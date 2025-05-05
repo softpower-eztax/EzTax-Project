@@ -1,0 +1,477 @@
+import React, { useState, useEffect } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { deductionsSchema, type Deductions } from '@shared/schema';
+import { Card, CardContent } from '@/components/ui/card';
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Separator } from '@/components/ui/separator';
+import { Info } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
+import ProgressTracker from '@/components/ProgressTracker';
+import TaxSummary from '@/components/TaxSummary';
+import StepNavigation from '@/components/StepNavigation';
+import { useTaxContext } from '@/context/TaxContext';
+import { Label } from '@/components/ui/label';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { calculateStandardDeduction } from '@/lib/taxCalculations';
+
+const Deductions: React.FC = () => {
+  const { taxData, updateTaxData } = useTaxContext();
+  const { toast } = useToast();
+  const [isItemizedDisabled, setIsItemizedDisabled] = useState(true);
+  
+  // Calculate standard deduction based on filing status
+  const standardDeductionAmount = calculateStandardDeduction(taxData.personalInfo?.filingStatus || 'single');
+  
+  const defaultValues: Deductions = {
+    useStandardDeduction: true,
+    standardDeductionAmount,
+    itemizedDeductions: {
+      medicalExpenses: 0,
+      stateLocalIncomeTax: 0,
+      realEstateTaxes: 0,
+      mortgageInterest: 0,
+      charitableCash: 0,
+      charitableNonCash: 0,
+    },
+    totalDeductions: standardDeductionAmount,
+    ...taxData.deductions
+  };
+
+  const form = useForm<Deductions>({
+    resolver: zodResolver(deductionsSchema),
+    defaultValues,
+    mode: 'onChange'
+  });
+
+  const watchDeductionType = form.watch('useStandardDeduction');
+  
+  // When useStandardDeduction changes, update form field status
+  useEffect(() => {
+    setIsItemizedDisabled(watchDeductionType);
+    
+    // Calculate total deductions
+    if (watchDeductionType) {
+      form.setValue('totalDeductions', standardDeductionAmount);
+    } else {
+      const itemized = form.getValues('itemizedDeductions');
+      if (itemized) {
+        const total = 
+          Number(itemized.medicalExpenses || 0) +
+          Number(itemized.stateLocalIncomeTax || 0) +
+          Number(itemized.realEstateTaxes || 0) +
+          Number(itemized.mortgageInterest || 0) +
+          Number(itemized.charitableCash || 0) +
+          Number(itemized.charitableNonCash || 0);
+        
+        form.setValue('totalDeductions', total);
+      }
+    }
+  }, [watchDeductionType, form, standardDeductionAmount]);
+
+  // Recalculate total itemized deductions when any value changes
+  const itemizedFields = [
+    'itemizedDeductions.medicalExpenses',
+    'itemizedDeductions.stateLocalIncomeTax',
+    'itemizedDeductions.realEstateTaxes',
+    'itemizedDeductions.mortgageInterest',
+    'itemizedDeductions.charitableCash',
+    'itemizedDeductions.charitableNonCash'
+  ];
+
+  itemizedFields.forEach(field => {
+    form.watch(field);
+  });
+
+  useEffect(() => {
+    if (!watchDeductionType) {
+      const itemized = form.getValues('itemizedDeductions');
+      if (itemized) {
+        const total = 
+          Number(itemized.medicalExpenses || 0) +
+          Number(itemized.stateLocalIncomeTax || 0) +
+          Number(itemized.realEstateTaxes || 0) +
+          Number(itemized.mortgageInterest || 0) +
+          Number(itemized.charitableCash || 0) +
+          Number(itemized.charitableNonCash || 0);
+        
+        form.setValue('totalDeductions', total);
+      }
+    }
+  }, itemizedFields.map(field => form.watch(field)));
+
+  const onSubmit = (data: Deductions) => {
+    updateTaxData({ deductions: data });
+    return true;
+  };
+
+  // Helper function to format currency input
+  const formatCurrency = (value: string) => {
+    // Remove all non-digits
+    const digits = value.replace(/[^\d.]/g, '');
+    return digits;
+  };
+
+  return (
+    <div className="max-w-5xl mx-auto">
+      <div className="mb-8">
+        <h1 className="text-3xl font-heading font-bold text-primary-dark mb-2">Your 2023 Tax Return</h1>
+        <p className="text-gray-dark">Complete all sections to prepare your tax return. Your information is saved as you go.</p>
+      </div>
+
+      <ProgressTracker currentStep={3} />
+      
+      <div className="md:hidden mb-4 border-b border-gray-medium">
+        <button className="py-2 px-4 border-b-2 border-transparent text-gray-dark">Personal</button>
+        <button className="py-2 px-4 border-b-2 border-primary text-primary font-semibold">Deductions</button>
+        <button className="py-2 px-4 border-b-2 border-transparent text-gray-dark">Credits</button>
+        <button className="py-2 px-4 border-b-2 border-transparent text-gray-dark">Add. Tax</button>
+        <button className="py-2 px-4 border-b-2 border-transparent text-gray-dark">Review</button>
+      </div>
+
+      <div className="flex flex-col md:flex-row gap-6">
+        <div className="flex-grow">
+          <Card className="mb-6">
+            <CardContent className="pt-6">
+              <h2 className="text-2xl font-heading font-semibold text-primary-dark mb-6">Deductions</h2>
+              
+              <Form {...form}>
+                <form>
+                  <div className="mb-8">
+                    <h3 className="text-lg font-heading font-semibold mb-4">Choose Your Deduction Method</h3>
+                    
+                    <FormField
+                      control={form.control}
+                      name="useStandardDeduction"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormControl>
+                            <RadioGroup
+                              onValueChange={(value) => field.onChange(value === 'standard')}
+                              defaultValue={field.value ? 'standard' : 'itemized'}
+                              className="flex flex-col sm:flex-row gap-4"
+                            >
+                              <div className="bg-gray-bg border border-gray-medium rounded-lg p-4 flex-1 hover:border-primary cursor-pointer">
+                                <div className="flex items-start">
+                                  <RadioGroupItem value="standard" id="standard_deduction" className="mt-1" />
+                                  <Label htmlFor="standard_deduction" className="ml-2 cursor-pointer">
+                                    <div className="font-semibold mb-1">Standard Deduction</div>
+                                    <p className="text-sm text-gray-dark">
+                                      Take the pre-defined deduction amount based on your filing status.
+                                    </p>
+                                    <p className="mt-2 text-primary-dark font-semibold">
+                                      ${standardDeductionAmount.toLocaleString()}
+                                    </p>
+                                  </Label>
+                                </div>
+                              </div>
+
+                              <div className="bg-gray-bg border border-gray-medium rounded-lg p-4 flex-1 hover:border-primary cursor-pointer">
+                                <div className="flex items-start">
+                                  <RadioGroupItem value="itemized" id="itemized_deduction" className="mt-1" />
+                                  <Label htmlFor="itemized_deduction" className="ml-2 cursor-pointer">
+                                    <div className="font-semibold mb-1">Itemized Deductions</div>
+                                    <p className="text-sm text-gray-dark">
+                                      Individually list each qualified deduction you want to claim.
+                                    </p>
+                                    <p className="mt-2 text-gray-dark italic text-sm">
+                                      Complete the sections below
+                                    </p>
+                                  </Label>
+                                </div>
+                              </div>
+                            </RadioGroup>
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
+                  <div id="itemized-deductions-section" className={isItemizedDisabled ? 'opacity-50' : ''}>
+                    <h3 className="text-lg font-heading font-semibold mb-4">Itemized Deductions</h3>
+
+                    {/* Medical Expenses */}
+                    <div className="mb-6 border-b border-gray-light pb-6">
+                      <div className="flex items-center mb-3">
+                        <h4 className="font-semibold">Medical Expenses</h4>
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Info className="h-4 w-4 text-gray-dark ml-2 cursor-help" />
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p className="w-64">
+                                Medical expenses are deductible to the extent they exceed 7.5% of your adjusted gross income.
+                              </p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                      </div>
+                      
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <FormField
+                          control={form.control}
+                          name="itemizedDeductions.medicalExpenses"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Total Medical and Dental Expenses</FormLabel>
+                              <FormControl>
+                                <div className="relative">
+                                  <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-dark">$</span>
+                                  <Input 
+                                    {...field} 
+                                    placeholder="0.00"
+                                    disabled={isItemizedDisabled}
+                                    className="pl-8"
+                                    value={field.value || ''}
+                                    onChange={(e) => {
+                                      const formatted = formatCurrency(e.target.value);
+                                      field.onChange(Number(formatted));
+                                    }}
+                                  />
+                                </div>
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+                    </div>
+
+                    {/* State and Local Taxes */}
+                    <div className="mb-6 border-b border-gray-light pb-6">
+                      <div className="flex items-center mb-3">
+                        <h4 className="font-semibold">State and Local Taxes</h4>
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Info className="h-4 w-4 text-gray-dark ml-2 cursor-help" />
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p className="w-64">
+                                Deduction for state and local taxes is limited to $10,000 ($5,000 if married filing separately).
+                              </p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                      </div>
+                      
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <FormField
+                          control={form.control}
+                          name="itemizedDeductions.stateLocalIncomeTax"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>State and Local Income Taxes</FormLabel>
+                              <FormControl>
+                                <div className="relative">
+                                  <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-dark">$</span>
+                                  <Input 
+                                    {...field} 
+                                    placeholder="0.00"
+                                    disabled={isItemizedDisabled}
+                                    className="pl-8"
+                                    value={field.value || ''}
+                                    onChange={(e) => {
+                                      const formatted = formatCurrency(e.target.value);
+                                      field.onChange(Number(formatted));
+                                    }}
+                                  />
+                                </div>
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        
+                        <FormField
+                          control={form.control}
+                          name="itemizedDeductions.realEstateTaxes"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Real Estate Taxes</FormLabel>
+                              <FormControl>
+                                <div className="relative">
+                                  <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-dark">$</span>
+                                  <Input 
+                                    {...field} 
+                                    placeholder="0.00"
+                                    disabled={isItemizedDisabled}
+                                    className="pl-8"
+                                    value={field.value || ''}
+                                    onChange={(e) => {
+                                      const formatted = formatCurrency(e.target.value);
+                                      field.onChange(Number(formatted));
+                                    }}
+                                  />
+                                </div>
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+                    </div>
+
+                    {/* Interest Paid */}
+                    <div className="mb-6 border-b border-gray-light pb-6">
+                      <div className="flex items-center mb-3">
+                        <h4 className="font-semibold">Interest Paid</h4>
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Info className="h-4 w-4 text-gray-dark ml-2 cursor-help" />
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p className="w-64">
+                                Mortgage interest on up to $750,000 of mortgage debt is deductible.
+                              </p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                      </div>
+                      
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <FormField
+                          control={form.control}
+                          name="itemizedDeductions.mortgageInterest"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Mortgage Interest (from Form 1098)</FormLabel>
+                              <FormControl>
+                                <div className="relative">
+                                  <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-dark">$</span>
+                                  <Input 
+                                    {...field} 
+                                    placeholder="0.00"
+                                    disabled={isItemizedDisabled}
+                                    className="pl-8"
+                                    value={field.value || ''}
+                                    onChange={(e) => {
+                                      const formatted = formatCurrency(e.target.value);
+                                      field.onChange(Number(formatted));
+                                    }}
+                                  />
+                                </div>
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+                    </div>
+
+                    {/* Charitable Contributions */}
+                    <div className="mb-6">
+                      <div className="flex items-center mb-3">
+                        <h4 className="font-semibold">Charitable Contributions</h4>
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Info className="h-4 w-4 text-gray-dark ml-2 cursor-help" />
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p className="w-64">
+                                Cash contributions to qualified organizations are generally deductible up to 60% of your adjusted gross income.
+                              </p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                      </div>
+                      
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <FormField
+                          control={form.control}
+                          name="itemizedDeductions.charitableCash"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Cash Contributions</FormLabel>
+                              <FormControl>
+                                <div className="relative">
+                                  <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-dark">$</span>
+                                  <Input 
+                                    {...field} 
+                                    placeholder="0.00"
+                                    disabled={isItemizedDisabled}
+                                    className="pl-8"
+                                    value={field.value || ''}
+                                    onChange={(e) => {
+                                      const formatted = formatCurrency(e.target.value);
+                                      field.onChange(Number(formatted));
+                                    }}
+                                  />
+                                </div>
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        
+                        <FormField
+                          control={form.control}
+                          name="itemizedDeductions.charitableNonCash"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Non-Cash Contributions</FormLabel>
+                              <FormControl>
+                                <div className="relative">
+                                  <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-dark">$</span>
+                                  <Input 
+                                    {...field} 
+                                    placeholder="0.00"
+                                    disabled={isItemizedDisabled}
+                                    className="pl-8"
+                                    value={field.value || ''}
+                                    onChange={(e) => {
+                                      const formatted = formatCurrency(e.target.value);
+                                      field.onChange(Number(formatted));
+                                    }}
+                                  />
+                                </div>
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </form>
+              </Form>
+              
+              <StepNavigation
+                prevStep="/income"
+                nextStep="/tax-credits"
+                submitText="Tax Credits"
+                onNext={() => {
+                  if (form.formState.isValid) {
+                    onSubmit(form.getValues());
+                    return true;
+                  } else {
+                    form.trigger();
+                    if (!form.formState.isValid) {
+                      toast({
+                        title: "Invalid form",
+                        description: "Please fix the errors in the form before proceeding.",
+                        variant: "destructive",
+                      });
+                    }
+                    return false;
+                  }
+                }}
+              />
+            </CardContent>
+          </Card>
+        </div>
+        
+        <TaxSummary />
+      </div>
+    </div>
+  );
+};
+
+export default Deductions;

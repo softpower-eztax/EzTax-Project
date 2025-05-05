@@ -1,0 +1,378 @@
+import React from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { taxCreditsSchema, type TaxCredits } from '@shared/schema';
+import { Card, CardContent } from '@/components/ui/card';
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { Separator } from '@/components/ui/separator';
+import { useToast } from '@/hooks/use-toast';
+import ProgressTracker from '@/components/ProgressTracker';
+import TaxSummary from '@/components/TaxSummary';
+import StepNavigation from '@/components/StepNavigation';
+import { useTaxContext } from '@/context/TaxContext';
+import { Info } from 'lucide-react';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+
+const TaxCreditsPage: React.FC = () => {
+  const { taxData, updateTaxData } = useTaxContext();
+  const { toast } = useToast();
+  
+  const defaultValues: TaxCredits = {
+    childTaxCredit: 0,
+    childDependentCareCredit: 0,
+    educationCredits: 0,
+    retirementSavingsCredit: 0,
+    otherCredits: 0,
+    totalCredits: 0,
+    ...taxData.taxCredits
+  };
+
+  const form = useForm<TaxCredits>({
+    resolver: zodResolver(taxCreditsSchema),
+    defaultValues,
+    mode: 'onChange'
+  });
+
+  // Watch all credit fields to calculate total
+  const watchChildTaxCredit = form.watch('childTaxCredit');
+  const watchChildDependentCareCredit = form.watch('childDependentCareCredit');
+  const watchEducationCredits = form.watch('educationCredits');
+  const watchRetirementSavingsCredit = form.watch('retirementSavingsCredit');
+  const watchOtherCredits = form.watch('otherCredits');
+
+  // Calculate total credits
+  React.useEffect(() => {
+    const total = 
+      Number(watchChildTaxCredit || 0) +
+      Number(watchChildDependentCareCredit || 0) +
+      Number(watchEducationCredits || 0) +
+      Number(watchRetirementSavingsCredit || 0) +
+      Number(watchOtherCredits || 0);
+    
+    form.setValue('totalCredits', total);
+  }, [
+    watchChildTaxCredit,
+    watchChildDependentCareCredit,
+    watchEducationCredits,
+    watchRetirementSavingsCredit,
+    watchOtherCredits,
+    form
+  ]);
+
+  const onSubmit = (data: TaxCredits) => {
+    updateTaxData({ taxCredits: data });
+    return true;
+  };
+
+  // Helper function to format currency input
+  const formatCurrency = (value: string) => {
+    // Remove all non-digits
+    const digits = value.replace(/[^\d.]/g, '');
+    return digits;
+  };
+
+  // Check if user has dependents for child tax credit
+  const hasDependents = taxData.personalInfo?.dependents && taxData.personalInfo.dependents.length > 0;
+
+  return (
+    <div className="max-w-5xl mx-auto">
+      <div className="mb-8">
+        <h1 className="text-3xl font-heading font-bold text-primary-dark mb-2">Your 2023 Tax Return</h1>
+        <p className="text-gray-dark">Complete all sections to prepare your tax return. Your information is saved as you go.</p>
+      </div>
+
+      <ProgressTracker currentStep={4} />
+
+      <div className="flex flex-col md:flex-row gap-6">
+        <div className="flex-grow">
+          <Card className="mb-6">
+            <CardContent className="pt-6">
+              <h2 className="text-2xl font-heading font-semibold text-primary-dark mb-6">Tax Credits</h2>
+              
+              <Form {...form}>
+                <form>
+                  {/* Child Tax Credit */}
+                  <div className="mb-6 border-b border-gray-light pb-6">
+                    <div className="flex items-center mb-3">
+                      <h4 className="font-semibold">Child Tax Credit</h4>
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Info className="h-4 w-4 text-gray-dark ml-2 cursor-help" />
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p className="w-64">
+                              You may be eligible for a Child Tax Credit of up to $2,000 for each qualifying dependent under age 17.
+                            </p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    </div>
+                    
+                    {!hasDependents && (
+                      <div className="bg-gray-bg p-3 rounded-md mb-3 text-sm">
+                        <p>You have not added any dependents in the Personal Information section. 
+                        If you have qualifying children, please go back and add them.</p>
+                      </div>
+                    )}
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <FormField
+                        control={form.control}
+                        name="childTaxCredit"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Child Tax Credit Amount</FormLabel>
+                            <FormControl>
+                              <div className="relative">
+                                <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-dark">$</span>
+                                <Input 
+                                  {...field} 
+                                  placeholder="0.00"
+                                  className="pl-8"
+                                  value={field.value || ''}
+                                  onChange={(e) => {
+                                    const formatted = formatCurrency(e.target.value);
+                                    field.onChange(Number(formatted));
+                                  }}
+                                />
+                              </div>
+                            </FormControl>
+                            <FormDescription>
+                              Enter your estimated child tax credit amount.
+                            </FormDescription>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Child and Dependent Care Credit */}
+                  <div className="mb-6 border-b border-gray-light pb-6">
+                    <div className="flex items-center mb-3">
+                      <h4 className="font-semibold">Child and Dependent Care Credit</h4>
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Info className="h-4 w-4 text-gray-dark ml-2 cursor-help" />
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p className="w-64">
+                              This credit is for expenses paid for the care of your qualifying children under age 13, or for a disabled spouse or dependent.
+                            </p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    </div>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <FormField
+                        control={form.control}
+                        name="childDependentCareCredit"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Care Credit Amount</FormLabel>
+                            <FormControl>
+                              <div className="relative">
+                                <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-dark">$</span>
+                                <Input 
+                                  {...field} 
+                                  placeholder="0.00"
+                                  className="pl-8"
+                                  value={field.value || ''}
+                                  onChange={(e) => {
+                                    const formatted = formatCurrency(e.target.value);
+                                    field.onChange(Number(formatted));
+                                  }}
+                                />
+                              </div>
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Education Credits */}
+                  <div className="mb-6 border-b border-gray-light pb-6">
+                    <div className="flex items-center mb-3">
+                      <h4 className="font-semibold">Education Credits</h4>
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Info className="h-4 w-4 text-gray-dark ml-2 cursor-help" />
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p className="w-64">
+                              The American Opportunity Credit and Lifetime Learning Credit help offset the costs of education.
+                            </p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    </div>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <FormField
+                        control={form.control}
+                        name="educationCredits"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Education Credits Amount</FormLabel>
+                            <FormControl>
+                              <div className="relative">
+                                <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-dark">$</span>
+                                <Input 
+                                  {...field} 
+                                  placeholder="0.00"
+                                  className="pl-8"
+                                  value={field.value || ''}
+                                  onChange={(e) => {
+                                    const formatted = formatCurrency(e.target.value);
+                                    field.onChange(Number(formatted));
+                                  }}
+                                />
+                              </div>
+                            </FormControl>
+                            <FormDescription>
+                              Total of American Opportunity and Lifetime Learning credits.
+                            </FormDescription>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Retirement Savings Credit */}
+                  <div className="mb-6 border-b border-gray-light pb-6">
+                    <div className="flex items-center mb-3">
+                      <h4 className="font-semibold">Retirement Savings Credit</h4>
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Info className="h-4 w-4 text-gray-dark ml-2 cursor-help" />
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p className="w-64">
+                              This credit is for eligible contributions to retirement accounts like 401(k)s and IRAs.
+                            </p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    </div>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <FormField
+                        control={form.control}
+                        name="retirementSavingsCredit"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Retirement Savings Credit Amount</FormLabel>
+                            <FormControl>
+                              <div className="relative">
+                                <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-dark">$</span>
+                                <Input 
+                                  {...field} 
+                                  placeholder="0.00"
+                                  className="pl-8"
+                                  value={field.value || ''}
+                                  onChange={(e) => {
+                                    const formatted = formatCurrency(e.target.value);
+                                    field.onChange(Number(formatted));
+                                  }}
+                                />
+                              </div>
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Other Credits */}
+                  <div className="mb-6">
+                    <div className="flex items-center mb-3">
+                      <h4 className="font-semibold">Other Credits</h4>
+                    </div>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <FormField
+                        control={form.control}
+                        name="otherCredits"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Other Tax Credits</FormLabel>
+                            <FormControl>
+                              <div className="relative">
+                                <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-dark">$</span>
+                                <Input 
+                                  {...field} 
+                                  placeholder="0.00"
+                                  className="pl-8"
+                                  value={field.value || ''}
+                                  onChange={(e) => {
+                                    const formatted = formatCurrency(e.target.value);
+                                    field.onChange(Number(formatted));
+                                  }}
+                                />
+                              </div>
+                            </FormControl>
+                            <FormDescription>
+                              Enter the total of any other tax credits not listed above.
+                            </FormDescription>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Total Credits - Read Only */}
+                  <div className="mb-6 bg-gray-bg p-4 rounded-md">
+                    <div className="flex justify-between items-center">
+                      <h4 className="font-semibold">Total Credits</h4>
+                      <p className="font-bold text-primary-dark text-xl">
+                        ${form.getValues('totalCredits').toLocaleString()}
+                      </p>
+                    </div>
+                  </div>
+                </form>
+              </Form>
+              
+              <StepNavigation
+                prevStep="/deductions"
+                nextStep="/additional-tax"
+                submitText="Additional Tax"
+                onNext={() => {
+                  if (form.formState.isValid) {
+                    onSubmit(form.getValues());
+                    return true;
+                  } else {
+                    form.trigger();
+                    if (!form.formState.isValid) {
+                      toast({
+                        title: "Invalid form",
+                        description: "Please fix the errors in the form before proceeding.",
+                        variant: "destructive",
+                      });
+                    }
+                    return false;
+                  }
+                }}
+              />
+            </CardContent>
+          </Card>
+        </div>
+        
+        <TaxSummary />
+      </div>
+    </div>
+  );
+};
+
+export default TaxCreditsPage;

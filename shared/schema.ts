@@ -60,6 +60,14 @@ export interface Dependent {
   dateOfBirth: string;
 }
 
+export interface SpouseInformation {
+  firstName: string;
+  middleInitial?: string;
+  lastName: string;
+  ssn: string;
+  dateOfBirth: string;
+}
+
 export interface PersonalInformation {
   firstName: string;
   middleInitial?: string;
@@ -74,6 +82,7 @@ export interface PersonalInformation {
   state: string;
   zipCode: string;
   filingStatus: FilingStatus;
+  spouseInfo?: SpouseInformation;
   dependents: Dependent[];
 }
 
@@ -151,6 +160,14 @@ export const dependentSchema = z.object({
   dateOfBirth: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Date must be in YYYY-MM-DD format"),
 });
 
+export const spouseInfoSchema = z.object({
+  firstName: z.string().min(1, "Spouse's first name is required"),
+  middleInitial: z.string().max(1).optional(),
+  lastName: z.string().min(1, "Spouse's last name is required"),
+  ssn: z.string().regex(/^\d{3}-\d{2}-\d{4}$/, "SSN must be in format XXX-XX-XXXX"),
+  dateOfBirth: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Date must be in YYYY-MM-DD format"),
+});
+
 export const personalInfoSchema = z.object({
   firstName: z.string().min(1, "First name is required"),
   middleInitial: z.string().max(1).optional(),
@@ -165,6 +182,7 @@ export const personalInfoSchema = z.object({
   state: z.string().length(2, "State must be a 2-letter code"),
   zipCode: z.string().regex(/^\d{5}(-\d{4})?$/, "ZIP code must be in format XXXXX or XXXXX-XXXX"),
   filingStatus: z.enum(["single", "married_joint", "married_separate", "head_of_household", "qualifying_widow"]),
+  spouseInfo: spouseInfoSchema.optional(),
   dependents: z.array(dependentSchema).optional(),
 });
 

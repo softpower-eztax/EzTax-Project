@@ -31,6 +31,12 @@ const PersonalInfo: React.FC = () => {
     state: '',
     zipCode: '',
     filingStatus: 'single',
+    spouseInfo: {
+      firstName: '',
+      lastName: '',
+      ssn: '',
+      dateOfBirth: ''
+    },
     dependents: [],
     ...taxData.personalInfo
   };
@@ -40,6 +46,9 @@ const PersonalInfo: React.FC = () => {
     defaultValues,
     mode: 'onChange'
   });
+  
+  // Watch filing status to show spouse info when 'married_joint' is selected
+  const filingStatus = form.watch('filingStatus');
 
   const { fields, append, remove } = useFieldArray({
     control: form.control,
@@ -230,6 +239,104 @@ const PersonalInfo: React.FC = () => {
                       />
                     </div>
                   </div>
+                  
+                  {/* Spouse Information - Only shows when filing status is married_joint */}
+                  {filingStatus === 'married_joint' && (
+                    <>
+                      <Separator className="my-6" />
+                      <div className="mb-6">
+                        <h3 className="text-lg font-heading font-semibold mb-4">배우자 정보(Spouse Information)</h3>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                          <FormField
+                            control={form.control}
+                            name="spouseInfo.firstName"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>배우자 이름(First Name)</FormLabel>
+                                <FormControl>
+                                  <Input {...field} />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                          
+                          <FormField
+                            control={form.control}
+                            name="spouseInfo.lastName"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>배우자 성(Last Name)</FormLabel>
+                                <FormControl>
+                                  <Input {...field} />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                          
+                          <FormField
+                            control={form.control}
+                            name="spouseInfo.middleInitial"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Middle Initial</FormLabel>
+                                <FormControl>
+                                  <Input {...field} maxLength={1} />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                        </div>
+                        
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                          <FormField
+                            control={form.control}
+                            name="spouseInfo.ssn"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>배우자 주민등록번호(SSN)</FormLabel>
+                                <FormControl>
+                                  <Input 
+                                    {...field} 
+                                    placeholder="XXX-XX-XXXX"
+                                    onChange={(e) => {
+                                      const formatted = formatSSN(e.target.value);
+                                      field.onChange(formatted);
+                                    }}
+                                    maxLength={11}
+                                  />
+                                </FormControl>
+                                <FormDescription>
+                                  Format: XXX-XX-XXXX
+                                </FormDescription>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                          
+                          <FormField
+                            control={form.control}
+                            name="spouseInfo.dateOfBirth"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>배우자 생년월일</FormLabel>
+                                <FormControl>
+                                  <Input 
+                                    {...field}
+                                    type="date"
+                                    placeholder="YYYY-MM-DD"
+                                  />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                        </div>
+                      </div>
+                    </>
+                  )}
                   
                   <Separator className="my-6" />
                   

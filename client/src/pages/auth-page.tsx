@@ -11,6 +11,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Loader2, User, Mail, Lock, LogIn, UserPlus } from "lucide-react";
+import { Separator } from "@/components/ui/separator";
+import { FcGoogle } from "react-icons/fc";
 
 // Extend the insertUserSchema to include password confirmation
 const registerSchema = insertUserSchema.extend({
@@ -153,7 +155,7 @@ export default function AuthPage() {
                   </div>
                 </CardContent>
 
-                <CardFooter>
+                <CardFooter className="flex flex-col space-y-4">
                   <Button 
                     className="w-full" 
                     type="submit" 
@@ -170,6 +172,25 @@ export default function AuthPage() {
                         로그인(Login)
                       </div>
                     )}
+                  </Button>
+                  
+                  <div className="relative w-full flex items-center justify-center">
+                    <Separator className="w-full" />
+                    <span className="absolute bg-white px-2 text-xs text-muted-foreground">
+                      또는(OR)
+                    </span>
+                  </div>
+                  
+                  <Button 
+                    variant="outline" 
+                    className="w-full" 
+                    type="button"
+                    onClick={() => window.location.href = "/auth/google"}
+                  >
+                    <div className="flex items-center">
+                      <FcGoogle className="mr-2 h-5 w-5" />
+                      Google로 로그인(Sign in with Google)
+                    </div>
                   </Button>
                 </CardFooter>
               </form>
@@ -263,7 +284,7 @@ export default function AuthPage() {
                   </div>
                 </CardContent>
 
-                <CardFooter>
+                <CardFooter className="flex flex-col space-y-4">
                   <Button 
                     className="w-full" 
                     type="submit" 
@@ -280,6 +301,25 @@ export default function AuthPage() {
                         회원가입(Register)
                       </div>
                     )}
+                  </Button>
+                  
+                  <div className="relative w-full flex items-center justify-center">
+                    <Separator className="w-full" />
+                    <span className="absolute bg-white px-2 text-xs text-muted-foreground">
+                      또는(OR)
+                    </span>
+                  </div>
+                  
+                  <Button 
+                    variant="outline" 
+                    className="w-full" 
+                    type="button"
+                    onClick={() => window.location.href = "/auth/google"}
+                  >
+                    <div className="flex items-center">
+                      <FcGoogle className="mr-2 h-5 w-5" />
+                      Google로 회원가입(Sign up with Google)
+                    </div>
                   </Button>
                 </CardFooter>
               </form>

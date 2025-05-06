@@ -555,59 +555,13 @@ export default function IncomePage() {
                         control={form.control}
                         name="adjustments.otherAdjustments"
                         render={({ field }) => (
-                          <FormItem>
-                            <div className="flex justify-between">
-                              <FormLabel>기타조정항목 (Other Adjustments)</FormLabel>
-                              <div className="tooltip">
-                                <InfoIcon className="h-4 w-4 text-gray-dark" />
-                                <span className="tooltip-text">Moving expenses, self-employment tax, etc.</span>
-                              </div>
-                            </div>
-                            <div className="flex gap-2 mb-2">
-                              <FormControl className="flex-grow">
-                                <Input
-                                  type="number"
-                                  step="0.01"
-                                  min="0"
-                                  {...field}
-                                  onChange={(e) => {
-                                    field.onChange(parseFloat(e.target.value) || 0);
-                                  }}
-                                />
-                              </FormControl>
-                              <Button
-                                type="button"
-                                variant="outline"
-                                size="sm"
-                                onClick={() => navigate('/additional-adjustments')}
-                                className="whitespace-nowrap"
-                              >
-                                <Plus className="h-4 w-4 mr-1" />
-                                기타조정
-                              </Button>
-                            </div>
-                            
-                            {additionalAdjustmentItems.length > 0 && (
-                              <div className="bg-gray-50 p-3 rounded-md border mb-2">
-                                <h4 className="text-sm font-semibold mb-2">기타조정 항목 요약</h4>
-                                <div className="space-y-1 text-sm">
-                                  {additionalAdjustmentItems.map((item, index) => (
-                                    <div key={index} className="flex justify-between">
-                                      <span>{item.type}</span>
-                                      <span>{new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(item.amount)}</span>
-                                    </div>
-                                  ))}
-                                  <div className="flex justify-between font-medium border-t pt-1 mt-2">
-                                    <span>총 기타조정:</span>
-                                    <span>
-                                      {new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(
-                                        additionalAdjustmentItems.reduce((sum, item) => sum + item.amount, 0)
-                                      )}
-                                    </span>
-                                  </div>
-                                </div>
-                              </div>
-                            )}
+                          <FormItem className="hidden">
+                            <FormControl>
+                              <Input
+                                type="hidden"
+                                {...field}
+                              />
+                            </FormControl>
                             <FormMessage />
                           </FormItem>
                         )}

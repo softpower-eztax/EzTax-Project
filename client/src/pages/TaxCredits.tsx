@@ -104,7 +104,8 @@ const TaxCreditsPage: React.FC = () => {
                           </TooltipTrigger>
                           <TooltipContent>
                             <p className="w-64">
-                              You may be eligible for a Child Tax Credit of up to $2,000 for each qualifying dependent under age 17.
+                              17세 미만의 적격 부양가족 각각에 대해 최대 $2,000까지의 자녀세액공제를 받을 수 있습니다.
+                              (You may be eligible for a Child Tax Credit of up to $2,000 for each qualifying dependent under age 17.)
                             </p>
                           </TooltipContent>
                         </Tooltip>
@@ -113,8 +114,10 @@ const TaxCreditsPage: React.FC = () => {
                     
                     {!hasDependents && (
                       <div className="bg-gray-bg p-3 rounded-md mb-3 text-sm">
-                        <p>You have not added any dependents in the Personal Information section. 
-                        If you have qualifying children, please go back and add them.</p>
+                        <p>개인정보 섹션에 부양가족을 추가하지 않았습니다. 
+                        자격을 갖춘 자녀가 있다면, 뒤로 돌아가 추가해주세요.</p>
+                        <p className="text-xs mt-1">(You have not added any dependents in the Personal Information section. 
+                        If you have qualifying children, please go back and add them.)</p>
                       </div>
                     )}
                     
@@ -124,7 +127,7 @@ const TaxCreditsPage: React.FC = () => {
                         name="childTaxCredit"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Child Tax Credit Amount</FormLabel>
+                            <FormLabel>자녀세액공제액 (Child Tax Credit Amount)</FormLabel>
                             <FormControl>
                               <div className="relative">
                                 <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-dark">$</span>
@@ -161,7 +164,8 @@ const TaxCreditsPage: React.FC = () => {
                           </TooltipTrigger>
                           <TooltipContent>
                             <p className="w-64">
-                              This credit is for expenses paid for the care of your qualifying children under age 13, or for a disabled spouse or dependent.
+                              이 공제는 13세 미만의 적격 자녀 또는 장애가 있는 배우자나 부양가족을 돌보는 데 지출한 비용에 대한 것입니다.
+                              (This credit is for expenses paid for the care of your qualifying children under age 13, or for a disabled spouse or dependent.)
                             </p>
                           </TooltipContent>
                         </Tooltip>
@@ -174,7 +178,7 @@ const TaxCreditsPage: React.FC = () => {
                         name="childDependentCareCredit"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Care Credit Amount</FormLabel>
+                            <FormLabel>돌봄공제액 (Care Credit Amount)</FormLabel>
                             <FormControl>
                               <div className="relative">
                                 <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-dark">$</span>
@@ -208,7 +212,8 @@ const TaxCreditsPage: React.FC = () => {
                           </TooltipTrigger>
                           <TooltipContent>
                             <p className="w-64">
-                              The American Opportunity Credit and Lifetime Learning Credit help offset the costs of education.
+                              미국 기회 세액공제와 평생 학습 세액공제는 교육 비용을 상쇄하는 데 도움이 됩니다.
+                              (The American Opportunity Credit and Lifetime Learning Credit help offset the costs of education.)
                             </p>
                           </TooltipContent>
                         </Tooltip>
@@ -258,7 +263,8 @@ const TaxCreditsPage: React.FC = () => {
                           </TooltipTrigger>
                           <TooltipContent>
                             <p className="w-64">
-                              This credit is for eligible contributions to retirement accounts like 401(k)s and IRAs.
+                              이 공제는 401(k)와 IRA와 같은 은퇴 계좌에 대한 적격 기여금에 대한 것입니다.
+                              (This credit is for eligible contributions to retirement accounts like 401(k)s and IRAs.)
                             </p>
                           </TooltipContent>
                         </Tooltip>

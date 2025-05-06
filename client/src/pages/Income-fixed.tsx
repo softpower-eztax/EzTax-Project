@@ -52,38 +52,50 @@ export default function IncomePage() {
     defaultValues,
   });
   
-  const calculateTotals = () => {
+  // 총소득과 조정 총소득을 계산하는 함수
+  const calculateTotals = (formValues?: any) => {
+    // 폼의 현재 값을 가져오거나 인자로 받은 값을 사용
+    const values = formValues || form.getValues();
+    
     // 총소득 계산
-    const wages = form.getValues('wages') || 0;
-    const otherEarnedIncome = form.getValues('otherEarnedIncome') || 0;
-    const interestIncome = form.getValues('interestIncome') || 0;
-    const dividends = form.getValues('dividends') || 0;
-    const businessIncome = form.getValues('businessIncome') || 0;
-    const capitalGains = form.getValues('capitalGains') || 0;
-    const rentalIncome = form.getValues('rentalIncome') || 0;
-    const retirementIncome = form.getValues('retirementIncome') || 0;
-    const unemploymentIncome = form.getValues('unemploymentIncome') || 0;
-    const otherIncome = form.getValues('otherIncome') || 0;
+    const wages = values.wages || 0;
+    const otherEarnedIncome = values.otherEarnedIncome || 0;
+    const interestIncome = values.interestIncome || 0;
+    const dividends = values.dividends || 0;
+    const businessIncome = values.businessIncome || 0;
+    const capitalGains = values.capitalGains || 0;
+    const rentalIncome = values.rentalIncome || 0;
+    const retirementIncome = values.retirementIncome || 0;
+    const unemploymentIncome = values.unemploymentIncome || 0;
+    const otherIncome = values.otherIncome || 0;
     
     // 추가 소득 항목이 있으면 포함
-    const additionalItemsTotal = form.getValues('additionalIncomeItems')?.reduce((sum, item) => sum + (item.amount || 0), 0) || 0;
+    const additionalItemsTotal = additionalIncomeItems.reduce((sum, item) => sum + (item.amount || 0), 0);
     
+    // 총소득 합계
     const totalIncome = wages + otherEarnedIncome + interestIncome + dividends + businessIncome + capitalGains + 
                       rentalIncome + retirementIncome + unemploymentIncome + otherIncome + additionalItemsTotal;
     
-    form.setValue('totalIncome', totalIncome);
-    
     // 소득 조정 항목 계산
-    const studentLoanInterest = form.getValues('adjustments.studentLoanInterest') || 0;
-    const retirementContributions = form.getValues('adjustments.retirementContributions') || 0;
-    const healthSavingsAccount = form.getValues('adjustments.healthSavingsAccount') || 0;
-    const otherAdjustments = form.getValues('adjustments.otherAdjustments') || 0;
+    const adjustments = values.adjustments || {};
+    const studentLoanInterest = adjustments.studentLoanInterest || 0;
+    const retirementContributions = adjustments.retirementContributions || 0;
+    const healthSavingsAccount = adjustments.healthSavingsAccount || 0;
+    const otherAdjustments = adjustments.otherAdjustments || 0;
     
+    // 총 조정 금액
     const totalAdjustments = studentLoanInterest + retirementContributions + healthSavingsAccount + otherAdjustments;
     
     // 조정 총소득(AGI) 계산
     const adjustedGrossIncome = totalIncome - totalAdjustments;
-    form.setValue('adjustedGrossIncome', adjustedGrossIncome);
+    
+    // 결과를 폼에 설정 (단, 인자로 값을 받은 경우에는 설정하지 않음)
+    if (!formValues) {
+      form.setValue('totalIncome', totalIncome, { shouldValidate: true });
+      form.setValue('adjustedGrossIncome', adjustedGrossIncome, { shouldValidate: true });
+    }
+    
+    return { totalIncome, adjustedGrossIncome, totalAdjustments };
   };
   
   const onSubmit = async (data: Income) => {

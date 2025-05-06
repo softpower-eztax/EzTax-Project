@@ -516,31 +516,37 @@ const IncomePage: React.FC = () => {
                     
                     <div className="mt-4">
                       <div className="space-y-3 mb-4">
-                        <div className="flex items-center space-x-2">
-                          <Button
-                            type="button"
-                            variant="outline"
-                            className="text-sm"
-                            onClick={() => setShowAdditionalIncomeDialog(true)}
-                          >
-                            <Plus className="w-4 h-4 mr-2" />
-                            추가 소득 항목 (Add Additional Income)
-                          </Button>
-                          <p className="text-sm text-gray-500 italic">
-                            여기를 클릭해 해당되는 사항이 있는지 확인하세요
-                          </p>
+                        <div className="flex items-center border rounded-md p-3">
+                          <Plus className="w-5 h-5 mr-3 shrink-0" />
+                          <div className="flex-1">
+                            <button 
+                              type="button"
+                              className="text-base font-medium hover:text-primary focus:outline-none"
+                              onClick={() => setShowAdditionalIncomeDialog(true)}
+                            >
+                              추가 소득 항목 (Add Additional Income)
+                            </button>
+                            <p className="text-sm text-gray-500">
+                              여기를 클릭해 해당되는 사항이 있는지 확인하세요
+                            </p>
+                          </div>
                         </div>
                         
-                        <Button
-                          type="button"
-                          variant="secondary"
-                          className="text-sm w-full"
-                          onClick={() => setShowAdditionalIncomeDialog(true)}
-                        >
-                          <Plus className="w-4 h-4 mr-2" />
-                          특이한 수입 (Unusual Income)
-                          <span className="ml-2 text-xs text-gray-500 italic">여기를 클릭해 해당되는 사항이 있는지 확인하세요</span>
-                        </Button>
+                        <div className="flex items-center border rounded-md p-3 bg-gray-50">
+                          <Plus className="w-5 h-5 mr-3 shrink-0" />
+                          <div className="flex-1">
+                            <button 
+                              type="button"
+                              className="text-base font-medium hover:text-primary focus:outline-none"
+                              onClick={() => setShowAdditionalIncomeDialog(true)}
+                            >
+                              특이한 수입 (Unusual Income)
+                            </button>
+                            <p className="text-sm text-gray-500">
+                              여기를 클릭해 해당되는 사항이 있는지 확인하세요
+                            </p>
+                          </div>
+                        </div>
                       </div>
                       
                       {form.watch('additionalIncomeItems') && form.watch('additionalIncomeItems').length > 0 && (

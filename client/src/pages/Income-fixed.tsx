@@ -3,6 +3,7 @@ import { useLocation } from 'wouter';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { Income, incomeSchema } from '@shared/schema';
+import { formatCurrency } from '@/lib/taxCalculations';
 import { useTaxContext } from '@/context/TaxContext';
 import ProgressTracker from '@/components/ProgressTracker';
 import StepNavigation from '@/components/StepNavigation';
@@ -107,9 +108,11 @@ export default function IncomePage() {
   
   // 값이 변경될 때마다 총소득과 AGI 재계산
   useEffect(() => {
-    const subscription = form.watch(() => calculateTotals());
+    const subscription = form.watch(() => {
+      calculateTotals();
+    });
     return () => subscription.unsubscribe();
-  }, [form.watch]);
+  }, []);
   
   return (
     <div className="max-w-5xl mx-auto">
@@ -121,7 +124,7 @@ export default function IncomePage() {
         <div className="flex-1">
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-              <Card>
+              <Card className="mb-8">
                 <CardHeader>
                   <CardTitle className="text-xl font-heading text-primary-dark">소득 정보 (Income Information)</CardTitle>
                 </CardHeader>
@@ -224,6 +227,97 @@ export default function IncomePage() {
                           </div>
                         </div>
                       </div>
+                    </div>
+                  </div>
+                  
+                  <div className="mt-8">
+                    <h3 className="text-lg font-semibold mb-4">기타 소득 (Unearned Income etc.)</h3>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <FormField
+                        control={form.control}
+                        name="interestIncome"
+                        render={({ field }) => (
+                          <FormItem className="flex flex-col justify-center h-full">
+                            <div className="flex justify-between">
+                              <FormLabel>이자 소득 (Interest Income)</FormLabel>
+                              <div className="tooltip">
+                                <InfoIcon className="h-4 w-4 text-gray-dark" />
+                                <span className="tooltip-text">Include interest from bank accounts, CDs, etc.</span>
+                              </div>
+                            </div>
+                            <FormControl>
+                              <Input
+                                type="number"
+                                step="0.01"
+                                min="0"
+                                {...field}
+                                onChange={(e) => {
+                                  field.onChange(parseFloat(e.target.value) || 0);
+                                }}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      
+                      <FormField
+                        control={form.control}
+                        name="dividends"
+                        render={({ field }) => (
+                          <FormItem className="flex flex-col justify-center h-full">
+                            <div className="flex justify-between">
+                              <FormLabel>배당금 (Dividends)</FormLabel>
+                              <div className="tooltip">
+                                <InfoIcon className="h-4 w-4 text-gray-dark" />
+                                <span className="tooltip-text">Include dividends from stocks and mutual funds</span>
+                              </div>
+                            </div>
+                            <FormControl>
+                              <Input
+                                type="number"
+                                step="0.01"
+                                min="0"
+                                {...field}
+                                onChange={(e) => {
+                                  field.onChange(parseFloat(e.target.value) || 0);
+                                }}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+              
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-xl font-heading text-primary-dark">소득 요약 (Income Summary)</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="income-total-box">
+                    <div className="income-total-row">
+                      <span>총 소득 (Total Income)</span>
+                      <span>{formatCurrency(form.getValues('totalIncome'))}</span>
+                    </div>
+                    <div className="income-total-row">
+                      <span>조정 항목 총액 (Total Adjustments)</span>
+                      <span>
+                        {formatCurrency(
+                          (form.getValues('adjustments.studentLoanInterest') || 0) +
+                          (form.getValues('adjustments.retirementContributions') || 0) +
+                          (form.getValues('adjustments.healthSavingsAccount') || 0) +
+                          (form.getValues('adjustments.otherAdjustments') || 0)
+                        )}
+                      </span>
+                    </div>
+                    <div className="income-total-row highlight">
+                      <span>조정 총소득 (Adjusted Gross Income)</span>
+                      <span>{formatCurrency(form.getValues('adjustedGrossIncome'))}</span>
                     </div>
                   </div>
                 </CardContent>

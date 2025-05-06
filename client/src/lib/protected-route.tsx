@@ -17,7 +17,8 @@ export function ProtectedRoute({
   path: string;
   component: ComponentType;
 }) {
-  const { user, isLoading } = useAuth();
+  // 인증 체크를 일시적으로 비활성화
+  const { isLoading } = useAuth();
   const WrappedComponent = wrapComponent(Component);
 
   if (isLoading) {
@@ -30,13 +31,6 @@ export function ProtectedRoute({
     );
   }
 
-  if (!user) {
-    return (
-      <Route path={path}>
-        <Redirect to="/auth" />
-      </Route>
-    );
-  }
-
+  // 인증 여부에 관계없이 항상 접근 허용
   return <Route path={path} component={WrappedComponent} />;
 }

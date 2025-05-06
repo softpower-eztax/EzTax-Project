@@ -341,6 +341,7 @@ const IncomePage: React.FC = () => {
                       
                       {/* W2 Upload Button (Right) */}
                       <div className="border rounded-md p-3 bg-gray-50/50">
+                        <h5 className="text-sm text-gray-700 mb-2">W-2입력(없으면 직접 입력)</h5>
                         <div className="flex flex-col items-start gap-2">
                           <div className="w-full flex items-center gap-3">
                             <div className="flex items-center">

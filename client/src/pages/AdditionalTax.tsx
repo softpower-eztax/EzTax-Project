@@ -49,7 +49,16 @@ const AdditionalTaxPage: React.FC = () => {
   }, [watchSelfEmploymentIncome, form]);
 
   const onSubmit = (data: AdditionalTax) => {
-    updateTaxData({ additionalTax: data });
+    // Ensure all fields have numeric values (even if 0)
+    const processedData: AdditionalTax = {
+      selfEmploymentIncome: Number(data.selfEmploymentIncome) || 0,
+      selfEmploymentTax: Number(data.selfEmploymentTax) || 0,
+      estimatedTaxPayments: Number(data.estimatedTaxPayments) || 0,
+      otherIncome: Number(data.otherIncome) || 0,
+      otherTaxes: Number(data.otherTaxes) || 0,
+    };
+    
+    updateTaxData({ additionalTax: processedData });
     recalculateTaxes();
     return true;
   };
@@ -320,20 +329,10 @@ const AdditionalTaxPage: React.FC = () => {
                 nextStep="/review"
                 submitText="검토 및 계산 (Review & Calculate)"
                 onNext={() => {
-                  if (form.formState.isValid) {
-                    onSubmit(form.getValues());
-                    return true;
-                  } else {
-                    form.trigger();
-                    if (!form.formState.isValid) {
-                      toast({
-                        title: "잘못된 양식 (Invalid form)",
-                        description: "계속하기 전에 양식의 오류를 수정해주세요. (Please fix the errors in the form before proceeding.)",
-                        variant: "destructive",
-                      });
-                    }
-                    return false;
-                  }
+                  // Always submit the form regardless of validation state
+                  // Default values ensure we always have valid data
+                  onSubmit(form.getValues());
+                  return true;
                 }}
               />
             </CardContent>

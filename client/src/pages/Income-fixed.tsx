@@ -138,7 +138,7 @@ export default function IncomePage() {
                         render={({ field }) => (
                           <FormItem className="flex flex-col justify-center h-full">
                             <div className="flex justify-between">
-                              <FormLabel>급여, 월급, 팁 (Wages, Salaries, Tips)</FormLabel>
+                              <FormLabel>급여 (Wages, Salaries)</FormLabel>
                               <div className="tooltip">
                                 <InfoIcon className="h-4 w-4 text-gray-dark" />
                                 <span className="tooltip-text">Include income from all W-2 forms</span>

@@ -288,6 +288,34 @@ export default function IncomePage() {
                           </FormItem>
                         )}
                       />
+                      
+                      <FormField
+                        control={form.control}
+                        name="rentalIncome"
+                        render={({ field }) => (
+                          <FormItem className="flex flex-col justify-center h-full">
+                            <div className="flex justify-between">
+                              <FormLabel>임대 소득 (Rental Income)</FormLabel>
+                              <div className="tooltip">
+                                <InfoIcon className="h-4 w-4 text-gray-dark" />
+                                <span className="tooltip-text">Income from renting property after expenses</span>
+                              </div>
+                            </div>
+                            <FormControl>
+                              <Input
+                                type="number"
+                                step="0.01"
+                                min="0"
+                                {...field}
+                                onChange={(e) => {
+                                  field.onChange(parseFloat(e.target.value) || 0);
+                                }}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
                     </div>
                   </div>
                   

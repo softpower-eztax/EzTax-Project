@@ -44,7 +44,7 @@ export default function IncomePage() {
       healthSavingsAccount: taxData.income?.adjustments?.healthSavingsAccount || 0,
       otherAdjustments: taxData.income?.adjustments?.otherAdjustments || 0,
     },
-    adjustedGrossIncome: taxData.income?.adjustedGrossIncome || 0,
+    adjustedGrossIncome: taxData.income?.adjustedGrossIncome || 0
   };
 
   const form = useForm<Income>({

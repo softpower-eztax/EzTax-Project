@@ -160,23 +160,53 @@ export default function IncomePage() {
     const otherIncome = formValues.otherIncome || 0;
     
     // 추가 소득 항목이 있으면 포함
-    const additionalItemsTotal = additionalIncomeItems.reduce((sum, item) => sum + (item.amount || 0), 0);
+    const additionalItemsTotal = additionalIncomeItems.reduce((sum, item) => {
+      console.log("더하는 추가 소득 항목:", item.type, item.amount);
+      return sum + (parseFloat(item.amount.toString()) || 0);
+    }, 0);
+    
+    console.log("추가 소득 항목 총액:", additionalItemsTotal);
     
     // 총소득 합계 계산
-    const totalIncome = wages + otherEarnedIncome + interestIncome + dividends + businessIncome + 
-                      capitalGains + rentalIncome + retirementIncome + unemploymentIncome + 
-                      otherIncome + additionalItemsTotal;
+    const totalIncome = 
+      parseFloat(wages.toString()) + 
+      parseFloat(otherEarnedIncome.toString()) + 
+      parseFloat(interestIncome.toString()) + 
+      parseFloat(dividends.toString()) + 
+      parseFloat(businessIncome.toString()) + 
+      parseFloat(capitalGains.toString()) + 
+      parseFloat(rentalIncome.toString()) + 
+      parseFloat(retirementIncome.toString()) + 
+      parseFloat(unemploymentIncome.toString()) + 
+      parseFloat(otherIncome.toString()) + 
+      additionalItemsTotal;
+      
+    console.log("계산된 총소득:", totalIncome);
     
     // 조정 항목 계산
     const adjustments = formValues.adjustments || {};
-    const studentLoanInterest = adjustments.studentLoanInterest || 0;
-    const retirementContributions = adjustments.retirementContributions || 0;
-    const healthSavingsAccount = adjustments.healthSavingsAccount || 0;
-    const otherAdjustments = adjustments.otherAdjustments || 0;
+    const studentLoanInterest = parseFloat(adjustments.studentLoanInterest?.toString() || "0");
+    const retirementContributions = parseFloat(adjustments.retirementContributions?.toString() || "0");
+    const healthSavingsAccount = parseFloat(adjustments.healthSavingsAccount?.toString() || "0");
+    const otherAdjustments = parseFloat(adjustments.otherAdjustments?.toString() || "0");
+    
+    // 기타 조정 항목이 있으면, 별도로 계산하여 otherAdjustments로 설정
+    if (additionalAdjustmentItems.length > 0) {
+      const additionalAdjustmentsTotal = additionalAdjustmentItems.reduce((sum, item) => {
+        console.log("더하는 조정 항목:", item.type, item.amount);
+        return sum + (parseFloat(item.amount.toString()) || 0);
+      }, 0);
+      console.log("추가 조정 항목 총액:", additionalAdjustmentsTotal);
+      
+      // 총 기타 조정 금액을 폼에 설정
+      form.setValue('adjustments.otherAdjustments', additionalAdjustmentsTotal);
+    }
     
     // 총 조정 금액
     const totalAdjustments = studentLoanInterest + retirementContributions + 
                            healthSavingsAccount + otherAdjustments;
+                           
+    console.log("계산된 총 조정 금액:", totalAdjustments);
     
     // 조정 총소득(AGI) 계산
     const adjustedGrossIncome = totalIncome - totalAdjustments;
@@ -661,10 +691,10 @@ export default function IncomePage() {
                       <span>조정항목총액 (Total Adjustments)</span>
                       <span>
                         {new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", minimumFractionDigits: 2 }).format(
-                          ((form.watch('adjustments')?.studentLoanInterest || 0) +
-                          (form.watch('adjustments')?.retirementContributions || 0) +
-                          (form.watch('adjustments')?.healthSavingsAccount || 0) +
-                          (form.watch('adjustments')?.otherAdjustments || 0))
+                          parseFloat((form.watch('adjustments')?.studentLoanInterest || 0).toString()) +
+                          parseFloat((form.watch('adjustments')?.retirementContributions || 0).toString()) +
+                          parseFloat((form.watch('adjustments')?.healthSavingsAccount || 0).toString()) +
+                          parseFloat((form.watch('adjustments')?.otherAdjustments || 0).toString())
                         )}
                       </span>
                     </div>

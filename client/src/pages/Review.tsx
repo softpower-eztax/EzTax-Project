@@ -359,7 +359,7 @@ const Review: React.FC = () => {
                         처리 중...(Processing...)
                       </>
                     ) : (
-                      '세금 신고서 제출(Submit Tax Return)'
+                      '신고서제출(Submit Tax Return)'
                     )}
                   </Button>
                   

@@ -53,14 +53,22 @@ export default function AdditionalIncomePage() {
     // 선택된 항목의 라벨 찾기
     const selectedTypeLabel = INCOME_TYPES.find(type => type.id === selectedType)?.label || selectedType;
 
+    // 새 항목 생성
     const newItem: AdditionalIncomeItem = {
       type: selectedTypeLabel,
-      amount,
+      amount: amount,
       description: description || undefined,
     };
 
+    console.log("새 항목 추가:", newItem);
+    
+    // 기존 항목에 추가
     const updatedItems = [...addedItems, newItem];
+    
+    // 상태 업데이트
     setAddedItems(updatedItems);
+    
+    console.log("업데이트된 항목 목록:", updatedItems);
 
     // 폼 초기화
     setSelectedType('');
@@ -252,7 +260,10 @@ export default function AdditionalIncomePage() {
                 <label className="text-sm font-medium">항목 (Item)</label>
                 <select 
                   value={selectedType}
-                  onChange={(e) => setSelectedType(e.target.value)}
+                  onChange={(e) => {
+                    console.log("선택된 항목:", e.target.value);
+                    setSelectedType(e.target.value);
+                  }}
                   className="w-full p-2 border rounded mt-1"
                 >
                   <option value="">선택하세요</option>
@@ -269,7 +280,12 @@ export default function AdditionalIncomePage() {
                   step="0.01"
                   min="0"
                   value={amount}
-                  onChange={(e) => setAmount(parseFloat(e.target.value) || 0)}
+                  onChange={(e) => {
+                    console.log("금액 변경:", e.target.value);
+                    const numValue = parseFloat(e.target.value) || 0;
+                    console.log("파싱된 금액:", numValue);
+                    setAmount(numValue);
+                  }}
                   className="mt-1"
                 />
               </div>
@@ -287,7 +303,13 @@ export default function AdditionalIncomePage() {
             </div>
 
             <Button 
-              onClick={addIncomeItem} 
+              type="button"
+              onClick={(e) => {
+                e.preventDefault();
+                console.log("항목 추가 버튼 클릭");
+                console.log("현재 선택:", selectedType, amount, description);
+                addIncomeItem();
+              }} 
               className="w-full md:w-auto"
             >
               <Plus className="h-4 w-4 mr-1" />

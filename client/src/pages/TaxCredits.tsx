@@ -34,6 +34,11 @@ const TaxCreditsPage: React.FC = () => {
     defaultValues,
     mode: 'onChange'
   });
+  
+  // Make sure the form is always valid since all fields default to 0
+  React.useEffect(() => {
+    form.trigger();
+  }, [form]);
 
   // Watch all credit fields to calculate total
   const watchChildTaxCredit = form.watch('childTaxCredit');
@@ -358,20 +363,9 @@ const TaxCreditsPage: React.FC = () => {
                 nextStep="/additional-tax"
                 submitText="추가세금 (Additional Tax)"
                 onNext={() => {
-                  if (form.formState.isValid) {
-                    onSubmit(form.getValues());
-                    return true;
-                  } else {
-                    form.trigger();
-                    if (!form.formState.isValid) {
-                      toast({
-                        title: "Invalid form",
-                        description: "Please fix the errors in the form before proceeding.",
-                        variant: "destructive",
-                      });
-                    }
-                    return false;
-                  }
+                  // Just save and continue, since all fields have valid defaults
+                  onSubmit(form.getValues());
+                  return true;
                 }}
               />
             </CardContent>

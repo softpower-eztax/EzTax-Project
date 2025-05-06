@@ -142,7 +142,7 @@ const Home: React.FC = () => {
               className="bg-green-500 hover:bg-green-600 text-white"
               onClick={() => navigate('/personal-info')}
             >
-              로그온 없이 시작하기(Start without Login)
+              로그인 없이 시작하기(Start without Login)
             </Button>
           </div>
         )}
@@ -228,7 +228,7 @@ const Home: React.FC = () => {
               className="w-full bg-green-500 hover:bg-green-600 text-white"
               onClick={() => navigate('/personal-info')}
             >
-              로그온 없이 시작하기(Start without Login)
+              로그인 없이 시작하기(Start without Login)
             </Button>
           </CardFooter>
         </Card>

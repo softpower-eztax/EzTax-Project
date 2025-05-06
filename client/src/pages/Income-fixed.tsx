@@ -551,6 +551,20 @@ export default function IncomePage() {
                         )}
                       />
                       
+                      {/* 기타조정 버튼 - 건강저축계좌 아래에 배치 */}
+                      <div className="md:col-span-2 flex justify-end mt-2">
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={() => navigate('/additional-adjustments')}
+                          className="flex items-center"
+                        >
+                          <Plus className="h-4 w-4 mr-1" />
+                          기타조정
+                        </Button>
+                      </div>
+                      
                       <FormField
                         control={form.control}
                         name="adjustments.otherAdjustments"

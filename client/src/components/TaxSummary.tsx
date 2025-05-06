@@ -49,10 +49,10 @@ const TaxSummary: React.FC<TaxSummaryProps> = ({ recalculate }) => {
     <div className="md:w-72">
       <Card className="sticky top-6">
         <CardContent className="p-4">
-          <h3 className="text-lg font-heading font-semibold text-primary-dark mb-3">Tax Summary</h3>
+          <h3 className="text-lg font-heading font-semibold text-primary-dark mb-3">세금 요약</h3>
           
           <div className="mb-4 border-b border-gray-light pb-4">
-            <p className="text-sm text-gray-dark mb-1">Filing Status</p>
+            <p className="text-sm text-gray-dark mb-1">신고 상태</p>
             <p className="font-semibold">
               {taxData.personalInfo?.filingStatus ? 
                 filingStatusMap[taxData.personalInfo.filingStatus] : 
@@ -78,19 +78,19 @@ const TaxSummary: React.FC<TaxSummaryProps> = ({ recalculate }) => {
           <div className="mb-4 border-b border-gray-light pb-4">
             <div className="flex justify-between mb-2">
               <p className="text-sm">
-                {taxData.deductions?.useStandardDeduction ? 'Standard Deduction' : 'Itemized Deductions'}
+                {taxData.deductions?.useStandardDeduction ? '표준공제' : '공제액'}
               </p>
               <p className="font-semibold text-destructive">- {formatCurrency(results.deductions)}</p>
             </div>
             <div className="flex justify-between">
-              <p className="text-sm">Taxable Income</p>
+              <p className="text-sm">과세소득</p>
               <p className="font-semibold">{formatCurrency(results.taxableIncome)}</p>
             </div>
           </div>
           
           <div className="mb-4 border-b border-gray-light pb-4">
             <div className="flex justify-between mb-2">
-              <p className="text-sm">Federal Tax</p>
+              <p className="text-sm">세액</p>
               <p className="font-semibold">{formatCurrency(results.federalTax)}</p>
             </div>
             <div className="flex justify-between mb-2">
@@ -98,31 +98,31 @@ const TaxSummary: React.FC<TaxSummaryProps> = ({ recalculate }) => {
               <p className="font-semibold text-destructive">- {formatCurrency(results.credits)}</p>
             </div>
             <div className="flex justify-between">
-              <p className="text-sm">Tax Due</p>
+              <p className="text-sm">예상세액</p>
               <p className="font-semibold">{formatCurrency(results.taxDue)}</p>
             </div>
           </div>
           
           <div className="mb-4">
             <div className="flex justify-between mb-2">
-              <p className="text-sm">Payments & Withholding</p>
+              <p className="text-sm">선납세금등</p>
               <p className="font-semibold text-destructive">- {formatCurrency(results.payments)}</p>
             </div>
             {results.refundAmount > 0 ? (
               <div className="flex justify-between items-center bg-gray-bg p-2 rounded">
-                <p className="font-semibold">Refund Amount</p>
+                <p className="font-semibold">환급액</p>
                 <p className="font-bold text-success text-xl">{formatCurrency(results.refundAmount)}</p>
               </div>
             ) : (
               <div className="flex justify-between items-center bg-gray-bg p-2 rounded">
-                <p className="font-semibold">Amount You Owe</p>
+                <p className="font-semibold">납부 예정액</p>
                 <p className="font-bold text-destructive text-xl">{formatCurrency(results.amountOwed)}</p>
               </div>
             )}
           </div>
           
           <p className="text-xs text-gray-dark italic mt-4">
-            This is an estimate based on information provided so far. Final calculations may differ.
+            지금까지 제공된 정보를 기반으로 한 예상치입니다. 최종 계산은 다를 수 있습니다.
           </p>
           
           <Button
@@ -131,7 +131,7 @@ const TaxSummary: React.FC<TaxSummaryProps> = ({ recalculate }) => {
             onClick={handleRecalculate}
           >
             <RefreshCw className="h-4 w-4 mr-1" />
-            Recalculate
+            다시 계산하기
           </Button>
         </CardContent>
       </Card>

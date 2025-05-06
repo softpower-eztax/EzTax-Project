@@ -13,7 +13,7 @@ const Logo: React.FC<LogoProps> = ({ theme = 'light' }) => {
           EzTax
         </div>
         <span className={theme === 'light' ? 'text-primary-dark text-sm font-heading' : 'text-white text-sm font-heading'}>
-          Simple Tax Preparation
+          세금보고 간편하게
         </span>
       </a>
     </Link>

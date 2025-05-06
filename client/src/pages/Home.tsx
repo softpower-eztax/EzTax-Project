@@ -11,23 +11,23 @@ const Home: React.FC = () => {
     <div className="max-w-5xl mx-auto">
       <section className="mb-12 text-center py-10">
         <h1 className="text-4xl md:text-5xl font-heading font-bold text-primary-dark mb-4">
-          Simple Tax Filing Made Easy
+          세상쉬운 세금 보고
         </h1>
         <p className="text-xl text-gray-dark max-w-3xl mx-auto mb-8">
-          EzTax helps you file your taxes with confidence through a simple step-by-step process.
+          EzTax로 간단한 단계별 과정을 통해 자신감 있게 세금 보고를 완료하세요.
         </p>
         <Button 
           size="lg" 
           className="bg-primary hover:bg-primary-dark text-white font-bold"
           onClick={() => navigate('/personal-info')}
         >
-          Start Your 2023 Tax Return
+          2023년 세금 보고 시작하기
         </Button>
       </section>
 
       <section className="mb-12">
         <h2 className="text-2xl font-heading font-bold text-primary-dark text-center mb-8">
-          Why Choose EzTax?
+          왜 EzTax인가요?
         </h2>
         
         <div className="grid md:grid-cols-4 gap-6">
@@ -76,9 +76,9 @@ const Home: React.FC = () => {
       <section className="mb-12">
         <Card>
           <CardHeader>
-            <CardTitle className="text-2xl font-heading text-primary-dark">Ready to file your taxes?</CardTitle>
+            <CardTitle className="text-2xl font-heading text-primary-dark">세금 신고 준비가 되셨나요?</CardTitle>
             <CardDescription>
-              Complete your 2023 tax return in as little as 30 minutes.
+              30분 만에 2023년 세금 신고를 완료하세요.
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -98,7 +98,7 @@ const Home: React.FC = () => {
               className="w-full bg-primary hover:bg-primary-dark text-white font-bold"
               onClick={() => navigate('/personal-info')}
             >
-              Get Started Now
+              지금 시작하기
             </Button>
           </CardFooter>
         </Card>

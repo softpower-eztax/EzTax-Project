@@ -147,10 +147,13 @@ export default function IncomePage() {
   
   // 지정된 필드 값이 변경될 때마다 자동 계산 및 저장
   useEffect(() => {
-    // 기본 소득 항목 계산
-    const basicIncomeTotal = 
+    // 근로소득 계산
+    const earnedIncomeTotal = 
       Number(form.watch('wages') || 0) +
-      Number(form.watch('otherEarnedIncome') || 0) +
+      Number(form.watch('otherEarnedIncome') || 0);
+      
+    // 비근로소득 계산
+    const unearnedIncomeTotal =
       Number(form.watch('interestIncome') || 0) +
       Number(form.watch('dividends') || 0) +
       Number(form.watch('businessIncome') || 0) +
@@ -158,6 +161,9 @@ export default function IncomePage() {
       Number(form.watch('rentalIncome') || 0) +
       Number(form.watch('retirementIncome') || 0) +
       Number(form.watch('unemploymentIncome') || 0);
+    
+    // 기타소득 계산 (사용자 직접 입력값)
+    const userOtherIncome = Number(form.watch('otherIncome') || 0);
     
     // 추가 소득 항목 계산 (AdditionalIncome 페이지에서 추가된 항목들)
     let additionalItemsTotal = 0;
@@ -168,16 +174,18 @@ export default function IncomePage() {
       });
     }
     
-    // 최종 총소득 계산 - 기본 소득 합계만 사용
-    const totalIncome = basicIncomeTotal;
+    // 총 기타소득 (사용자 직접 입력값 + 추가 소득 항목의 합)
+    const totalOtherIncome = userOtherIncome + additionalItemsTotal;
     
-    // 로깅용 변수
-    const userOtherIncome = Number(form.watch('otherIncome') || 0);
+    // 최종 총소득 계산 (근로소득 + 비근로소득 + 기타소득)
+    const totalIncome = earnedIncomeTotal + unearnedIncomeTotal + totalOtherIncome;
     
     console.log("계산 세부사항:", {
-      기본소득합계: basicIncomeTotal,
+      근로소득합계: earnedIncomeTotal,
+      비근로소득합계: unearnedIncomeTotal,
       사용자기타소득: userOtherIncome,
       추가소득항목합계: additionalItemsTotal,
+      총기타소득: totalOtherIncome,
       최종총소득: totalIncome
     });
     

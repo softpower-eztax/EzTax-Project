@@ -58,6 +58,7 @@ const IncomePage: React.FC = () => {
   // 테스트용 하드코딩된 데이터로 시작
   const defaultValues: Income = {
     wages: 75000,
+    otherEarnedIncome: 0,
     interestIncome: 1200,
     dividends: 3500,
     businessIncome: 15000,
@@ -431,7 +432,18 @@ const IncomePage: React.FC = () => {
                     </div>
                     
                     <div className="mt-6 mb-6">
-                      <h3 className="text-lg font-semibold mb-4">기타 소득 (Unearned Income etc.)</h3>
+                    <div className="flex justify-between items-center mb-4">
+                      <h3 className="text-lg font-semibold">기타 소득 (Unearned Income etc.)</h3>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => navigate('/additional-income')}
+                        className="text-sm flex items-center"
+                      >
+                        <Plus className="h-4 w-4 mr-1" />
+                        소득조정 추가 입력
+                      </Button>
+                    </div>
                     </div>
                     
                     <div className="space-y-4">

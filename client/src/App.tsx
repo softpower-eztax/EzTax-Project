@@ -16,6 +16,7 @@ import NotFound from "@/pages/not-found";
 import AuthPage from "@/pages/auth-page";
 import { AuthProvider } from "@/hooks/use-auth";
 import { ProtectedRoute } from "@/lib/protected-route";
+import { TaxProvider } from "@/context/TaxContext";
 
 function Router() {
   return (
@@ -37,16 +38,18 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
-        <TooltipProvider>
-          <div className="flex flex-col min-h-screen">
-            <Header />
-            <main className="container mx-auto px-4 py-8 flex-grow">
-              <Router />
-            </main>
-            <Footer />
-          </div>
-          <Toaster />
-        </TooltipProvider>
+        <TaxProvider>
+          <TooltipProvider>
+            <div className="flex flex-col min-h-screen">
+              <Header />
+              <main className="container mx-auto px-4 py-8 flex-grow">
+                <Router />
+              </main>
+              <Footer />
+            </div>
+            <Toaster />
+          </TooltipProvider>
+        </TaxProvider>
       </AuthProvider>
     </QueryClientProvider>
   );

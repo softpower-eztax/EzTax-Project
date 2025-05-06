@@ -1,15 +1,24 @@
 import { useAuth } from "@/hooks/use-auth";
 import { Loader2 } from "lucide-react";
 import { Route, Redirect } from "wouter";
+import React from 'react';
+
+// Convert FC to function that returns JSX.Element
+type ComponentType = React.FC<any> | (() => React.JSX.Element);
+
+const wrapComponent = (Component: ComponentType): (() => React.JSX.Element) => {
+  return () => <Component />;
+};
 
 export function ProtectedRoute({
   path,
   component: Component,
 }: {
   path: string;
-  component: () => React.JSX.Element;
+  component: ComponentType;
 }) {
   const { user, isLoading } = useAuth();
+  const WrappedComponent = wrapComponent(Component);
 
   if (isLoading) {
     return (
@@ -29,5 +38,5 @@ export function ProtectedRoute({
     );
   }
 
-  return <Route path={path} component={Component} />;
+  return <Route path={path} component={WrappedComponent} />;
 }

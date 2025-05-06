@@ -28,7 +28,7 @@ const Home: React.FC = () => {
         city: 'Springfield',
         state: 'IL',
         zipCode: '62704',
-        filingStatus: 'married_joint',
+        filingStatus: 'married_joint' as any, // Type assertion to avoid FilingStatus error
         spouseInfo: {
           firstName: 'Jane',
           middleInitial: 'B',
@@ -48,6 +48,7 @@ const Home: React.FC = () => {
       },
       income: {
         wages: 75000,
+        otherEarnedIncome: 0, // Adding missing property
         interestIncome: 1200,
         dividends: 3500,
         businessIncome: 15000,
@@ -209,9 +210,9 @@ const Home: React.FC = () => {
           <CardFooter>
             <Button 
               className="w-full bg-primary hover:bg-primary-dark text-white font-bold"
-              onClick={() => navigate('/personal-info')}
+              onClick={() => user ? navigate('/personal-info') : navigate('/auth')}
             >
-              지금 시작하기
+              {user ? '지금 시작하기' : '로그인하고 시작하기(Login to Start)'}
             </Button>
           </CardFooter>
         </Card>

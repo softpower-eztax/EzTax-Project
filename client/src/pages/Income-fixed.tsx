@@ -800,7 +800,7 @@ export default function IncomePage() {
                       className="w-full flex items-center gap-2 py-6"
                     >
                       <BarChart2 className="h-5 w-5" />
-                      <span className="text-lg"></span>
+                      <span className="text-lg">계산 결과 보기 (View Calculation)</span>
                     </Button>
                   </DialogTrigger>
                   <DialogContent className="sm:max-w-[500px]">

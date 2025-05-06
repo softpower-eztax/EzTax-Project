@@ -52,7 +52,7 @@ const TaxSummary: React.FC<TaxSummaryProps> = ({ recalculate }) => {
           <h3 className="text-lg font-heading font-semibold text-primary-dark mb-3">세금 요약</h3>
           
           <div className="mb-4 border-b border-gray-light pb-4">
-            <p className="text-sm text-gray-dark mb-1">신고 상태</p>
+            <p className="text-sm text-gray-dark mb-1">Filing Status</p>
             <p className="font-semibold">
               {taxData.personalInfo?.filingStatus ? 
                 filingStatusMap[taxData.personalInfo.filingStatus] : 

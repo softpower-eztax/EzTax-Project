@@ -19,12 +19,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Info as InfoIcon, ArrowLeft } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
-// 추가 조정 항목 타입 정의
-interface AdjustmentItem {
-  type: string;
-  amount: number;
-  description?: string;
-}
+// 공유된 스키마의 AdditionalAdjustmentItem 타입 사용
 
 // 폼 스키마 정의
 const adjustmentItemSchema = z.object({
@@ -58,7 +53,7 @@ export default function AdditionalAdjustmentsPage() {
   const [, navigate] = useLocation();
   const { taxData, updateTaxData } = useTaxContext();
   const { toast } = useToast();
-  const [addedItems, setAddedItems] = useState<AdjustmentItem[]>(
+  const [addedItems, setAddedItems] = useState<AdditionalAdjustmentItem[]>(
     taxData.income?.additionalAdjustmentItems || []
   );
   const [selectedType, setSelectedType] = useState<string>('');
@@ -78,7 +73,7 @@ export default function AdditionalAdjustmentsPage() {
     // 선택된 항목의 라벨 찾기
     const selectedTypeLabel = ADJUSTMENT_TYPES.find(type => type.id === selectedType)?.label || selectedType;
 
-    const newItem: AdjustmentItem = {
+    const newItem: AdditionalAdjustmentItem = {
       type: selectedTypeLabel,
       amount,
       description: description || undefined,

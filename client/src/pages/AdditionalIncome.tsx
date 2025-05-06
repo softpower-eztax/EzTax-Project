@@ -124,8 +124,27 @@ const AdditionalIncomePage: React.FC = () => {
       const currentIncome = taxData.income || {};
       
       // Update with new additional income items
+      // 기존 Income 객체 필수 필드 유지하면서 업데이트
       const updatedIncome = {
         ...currentIncome,
+        wages: currentIncome.wages || 0,
+        otherEarnedIncome: currentIncome.otherEarnedIncome || 0,
+        interestIncome: currentIncome.interestIncome || 0,
+        dividends: currentIncome.dividends || 0,
+        businessIncome: currentIncome.businessIncome || 0,
+        capitalGains: currentIncome.capitalGains || 0,
+        rentalIncome: currentIncome.rentalIncome || 0,
+        retirementIncome: currentIncome.retirementIncome || 0,
+        unemploymentIncome: currentIncome.unemploymentIncome || 0,
+        otherIncome: currentIncome.otherIncome || 0,
+        totalIncome: currentIncome.totalIncome || 0,
+        adjustments: currentIncome.adjustments || {
+          studentLoanInterest: 0,
+          retirementContributions: 0,
+          healthSavingsAccount: 0,
+          otherAdjustments: 0,
+        },
+        adjustedGrossIncome: currentIncome.adjustedGrossIncome || 0,
         additionalIncomeItems: additionalIncomeItems,
       };
       

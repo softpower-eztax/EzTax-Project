@@ -117,7 +117,7 @@ const PersonalInfo: React.FC = () => {
                         name="firstName"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>First Name</FormLabel>
+                            <FormLabel>이름(First Name)</FormLabel>
                             <FormControl>
                               <Input {...field} />
                             </FormControl>
@@ -145,7 +145,7 @@ const PersonalInfo: React.FC = () => {
                         name="lastName"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Last Name</FormLabel>
+                            <FormLabel>성(Last Name)</FormLabel>
                             <FormControl>
                               <Input {...field} />
                             </FormControl>
@@ -186,7 +186,7 @@ const PersonalInfo: React.FC = () => {
                         name="dateOfBirth"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Date of Birth</FormLabel>
+                            <FormLabel>생년월일</FormLabel>
                             <FormControl>
                               <Input 
                                 {...field}
@@ -399,7 +399,7 @@ const PersonalInfo: React.FC = () => {
                               name={`dependents.${index}.firstName`}
                               render={({ field }) => (
                                 <FormItem>
-                                  <FormLabel>First Name</FormLabel>
+                                  <FormLabel>이름(First Name)</FormLabel>
                                   <FormControl>
                                     <Input {...field} />
                                   </FormControl>
@@ -413,7 +413,7 @@ const PersonalInfo: React.FC = () => {
                               name={`dependents.${index}.lastName`}
                               render={({ field }) => (
                                 <FormItem>
-                                  <FormLabel>Last Name</FormLabel>
+                                  <FormLabel>성(Last Name)</FormLabel>
                                   <FormControl>
                                     <Input {...field} />
                                   </FormControl>

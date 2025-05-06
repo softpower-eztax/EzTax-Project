@@ -79,11 +79,35 @@ const IncomePage: React.FC = () => {
   // Update calculated fields when form values change
   // Additional income types
   const additionalIncomeTypes = [
+    // 기존 사업 관련 소득
     "종교지도자 및 자영업자 소득 (Income of clergy and self-employed)",
     "파트너쉽 소득 (Partnership income)",
     "S Corp 소득 (S Corporation income)",
     "농업 및 어업 관련 소득 (Farm and fishing income)",
-    "프리랜서, 독립계약자(1099-NEC), 사업자 등록 없이 활동하는 파트너십 파트너 등 해당 수입 (For freelancers, independent contractors, and partners without a business under their name)"
+    "프리랜서, 독립계약자(1099-NEC), 사업자 등록 없이 활동하는 파트너십 파트너 등 해당 수입 (For freelancers, independent contractors, and partners without a business under their name)",
+    
+    // 특이한 수입 카테고리
+    "메디케이드 수입 (Medicaid income)",
+    "고용주 제공 입양 혜택 (Employer-provided adoption benefits)",
+    "IRA 분배금 수령액 (IRA distributions)",
+    "주 및 지방 소득세 환급, 크레딧 또는 상계 금액 (Taxable refunds, credits, or offsets of state and local income taxes)",
+    "위자료 수령액 (Alimony received)",
+    "도박 소득 (Gambling winnings)",
+    "부채 탕감 (Cancellation of debt)",
+    "해외 근로소득 제외액 (Foreign earned income exclusion)",
+    "Archer 의료 저축 계좌 인출액 및 장기요양보험 지급금 (Distributions from Archer MSAs and long-term care insurance contracts)",
+    "HSA 계좌 인출액 (Health Savings Accounts)",
+    "알래스카 영구 기금 배당금 (Alaska Permanent Fund dividends)",
+    "배심원 수당 (Jury duty pay)",
+    "상금 및 수상금 (Prizes and awards)",
+    "취미활동 소득 (Activity not engaged in for profit income)",
+    "스톡옵션 소득 (Stock options)",
+    "올림픽 및 패럴림픽 메달과 미국올림픽위원회(USOC) 상금 (Olympic and Paralympic medals and USOC prize money)",
+    "ABLE 계좌로부터의 과세 대상 분배금 (Taxable distributions from an ABLE account)",
+    "Form W-2에 보고되지 않은 장학금 및 연구비 보조금 (Scholarship and fellowship grants not reported on Form W-2)",
+    "비자격 이연 보상 계획 또는 비정부 457 플랜으로부터의 연금 또는 연금소득 (Pension or annuity from a nonqualified deferred compensation plan or a nongovernmental section 457 plan)",
+    "수감 중 벌어들인 임금 (Wages earned while incarcerated)",
+    "다른 곳에 보고되지 않은 일반 소득으로 수령한 디지털 자산 (Digital assets received as ordinary income not reported elsewhere)"
   ];
 
   // Handle adding additional income
@@ -491,19 +515,32 @@ const IncomePage: React.FC = () => {
                     </div>
                     
                     <div className="mt-4">
-                      <div className="flex items-center space-x-2 mb-4">
+                      <div className="space-y-3 mb-4">
+                        <div className="flex items-center space-x-2">
+                          <Button
+                            type="button"
+                            variant="outline"
+                            className="text-sm"
+                            onClick={() => setShowAdditionalIncomeDialog(true)}
+                          >
+                            <Plus className="w-4 h-4 mr-2" />
+                            추가 소득 항목 (Add Additional Income)
+                          </Button>
+                          <p className="text-sm text-gray-500 italic">
+                            여기를 클릭해 해당되는 사항이 있는지 확인하세요
+                          </p>
+                        </div>
+                        
                         <Button
                           type="button"
-                          variant="outline"
-                          className="text-sm"
+                          variant="secondary"
+                          className="text-sm w-full"
                           onClick={() => setShowAdditionalIncomeDialog(true)}
                         >
                           <Plus className="w-4 h-4 mr-2" />
-                          추가 소득 항목 (Add Additional Income)
+                          특이한 수입 (Unusual Income)
+                          <span className="ml-2 text-xs text-gray-500 italic">여기를 클릭해 해당되는 사항이 있는지 확인하세요</span>
                         </Button>
-                        <p className="text-sm text-gray-500 italic">
-                          여기를 클릭해 해당되는 사항이 있는지 확인하세요
-                        </p>
                       </div>
                       
                       {form.watch('additionalIncomeItems') && form.watch('additionalIncomeItems').length > 0 && (

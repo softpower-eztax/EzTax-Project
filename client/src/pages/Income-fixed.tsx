@@ -765,9 +765,6 @@ export default function IncomePage() {
               </Card>
               
               <Card>
-                <CardHeader>
-                  <CardTitle className="text-xl font-heading text-primary-dark">소득요약 (Income Summary)</CardTitle>
-                </CardHeader>
                 <CardContent>
                   <div className="income-total-box">
                     <div className="income-total-row">
@@ -803,13 +800,11 @@ export default function IncomePage() {
                       className="w-full flex items-center gap-2 py-6"
                     >
                       <BarChart2 className="h-5 w-5" />
-                      <span className="text-lg">소득 요약 (Income Summary)</span>
+                      <span className="text-lg"></span>
                     </Button>
                   </DialogTrigger>
                   <DialogContent className="sm:max-w-[500px]">
-                    <DialogHeader>
-                      <DialogTitle className="text-xl font-heading text-primary-dark">소득요약 (Income Summary)</DialogTitle>
-                    </DialogHeader>
+
                     
                     {/* 간소화된 소득 요약 */}
                     <div className="p-4 space-y-4 border rounded-lg">

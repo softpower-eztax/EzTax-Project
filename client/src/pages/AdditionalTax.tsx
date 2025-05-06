@@ -81,7 +81,7 @@ const AdditionalTaxPage: React.FC = () => {
                   {/* Self-Employment Income */}
                   <div className="mb-6 border-b border-gray-light pb-6">
                     <div className="flex items-center mb-3">
-                      <h4 className="font-semibold">Self-Employment Income</h4>
+                      <h4 className="font-semibold">자영업 소득 (Self-Employment Income)</h4>
                       <TooltipProvider>
                         <Tooltip>
                           <TooltipTrigger asChild>
@@ -89,7 +89,8 @@ const AdditionalTaxPage: React.FC = () => {
                           </TooltipTrigger>
                           <TooltipContent>
                             <p className="w-64">
-                              Self-employment income includes business income, freelance work, and independent contractor earnings.
+                              자영업 소득에는 사업 소득, 프리랜서 수입, 독립 계약자 소득이 포함됩니다.
+                              (Self-employment income includes business income, freelance work, and independent contractor earnings.)
                             </p>
                           </TooltipContent>
                         </Tooltip>
@@ -102,7 +103,7 @@ const AdditionalTaxPage: React.FC = () => {
                         name="selfEmploymentIncome"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Net Self-Employment Income</FormLabel>
+                            <FormLabel>순 자영업 소득 (Net Self-Employment Income)</FormLabel>
                             <FormControl>
                               <div className="relative">
                                 <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-dark">$</span>
@@ -119,7 +120,8 @@ const AdditionalTaxPage: React.FC = () => {
                               </div>
                             </FormControl>
                             <FormDescription>
-                              Your net business income after expenses.
+                              비용을 제외한 순사업 소득을 입력하세요.
+                              (Your net business income after expenses.)
                             </FormDescription>
                             <FormMessage />
                           </FormItem>
@@ -131,7 +133,7 @@ const AdditionalTaxPage: React.FC = () => {
                         name="selfEmploymentTax"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Self-Employment Tax (Calculated)</FormLabel>
+                            <FormLabel>자영업 세금 (계산됨) (Self-Employment Tax)</FormLabel>
                             <FormControl>
                               <div className="relative">
                                 <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-dark">$</span>
@@ -145,7 +147,8 @@ const AdditionalTaxPage: React.FC = () => {
                               </div>
                             </FormControl>
                             <FormDescription>
-                              15.3% of 92.35% of your self-employment income.
+                              자영업 소득의 92.35%에 대해 15.3%가 계산됩니다.
+                              (15.3% of 92.35% of your self-employment income.)
                             </FormDescription>
                             <FormMessage />
                           </FormItem>
@@ -157,7 +160,7 @@ const AdditionalTaxPage: React.FC = () => {
                   {/* Other Income */}
                   <div className="mb-6 border-b border-gray-light pb-6">
                     <div className="flex items-center mb-3">
-                      <h4 className="font-semibold">Other Income</h4>
+                      <h4 className="font-semibold">기타 소득 (Other Income)</h4>
                       <TooltipProvider>
                         <Tooltip>
                           <TooltipTrigger asChild>
@@ -165,7 +168,8 @@ const AdditionalTaxPage: React.FC = () => {
                           </TooltipTrigger>
                           <TooltipContent>
                             <p className="w-64">
-                              Other income includes unemployment benefits, gambling winnings, rental income, etc.
+                              기타 소득에는 실업 급여, 도박 수익, 임대 소득 등이 포함됩니다.
+                              (Other income includes unemployment benefits, gambling winnings, rental income, etc.)
                             </p>
                           </TooltipContent>
                         </Tooltip>

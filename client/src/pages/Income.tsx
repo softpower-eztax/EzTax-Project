@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useLocation } from 'wouter';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
@@ -21,7 +21,7 @@ import StepNavigation from '@/components/StepNavigation';
 import TaxSummary from '@/components/TaxSummary';
 import { useToast } from '@/hooks/use-toast';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { InfoIcon, Plus, X } from 'lucide-react';
+import { InfoIcon, Plus, X, Upload, Loader2 } from 'lucide-react';
 import { formatCurrency } from '@/lib/taxCalculations';
 import {
   Dialog,
@@ -38,6 +38,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 const IncomePage: React.FC = () => {
   const [, navigate] = useLocation();
@@ -47,6 +53,7 @@ const IncomePage: React.FC = () => {
   const [selectedIncomeType, setSelectedIncomeType] = useState<string>("");
   const [additionalIncomeAmount, setAdditionalIncomeAmount] = useState<number>(0);
   const [additionalIncomeDescription, setAdditionalIncomeDescription] = useState<string>("");
+  const [isUploading, setIsUploading] = useState<boolean>(false);
 
   // 테스트용 하드코딩된 데이터로 시작
   const defaultValues: Income = {
@@ -302,33 +309,109 @@ const IncomePage: React.FC = () => {
                   <div>
                     <h3 className="text-lg font-semibold mb-4">근로 및 기타 소득 (Employment & Other Income)</h3>
                     
-                    <FormField
-                      control={form.control}
-                      name="wages"
-                      render={({ field }) => (
-                        <FormItem>
-                          <div className="flex justify-between">
-                            <FormLabel>급여, 월급, 팁 (Wages, Salaries, Tips)</FormLabel>
-                            <div className="tooltip">
-                              <InfoIcon className="h-4 w-4 text-gray-dark" />
-                              <span className="tooltip-text">Include income from all W-2 forms</span>
-                            </div>
+                    <div className="space-y-4">
+                      {/* W2 Upload Button */}
+                      <div className="border rounded-md p-3 bg-gray-50/50">
+                        <div className="flex items-center gap-2">
+                          <div className="flex-1">
+                            <h4 className="text-base font-medium mb-1">
+                              W-2 폼 업로드 (Upload W-2 Form)
+                            </h4>
+                            <p className="text-sm text-gray-500 mb-2">
+                              W-2 파일을 업로드하여 자동으로 정보를 추출합니다.
+                            </p>
                           </div>
-                          <FormControl>
-                            <Input
-                              type="number"
-                              step="0.01"
-                              min="0"
-                              {...field}
-                              onChange={(e) => {
-                                field.onChange(parseFloat(e.target.value) || 0);
-                              }}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+                          <div>
+                            <TooltipProvider>
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <label className="cursor-pointer">
+                                    <div className="flex items-center gap-2 rounded-md border bg-white px-4 py-2 text-sm shadow-sm">
+                                      {isUploading ? (
+                                        <>
+                                          <Loader2 className="h-4 w-4 animate-spin" />
+                                          <span>처리 중...</span>
+                                        </>
+                                      ) : (
+                                        <>
+                                          <Upload className="h-4 w-4" />
+                                          <span>파일 업로드</span>
+                                        </>
+                                      )}
+                                    </div>
+                                    <input 
+                                      type="file" 
+                                      accept=".pdf,.jpg,.jpeg,.png" 
+                                      className="hidden" 
+                                      onChange={(e) => {
+                                        const file = e.target.files?.[0];
+                                        if (file) {
+                                          setIsUploading(true);
+                                          
+                                          // 실제 환경에서는 파일을 서버에 업로드하고 데이터를 추출하는 API를 호출합니다.
+                                          // 지금은 시뮬레이션을 위해 타이머를 사용하여 2초 후에 임의의 데이터를 설정합니다.
+                                          setTimeout(() => {
+                                            // W2에서 추출한 급여 데이터 (시뮬레이션)
+                                            const extractedWages = 82500;
+                                            
+                                            // 폼 값 업데이트
+                                            form.setValue('wages', extractedWages);
+                                            
+                                            // 총소득 재계산
+                                            calculateTotals();
+                                            
+                                            // 업로드 상태 초기화
+                                            setIsUploading(false);
+                                            
+                                            // 알림 표시
+                                            toast({
+                                              title: "W-2 데이터 추출 완료",
+                                              description: "급여 정보가 자동으로 입력되었습니다.",
+                                            });
+                                          }, 2000);
+                                        }
+                                      }}
+                                    />
+                                  </label>
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                  <p>W-2 폼에서 정보를 자동으로 추출합니다</p>
+                                </TooltipContent>
+                              </Tooltip>
+                            </TooltipProvider>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      {/* Wages Input Field */}
+                      <FormField
+                        control={form.control}
+                        name="wages"
+                        render={({ field }) => (
+                          <FormItem>
+                            <div className="flex justify-between">
+                              <FormLabel>급여, 월급, 팁 (Wages, Salaries, Tips)</FormLabel>
+                              <div className="tooltip">
+                                <InfoIcon className="h-4 w-4 text-gray-dark" />
+                                <span className="tooltip-text">Include income from all W-2 forms</span>
+                              </div>
+                            </div>
+                            <FormControl>
+                              <Input
+                                type="number"
+                                step="0.01"
+                                min="0"
+                                {...field}
+                                onChange={(e) => {
+                                  field.onChange(parseFloat(e.target.value) || 0);
+                                }}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
                     
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
                       <FormField

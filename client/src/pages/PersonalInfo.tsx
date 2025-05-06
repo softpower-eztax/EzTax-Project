@@ -19,25 +19,37 @@ const PersonalInfo: React.FC = () => {
   const { taxData, updateTaxData } = useTaxContext();
   const { toast } = useToast();
   
+  // 테스트용 하드코딩된 데이터로 시작
   const defaultValues: PersonalInformation = {
-    firstName: '',
-    lastName: '',
-    ssn: '',
-    dateOfBirth: '',
-    email: '',
-    phone: '',
-    address1: '',
-    city: '',
-    state: '',
-    zipCode: '',
-    filingStatus: 'single',
+    firstName: 'John',
+    middleInitial: 'A',
+    lastName: 'Smith',
+    ssn: '123-45-6789',
+    dateOfBirth: '1980-01-15',
+    email: 'john.smith@example.com',
+    phone: '123-456-7890',
+    address1: '123 Main Street',
+    address2: 'Apt 4B',
+    city: 'Springfield',
+    state: 'IL',
+    zipCode: '62704',
+    filingStatus: 'married_joint',
     spouseInfo: {
-      firstName: '',
-      lastName: '',
-      ssn: '',
-      dateOfBirth: ''
+      firstName: 'Jane',
+      middleInitial: 'B',
+      lastName: 'Smith',
+      ssn: '987-65-4321',
+      dateOfBirth: '1982-05-20'
     },
-    dependents: [],
+    dependents: [
+      {
+        firstName: 'Tommy',
+        lastName: 'Smith',
+        ssn: '111-22-3333',
+        relationship: 'Son',
+        dateOfBirth: '2010-03-12'
+      }
+    ],
     ...taxData.personalInfo
   };
 

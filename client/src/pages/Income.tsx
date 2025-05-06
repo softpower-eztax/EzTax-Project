@@ -29,25 +29,25 @@ const IncomePage: React.FC = () => {
   const { taxData, updateTaxData, saveTaxReturn } = useTaxContext();
   const { toast } = useToast();
 
-  // Define default values for the form
+  // 테스트용 하드코딩된 데이터로 시작
   const defaultValues: Income = {
-    wages: taxData.income?.wages || 0,
-    interestIncome: taxData.income?.interestIncome || 0,
-    dividends: taxData.income?.dividends || 0,
-    businessIncome: taxData.income?.businessIncome || 0,
-    capitalGains: taxData.income?.capitalGains || 0,
-    rentalIncome: taxData.income?.rentalIncome || 0,
-    retirementIncome: taxData.income?.retirementIncome || 0,
-    unemploymentIncome: taxData.income?.unemploymentIncome || 0,
-    otherIncome: taxData.income?.otherIncome || 0,
-    totalIncome: taxData.income?.totalIncome || 0,
+    wages: 75000,
+    interestIncome: 1200,
+    dividends: 3500,
+    businessIncome: 15000,
+    capitalGains: 5000,
+    rentalIncome: 12000,
+    retirementIncome: 0,
+    unemploymentIncome: 0,
+    otherIncome: 1500,
+    totalIncome: 113200,
     adjustments: {
-      studentLoanInterest: taxData.income?.adjustments?.studentLoanInterest || 0,
-      retirementContributions: taxData.income?.adjustments?.retirementContributions || 0,
-      healthSavingsAccount: taxData.income?.adjustments?.healthSavingsAccount || 0,
-      otherAdjustments: taxData.income?.adjustments?.otherAdjustments || 0
+      studentLoanInterest: 2500,
+      retirementContributions: 6000,
+      healthSavingsAccount: 3500,
+      otherAdjustments: 1000
     },
-    adjustedGrossIncome: taxData.income?.adjustedGrossIncome || 0
+    adjustedGrossIncome: 100200
   };
 
   // Initialize the form with react-hook-form

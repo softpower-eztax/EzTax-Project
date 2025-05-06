@@ -192,8 +192,8 @@ const Review: React.FC = () => {
   return (
     <div className="max-w-5xl mx-auto">
       <div className="mb-8">
-        <h1 className="text-3xl font-heading font-bold text-primary-dark mb-2">Your 2023 Tax Return</h1>
-        <p className="text-gray-dark">Review your information and submit your tax return.</p>
+        <h1 className="text-3xl font-heading font-bold text-primary-dark mb-2">2025년 세금 신고(Your 2025 Tax Return)</h1>
+        <p className="text-gray-dark">정보를 검토하고 세금 신고서를 제출하세요.(Review your information and submit your tax return.)</p>
       </div>
 
       <ProgressTracker currentStep={6} />
@@ -202,10 +202,10 @@ const Review: React.FC = () => {
         <div className="flex-grow">
           <Card className="mb-6">
             <CardContent className="pt-6">
-              <h2 className="text-2xl font-heading font-semibold text-primary-dark mb-6">Review & Calculate</h2>
+              <h2 className="text-2xl font-heading font-semibold text-primary-dark mb-6">검토 및 계산(Review & Calculate)</h2>
               
               {/* Personal Information Summary */}
-              <SectionSummary title="Personal Information" editLink="/personal-info">
+              <SectionSummary title="개인 정보(Personal Information)" editLink="/personal-info">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <Field 
@@ -236,7 +236,7 @@ const Review: React.FC = () => {
               </SectionSummary>
               
               {/* Deductions Summary */}
-              <SectionSummary title="Deductions" editLink="/deductions">
+              <SectionSummary title="공제(Deductions)" editLink="/deductions">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <Field 

@@ -193,12 +193,12 @@ const Deductions: React.FC = () => {
                   </div>
 
                   <div id="itemized-deductions-section" className={isItemizedDisabled ? 'opacity-50' : ''}>
-                    <h3 className="text-lg font-heading font-semibold mb-4">Itemized Deductions</h3>
+                    <h3 className="text-lg font-heading font-semibold mb-4">항목별공제 (Itemized Deductions)</h3>
 
                     {/* Medical Expenses */}
                     <div className="mb-6 border-b border-gray-light pb-6">
                       <div className="flex items-center mb-3">
-                        <h4 className="font-semibold">Medical Expenses</h4>
+                        <h4 className="font-semibold">의료비 (Medical Expenses)</h4>
                         <TooltipProvider>
                           <Tooltip>
                             <TooltipTrigger asChild>
@@ -219,7 +219,7 @@ const Deductions: React.FC = () => {
                           name="itemizedDeductions.medicalExpenses"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel>Total Medical and Dental Expenses</FormLabel>
+                              <FormLabel>의료비및치과비용 (Medical and Dental Expenses)</FormLabel>
                               <FormControl>
                                 <div className="relative">
                                   <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-dark">$</span>
@@ -246,7 +246,7 @@ const Deductions: React.FC = () => {
                     {/* State and Local Taxes */}
                     <div className="mb-6 border-b border-gray-light pb-6">
                       <div className="flex items-center mb-3">
-                        <h4 className="font-semibold">State and Local Taxes</h4>
+                        <h4 className="font-semibold">주세및지방세 (State and Local Taxes)</h4>
                         <TooltipProvider>
                           <Tooltip>
                             <TooltipTrigger asChild>
@@ -267,7 +267,7 @@ const Deductions: React.FC = () => {
                           name="itemizedDeductions.stateLocalIncomeTax"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel>State and Local Income Taxes</FormLabel>
+                              <FormLabel>주및지방소득세 (State and Local Income Taxes)</FormLabel>
                               <FormControl>
                                 <div className="relative">
                                   <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-dark">$</span>
@@ -294,7 +294,7 @@ const Deductions: React.FC = () => {
                           name="itemizedDeductions.realEstateTaxes"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel>Real Estate Taxes</FormLabel>
+                              <FormLabel>부동산세 (Real Estate Taxes)</FormLabel>
                               <FormControl>
                                 <div className="relative">
                                   <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-dark">$</span>
@@ -321,7 +321,7 @@ const Deductions: React.FC = () => {
                     {/* Interest Paid */}
                     <div className="mb-6 border-b border-gray-light pb-6">
                       <div className="flex items-center mb-3">
-                        <h4 className="font-semibold">Interest Paid</h4>
+                        <h4 className="font-semibold">지급이자 (Interest Paid)</h4>
                         <TooltipProvider>
                           <Tooltip>
                             <TooltipTrigger asChild>
@@ -342,7 +342,7 @@ const Deductions: React.FC = () => {
                           name="itemizedDeductions.mortgageInterest"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel>Mortgage Interest (from Form 1098)</FormLabel>
+                              <FormLabel>주택담보대출이자 (Mortgage Interest)</FormLabel>
                               <FormControl>
                                 <div className="relative">
                                   <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-dark">$</span>
@@ -369,7 +369,7 @@ const Deductions: React.FC = () => {
                     {/* Charitable Contributions */}
                     <div className="mb-6">
                       <div className="flex items-center mb-3">
-                        <h4 className="font-semibold">Charitable Contributions</h4>
+                        <h4 className="font-semibold">자선기부 (Charitable Contributions)</h4>
                         <TooltipProvider>
                           <Tooltip>
                             <TooltipTrigger asChild>
@@ -390,7 +390,7 @@ const Deductions: React.FC = () => {
                           name="itemizedDeductions.charitableCash"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel>Cash Contributions</FormLabel>
+                              <FormLabel>현금기부 (Cash Contributions)</FormLabel>
                               <FormControl>
                                 <div className="relative">
                                   <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-dark">$</span>

@@ -14,6 +14,7 @@ import Deductions from "@/pages/Deductions";
 import TaxCredits from "@/pages/TaxCredits-new";
 import AdditionalTax from "@/pages/AdditionalTax";
 import Review from "@/pages/Review";
+import PricingPage from "@/pages/PricingPage";
 import NotFound from "@/pages/not-found";
 import AuthPage from "@/pages/auth-page";
 import { AuthProvider } from "@/hooks/use-auth";
@@ -33,6 +34,7 @@ function Router() {
       <ProtectedRoute path="/tax-credits" component={TaxCredits} />
       <ProtectedRoute path="/additional-tax" component={AdditionalTax} />
       <ProtectedRoute path="/review" component={Review} />
+      <ProtectedRoute path="/pricing" component={PricingPage} />
       <Route component={NotFound} />
     </Switch>
   );

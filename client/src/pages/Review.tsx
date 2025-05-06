@@ -365,13 +365,7 @@ const Review: React.FC = () => {
                   
                   <Button
                     className="bg-success text-white font-semibold rounded hover:bg-success/80 transition duration-200 w-[240px] justify-center"
-                    onClick={() => {
-                      toast({
-                        title: "유료검토 신청",
-                        description: "세무사와 연결 중입니다. 곧 연락드리겠습니다.",
-                        variant: "default",
-                      });
-                    }}
+                    onClick={() => navigate('/pricing')}
                   >
                     유료검토(Review)
                   </Button>

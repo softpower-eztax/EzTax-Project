@@ -24,7 +24,6 @@ const PersonalInfo: React.FC = () => {
     lastName: '',
     ssn: '',
     dateOfBirth: '',
-    occupation: '',
     email: '',
     phone: '',
     address1: '',
@@ -201,21 +200,7 @@ const PersonalInfo: React.FC = () => {
                       />
                     </div>
                     
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-                      <FormField
-                        control={form.control}
-                        name="occupation"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Occupation</FormLabel>
-                            <FormControl>
-                              <Input {...field} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      
+                    <div className="mt-4">
                       <FormField
                         control={form.control}
                         name="filingStatus"

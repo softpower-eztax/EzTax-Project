@@ -66,7 +66,6 @@ export interface PersonalInformation {
   lastName: string;
   ssn: string;
   dateOfBirth: string;
-  occupation: string;
   email: string;
   phone: string;
   address1: string;
@@ -158,7 +157,6 @@ export const personalInfoSchema = z.object({
   lastName: z.string().min(1, "Last name is required"),
   ssn: z.string().regex(/^\d{3}-\d{2}-\d{4}$/, "SSN must be in format XXX-XX-XXXX"),
   dateOfBirth: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Date must be in YYYY-MM-DD format"),
-  occupation: z.string().min(1, "Occupation is required"),
   email: z.string().email("Invalid email address"),
   phone: z.string().regex(/^\d{3}-\d{3}-\d{4}$/, "Phone must be in format XXX-XXX-XXXX"),
   address1: z.string().min(1, "Address is required"),

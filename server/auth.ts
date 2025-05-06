@@ -1,6 +1,8 @@
 import passport from "passport";
 import { Strategy as LocalStrategy } from "passport-local";
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
+import fs from "fs";
+import path from "path";
 import { Express, Request, Response, NextFunction } from "express";
 import session from "express-session";
 import { scrypt, randomBytes, timingSafeEqual } from "crypto";
@@ -70,13 +72,22 @@ export function setupAuth(app: Express) {
   );
   
   // 구글 OAuth 인증 전략
-  if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
+  try {
+    // JSON 파일에서 Google 클라이언트 정보 읽기
+    const clientSecretPath = path.join(process.cwd(), 'client-secret.json');
+    const clientSecretContent = fs.readFileSync(clientSecretPath, 'utf-8');
+    const clientSecretJson = JSON.parse(clientSecretContent);
+    
+    const clientID = clientSecretJson.web.client_id;
+    const clientSecret = clientSecretJson.web.client_secret;
+    
     passport.use(
       new GoogleStrategy(
         {
-          clientID: process.env.GOOGLE_CLIENT_ID,
-          clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-          callbackURL: "/auth/google/callback",
+          clientID: clientID,
+          clientSecret: clientSecret,
+          callbackURL: "https://" + (process.env.REPLIT_DEV_DOMAIN || "localhost:5000") + "/auth/google/callback",
+          proxy: true
         },
         async (accessToken, refreshToken, profile, done) => {
           try {
@@ -111,8 +122,8 @@ export function setupAuth(app: Express) {
     );
     
     console.log("구글 로그인 설정 완료");
-  } else {
-    console.log("구글 인증 정보가 없어 구글 로그인을 사용할 수 없습니다.");
+  } catch (error) {
+    console.error("구글 인증 설정 중 오류 발생:", error);
   }
 
   passport.serializeUser((user, done) => done(null, user.id));

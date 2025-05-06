@@ -144,7 +144,8 @@ const TaxCreditsPage: React.FC = () => {
                               </div>
                             </FormControl>
                             <FormDescription>
-                              Enter your estimated child tax credit amount.
+                              귀하의 예상 자녀세액공제액을 입력하세요.
+                              (Enter your estimated child tax credit amount.)
                             </FormDescription>
                             <FormMessage />
                           </FormItem>
@@ -226,7 +227,7 @@ const TaxCreditsPage: React.FC = () => {
                         name="educationCredits"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Education Credits Amount</FormLabel>
+                            <FormLabel>교육공제액 (Education Credits Amount)</FormLabel>
                             <FormControl>
                               <div className="relative">
                                 <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-dark">$</span>
@@ -243,7 +244,8 @@ const TaxCreditsPage: React.FC = () => {
                               </div>
                             </FormControl>
                             <FormDescription>
-                              Total of American Opportunity and Lifetime Learning credits.
+                              미국 기회 세액공제와 평생 학습 세액공제의 총액입니다.
+                              (Total of American Opportunity and Lifetime Learning credits.)
                             </FormDescription>
                             <FormMessage />
                           </FormItem>
@@ -277,7 +279,7 @@ const TaxCreditsPage: React.FC = () => {
                         name="retirementSavingsCredit"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Retirement Savings Credit Amount</FormLabel>
+                            <FormLabel>은퇴저축공제액 (Retirement Savings Credit Amount)</FormLabel>
                             <FormControl>
                               <div className="relative">
                                 <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-dark">$</span>
@@ -312,7 +314,7 @@ const TaxCreditsPage: React.FC = () => {
                         name="otherCredits"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Other Tax Credits</FormLabel>
+                            <FormLabel>기타 세금공제 (Other Tax Credits)</FormLabel>
                             <FormControl>
                               <div className="relative">
                                 <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-dark">$</span>
@@ -329,7 +331,8 @@ const TaxCreditsPage: React.FC = () => {
                               </div>
                             </FormControl>
                             <FormDescription>
-                              Enter the total of any other tax credits not listed above.
+                              위에 나열되지 않은 다른 세금공제의 총액을 입력하세요.
+                              (Enter the total of any other tax credits not listed above.)
                             </FormDescription>
                             <FormMessage />
                           </FormItem>
@@ -353,7 +356,7 @@ const TaxCreditsPage: React.FC = () => {
               <StepNavigation
                 prevStep="/deductions"
                 nextStep="/additional-tax"
-                submitText="Additional Tax"
+                submitText="추가세금 (Additional Tax)"
                 onNext={() => {
                   if (form.formState.isValid) {
                     onSubmit(form.getValues());

@@ -1,11 +1,101 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useLocation } from 'wouter';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { File, FileText, Clock, Shield } from 'lucide-react';
+import { useTaxContext } from '@/context/TaxContext';
 
 const Home: React.FC = () => {
   const [, navigate] = useLocation();
+  const { updateTaxData } = useTaxContext();
+  
+  // Initialize with test data when the home page loads
+  useEffect(() => {
+    // Hardcode test tax data directly
+    const testData = {
+      personalInfo: {
+        firstName: 'John',
+        middleInitial: 'A',
+        lastName: 'Smith',
+        ssn: '123-45-6789',
+        dateOfBirth: '1980-01-15',
+        email: 'john.smith@example.com',
+        phone: '123-456-7890',
+        address1: '123 Main Street',
+        address2: 'Apt 4B',
+        city: 'Springfield',
+        state: 'IL',
+        zipCode: '62704',
+        filingStatus: 'married_joint',
+        spouseInfo: {
+          firstName: 'Jane',
+          middleInitial: 'B',
+          lastName: 'Smith',
+          ssn: '987-65-4321',
+          dateOfBirth: '1982-05-20'
+        },
+        dependents: [
+          {
+            firstName: 'Tommy',
+            lastName: 'Smith',
+            ssn: '111-22-3333',
+            relationship: 'Son',
+            dateOfBirth: '2010-03-12'
+          }
+        ]
+      },
+      income: {
+        wages: 75000,
+        interestIncome: 1200,
+        dividends: 3500,
+        businessIncome: 15000,
+        capitalGains: 5000,
+        rentalIncome: 12000,
+        retirementIncome: 0,
+        unemploymentIncome: 0,
+        otherIncome: 1500,
+        totalIncome: 113200,
+        adjustments: {
+          studentLoanInterest: 2500,
+          retirementContributions: 6000,
+          healthSavingsAccount: 3500,
+          otherAdjustments: 1000
+        },
+        adjustedGrossIncome: 100200
+      },
+      deductions: {
+        useStandardDeduction: false,
+        standardDeductionAmount: 27700,
+        itemizedDeductions: {
+          medicalExpenses: 5000,
+          stateLocalIncomeTax: 7500,
+          realEstateTaxes: 8000,
+          mortgageInterest: 9500,
+          charitableCash: 3000,
+          charitableNonCash: 2000
+        },
+        totalDeductions: 35000
+      },
+      taxCredits: {
+        childTaxCredit: 2000,
+        childDependentCareCredit: 1000,
+        educationCredits: 1500,
+        retirementSavingsCredit: 500,
+        otherCredits: 200,
+        totalCredits: 5200
+      },
+      additionalTax: {
+        selfEmploymentIncome: 15000,
+        selfEmploymentTax: 2120,
+        estimatedTaxPayments: 5000,
+        otherIncome: 1500,
+        otherTaxes: 800
+      }
+    };
+    
+    // Update tax data in context with test data
+    updateTaxData(testData);
+  }, [updateTaxData]);
 
   return (
     <div className="max-w-5xl mx-auto">

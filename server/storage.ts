@@ -163,8 +163,7 @@ export class DatabaseStorage implements IStorage {
       .insert(users)
       .values({
         ...insertUser,
-        createdAt: insertUser.createdAt || new Date().toISOString(),
-        updatedAt: insertUser.updatedAt || new Date().toISOString()
+        // These will use the default values from the schema
       })
       .returning();
     return user;
@@ -190,13 +189,17 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createTaxReturn(insertTaxReturn: InsertTaxReturn): Promise<TaxReturn> {
+    // Make sure status is specified
+    const valuesWithStatus = {
+      ...insertTaxReturn,
+      status: insertTaxReturn.status || "in_progress",
+      createdAt: insertTaxReturn.createdAt || new Date().toISOString(),
+      updatedAt: insertTaxReturn.updatedAt || new Date().toISOString()
+    };
+    
     const [taxReturn] = await db
       .insert(taxReturns)
-      .values({
-        ...insertTaxReturn,
-        createdAt: insertTaxReturn.createdAt || new Date().toISOString(),
-        updatedAt: insertTaxReturn.updatedAt || new Date().toISOString()
-      })
+      .values(valuesWithStatus)
       .returning();
     return taxReturn;
   }
@@ -240,7 +243,8 @@ export class DatabaseStorage implements IStorage {
       // 기본 사용자 생성
       const user = await this.createUser({
         username: "default",
-        password: "password"
+        password: "password",
+        email: "default@example.com"
       });
       
       // 기본 세금 신고서 생성

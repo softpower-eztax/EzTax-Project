@@ -350,16 +350,40 @@ export default function IncomePage() {
                     </div>
                   </div>
                   
-                  <div className="flex justify-between items-center mt-6 mb-4">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => navigate('/additional-income')}
-                      className="text-sm flex items-center"
-                    >
-                      <Plus className="h-4 w-4 mr-1" />
-                      기타소득
-                    </Button>
+                  <div className="mt-6 mb-4">
+                    <div className="flex justify-between items-center mb-4">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => navigate('/additional-income')}
+                        className="text-sm flex items-center"
+                      >
+                        <Plus className="h-4 w-4 mr-1" />
+                        기타소득
+                      </Button>
+                    </div>
+                    
+                    {taxData.income?.additionalIncomeItems && taxData.income.additionalIncomeItems.length > 0 && (
+                      <div className="bg-gray-50 p-3 rounded-md border mb-4">
+                        <h4 className="text-sm font-semibold mb-2">기타소득 항목 요약</h4>
+                        <div className="space-y-1 text-sm">
+                          {taxData.income.additionalIncomeItems.map((item, index) => (
+                            <div key={index} className="flex justify-between">
+                              <span>{item.type}</span>
+                              <span>{new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(item.amount)}</span>
+                            </div>
+                          ))}
+                          <div className="flex justify-between font-medium border-t pt-1 mt-2">
+                            <span>총 기타소득:</span>
+                            <span>
+                              {new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(
+                                taxData.income.additionalIncomeItems.reduce((sum, item) => sum + item.amount, 0)
+                              )}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    )}
                   </div>
                     
                   <div className="mt-8">
@@ -466,7 +490,7 @@ export default function IncomePage() {
                                 <span className="tooltip-text">Moving expenses, self-employment tax, etc.</span>
                               </div>
                             </div>
-                            <div className="flex gap-2">
+                            <div className="flex gap-2 mb-2">
                               <FormControl className="flex-grow">
                                 <Input
                                   type="number"
@@ -489,6 +513,28 @@ export default function IncomePage() {
                                 기타조정
                               </Button>
                             </div>
+                            
+                            {taxData.income?.additionalAdjustmentItems && taxData.income.additionalAdjustmentItems.length > 0 && (
+                              <div className="bg-gray-50 p-3 rounded-md border mb-2">
+                                <h4 className="text-sm font-semibold mb-2">기타조정 항목 요약</h4>
+                                <div className="space-y-1 text-sm">
+                                  {taxData.income.additionalAdjustmentItems.map((item, index) => (
+                                    <div key={index} className="flex justify-between">
+                                      <span>{item.type}</span>
+                                      <span>{new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(item.amount)}</span>
+                                    </div>
+                                  ))}
+                                  <div className="flex justify-between font-medium border-t pt-1 mt-2">
+                                    <span>총 기타조정:</span>
+                                    <span>
+                                      {new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(
+                                        taxData.income.additionalAdjustmentItems.reduce((sum, item) => sum + item.amount, 0)
+                                      )}
+                                    </span>
+                                  </div>
+                                </div>
+                              </div>
+                            )}
                             <FormMessage />
                           </FormItem>
                         )}

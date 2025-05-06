@@ -356,7 +356,7 @@ const Review: React.FC = () => {
                     {isLoading ? (
                       <>
                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        Processing...
+                        처리 중...(Processing...)
                       </>
                     ) : (
                       '세금 신고서 제출(Submit Tax Return)'
@@ -421,15 +421,15 @@ const Review: React.FC = () => {
                 <h4 className="font-semibold mb-2">요약(Summary)</h4>
                 <ul className="space-y-1">
                   <li className="flex justify-between">
-                    <span>Adjusted Gross Income:</span>
+                    <span>조정된 총소득(Adjusted Gross Income):</span>
                     <span>{formatCurrency(calculatedResults.adjustedGrossIncome)}</span>
                   </li>
                   <li className="flex justify-between">
-                    <span>Taxable Income:</span>
+                    <span>과세 소득(Taxable Income):</span>
                     <span>{formatCurrency(calculatedResults.taxableIncome)}</span>
                   </li>
                   <li className="flex justify-between">
-                    <span>Tax Due:</span>
+                    <span>납부할 세금(Tax Due):</span>
                     <span>{formatCurrency(calculatedResults.taxDue)}</span>
                   </li>
                   <li className="flex justify-between font-bold">
@@ -450,16 +450,16 @@ const Review: React.FC = () => {
               
               <DialogFooter className="mt-4">
                 <Button variant="outline" onClick={() => setShowSubmitDialog(false)}>
-                  Cancel
+                  취소(Cancel)
                 </Button>
                 <Button onClick={handleSubmitTaxReturn} disabled={isLoading}>
                   {isLoading ? (
                     <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Processing...
+                      처리 중...(Processing...)
                     </>
                   ) : (
-                    'Confirm & Submit'
+                    '확인 및 제출(Confirm & Submit)'
                   )}
                 </Button>
               </DialogFooter>

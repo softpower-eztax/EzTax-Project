@@ -341,13 +341,10 @@ const IncomePage: React.FC = () => {
                       
                       {/* W2 Upload Button (Right) */}
                       <div className="border rounded-md p-3 bg-gray-50/50">
-                        <div className="flex items-center gap-2">
-                          <div className="flex-1">
-                            <h4 className="text-base font-medium mb-1">
-                              W-2 폼 업로드 (Upload W-2 Form)
-                            </h4>
-                            <p className="text-sm text-gray-500 mb-2">
-                              W-2 파일을 업로드하여 자동으로 정보를 추출합니다.
+                        <div className="flex flex-col items-start gap-2">
+                          <div className="w-full">
+                            <p className="text-sm text-gray-700 mb-2">
+                              W-2를 업로드하세요 (없다면 직접입력하세요)
                             </p>
                           </div>
                           <div>
@@ -355,16 +352,16 @@ const IncomePage: React.FC = () => {
                               <Tooltip>
                                 <TooltipTrigger asChild>
                                   <label className="cursor-pointer">
-                                    <div className="flex items-center gap-2 rounded-md border bg-white px-4 py-2 text-sm shadow-sm">
+                                    <div className="flex items-center gap-1 rounded-md border bg-white px-3 py-1 text-xs shadow-sm">
                                       {isUploading ? (
                                         <>
-                                          <Loader2 className="h-4 w-4 animate-spin" />
+                                          <Loader2 className="h-3 w-3 animate-spin" />
                                           <span>처리 중...</span>
                                         </>
                                       ) : (
                                         <>
-                                          <Upload className="h-4 w-4" />
-                                          <span>파일 업로드</span>
+                                          <Upload className="h-3 w-3" />
+                                          <span>업로드</span>
                                         </>
                                       )}
                                     </div>
@@ -404,7 +401,7 @@ const IncomePage: React.FC = () => {
                                   </label>
                                 </TooltipTrigger>
                                 <TooltipContent>
-                                  <p>W-2 폼에서 정보를 자동으로 추출합니다</p>
+                                  <p>W-2에서 급여 정보를 자동으로 추출합니다</p>
                                 </TooltipContent>
                               </Tooltip>
                             </TooltipProvider>

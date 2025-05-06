@@ -128,12 +128,12 @@ const PersonalInfo: React.FC = () => {
                       
                       <FormField
                         control={form.control}
-                        name="middleInitial"
+                        name="lastName"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Middle Initial</FormLabel>
+                            <FormLabel>성(Last Name)</FormLabel>
                             <FormControl>
-                              <Input {...field} maxLength={1} />
+                              <Input {...field} />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -142,12 +142,12 @@ const PersonalInfo: React.FC = () => {
                       
                       <FormField
                         control={form.control}
-                        name="lastName"
+                        name="middleInitial"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>성(Last Name)</FormLabel>
+                            <FormLabel>Middle Initial</FormLabel>
                             <FormControl>
-                              <Input {...field} />
+                              <Input {...field} maxLength={1} />
                             </FormControl>
                             <FormMessage />
                           </FormItem>

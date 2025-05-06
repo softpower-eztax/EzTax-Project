@@ -170,7 +170,7 @@ const PersonalInfo: React.FC = () => {
                         name="ssn"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Social Security Number</FormLabel>
+                            <FormLabel>사회보장번호(SSN)</FormLabel>
                             <FormControl>
                               <Input 
                                 {...field} 
@@ -536,7 +536,7 @@ const PersonalInfo: React.FC = () => {
                               name={`dependents.${index}.ssn`}
                               render={({ field }) => (
                                 <FormItem>
-                                  <FormLabel>Social Security Number</FormLabel>
+                                  <FormLabel>사회보장번호(SSN)</FormLabel>
                                   <FormControl>
                                     <Input 
                                       {...field} 

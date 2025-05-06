@@ -605,6 +605,28 @@ export default function IncomePage() {
                         </Button>
                       </div>
                       
+                      {additionalAdjustmentItems.length > 0 && (
+                        <div className="bg-gray-50 p-3 rounded-md border mb-4 md:col-span-2 mt-3">
+                          <h4 className="text-sm font-semibold mb-2">기타조정 항목 요약</h4>
+                          <div className="space-y-1 text-sm">
+                            {additionalAdjustmentItems.map((item, index) => (
+                              <div key={index} className="flex justify-between">
+                                <span>{item.type}</span>
+                                <span>{new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(item.amount)}</span>
+                              </div>
+                            ))}
+                            <div className="flex justify-between font-medium border-t pt-1 mt-2">
+                              <span>총 기타조정:</span>
+                              <span>
+                                {new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(
+                                  additionalAdjustmentItems.reduce((sum, item) => sum + item.amount, 0)
+                                )}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                      
                       <FormField
                         control={form.control}
                         name="adjustments.otherAdjustments"

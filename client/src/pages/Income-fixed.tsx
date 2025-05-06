@@ -351,140 +351,14 @@ export default function IncomePage() {
                 <CardHeader>
                   <div className="flex justify-between items-center">
                     <CardTitle className="text-xl font-heading text-primary-dark">소득정보 (Income Information)</CardTitle>
-                    <div className="flex gap-2">
-                      <Dialog>
-                        <DialogTrigger asChild>
-                          <Button 
-                            type="button" 
-                            size="sm" 
-                            variant="secondary"
-                            className="flex items-center gap-1"
-                          >
-                            <FileText className="h-4 w-4" />
-                            <span>소득 요약</span>
-                          </Button>
-                        </DialogTrigger>
-                        <DialogContent className="sm:max-w-[600px]">
-                          <DialogHeader>
-                            <DialogTitle className="text-xl font-heading text-primary-dark">소득 및 조정 항목 요약</DialogTitle>
-                            <DialogDescription>
-                              입력한 소득과 조정 항목에 대한 요약 정보입니다.
-                            </DialogDescription>
-                          </DialogHeader>
-                          
-                          {/* 소득 요약 테이블 */}
-                          <div className="border rounded-lg overflow-hidden">
-                            <div className="py-3 px-4 bg-muted font-medium text-lg">
-                              소득 항목 내역
-                            </div>
-                            <div className="p-4 space-y-4">
-                              <div className="grid grid-cols-2 gap-y-2">
-                                <div className="font-medium">근로소득 합계:</div>
-                                <div className="text-right">{formatCurrency(getIncomeSummary().earnedIncomeTotal)}</div>
-                                
-                                <div className="font-medium">비근로소득 합계:</div>
-                                <div className="text-right">{formatCurrency(getIncomeSummary().unearnedIncomeTotal)}</div>
-                                
-                                <div className="font-medium">기타소득 (입력):</div>
-                                <div className="text-right">{formatCurrency(getIncomeSummary().userOtherIncome)}</div>
-                                
-                                <div className="font-medium">추가 소득 항목:</div>
-                                <div className="text-right">{formatCurrency(getIncomeSummary().additionalItemsTotal)}</div>
-                                
-                                <div className="border-t pt-2 font-semibold">총 소득:</div>
-                                <div className="border-t pt-2 text-right font-semibold text-primary">
-                                  {formatCurrency(getIncomeSummary().totalIncome)}
-                                </div>
-                              </div>
-                              
-                              <div className="mt-6">
-                                <div className="font-medium">추가 소득 항목 상세:</div>
-                                {additionalIncomeItems.length > 0 ? (
-                                  <ul className="list-disc list-inside mt-2 space-y-1 text-sm">
-                                    {additionalIncomeItems.map((item, index) => (
-                                      <li key={index}>
-                                        {item.type}: {formatCurrency(Number(item.amount))}
-                                        {item.description && ` (${item.description})`}
-                                      </li>
-                                    ))}
-                                  </ul>
-                                ) : (
-                                  <p className="text-sm text-muted-foreground mt-1">추가 소득 항목이 없습니다.</p>
-                                )}
-                              </div>
-                            </div>
-                          </div>
-                          
-                          {/* 조정 항목 요약 테이블 */}
-                          <div className="border rounded-lg overflow-hidden mt-4">
-                            <div className="py-3 px-4 bg-muted font-medium text-lg">
-                              조정 항목 내역
-                            </div>
-                            <div className="p-4 space-y-4">
-                              <div className="grid grid-cols-2 gap-y-2">
-                                <div className="font-medium">학자금대출 이자:</div>
-                                <div className="text-right">{formatCurrency(getIncomeSummary().studentLoanInterest)}</div>
-                                
-                                <div className="font-medium">은퇴기여금:</div>
-                                <div className="text-right">{formatCurrency(getIncomeSummary().retirementContributions)}</div>
-                                
-                                <div className="font-medium">의료저축계좌:</div>
-                                <div className="text-right">{formatCurrency(getIncomeSummary().healthSavingsAccount)}</div>
-                                
-                                <div className="font-medium">추가 조정 항목:</div>
-                                <div className="text-right">{formatCurrency(getIncomeSummary().additionalAdjustmentsTotal)}</div>
-                                
-                                <div className="border-t pt-2 font-semibold">총 조정 금액:</div>
-                                <div className="border-t pt-2 text-right font-semibold">
-                                  {formatCurrency(getIncomeSummary().totalAdjustments)}
-                                </div>
-                              </div>
-                              
-                              <div className="mt-6">
-                                <div className="font-medium">추가 조정 항목 상세:</div>
-                                {additionalAdjustmentItems.length > 0 ? (
-                                  <ul className="list-disc list-inside mt-2 space-y-1 text-sm">
-                                    {additionalAdjustmentItems.map((item, index) => (
-                                      <li key={index}>
-                                        {item.type}: {formatCurrency(Number(item.amount))}
-                                        {item.description && ` (${item.description})`}
-                                      </li>
-                                    ))}
-                                  </ul>
-                                ) : (
-                                  <p className="text-sm text-muted-foreground mt-1">추가 조정 항목이 없습니다.</p>
-                                )}
-                              </div>
-                            </div>
-                          </div>
-                          
-                          {/* 최종 소득 계산 결과 */}
-                          <div className="mt-4 p-4 border rounded-lg bg-primary/5">
-                            <div className="grid grid-cols-2 gap-y-2">
-                              <div className="font-semibold text-lg">조정 총소득 (AGI):</div>
-                              <div className="text-right font-bold text-primary text-lg">
-                                {formatCurrency(getIncomeSummary().adjustedGrossIncome)}
-                              </div>
-                            </div>
-                          </div>
-                          
-                          <DialogFooter className="mt-4">
-                            <DialogClose asChild>
-                              <Button type="button">확인</Button>
-                            </DialogClose>
-                          </DialogFooter>
-                        </DialogContent>
-                      </Dialog>
-                      
-                      <Button 
-                        type="button" 
-                        size="sm" 
-                        variant="outline" 
-                        onClick={addDummyData}
-                      >
-                        테스트 데이터 추가
-                      </Button>
-                    </div>
+                    <Button 
+                      type="button" 
+                      size="sm" 
+                      variant="outline" 
+                      onClick={addDummyData}
+                    >
+                      테스트 데이터 추가
+                    </Button>
                   </div>
                 </CardHeader>
                 <CardContent className="space-y-6">
@@ -918,6 +792,132 @@ export default function IncomePage() {
                   </div>
                 </CardContent>
               </Card>
+              
+              {/* 소득 요약 다이얼로그 버튼 */}
+              <div className="mt-6 mb-6">
+                <Dialog>
+                  <DialogTrigger asChild>
+                    <Button 
+                      type="button" 
+                      variant="outline"
+                      className="w-full flex items-center gap-2 py-6"
+                    >
+                      <BarChart2 className="h-5 w-5" />
+                      <span className="text-lg">소득 요약 (Income Summary)</span>
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="sm:max-w-[600px]">
+                    <DialogHeader>
+                      <DialogTitle className="text-xl font-heading text-primary-dark">소득 및 조정 항목 요약</DialogTitle>
+                      <DialogDescription>
+                        입력한 소득과 조정 항목에 대한 요약 정보입니다.
+                      </DialogDescription>
+                    </DialogHeader>
+                    
+                    {/* 소득 요약 테이블 */}
+                    <div className="border rounded-lg overflow-hidden">
+                      <div className="py-3 px-4 bg-muted font-medium text-lg">
+                        소득 항목 내역
+                      </div>
+                      <div className="p-4 space-y-4">
+                        <div className="grid grid-cols-2 gap-y-2">
+                          <div className="font-medium">근로소득 합계:</div>
+                          <div className="text-right">{formatCurrency(getIncomeSummary().earnedIncomeTotal)}</div>
+                          
+                          <div className="font-medium">비근로소득 합계:</div>
+                          <div className="text-right">{formatCurrency(getIncomeSummary().unearnedIncomeTotal)}</div>
+                          
+                          <div className="font-medium">기타소득 (입력):</div>
+                          <div className="text-right">{formatCurrency(getIncomeSummary().userOtherIncome)}</div>
+                          
+                          <div className="font-medium">추가 소득 항목:</div>
+                          <div className="text-right">{formatCurrency(getIncomeSummary().additionalItemsTotal)}</div>
+                          
+                          <div className="border-t pt-2 font-semibold">총 소득:</div>
+                          <div className="border-t pt-2 text-right font-semibold text-primary">
+                            {formatCurrency(getIncomeSummary().totalIncome)}
+                          </div>
+                        </div>
+                        
+                        <div className="mt-6">
+                          <div className="font-medium">추가 소득 항목 상세:</div>
+                          {additionalIncomeItems.length > 0 ? (
+                            <ul className="list-disc list-inside mt-2 space-y-1 text-sm">
+                              {additionalIncomeItems.map((item, index) => (
+                                <li key={index}>
+                                  {item.type}: {formatCurrency(Number(item.amount))}
+                                  {item.description && ` (${item.description})`}
+                                </li>
+                              ))}
+                            </ul>
+                          ) : (
+                            <p className="text-sm text-muted-foreground mt-1">추가 소득 항목이 없습니다.</p>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                    
+                    {/* 조정 항목 요약 테이블 */}
+                    <div className="border rounded-lg overflow-hidden mt-4">
+                      <div className="py-3 px-4 bg-muted font-medium text-lg">
+                        조정 항목 내역
+                      </div>
+                      <div className="p-4 space-y-4">
+                        <div className="grid grid-cols-2 gap-y-2">
+                          <div className="font-medium">학자금대출 이자:</div>
+                          <div className="text-right">{formatCurrency(getIncomeSummary().studentLoanInterest)}</div>
+                          
+                          <div className="font-medium">은퇴기여금:</div>
+                          <div className="text-right">{formatCurrency(getIncomeSummary().retirementContributions)}</div>
+                          
+                          <div className="font-medium">의료저축계좌:</div>
+                          <div className="text-right">{formatCurrency(getIncomeSummary().healthSavingsAccount)}</div>
+                          
+                          <div className="font-medium">추가 조정 항목:</div>
+                          <div className="text-right">{formatCurrency(getIncomeSummary().additionalAdjustmentsTotal)}</div>
+                          
+                          <div className="border-t pt-2 font-semibold">총 조정 금액:</div>
+                          <div className="border-t pt-2 text-right font-semibold">
+                            {formatCurrency(getIncomeSummary().totalAdjustments)}
+                          </div>
+                        </div>
+                        
+                        <div className="mt-6">
+                          <div className="font-medium">추가 조정 항목 상세:</div>
+                          {additionalAdjustmentItems.length > 0 ? (
+                            <ul className="list-disc list-inside mt-2 space-y-1 text-sm">
+                              {additionalAdjustmentItems.map((item, index) => (
+                                <li key={index}>
+                                  {item.type}: {formatCurrency(Number(item.amount))}
+                                  {item.description && ` (${item.description})`}
+                                </li>
+                              ))}
+                            </ul>
+                          ) : (
+                            <p className="text-sm text-muted-foreground mt-1">추가 조정 항목이 없습니다.</p>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                    
+                    {/* 최종 소득 계산 결과 */}
+                    <div className="mt-4 p-4 border rounded-lg bg-primary/5">
+                      <div className="grid grid-cols-2 gap-y-2">
+                        <div className="font-semibold text-lg">조정 총소득 (AGI):</div>
+                        <div className="text-right font-bold text-primary text-lg">
+                          {formatCurrency(getIncomeSummary().adjustedGrossIncome)}
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <DialogFooter className="mt-4">
+                      <DialogClose asChild>
+                        <Button type="button">확인</Button>
+                      </DialogClose>
+                    </DialogFooter>
+                  </DialogContent>
+                </Dialog>
+              </div>
               
               <StepNavigation 
                 prevStep="/personal-info" 

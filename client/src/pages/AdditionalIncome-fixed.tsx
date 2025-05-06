@@ -39,9 +39,14 @@ export default function AdditionalIncomeFixedPage() {
   const [itemType, setItemType] = useState<string>('');
   const [itemAmount, setItemAmount] = useState<string>('');
   const [itemDescription, setItemDescription] = useState<string>('');
+  
+  console.log("현재 아이템 목록:", itemsList);
 
   // 항목 추가 핸들러
   const handleAddItem = () => {
+    console.log("항목 추가 함수 호출됨");
+    console.log("현재 값:", { 항목: itemType, 금액: itemAmount, 설명: itemDescription });
+    
     // 유효성 검사
     if (!itemType) {
       toast({
@@ -64,6 +69,7 @@ export default function AdditionalIncomeFixedPage() {
     
     // 항목 라벨 찾기
     const selectedTypeLabel = INCOME_TYPES.find(type => type.id === itemType)?.label || itemType;
+    console.log("선택된 항목 라벨:", selectedTypeLabel);
     
     // 새 항목 생성
     const newItem: AdditionalIncomeItem = {
@@ -72,8 +78,11 @@ export default function AdditionalIncomeFixedPage() {
       description: itemDescription || undefined
     };
     
+    console.log("새 항목 생성:", newItem);
+    
     // 항목 목록에 추가
     const updatedItems = [...itemsList, newItem];
+    console.log("업데이트된 항목 목록:", updatedItems);
     setItemsList(updatedItems);
     
     // 입력 필드 초기화
@@ -291,7 +300,10 @@ export default function AdditionalIncomeFixedPage() {
                   step="0.01"
                   min="0"
                   value={itemAmount}
-                  onChange={(e) => setItemAmount(e.target.value)}
+                  onChange={(e) => {
+                    console.log("금액 변경:", e.target.value);
+                    setItemAmount(e.target.value);
+                  }}
                   className="mt-1"
                 />
               </div>
@@ -310,8 +322,12 @@ export default function AdditionalIncomeFixedPage() {
             
             <Button 
               type="button"
-              onClick={handleAddItem}
-              className="w-full md:w-auto"
+              onClick={(e) => {
+                e.preventDefault();
+                console.log("항목 추가 버튼 직접 클릭 이벤트", e);
+                handleAddItem();
+              }}
+              className="w-full md:w-auto bg-blue-600 hover:bg-blue-700 text-white"
             >
               <Plus className="h-4 w-4 mr-1" />
               항목 추가

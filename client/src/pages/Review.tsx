@@ -142,7 +142,6 @@ const Review: React.FC = () => {
                     />
                     <Field label="SSN" value={personalInfo.ssn} />
                     <Field label="Date of Birth" value={personalInfo.dateOfBirth} />
-                    <Field label="Occupation" value={personalInfo.occupation} />
                     <Field label="Filing Status" value={formatFilingStatus(personalInfo.filingStatus)} />
                   </div>
                   <div>

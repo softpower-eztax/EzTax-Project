@@ -95,7 +95,6 @@ const addPersonalInfoSection = (doc: jsPDF, personalInfo: PersonalInformation | 
   yPosition += 6;
   
   doc.text(`Date of Birth: ${formatDate(personalInfo.dateOfBirth)}`, 15, yPosition);
-  doc.text(`Occupation: ${personalInfo.occupation || 'Not provided'}`, 100, yPosition);
   yPosition += 6;
   
   doc.text(`Filing Status: ${formatFilingStatus(personalInfo.filingStatus)}`, 15, yPosition);

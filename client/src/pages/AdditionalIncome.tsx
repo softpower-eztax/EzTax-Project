@@ -126,7 +126,7 @@ const AdditionalIncomePage: React.FC = () => {
       // Update with new additional income items
       const updatedIncome = {
         ...currentIncome,
-        additionalIncomeItems: additionalIncomeItems
+        additionalIncomeItems: additionalIncomeItems,
       };
       
       // Update tax data

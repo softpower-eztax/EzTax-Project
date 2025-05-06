@@ -42,7 +42,7 @@ interface TaxContextState {
 // Create the context with initial default values
 const TaxContext = createContext<TaxContextState>({
   taxData: {
-    taxYear: new Date().getFullYear() - 1, // Default to previous year
+    taxYear: 2025, // Default to 2025
     status: 'in_progress',
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
@@ -61,7 +61,7 @@ export const TaxProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   
   // Initialize tax data with test values for demonstration
   const [taxData, setTaxData] = useState<TaxData>({
-    taxYear: new Date().getFullYear() - 1, // Default to previous year
+    taxYear: 2025, // Default to 2025
     status: 'in_progress',
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),

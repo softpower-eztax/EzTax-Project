@@ -111,7 +111,7 @@ const Home: React.FC = () => {
           className="bg-primary hover:bg-primary-dark text-white font-bold"
           onClick={() => navigate('/personal-info')}
         >
-          2023년 세금 보고 시작하기
+          2025년 세금 보고 시작하기
         </Button>
       </section>
 
@@ -168,7 +168,7 @@ const Home: React.FC = () => {
           <CardHeader>
             <CardTitle className="text-2xl font-heading text-primary-dark">세금 신고 준비가 되셨나요?</CardTitle>
             <CardDescription>
-              30분 만에 2023년 세금 신고를 완료하세요.
+              30분 만에 2025년 세금 신고를 완료하세요.
             </CardDescription>
           </CardHeader>
           <CardContent>

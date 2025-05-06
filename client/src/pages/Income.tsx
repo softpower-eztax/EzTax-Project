@@ -413,7 +413,11 @@ const IncomePage: React.FC = () => {
                       />
                     </div>
                     
-                    <div className="space-y-4 mt-4">
+                    <div className="mt-6 mb-6">
+                      <h3 className="text-lg font-semibold mb-4">기타 소득 (Unearned Income etc.)</h3>
+                    </div>
+                    
+                    <div className="space-y-4">
                       {/* 1099-INT Upload Section */}
                       <div className="border rounded-md p-3 bg-gray-50/50">
                         <div className="flex items-center gap-2">

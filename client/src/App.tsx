@@ -9,6 +9,7 @@ import Home from "@/pages/Home";
 import PersonalInfo from "@/pages/PersonalInfo";
 import IncomePage from "@/pages/Income-fixed";
 import AdditionalIncomePage from "@/pages/AdditionalIncome";
+import AdditionalAdjustmentsPage from "@/pages/AdditionalAdjustments";
 import Deductions from "@/pages/Deductions";
 import TaxCredits from "@/pages/TaxCredits-new";
 import AdditionalTax from "@/pages/AdditionalTax";
@@ -27,6 +28,7 @@ function Router() {
       <ProtectedRoute path="/personal-info" component={PersonalInfo} />
       <ProtectedRoute path="/income" component={IncomePage} />
       <ProtectedRoute path="/additional-income" component={AdditionalIncomePage} />
+      <ProtectedRoute path="/additional-adjustments" component={AdditionalAdjustmentsPage} />
       <ProtectedRoute path="/deductions" component={Deductions} />
       <ProtectedRoute path="/tax-credits" component={TaxCredits} />
       <ProtectedRoute path="/additional-tax" component={AdditionalTax} />

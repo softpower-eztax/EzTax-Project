@@ -466,17 +466,29 @@ export default function IncomePage() {
                                 <span className="tooltip-text">Moving expenses, self-employment tax, etc.</span>
                               </div>
                             </div>
-                            <FormControl>
-                              <Input
-                                type="number"
-                                step="0.01"
-                                min="0"
-                                {...field}
-                                onChange={(e) => {
-                                  field.onChange(parseFloat(e.target.value) || 0);
-                                }}
-                              />
-                            </FormControl>
+                            <div className="flex gap-2">
+                              <FormControl className="flex-grow">
+                                <Input
+                                  type="number"
+                                  step="0.01"
+                                  min="0"
+                                  {...field}
+                                  onChange={(e) => {
+                                    field.onChange(parseFloat(e.target.value) || 0);
+                                  }}
+                                />
+                              </FormControl>
+                              <Button
+                                type="button"
+                                variant="outline"
+                                size="sm"
+                                onClick={() => navigate('/additional-adjustments')}
+                                className="whitespace-nowrap"
+                              >
+                                <Plus className="h-4 w-4 mr-1" />
+                                기타조정
+                              </Button>
+                            </div>
                             <FormMessage />
                           </FormItem>
                         )}

@@ -9,7 +9,7 @@ import Home from "@/pages/Home";
 import PersonalInfo from "@/pages/PersonalInfo";
 import IncomePage from "@/pages/Income-fixed";
 import Deductions from "@/pages/Deductions";
-import TaxCredits from "@/pages/TaxCredits";
+import TaxCredits from "@/pages/TaxCredits-new";
 import AdditionalTax from "@/pages/AdditionalTax";
 import Review from "@/pages/Review";
 import NotFound from "@/pages/not-found";

@@ -64,8 +64,8 @@ const AdditionalTaxPage: React.FC = () => {
   return (
     <div className="max-w-5xl mx-auto">
       <div className="mb-8">
-        <h1 className="text-3xl font-heading font-bold text-primary-dark mb-2">Your 2023 Tax Return</h1>
-        <p className="text-gray-dark">Complete all sections to prepare your tax return. Your information is saved as you go.</p>
+        <h1 className="text-3xl font-heading font-bold text-primary-dark mb-2">귀하의 2025년 세금 신고서</h1>
+        <p className="text-gray-dark">세금 신고서를 준비하기 위해 모든 섹션을 작성하세요. 입력한 정보는 자동으로 저장됩니다.</p>
       </div>
 
       <ProgressTracker currentStep={5} />
@@ -74,7 +74,7 @@ const AdditionalTaxPage: React.FC = () => {
         <div className="flex-grow">
           <Card className="mb-6">
             <CardContent className="pt-6">
-              <h2 className="text-2xl font-heading font-semibold text-primary-dark mb-6">Additional Tax</h2>
+              <h2 className="text-2xl font-heading font-semibold text-primary-dark mb-6">추가 세금 (Additional Tax)</h2>
               
               <Form {...form}>
                 <form>

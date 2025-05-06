@@ -37,6 +37,7 @@ interface TaxContextState {
   recalculateTaxes: () => void;
   resetTaxReturn: () => void;
   isLoading: boolean;
+  formErrors?: Record<string, string[]>;
 }
 
 // Create the context with initial default values
@@ -279,6 +280,9 @@ export const TaxProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     });
   };
 
+  // 폼 오류 상태 (필요한 경우 여기에 추가)
+  const [formErrors, setFormErrors] = useState<Record<string, string[]>>({});
+
   return (
     <TaxContext.Provider value={{ 
       taxData, 
@@ -286,7 +290,8 @@ export const TaxProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       saveTaxReturn, 
       recalculateTaxes, 
       resetTaxReturn,
-      isLoading 
+      isLoading,
+      formErrors
     }}>
       {children}
     </TaxContext.Provider>

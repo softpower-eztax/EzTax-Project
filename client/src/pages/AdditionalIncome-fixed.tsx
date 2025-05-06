@@ -30,15 +30,21 @@ export default function AdditionalIncomeFixedPage() {
   const { taxData, updateTaxData } = useTaxContext();
   const { toast } = useToast();
   
-  // 상태 정의
-  const [itemsList, setItemsList] = useState<AdditionalIncomeItem[]>(
-    taxData.income?.additionalIncomeItems || []
-  );
+  // 상태 정의 - 초기화 시에는 빈 배열로 설정하고, useEffect에서 데이터 로딩
+  const [itemsList, setItemsList] = useState<AdditionalIncomeItem[]>([]);
   
   // 새 항목 입력 필드용 상태
   const [itemType, setItemType] = useState<string>('');
   const [itemAmount, setItemAmount] = useState<string>('');
   const [itemDescription, setItemDescription] = useState<string>('');
+  
+  // 컴포넌트 마운트 시 기존 데이터 로드
+  useEffect(() => {
+    console.log("컴포넌트 마운트: 기존 데이터 로드", taxData.income?.additionalIncomeItems);
+    if (taxData.income?.additionalIncomeItems && taxData.income.additionalIncomeItems.length > 0) {
+      setItemsList(taxData.income.additionalIncomeItems);
+    }
+  }, []);
   
   console.log("현재 아이템 목록:", itemsList);
 
@@ -188,71 +194,73 @@ export default function AdditionalIncomeFixedPage() {
     }
   };
   
-  // 항목 목록이 변경될 때마다 자동 저장
+  // 항목 목록이 변경될 때마다 즉시 저장 (디바운스 제거)
   useEffect(() => {
-    if (itemsList.length > 0) {
-      const saveTimer = setTimeout(() => {
-        // 기존 데이터와 합치기
-        const updatedIncome = { 
-          ...(taxData.income || {
-            wages: 0,
-            otherEarnedIncome: 0,
-            interestIncome: 0,
-            dividends: 0,
-            businessIncome: 0,
-            capitalGains: 0,
-            rentalIncome: 0,
-            retirementIncome: 0,
-            unemploymentIncome: 0,
-            otherIncome: 0,
-            totalIncome: 0,
-            adjustments: {
-              studentLoanInterest: 0,
-              retirementContributions: 0,
-              healthSavingsAccount: 0,
-              otherAdjustments: 0
-            },
-            adjustedGrossIncome: 0
-          })
-        };
-        
-        // 항목 목록 및 합계 업데이트
-        updatedIncome.additionalIncomeItems = itemsList;
-        updatedIncome.otherIncome = calculateTotal();
-        
-        // 총액 재계산
-        const totalIncome = 
-          updatedIncome.wages + 
-          updatedIncome.otherEarnedIncome + 
-          updatedIncome.interestIncome + 
-          updatedIncome.dividends + 
-          updatedIncome.businessIncome + 
-          updatedIncome.capitalGains + 
-          updatedIncome.rentalIncome + 
-          updatedIncome.retirementIncome + 
-          updatedIncome.unemploymentIncome + 
-          updatedIncome.otherIncome;
-        
-        updatedIncome.totalIncome = totalIncome;
-        
-        // 조정 총소득 재계산
-        const adjustments = updatedIncome.adjustments;
-        const totalAdjustments = 
-          (adjustments.studentLoanInterest || 0) + 
-          (adjustments.retirementContributions || 0) + 
-          (adjustments.healthSavingsAccount || 0) + 
-          (adjustments.otherAdjustments || 0);
-        
-        updatedIncome.adjustedGrossIncome = totalIncome - totalAdjustments;
-        
-        // 데이터 저장
-        updateTaxData({ income: updatedIncome });
-        console.log("기타소득 항목 자동 저장됨", itemsList);
-      }, 500);
+    console.log("아이템 목록 변경 감지:", itemsList);
+  
+    try {
+      // 기존 데이터와 합치기
+      const baseIncome = taxData.income || {
+        wages: 0,
+        otherEarnedIncome: 0,
+        interestIncome: 0,
+        dividends: 0,
+        businessIncome: 0,
+        capitalGains: 0,
+        rentalIncome: 0,
+        retirementIncome: 0,
+        unemploymentIncome: 0,
+        otherIncome: 0,
+        totalIncome: 0,
+        adjustments: {
+          studentLoanInterest: 0,
+          retirementContributions: 0,
+          healthSavingsAccount: 0,
+          otherAdjustments: 0
+        },
+        adjustedGrossIncome: 0,
+        additionalIncomeItems: []
+      };
       
-      return () => clearTimeout(saveTimer);
+      // 소득 데이터 복제 (깊은 복사)
+      const updatedIncome = JSON.parse(JSON.stringify(baseIncome));
+      
+      // 항목 목록 및 합계 업데이트
+      updatedIncome.additionalIncomeItems = [...itemsList];
+      updatedIncome.otherIncome = calculateTotal();
+      
+      // 총액 재계산
+      const totalIncome = 
+        updatedIncome.wages + 
+        updatedIncome.otherEarnedIncome + 
+        updatedIncome.interestIncome + 
+        updatedIncome.dividends + 
+        updatedIncome.businessIncome + 
+        updatedIncome.capitalGains + 
+        updatedIncome.rentalIncome + 
+        updatedIncome.retirementIncome + 
+        updatedIncome.unemploymentIncome + 
+        updatedIncome.otherIncome;
+      
+      updatedIncome.totalIncome = totalIncome;
+      
+      // 조정 총소득 재계산
+      const adjustments = updatedIncome.adjustments;
+      const totalAdjustments = 
+        (adjustments.studentLoanInterest || 0) + 
+        (adjustments.retirementContributions || 0) + 
+        (adjustments.healthSavingsAccount || 0) + 
+        (adjustments.otherAdjustments || 0);
+      
+      updatedIncome.adjustedGrossIncome = totalIncome - totalAdjustments;
+      
+      // 실시간 데이터 저장
+      updateTaxData({ income: updatedIncome });
+      console.log("소득 데이터 업데이트:", updatedIncome);
+    } catch (error) {
+      console.error("소득 데이터 업데이트 중 오류:", error);
     }
-  }, [itemsList, updateTaxData, taxData.income]);
+  }, [itemsList]);
   
   return (
     <div className="max-w-5xl mx-auto p-4 md:p-6">

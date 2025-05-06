@@ -8,7 +8,7 @@ import Footer from "@/components/Footer";
 import Home from "@/pages/Home";
 import PersonalInfo from "@/pages/PersonalInfo";
 import IncomePage from "@/pages/Income-fixed";
-import AdditionalIncomePage from "@/pages/AdditionalIncome";
+import AdditionalIncomePage from "@/pages/AdditionalIncome-new";
 import AdditionalAdjustmentsPage from "@/pages/AdditionalAdjustments";
 import Deductions from "@/pages/Deductions";
 import TaxCredits from "@/pages/TaxCredits-new";

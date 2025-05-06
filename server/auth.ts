@@ -1,7 +1,7 @@
 import passport from "passport";
 import { Strategy as LocalStrategy } from "passport-local";
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
-import { Express } from "express";
+import { Express, Request, Response, NextFunction } from "express";
 import session from "express-session";
 import { scrypt, randomBytes, timingSafeEqual } from "crypto";
 import { promisify } from "util";
@@ -53,6 +53,7 @@ export function setupAuth(app: Express) {
   app.use(passport.initialize());
   app.use(passport.session());
 
+  // 로컬 인증 전략
   passport.use(
     new LocalStrategy(async (username, password, done) => {
       try {
@@ -67,6 +68,52 @@ export function setupAuth(app: Express) {
       }
     }),
   );
+  
+  // 구글 OAuth 인증 전략
+  if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
+    passport.use(
+      new GoogleStrategy(
+        {
+          clientID: process.env.GOOGLE_CLIENT_ID,
+          clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+          callbackURL: "/auth/google/callback",
+        },
+        async (accessToken, refreshToken, profile, done) => {
+          try {
+            // 구글 ID로 사용자 확인
+            let user = await storage.getUserByGoogleId(profile.id);
+            
+            // 사용자가 없으면 새로 생성
+            if (!user) {
+              // 고유한 사용자명 생성
+              const username = `google_${profile.id}`;
+              // 이메일 가져오기 (있을 경우)
+              const email = profile.emails && profile.emails[0]?.value;
+              
+              // 임의의 비밀번호 생성 (실제로 사용되지 않음)
+              const randomPass = randomBytes(16).toString("hex");
+              
+              user = await storage.createUser({
+                username,
+                password: await hashPassword(randomPass),
+                googleId: profile.id,
+                email: email || "",
+                displayName: profile.displayName || username,
+              });
+            }
+            
+            return done(null, user);
+          } catch (error) {
+            return done(error);
+          }
+        }
+      )
+    );
+    
+    console.log("구글 로그인 설정 완료");
+  } else {
+    console.log("구글 인증 정보가 없어 구글 로그인을 사용할 수 없습니다.");
+  }
 
   passport.serializeUser((user, done) => done(null, user.id));
   passport.deserializeUser(async (id: number, done) => {
@@ -118,6 +165,21 @@ export function setupAuth(app: Express) {
       res.sendStatus(200);
     });
   });
+
+  // 구글 인증 라우트
+  app.get(
+    "/auth/google",
+    passport.authenticate("google", { scope: ["profile", "email"] })
+  );
+
+  app.get(
+    "/auth/google/callback",
+    passport.authenticate("google", { failureRedirect: "/auth" }),
+    (req, res) => {
+      // 인증 성공 시 홈페이지로 리다이렉트
+      res.redirect("/");
+    }
+  );
 
   app.get("/api/user", (req, res) => {
     if (!req.isAuthenticated()) return res.sendStatus(401);

@@ -62,15 +62,15 @@ const TaxSummary: React.FC<TaxSummaryProps> = ({ recalculate }) => {
           
           <div className="mb-4 border-b border-gray-light pb-4">
             <div className="flex justify-between mb-2">
-              <p className="text-sm">Income</p>
+              <p className="text-sm">수입</p>
               <p className="font-semibold">{formatCurrency(results.totalIncome)}</p>
             </div>
             <div className="flex justify-between mb-2">
-              <p className="text-sm">Adjustments</p>
+              <p className="text-sm">수입조정</p>
               <p className="font-semibold text-destructive">- {formatCurrency(results.adjustments)}</p>
             </div>
             <div className="flex justify-between">
-              <p className="text-sm">Adjusted Gross Income</p>
+              <p className="text-sm">AGM</p>
               <p className="font-semibold">{formatCurrency(results.adjustedGrossIncome)}</p>
             </div>
           </div>

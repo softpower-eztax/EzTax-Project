@@ -86,7 +86,7 @@ export function setupAuth(app: Express) {
         {
           clientID: clientID,
           clientSecret: clientSecret,
-          callbackURL: "https://" + (process.env.REPLIT_DEV_DOMAIN || "localhost:5000") + "/auth/google/callback",
+          callbackURL: "https://3e18f96e-0fbf-4af6-b766-cfbae9f2437b-00-17nnd6cbvtwuy.janeway.replit.dev/auth/google/callback",
           proxy: true
         },
         async (accessToken, refreshToken, profile, done) => {
@@ -158,7 +158,7 @@ export function setupAuth(app: Express) {
   });
 
   app.post("/api/login", (req, res, next) => {
-    passport.authenticate("local", (err, user, info) => {
+    passport.authenticate("local", (err: Error | null, user: User | false, info: { message: string }) => {
       if (err) return next(err);
       if (!user) {
         return res.status(401).json({ message: "아이디나 비밀번호가 올바르지 않습니다(Invalid username or password)" });

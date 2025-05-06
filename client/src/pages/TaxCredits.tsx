@@ -1,7 +1,7 @@
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { taxCreditsSchema, type TaxCredits } from '@shared/schema';
+import { z } from 'zod';
 import { Card, CardContent } from '@/components/ui/card';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
@@ -19,6 +19,16 @@ const TaxCreditsPage: React.FC = () => {
   const { taxData, updateTaxData } = useTaxContext();
   const { toast } = useToast();
   
+  // Define TaxCredits interface
+  interface TaxCredits {
+    childTaxCredit: number;
+    childDependentCareCredit: number;
+    educationCredits: number;
+    retirementSavingsCredit: number;
+    otherCredits: number;
+    totalCredits: number;
+  }
+  
   const defaultValues: TaxCredits = {
     childTaxCredit: 0,
     childDependentCareCredit: 0,
@@ -26,13 +36,23 @@ const TaxCreditsPage: React.FC = () => {
     retirementSavingsCredit: 0,
     otherCredits: 0,
     totalCredits: 0,
-    ...taxData.taxCredits
+    ...(taxData.taxCredits || {})
   };
 
+  // 로컬 스키마 정의 (모든 필드를 선택사항으로 만들고 기본값 0으로 설정)
+  const localTaxCreditsSchema = z.object({
+    childTaxCredit: z.number().default(0),
+    childDependentCareCredit: z.number().default(0),
+    educationCredits: z.number().default(0),
+    retirementSavingsCredit: z.number().default(0),
+    otherCredits: z.number().default(0),
+    totalCredits: z.number().default(0)
+  });
+
   const form = useForm<TaxCredits>({
-    resolver: zodResolver(taxCreditsSchema),
+    resolver: zodResolver(localTaxCreditsSchema),
     defaultValues,
-    mode: 'onChange'
+    mode: 'onBlur'
   });
   
   // Make sure the form is always valid since all fields default to 0

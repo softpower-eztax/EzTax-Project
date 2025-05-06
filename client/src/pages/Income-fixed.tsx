@@ -159,9 +159,6 @@ export default function IncomePage() {
       Number(form.watch('retirementIncome') || 0) +
       Number(form.watch('unemploymentIncome') || 0);
     
-    // 기타소득 (사용자 입력값)
-    const userOtherIncome = Number(form.watch('otherIncome') || 0);
-    
     // 추가 소득 항목 계산 (AdditionalIncome 페이지에서 추가된 항목들)
     let additionalItemsTotal = 0;
     if (additionalIncomeItems.length > 0) {
@@ -171,8 +168,13 @@ export default function IncomePage() {
       });
     }
     
-    // 최종 총소득 계산 (사용자가 입력한 기타소득도 포함)
-    const totalIncome = basicIncomeTotal + userOtherIncome + additionalItemsTotal;
+    // 기타소득 (사용자 입력값 또는 additionalItemsTotal)
+    // 소득 페이지에서 직접 입력한 기타소득과 추가 소득 항목 중 큰 값 사용
+    const userOtherIncome = Number(form.watch('otherIncome') || 0);
+    
+    // 최종 총소득 계산
+    // 기본소득 + 기타소득(사용자 입력값과 추가항목 중 큰 값 사용)
+    const totalIncome = basicIncomeTotal + Math.max(userOtherIncome, additionalItemsTotal);
     
     console.log("계산 세부사항:", {
       기본소득합계: basicIncomeTotal,

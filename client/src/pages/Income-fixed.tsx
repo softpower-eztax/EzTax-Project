@@ -804,7 +804,10 @@ export default function IncomePage() {
                     </Button>
                   </DialogTrigger>
                   <DialogContent className="sm:max-w-[500px]">
-
+                    <DialogHeader>
+                      <DialogTitle className="sr-only">계산 결과</DialogTitle>
+                      <DialogDescription className="sr-only">소득 및 조정금액 계산 결과</DialogDescription>
+                    </DialogHeader>
                     
                     {/* 간소화된 소득 요약 */}
                     <div className="p-4 space-y-4 border rounded-lg">

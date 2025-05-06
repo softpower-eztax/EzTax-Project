@@ -57,6 +57,9 @@ const Deductions: React.FC = () => {
     // Calculate total deductions
     if (watchDeductionType) {
       form.setValue('totalDeductions', standardDeductionAmount);
+      
+      // Clear validation errors for itemized deduction fields when standard deduction is selected
+      form.clearErrors('itemizedDeductions');
     } else {
       const itemized = form.getValues('itemizedDeductions');
       if (itemized) {
@@ -144,7 +147,7 @@ const Deductions: React.FC = () => {
               <h2 className="text-2xl font-heading font-semibold text-primary-dark mb-6">공제 (Deductions)</h2>
               
               <Form {...form}>
-                <form>
+                <form onSubmit={form.handleSubmit(onSubmit)}>
                   <div className="mb-8">
                     <h3 className="text-lg font-heading font-semibold mb-4">공제방법선택 (Choose Your Deduction Method)</h3>
                     

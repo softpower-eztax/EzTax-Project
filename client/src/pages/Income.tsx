@@ -195,6 +195,70 @@ const IncomePage: React.FC = () => {
 
   return (
     <div className="max-w-5xl mx-auto">
+      <Dialog open={showAdditionalIncomeDialog} onOpenChange={setShowAdditionalIncomeDialog}>
+        <DialogContent className="sm:max-w-[500px]">
+          <DialogHeader>
+            <DialogTitle>추가 소득 항목 입력 (Add Additional Income)</DialogTitle>
+            <DialogDescription>
+              추가 소득 유형을 선택하고 금액을 입력하세요.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div className="grid gap-2">
+              <label htmlFor="income-type" className="text-sm font-medium">
+                소득 유형 (Income Type)
+              </label>
+              <Select 
+                value={selectedIncomeType} 
+                onValueChange={setSelectedIncomeType}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="소득 유형을 선택하세요" />
+                </SelectTrigger>
+                <SelectContent>
+                  {additionalIncomeTypes.map((type, index) => (
+                    <SelectItem key={index} value={type}>
+                      {type}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="grid gap-2">
+              <label htmlFor="amount" className="text-sm font-medium">
+                금액 (Amount)
+              </label>
+              <Input
+                id="amount"
+                type="number"
+                step="0.01"
+                min="0"
+                value={additionalIncomeAmount || ''}
+                onChange={(e) => setAdditionalIncomeAmount(parseFloat(e.target.value) || 0)}
+              />
+            </div>
+            <div className="grid gap-2">
+              <label htmlFor="description" className="text-sm font-medium">
+                설명 (Description - Optional)
+              </label>
+              <Input
+                id="description"
+                value={additionalIncomeDescription}
+                onChange={(e) => setAdditionalIncomeDescription(e.target.value)}
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowAdditionalIncomeDialog(false)}>
+              취소 (Cancel)
+            </Button>
+            <Button onClick={handleAddAdditionalIncome}>
+              추가 (Add)
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      
       <div className="mb-8">
         <h1 className="text-3xl font-heading font-bold text-primary-dark mb-2">2023년 세금 신고</h1>
         <p className="text-gray-dark">세금 신고를 준비하기 위해 모든 섹션을 작성하세요. 정보는 입력하는 대로 저장됩니다.</p>

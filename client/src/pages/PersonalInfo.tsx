@@ -296,7 +296,7 @@ const PersonalInfo: React.FC = () => {
                             name="spouseInfo.ssn"
                             render={({ field }) => (
                               <FormItem>
-                                <FormLabel>배우자 주민등록번호(SSN)</FormLabel>
+                                <FormLabel>배우자 사회보장번호(SSN)</FormLabel>
                                 <FormControl>
                                   <Input 
                                     {...field} 

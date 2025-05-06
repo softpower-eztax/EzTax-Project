@@ -187,8 +187,8 @@ export default function IncomePage() {
       });
     }
     
-    // 기타소득은 사용자 직접 입력값만 사용 - additionalIncomeItems는 내역 표시용
-    const totalOtherIncome = userOtherIncome;
+    // 기타소득은 사용자 직접 입력값 + 추가 소득 항목의 합계
+    const totalOtherIncome = userOtherIncome + additionalItemsTotal;
     
     // 최종 총소득 계산 (근로소득 + 비근로소득 + 기타소득)
     const totalIncome = earnedIncomeTotal + unearnedIncomeTotal + totalOtherIncome;
@@ -293,8 +293,8 @@ export default function IncomePage() {
         sum + Number(item.amount || 0), 0);
     }
     
-    // 기타소득은 사용자 직접 입력값만 사용 - additionalIncomeItems는 내역 표시용
-    const totalOtherIncome = userOtherIncome;
+    // 기타소득은 사용자 직접 입력값 + 추가 소득 항목의 합계
+    const totalOtherIncome = userOtherIncome + additionalItemsTotal;
     const totalIncome = earnedIncomeTotal + unearnedIncomeTotal + totalOtherIncome;
     
     const studentLoanInterest = Number(form.watch('adjustments.studentLoanInterest') || 0);

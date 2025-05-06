@@ -17,12 +17,12 @@ const ProgressTracker: React.FC<ProgressTrackerProps> = ({ currentStep }) => {
   const [, navigate] = useLocation();
 
   const steps: Step[] = [
-    { id: 1, name: 'Personal Info', path: '/personal-info', completed: currentStep > 1 },
-    { id: 2, name: 'Income', path: '/income', completed: currentStep > 2 },
-    { id: 3, name: 'Deductions', path: '/deductions', completed: currentStep > 3 },
-    { id: 4, name: 'Tax Credits', path: '/tax-credits', completed: currentStep > 4 },
-    { id: 5, name: 'Additional Tax', path: '/additional-tax', completed: currentStep > 5 },
-    { id: 6, name: 'Review', path: '/review', completed: currentStep > 6 },
+    { id: 1, name: '개인 정보', path: '/personal-info', completed: currentStep > 1 },
+    { id: 2, name: '소득', path: '/income', completed: currentStep > 2 },
+    { id: 3, name: '공제 항목', path: '/deductions', completed: currentStep > 3 },
+    { id: 4, name: '세액 공제', path: '/tax-credits', completed: currentStep > 4 },
+    { id: 5, name: '추가 세금', path: '/additional-tax', completed: currentStep > 5 },
+    { id: 6, name: '검토', path: '/review', completed: currentStep > 6 },
   ];
 
   const handleStepClick = (step: Step) => {

@@ -95,8 +95,8 @@ const PersonalInfo: React.FC = () => {
   return (
     <div className="max-w-5xl mx-auto">
       <div className="mb-8">
-        <h1 className="text-3xl font-heading font-bold text-primary-dark mb-2">Your 2023 Tax Return</h1>
-        <p className="text-gray-dark">Complete all sections to prepare your tax return. Your information is saved as you go.</p>
+        <h1 className="text-3xl font-heading font-bold text-primary-dark mb-2">2023년 세금 신고</h1>
+        <p className="text-gray-dark">세금 신고를 준비하기 위해 모든 섹션을 작성하세요. 정보는 입력하는 대로 저장됩니다.</p>
       </div>
 
       <ProgressTracker currentStep={1} />
@@ -105,13 +105,13 @@ const PersonalInfo: React.FC = () => {
         <div className="flex-grow">
           <Card className="mb-6">
             <CardContent className="pt-6">
-              <h2 className="text-2xl font-heading font-semibold text-primary-dark mb-6">Personal Information</h2>
+              <h2 className="text-2xl font-heading font-semibold text-primary-dark mb-6">개인 정보</h2>
               
               <Form {...form}>
                 <form>
                   {/* Basic Information */}
                   <div className="mb-6">
-                    <h3 className="text-lg font-heading font-semibold mb-4">Basic Information</h3>
+                    <h3 className="text-lg font-heading font-semibold mb-4">기본 정보</h3>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                       <FormField
                         control={form.control}
@@ -250,7 +250,7 @@ const PersonalInfo: React.FC = () => {
                   
                   {/* Contact Information */}
                   <div className="mb-6">
-                    <h3 className="text-lg font-heading font-semibold mb-4">Contact Information</h3>
+                    <h3 className="text-lg font-heading font-semibold mb-4">연락처 정보</h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <FormField
                         control={form.control}
@@ -297,7 +297,7 @@ const PersonalInfo: React.FC = () => {
                   
                   {/* Address */}
                   <div className="mb-6">
-                    <h3 className="text-lg font-heading font-semibold mb-4">Home Address</h3>
+                    <h3 className="text-lg font-heading font-semibold mb-4">집 주소</h3>
                     
                     <FormField
                       control={form.control}
@@ -377,7 +377,7 @@ const PersonalInfo: React.FC = () => {
                   {/* Dependents */}
                   <div className="mb-6">
                     <div className="flex justify-between items-center mb-4">
-                      <h3 className="text-lg font-heading font-semibold">Dependents</h3>
+                      <h3 className="text-lg font-heading font-semibold">부양가족</h3>
                       <Button 
                         type="button" 
                         variant="outline"
@@ -386,12 +386,12 @@ const PersonalInfo: React.FC = () => {
                         className="flex items-center"
                       >
                         <PlusCircle className="mr-1 h-4 w-4" />
-                        Add Dependent
+                        부양가족 추가
                       </Button>
                     </div>
                     
                     {fields.length === 0 ? (
-                      <p className="text-gray-dark italic mb-4">No dependents added. Click "Add Dependent" to add someone.</p>
+                      <p className="text-gray-dark italic mb-4">추가된 부양가족이 없습니다. "부양가족 추가" 버튼을 클릭하여 추가하세요.</p>
                     ) : (
                       fields.map((field, index) => (
                         <div key={field.id} className="border border-gray-medium rounded-md p-4 mb-4">

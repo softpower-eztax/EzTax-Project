@@ -460,19 +460,7 @@ export default function IncomePage() {
                   </div>
                     
                   <div className="mt-8">
-                    <div className="flex justify-between items-center mb-4">
-                      <h3 className="text-lg font-semibold">소득조정 (Adjustments to Income)</h3>
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="sm"
-                        onClick={() => navigate('/additional-adjustments')}
-                        className="text-sm flex items-center"
-                      >
-                        <Plus className="h-4 w-4 mr-1" />
-                        기타조정
-                      </Button>
-                    </div>
+                    <h3 className="text-lg font-semibold mb-4">소득조정 (Adjustments to Income)</h3>
                     <p className="text-sm text-gray-dark mb-4">
                       소득에서 차감되는 항목을 입력하세요. 이 금액은 과세 대상 소득을 줄입니다.
                     </p>
@@ -563,7 +551,18 @@ export default function IncomePage() {
                         )}
                       />
                       
-
+                      <div className="flex items-center md:col-span-2 mt-2">
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={() => navigate('/additional-adjustments')}
+                          className="flex items-center"
+                        >
+                          <Plus className="h-4 w-4 mr-1" />
+                          기타조정
+                        </Button>
+                      </div>
                       
                       <FormField
                         control={form.control}

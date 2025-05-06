@@ -1,15 +1,17 @@
 import React from 'react';
 import Logo from './Logo';
 import { useToast } from "@/hooks/use-toast";
-import { HelpCircle, Save } from 'lucide-react';
+import { HelpCircle, Save, LogIn, LogOut, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useLocation } from 'wouter';
 import { useTaxContext } from '@/context/TaxContext';
+import { useAuth } from '@/hooks/use-auth';
 
 const Header: React.FC = () => {
   const { toast } = useToast();
-  const [location] = useLocation();
+  const [location, navigate] = useLocation();
   const { saveTaxReturn } = useTaxContext();
+  const { user, logoutMutation } = useAuth();
 
   const handleSaveProgress = async () => {
     try {
@@ -28,40 +30,81 @@ const Header: React.FC = () => {
   };
 
   // Only show buttons on tax form pages
-  const showButtons = location !== '/' && location !== '/not-found';
+  const showButtons = location !== '/' && location !== '/not-found' && location !== '/auth';
+
+  const handleLogout = () => {
+    logoutMutation.mutate();
+    navigate('/');
+  };
+
+  const handleLogin = () => {
+    navigate('/auth');
+  };
 
   return (
     <header className="bg-white shadow-sm">
       <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-        <Logo />
+        <div className="cursor-pointer" onClick={() => navigate('/')}>
+          <Logo />
+        </div>
         
-        {showButtons && (
-          <div className="flex items-center space-x-4">
+        <div className="flex items-center space-x-4">
+          {showButtons && (
+            <>
+              <Button 
+                variant="outline" 
+                size="sm"
+                className="text-primary-dark hover:text-primary flex items-center text-sm"
+                onClick={handleSaveProgress}
+              >
+                <Save className="h-4 w-4 mr-1" />
+                진행 상황 저장
+              </Button>
+              <Button 
+                variant="outline" 
+                size="sm"
+                className="text-primary-dark hover:text-primary flex items-center text-sm"
+                onClick={() => {
+                  toast({
+                    title: "도움말 및 지원",
+                    description: "지원 팀은 월요일부터 금요일까지 오전 9시부터 오후 5시(동부 시간)까지 support@eztax.com에서 이용 가능합니다.",
+                  });
+                }}
+              >
+                <HelpCircle className="h-4 w-4 mr-1" />
+                도움말
+              </Button>
+            </>
+          )}
+          
+          {user ? (
+            <div className="flex items-center gap-2">
+              <div className="hidden md:flex items-center text-sm font-medium">
+                <User className="h-4 w-4 mr-1" />
+                {user.username}
+              </div>
+              <Button 
+                variant="outline" 
+                size="sm"
+                className="text-primary-dark hover:text-primary flex items-center text-sm"
+                onClick={handleLogout}
+              >
+                <LogOut className="h-4 w-4 mr-1" />
+                <span>로그아웃(Logout)</span>
+              </Button>
+            </div>
+          ) : (
             <Button 
               variant="outline" 
               size="sm"
               className="text-primary-dark hover:text-primary flex items-center text-sm"
-              onClick={handleSaveProgress}
+              onClick={handleLogin}
             >
-              <Save className="h-4 w-4 mr-1" />
-              진행 상황 저장
+              <LogIn className="h-4 w-4 mr-1" />
+              <span>로그인(Login)</span>
             </Button>
-            <Button 
-              variant="outline" 
-              size="sm"
-              className="text-primary-dark hover:text-primary flex items-center text-sm"
-              onClick={() => {
-                toast({
-                  title: "도움말 및 지원",
-                  description: "지원 팀은 월요일부터 금요일까지 오전 9시부터 오후 5시(동부 시간)까지 support@eztax.com에서 이용 가능합니다.",
-                });
-              }}
-            >
-              <HelpCircle className="h-4 w-4 mr-1" />
-              도움말
-            </Button>
-          </div>
-        )}
+          )}
+        </div>
       </div>
     </header>
   );

@@ -13,17 +13,21 @@ import TaxCredits from "@/pages/TaxCredits-new";
 import AdditionalTax from "@/pages/AdditionalTax";
 import Review from "@/pages/Review";
 import NotFound from "@/pages/not-found";
+import AuthPage from "@/pages/auth-page";
+import { AuthProvider } from "@/hooks/use-auth";
+import { ProtectedRoute } from "@/lib/protected-route";
 
 function Router() {
   return (
     <Switch>
       <Route path="/" component={Home} />
-      <Route path="/personal-info" component={PersonalInfo} />
-      <Route path="/income" component={IncomePage} />
-      <Route path="/deductions" component={Deductions} />
-      <Route path="/tax-credits" component={TaxCredits} />
-      <Route path="/additional-tax" component={AdditionalTax} />
-      <Route path="/review" component={Review} />
+      <Route path="/auth" component={AuthPage} />
+      <ProtectedRoute path="/personal-info" component={PersonalInfo} />
+      <ProtectedRoute path="/income" component={IncomePage} />
+      <ProtectedRoute path="/deductions" component={Deductions} />
+      <ProtectedRoute path="/tax-credits" component={TaxCredits} />
+      <ProtectedRoute path="/additional-tax" component={AdditionalTax} />
+      <ProtectedRoute path="/review" component={Review} />
       <Route component={NotFound} />
     </Switch>
   );
@@ -32,16 +36,18 @@ function Router() {
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <div className="flex flex-col min-h-screen">
-          <Header />
-          <main className="container mx-auto px-4 py-8 flex-grow">
-            <Router />
-          </main>
-          <Footer />
-        </div>
-        <Toaster />
-      </TooltipProvider>
+      <AuthProvider>
+        <TooltipProvider>
+          <div className="flex flex-col min-h-screen">
+            <Header />
+            <main className="container mx-auto px-4 py-8 flex-grow">
+              <Router />
+            </main>
+            <Footer />
+          </div>
+          <Toaster />
+        </TooltipProvider>
+      </AuthProvider>
     </QueryClientProvider>
   );
 }

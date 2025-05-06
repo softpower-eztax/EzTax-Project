@@ -4,10 +4,12 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { File, FileText, Clock, Shield } from 'lucide-react';
 import { useTaxContext } from '@/context/TaxContext';
+import { useAuth } from '@/hooks/use-auth';
 
 const Home: React.FC = () => {
   const [, navigate] = useLocation();
   const { updateTaxData } = useTaxContext();
+  const { user } = useAuth();
   
   // Initialize with test data when the home page loads
   useEffect(() => {
@@ -106,13 +108,33 @@ const Home: React.FC = () => {
         <p className="text-xl text-gray-dark max-w-3xl mx-auto mb-8">
           EzTax로 간단한 과정을 통해 자신감 있게 세금 보고를 완료하세요.
         </p>
-        <Button 
-          size="lg" 
-          className="bg-primary hover:bg-primary-dark text-white font-bold"
-          onClick={() => navigate('/personal-info')}
-        >
-          2025년 세금 보고 시작하기
-        </Button>
+        {user ? (
+          <Button 
+            size="lg" 
+            className="bg-primary hover:bg-primary-dark text-white font-bold"
+            onClick={() => navigate('/personal-info')}
+          >
+            2025년 세금 보고 시작하기
+          </Button>
+        ) : (
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Button 
+              size="lg" 
+              className="bg-primary hover:bg-primary-dark text-white font-bold"
+              onClick={() => navigate('/auth')}
+            >
+              로그인하고 시작하기(Login and Start)
+            </Button>
+            <Button 
+              size="lg" 
+              variant="outline"
+              className="border-primary text-primary hover:bg-primary/10"
+              onClick={() => navigate('/auth')}
+            >
+              계정 만들기(Create Account)
+            </Button>
+          </div>
+        )}
       </section>
 
       <section className="mb-12">

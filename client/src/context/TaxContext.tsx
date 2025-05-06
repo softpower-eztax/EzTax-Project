@@ -59,13 +59,91 @@ export const TaxProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
   
-  // Initialize tax data with default values
+  // Initialize tax data with test values for demonstration
   const [taxData, setTaxData] = useState<TaxData>({
     taxYear: new Date().getFullYear() - 1, // Default to previous year
     status: 'in_progress',
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
-    // Initialize an empty structure for calculated results
+    personalInfo: {
+      firstName: 'John',
+      middleInitial: 'A',
+      lastName: 'Smith',
+      ssn: '123-45-6789',
+      dateOfBirth: '1980-01-15',
+      email: 'john.smith@example.com',
+      phone: '123-456-7890',
+      address1: '123 Main Street',
+      address2: 'Apt 4B',
+      city: 'Springfield',
+      state: 'IL',
+      zipCode: '62704',
+      filingStatus: 'married_joint',
+      spouseInfo: {
+        firstName: 'Jane',
+        middleInitial: 'B',
+        lastName: 'Smith',
+        ssn: '987-65-4321',
+        dateOfBirth: '1982-05-20'
+      },
+      dependents: [
+        {
+          firstName: 'Tommy',
+          lastName: 'Smith',
+          ssn: '111-22-3333',
+          relationship: 'Son',
+          dateOfBirth: '2010-03-12'
+        }
+      ]
+    },
+    income: {
+      wages: 75000,
+      interestIncome: 1200,
+      dividends: 3500,
+      businessIncome: 15000,
+      capitalGains: 5000,
+      rentalIncome: 12000,
+      retirementIncome: 0,
+      unemploymentIncome: 0,
+      otherIncome: 1500,
+      totalIncome: 113200,
+      adjustments: {
+        studentLoanInterest: 2500,
+        retirementContributions: 6000,
+        healthSavingsAccount: 3500,
+        otherAdjustments: 1000
+      },
+      adjustedGrossIncome: 100200
+    },
+    deductions: {
+      useStandardDeduction: false,
+      standardDeductionAmount: 27700,
+      itemizedDeductions: {
+        medicalExpenses: 5000,
+        stateLocalIncomeTax: 7500,
+        realEstateTaxes: 8000,
+        mortgageInterest: 9500,
+        charitableCash: 3000,
+        charitableNonCash: 2000
+      },
+      totalDeductions: 35000
+    },
+    taxCredits: {
+      childTaxCredit: 2000,
+      childDependentCareCredit: 1000,
+      educationCredits: 1500,
+      retirementSavingsCredit: 500,
+      otherCredits: 200,
+      totalCredits: 5200
+    },
+    additionalTax: {
+      selfEmploymentIncome: 15000,
+      selfEmploymentTax: 2120,
+      estimatedTaxPayments: 5000,
+      otherIncome: 1500,
+      otherTaxes: 800
+    },
+    // Initialize with empty calculated results that will be updated
     calculatedResults: {
       totalIncome: 0,
       adjustments: 0,

@@ -123,13 +123,57 @@ export function calculateTaxes(taxData: TaxData): CalculatedResults {
   const filingStatus: FilingStatus = taxData.personalInfo?.filingStatus || 'single';
   
   // Calculate total income
-  const selfEmploymentIncome = taxData.additionalTax?.selfEmploymentIncome || 0;
-  const otherIncome = taxData.additionalTax?.otherIncome || 0;
-  result.totalIncome = 60000 + selfEmploymentIncome + otherIncome; // Assume $60,000 base income
+  const income = taxData.income || {
+    wages: 0,
+    interestIncome: 0,
+    dividends: 0,
+    businessIncome: 0,
+    capitalGains: 0,
+    rentalIncome: 0,
+    retirementIncome: 0,
+    unemploymentIncome: 0,
+    otherIncome: 0,
+    totalIncome: 0,
+  };
   
-  // Calculate adjustments (half of self-employment tax)
+  const selfEmploymentIncome = taxData.additionalTax?.selfEmploymentIncome || 0;
+  const additionalOtherIncome = taxData.additionalTax?.otherIncome || 0;
+  
+  // Calculate total income from all sources
+  result.totalIncome = (
+    income.wages +
+    income.interestIncome +
+    income.dividends +
+    income.businessIncome +
+    income.capitalGains +
+    income.rentalIncome + 
+    income.retirementIncome +
+    income.unemploymentIncome +
+    income.otherIncome +
+    selfEmploymentIncome +
+    additionalOtherIncome
+  );
+  
+  // Calculate adjustments (both from income section and half of self-employment tax)
   const selfEmploymentTax = taxData.additionalTax?.selfEmploymentTax || 0;
-  result.adjustments = Math.round((selfEmploymentTax / 2) * 100) / 100;
+  const halfSETax = Math.round((selfEmploymentTax / 2) * 100) / 100;
+  
+  // Get adjustments from income section if available
+  const incomeAdjustments = income.adjustments || {
+    studentLoanInterest: 0,
+    retirementContributions: 0,
+    healthSavingsAccount: 0,
+    otherAdjustments: 0
+  };
+  
+  // Sum all adjustments
+  result.adjustments = (
+    incomeAdjustments.studentLoanInterest +
+    incomeAdjustments.retirementContributions +
+    incomeAdjustments.healthSavingsAccount +
+    incomeAdjustments.otherAdjustments +
+    halfSETax
+  );
   
   // Calculate adjusted gross income (AGI)
   result.adjustedGrossIncome = result.totalIncome - result.adjustments;

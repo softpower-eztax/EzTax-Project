@@ -147,72 +147,75 @@ export default function IncomePage() {
   
   // 지정된 필드 값이 변경될 때마다 자동 계산 및 저장
   useEffect(() => {
-    const formValues = form.getValues();
-    const wages = formValues.wages || 0;
-    const otherEarnedIncome = formValues.otherEarnedIncome || 0;
-    const interestIncome = formValues.interestIncome || 0;
-    const dividends = formValues.dividends || 0;
-    const businessIncome = formValues.businessIncome || 0;
-    const capitalGains = formValues.capitalGains || 0;
-    const rentalIncome = formValues.rentalIncome || 0;
-    const retirementIncome = formValues.retirementIncome || 0;
-    const unemploymentIncome = formValues.unemploymentIncome || 0;
-    const otherIncome = formValues.otherIncome || 0;
+    // 기본 소득 항목 계산
+    const basicIncomeTotal = 
+      Number(form.watch('wages') || 0) +
+      Number(form.watch('otherEarnedIncome') || 0) +
+      Number(form.watch('interestIncome') || 0) +
+      Number(form.watch('dividends') || 0) +
+      Number(form.watch('businessIncome') || 0) +
+      Number(form.watch('capitalGains') || 0) +
+      Number(form.watch('rentalIncome') || 0) +
+      Number(form.watch('retirementIncome') || 0) +
+      Number(form.watch('unemploymentIncome') || 0);
     
-    // 추가 소득 항목이 있으면 포함
-    const additionalItemsTotal = additionalIncomeItems.reduce((sum, item) => {
-      console.log("더하는 추가 소득 항목:", item.type, item.amount);
-      return sum + (parseFloat(item.amount.toString()) || 0);
-    }, 0);
+    // 기타소득 (사용자 입력값)
+    const userOtherIncome = Number(form.watch('otherIncome') || 0);
     
-    console.log("추가 소득 항목 총액:", additionalItemsTotal);
-    
-    // 총소득 합계 계산
-    const totalIncome = 
-      parseFloat(wages.toString()) + 
-      parseFloat(otherEarnedIncome.toString()) + 
-      parseFloat(interestIncome.toString()) + 
-      parseFloat(dividends.toString()) + 
-      parseFloat(businessIncome.toString()) + 
-      parseFloat(capitalGains.toString()) + 
-      parseFloat(rentalIncome.toString()) + 
-      parseFloat(retirementIncome.toString()) + 
-      parseFloat(unemploymentIncome.toString()) + 
-      parseFloat(otherIncome.toString()) + 
-      additionalItemsTotal;
-      
-    console.log("계산된 총소득:", totalIncome);
-    
-    // 조정 항목 계산
-    const adjustments = formValues.adjustments || {};
-    const studentLoanInterest = parseFloat(adjustments.studentLoanInterest?.toString() || "0");
-    const retirementContributions = parseFloat(adjustments.retirementContributions?.toString() || "0");
-    const healthSavingsAccount = parseFloat(adjustments.healthSavingsAccount?.toString() || "0");
-    const otherAdjustments = parseFloat(adjustments.otherAdjustments?.toString() || "0");
-    
-    // 기타 조정 항목이 있으면, 별도로 계산하여 otherAdjustments로 설정
-    if (additionalAdjustmentItems.length > 0) {
-      const additionalAdjustmentsTotal = additionalAdjustmentItems.reduce((sum, item) => {
-        console.log("더하는 조정 항목:", item.type, item.amount);
-        return sum + (parseFloat(item.amount.toString()) || 0);
-      }, 0);
-      console.log("추가 조정 항목 총액:", additionalAdjustmentsTotal);
-      
-      // 총 기타 조정 금액을 폼에 설정
-      form.setValue('adjustments.otherAdjustments', additionalAdjustmentsTotal);
+    // 추가 소득 항목 계산 (AdditionalIncome 페이지에서 추가된 항목들)
+    let additionalItemsTotal = 0;
+    if (additionalIncomeItems.length > 0) {
+      additionalIncomeItems.forEach(item => {
+        console.log("계산에 포함된 추가 소득 항목:", item.type, Number(item.amount || 0));
+        additionalItemsTotal += Number(item.amount || 0);
+      });
     }
     
-    // 총 조정 금액
-    const totalAdjustments = studentLoanInterest + retirementContributions + 
-                           healthSavingsAccount + otherAdjustments;
-                           
-    console.log("계산된 총 조정 금액:", totalAdjustments);
+    // 최종 총소득 계산 (사용자가 입력한 기타소득도 포함)
+    const totalIncome = basicIncomeTotal + userOtherIncome + additionalItemsTotal;
+    
+    console.log("계산 세부사항:", {
+      기본소득합계: basicIncomeTotal,
+      사용자기타소득: userOtherIncome,
+      추가소득항목합계: additionalItemsTotal,
+      최종총소득: totalIncome
+    });
+    
+    // 조정 항목 계산
+    const studentLoanInterest = Number(form.watch('adjustments.studentLoanInterest') || 0);
+    const retirementContributions = Number(form.watch('adjustments.retirementContributions') || 0);
+    const healthSavingsAccount = Number(form.watch('adjustments.healthSavingsAccount') || 0);
+    
+    // 추가 조정 항목 계산
+    let additionalAdjustmentsTotal = 0;
+    if (additionalAdjustmentItems.length > 0) {
+      additionalAdjustmentItems.forEach(item => {
+        console.log("계산에 포함된 조정 항목:", item.type, Number(item.amount || 0));
+        additionalAdjustmentsTotal += Number(item.amount || 0);
+      });
+    }
+    
+    // 조정 항목 합계 계산
+    const totalAdjustments = studentLoanInterest + 
+                           retirementContributions + 
+                           healthSavingsAccount + 
+                           additionalAdjustmentsTotal;
     
     // 조정 총소득(AGI) 계산
     const adjustedGrossIncome = totalIncome - totalAdjustments;
     
-    // 폼 필드 값 설정
+    console.log("조정 계산 세부사항:", {
+      학자금대출이자: studentLoanInterest,
+      은퇴기여금: retirementContributions,
+      의료저축계좌: healthSavingsAccount,
+      추가조정항목합계: additionalAdjustmentsTotal,
+      총조정금액: totalAdjustments,
+      조정총소득: adjustedGrossIncome
+    });
+    
+    // 폼 필드에 계산된 값 설정
     form.setValue('totalIncome', totalIncome);
+    form.setValue('adjustments.otherAdjustments', additionalAdjustmentsTotal);
     form.setValue('adjustedGrossIncome', adjustedGrossIncome);
     
     // 폼 데이터를 컨텍스트에 자동 저장

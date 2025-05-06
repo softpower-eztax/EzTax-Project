@@ -168,13 +168,11 @@ export default function IncomePage() {
       });
     }
     
-    // 기타소득 (사용자 입력값 또는 additionalItemsTotal)
-    // 소득 페이지에서 직접 입력한 기타소득과 추가 소득 항목 중 큰 값 사용
-    const userOtherIncome = Number(form.watch('otherIncome') || 0);
+    // 최종 총소득 계산 - 기본 소득 합계만 사용
+    const totalIncome = basicIncomeTotal;
     
-    // 최종 총소득 계산
-    // 기본소득 + 기타소득(사용자 입력값과 추가항목 중 큰 값 사용)
-    const totalIncome = basicIncomeTotal + Math.max(userOtherIncome, additionalItemsTotal);
+    // 로깅용 변수
+    const userOtherIncome = Number(form.watch('otherIncome') || 0);
     
     console.log("계산 세부사항:", {
       기본소득합계: basicIncomeTotal,

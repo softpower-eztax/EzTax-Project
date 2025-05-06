@@ -162,15 +162,18 @@ export default function IncomePage() {
       Number(form.watch('wages') || 0) +
       Number(form.watch('otherEarnedIncome') || 0);
       
-    // 비근로소득 계산
+    // 비근로소득 계산 (이미지에 표시된 필드만 포함)
     const unearnedIncomeTotal =
       Number(form.watch('interestIncome') || 0) +
       Number(form.watch('dividends') || 0) +
-      Number(form.watch('businessIncome') || 0) +
-      Number(form.watch('capitalGains') || 0) +
-      Number(form.watch('rentalIncome') || 0) +
-      Number(form.watch('retirementIncome') || 0) +
-      Number(form.watch('unemploymentIncome') || 0);
+      Number(form.watch('rentalIncome') || 0);
+      
+    // 사용하지 않는 필드들은 0으로 설정
+    form.setValue('businessIncome', 0);
+    form.setValue('capitalGains', 0);
+    form.setValue('retirementIncome', 0);
+    form.setValue('unemploymentIncome', 0);
+    form.setValue('otherIncome', 0);
     
     // 기타소득 계산 (사용자 직접 입력값)
     const userOtherIncome = Number(form.watch('otherIncome') || 0);
@@ -280,11 +283,7 @@ export default function IncomePage() {
     const unearnedIncomeTotal =
       Number(form.watch('interestIncome') || 0) +
       Number(form.watch('dividends') || 0) +
-      Number(form.watch('businessIncome') || 0) +
-      Number(form.watch('capitalGains') || 0) +
-      Number(form.watch('rentalIncome') || 0) +
-      Number(form.watch('retirementIncome') || 0) +
-      Number(form.watch('unemploymentIncome') || 0);
+      Number(form.watch('rentalIncome') || 0);
     
     const userOtherIncome = Number(form.watch('otherIncome') || 0);
     

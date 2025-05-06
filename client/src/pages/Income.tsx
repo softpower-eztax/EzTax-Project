@@ -309,7 +309,7 @@ const IncomePage: React.FC = () => {
                   <div>
                     <h3 className="text-lg font-semibold mb-4">근로소득 (Earned Income)</h3>
                     
-                    <div className="space-y-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       {/* W2 Upload Button */}
                       <div className="border rounded-md p-3 bg-gray-50/50">
                         <div className="flex items-center gap-2">
@@ -388,7 +388,7 @@ const IncomePage: React.FC = () => {
                         control={form.control}
                         name="wages"
                         render={({ field }) => (
-                          <FormItem>
+                          <FormItem className="flex flex-col justify-center h-full">
                             <div className="flex justify-between">
                               <FormLabel>급여, 월급, 팁 (Wages, Salaries, Tips)</FormLabel>
                               <div className="tooltip">

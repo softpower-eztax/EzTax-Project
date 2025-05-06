@@ -252,7 +252,7 @@ const PersonalInfo: React.FC = () => {
                             name="spouseInfo.firstName"
                             render={({ field }) => (
                               <FormItem>
-                                <FormLabel>배우자 이름(First Name)</FormLabel>
+                                <FormLabel>이름(First Name)</FormLabel>
                                 <FormControl>
                                   <Input {...field} />
                                 </FormControl>
@@ -266,7 +266,7 @@ const PersonalInfo: React.FC = () => {
                             name="spouseInfo.lastName"
                             render={({ field }) => (
                               <FormItem>
-                                <FormLabel>배우자 성(Last Name)</FormLabel>
+                                <FormLabel>성(Last Name)</FormLabel>
                                 <FormControl>
                                   <Input {...field} />
                                 </FormControl>
@@ -296,7 +296,7 @@ const PersonalInfo: React.FC = () => {
                             name="spouseInfo.ssn"
                             render={({ field }) => (
                               <FormItem>
-                                <FormLabel>배우자 사회보장번호(SSN)</FormLabel>
+                                <FormLabel>사회보장번호(SSN)</FormLabel>
                                 <FormControl>
                                   <Input 
                                     {...field} 
@@ -321,7 +321,7 @@ const PersonalInfo: React.FC = () => {
                             name="spouseInfo.dateOfBirth"
                             render={({ field }) => (
                               <FormItem>
-                                <FormLabel>배우자 생년월일</FormLabel>
+                                <FormLabel>생년월일</FormLabel>
                                 <FormControl>
                                   <Input 
                                     {...field}

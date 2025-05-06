@@ -307,7 +307,7 @@ const IncomePage: React.FC = () => {
                 </CardHeader>
                 <CardContent className="space-y-6">
                   <div>
-                    <h3 className="text-lg font-semibold mb-4">근로 및 기타 소득 (Employment & Other Income)</h3>
+                    <h3 className="text-lg font-semibold mb-4">근로소득 (Earned Income)</h3>
                     
                     <div className="space-y-4">
                       {/* W2 Upload Button */}

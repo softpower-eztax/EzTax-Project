@@ -345,7 +345,7 @@ const Review: React.FC = () => {
                     className="border-primary text-primary font-semibold rounded hover:bg-primary-light hover:text-white transition duration-200"
                     onClick={() => navigate('/additional-tax')}
                   >
-                    Previous: Additional Tax
+                    이전: 추가 세금(Previous: Additional Tax)
                   </Button>
                   
                   <Button
@@ -359,7 +359,7 @@ const Review: React.FC = () => {
                         Processing...
                       </>
                     ) : (
-                      'Submit Tax Return'
+                      '세금 신고서 제출(Submit Tax Return)'
                     )}
                   </Button>
                 </div>
@@ -379,15 +379,15 @@ const Review: React.FC = () => {
               <DialogHeader>
                 <DialogTitle className="text-success flex items-center">
                   <Check className="mr-2 h-5 w-5" />
-                  Tax Return Submitted Successfully
+                  세금 신고서 제출 완료(Tax Return Submitted Successfully)
                 </DialogTitle>
               </DialogHeader>
               
               <Alert className="bg-success/10 border-success mt-4">
                 <Check className="h-4 w-4 text-success" />
-                <AlertTitle className="text-success">Success!</AlertTitle>
+                <AlertTitle className="text-success">성공!(Success!)</AlertTitle>
                 <AlertDescription>
-                  Your tax return for 2023 has been submitted successfully. You can download a PDF copy for your records.
+                  2025년 세금 신고서가 성공적으로 제출되었습니다. 기록을 위해 PDF 사본을 다운로드할 수 있습니다.(Your tax return for 2025 has been submitted successfully. You can download a PDF copy for your records.)
                 </AlertDescription>
               </Alert>
               
@@ -398,27 +398,27 @@ const Review: React.FC = () => {
                   onClick={handleGeneratePdf}
                 >
                   <File className="mr-2 h-4 w-4" />
-                  Download Tax Return PDF
+                  세금 신고서 PDF 다운로드(Download Tax Return PDF)
                 </Button>
                 <Button onClick={() => {
                   setShowSubmitDialog(false);
                   navigate('/');
                 }}>
-                  Return to Home
+                  홈으로 돌아가기(Return to Home)
                 </Button>
               </DialogFooter>
             </>
           ) : (
             <>
               <DialogHeader>
-                <DialogTitle>Submit Tax Return</DialogTitle>
+                <DialogTitle>세금 신고서 제출(Submit Tax Return)</DialogTitle>
                 <DialogDescription>
-                  Are you sure you want to submit your 2023 tax return? Please make sure all the information is correct.
+                  2025년 세금 신고서를 제출하시겠습니까? 모든 정보가 정확한지 확인해 주세요.(Are you sure you want to submit your 2025 tax return? Please make sure all the information is correct.)
                 </DialogDescription>
               </DialogHeader>
               
               <div className="bg-primary/5 p-4 rounded-md mt-4">
-                <h4 className="font-semibold mb-2">Summary</h4>
+                <h4 className="font-semibold mb-2">요약(Summary)</h4>
                 <ul className="space-y-1">
                   <li className="flex justify-between">
                     <span>Adjusted Gross Income:</span>
@@ -435,12 +435,12 @@ const Review: React.FC = () => {
                   <li className="flex justify-between font-bold">
                     {calculatedResults.refundAmount > 0 ? (
                       <>
-                        <span className="text-success">Refund Amount:</span>
+                        <span className="text-success">환급액(Refund Amount):</span>
                         <span className="text-success">{formatCurrency(calculatedResults.refundAmount)}</span>
                       </>
                     ) : (
                       <>
-                        <span className="text-destructive">Amount You Owe:</span>
+                        <span className="text-destructive">납부해야 할 금액(Amount You Owe):</span>
                         <span className="text-destructive">{formatCurrency(calculatedResults.amountOwed)}</span>
                       </>
                     )}

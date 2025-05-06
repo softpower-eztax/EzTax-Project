@@ -246,7 +246,7 @@ export const deductionsSchema = z.object({
   itemizedDeductions: z.object({
     medicalExpenses: z.number().min(0),
     stateLocalIncomeTax: z.number().min(0),
-    realEstateTaxes: z.number().min(0),
+    realEstateTaxes: z.number().min(0), 
     mortgageInterest: z.number().min(0),
     charitableCash: z.number().min(0),
     charitableNonCash: z.number().min(0),

@@ -58,8 +58,18 @@ const Deductions: React.FC = () => {
     if (watchDeductionType) {
       form.setValue('totalDeductions', standardDeductionAmount);
       
-      // Clear validation errors for itemized deduction fields when standard deduction is selected
+      // 표준 공제 선택 시 항목별 공제 필드의 유효성 검사 오류를 초기화하고 값을 빈 값으로 설정
       form.clearErrors('itemizedDeductions');
+      
+      // 표준 공제 선택 시 항목별 공제 필드를 기본값으로 초기화
+      form.setValue('itemizedDeductions', {
+        medicalExpenses: 0,
+        stateLocalIncomeTax: 0,
+        realEstateTaxes: 0,
+        mortgageInterest: 0,
+        charitableCash: 0,
+        charitableNonCash: 0
+      });
     } else {
       const itemized = form.getValues('itemizedDeductions');
       if (itemized) {
@@ -460,6 +470,12 @@ const Deductions: React.FC = () => {
                 nextStep="/tax-credits"
                 submitText="세금공제 (Tax Credits)"
                 onNext={() => {
+                  // 표준 공제를 선택한 경우 폼 유효성 검사를 무시하고 진행
+                  if (form.watch('useStandardDeduction')) {
+                    onSubmit(form.getValues());
+                    return true;
+                  }
+                  
                   if (form.formState.isValid) {
                     onSubmit(form.getValues());
                     return true;
@@ -467,8 +483,8 @@ const Deductions: React.FC = () => {
                     form.trigger();
                     if (!form.formState.isValid) {
                       toast({
-                        title: "Invalid form",
-                        description: "Please fix the errors in the form before proceeding.",
+                        title: "폼 오류",
+                        description: "다음으로 진행하기 전에 폼의 오류를 수정해주세요.",
                         variant: "destructive",
                       });
                     }

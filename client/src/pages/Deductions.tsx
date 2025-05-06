@@ -210,7 +210,8 @@ const Deductions: React.FC = () => {
                             </TooltipTrigger>
                             <TooltipContent>
                               <p className="w-64">
-                                Medical expenses are deductible to the extent they exceed 7.5% of your adjusted gross income.
+                                의료비는 조정총소득(AGI)의 7.5%를 초과하는 부분에 대해 공제될 수 있습니다.
+                                (Medical expenses are deductible to the extent they exceed 7.5% of your adjusted gross income.)
                               </p>
                             </TooltipContent>
                           </Tooltip>
@@ -258,7 +259,8 @@ const Deductions: React.FC = () => {
                             </TooltipTrigger>
                             <TooltipContent>
                               <p className="w-64">
-                                Deduction for state and local taxes is limited to $10,000 ($5,000 if married filing separately).
+                                주세 및 지방세에 대한 공제는 $10,000로 제한됩니다 (부부별도신고의 경우 $5,000).
+                                (Deduction for state and local taxes is limited to $10,000 ($5,000 if married filing separately).)
                               </p>
                             </TooltipContent>
                           </Tooltip>
@@ -333,7 +335,8 @@ const Deductions: React.FC = () => {
                             </TooltipTrigger>
                             <TooltipContent>
                               <p className="w-64">
-                                Mortgage interest on up to $750,000 of mortgage debt is deductible.
+                                주택담보대출 이자는 최대 $750,000까지의 대출에 대해 공제 가능합니다.
+                                (Mortgage interest on up to $750,000 of mortgage debt is deductible.)
                               </p>
                             </TooltipContent>
                           </Tooltip>
@@ -381,7 +384,8 @@ const Deductions: React.FC = () => {
                             </TooltipTrigger>
                             <TooltipContent>
                               <p className="w-64">
-                                Cash contributions to qualified organizations are generally deductible up to 60% of your adjusted gross income.
+                                적격 기관에 대한 현금 기부는 일반적으로 조정총소득의 최대 60%까지 공제 가능합니다.
+                                (Cash contributions to qualified organizations are generally deductible up to 60% of your adjusted gross income.)
                               </p>
                             </TooltipContent>
                           </Tooltip>

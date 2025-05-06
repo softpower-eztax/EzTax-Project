@@ -491,21 +491,26 @@ const IncomePage: React.FC = () => {
                     </div>
                     
                     <div className="mt-4">
-                      <Button
-                        type="button"
-                        variant="outline"
-                        className="text-sm mb-4"
-                        onClick={() => setShowAdditionalIncomeDialog(true)}
-                      >
-                        <Plus className="w-4 h-4 mr-2" />
-                        추가 소득 항목 (Add Additional Income)
-                      </Button>
+                      <div className="flex items-center space-x-2 mb-4">
+                        <Button
+                          type="button"
+                          variant="outline"
+                          className="text-sm"
+                          onClick={() => setShowAdditionalIncomeDialog(true)}
+                        >
+                          <Plus className="w-4 h-4 mr-2" />
+                          추가 소득 항목 (Add Additional Income)
+                        </Button>
+                        <p className="text-sm text-gray-500 italic">
+                          여기를 클릭해 해당되는 사항이 있는지 확인하세요
+                        </p>
+                      </div>
                       
-                      {form.watch('additionalIncomeItems')?.length > 0 && (
+                      {form.watch('additionalIncomeItems') && form.watch('additionalIncomeItems').length > 0 && (
                         <div className="mb-4 p-4 bg-gray-50 rounded-md border">
                           <h4 className="font-medium mb-2">추가 소득 항목 (Additional Income Items)</h4>
                           <ul className="space-y-2">
-                            {form.watch('additionalIncomeItems')?.map((item, index) => (
+                            {form.watch('additionalIncomeItems').map((item, index) => (
                               <li key={index} className="flex justify-between">
                                 <span>{item.type}</span>
                                 <div className="flex items-center space-x-2">

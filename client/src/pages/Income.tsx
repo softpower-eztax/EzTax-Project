@@ -273,7 +273,7 @@ const IncomePage: React.FC = () => {
                         name="rentalIncome"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Rental Income</FormLabel>
+                            <FormLabel>임대 소득 (Rental Income)</FormLabel>
                             <FormControl>
                               <Input
                                 type="number"
@@ -295,7 +295,7 @@ const IncomePage: React.FC = () => {
                         name="retirementIncome"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Retirement Income</FormLabel>
+                            <FormLabel>은퇴 소득 (Retirement Income)</FormLabel>
                             <FormControl>
                               <Input
                                 type="number"
@@ -319,7 +319,7 @@ const IncomePage: React.FC = () => {
                         name="unemploymentIncome"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Unemployment Income</FormLabel>
+                            <FormLabel>실업 급여 (Unemployment Income)</FormLabel>
                             <FormControl>
                               <Input
                                 type="number"
@@ -341,7 +341,7 @@ const IncomePage: React.FC = () => {
                         name="otherIncome"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Other Income</FormLabel>
+                            <FormLabel>기타 소득 (Other Income)</FormLabel>
                             <FormControl>
                               <Input
                                 type="number"
@@ -361,7 +361,7 @@ const IncomePage: React.FC = () => {
                     
                     <div className="mt-4 p-4 bg-gray-bg rounded-md">
                       <div className="flex justify-between">
-                        <span className="font-semibold">Total Income:</span>
+                        <span className="font-semibold">총 소득 (Total Income):</span>
                         <span className="font-semibold">{formatCurrency(form.watch('totalIncome'))}</span>
                       </div>
                     </div>
@@ -370,9 +370,9 @@ const IncomePage: React.FC = () => {
                   <Separator />
                   
                   <div>
-                    <h3 className="text-lg font-semibold mb-4">Adjustments to Income</h3>
+                    <h3 className="text-lg font-semibold mb-4">소득 조정 (Adjustments to Income)</h3>
                     <p className="text-sm text-gray-dark mb-4">
-                      These adjustments reduce your income before calculating your adjusted gross income (AGI).
+                      이 조정 사항들은 조정된 총소득(AGI)을 계산하기 전에 귀하의 소득을 줄여줍니다.
                     </p>
                     
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
@@ -381,7 +381,7 @@ const IncomePage: React.FC = () => {
                         name="adjustments.studentLoanInterest"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Student Loan Interest</FormLabel>
+                            <FormLabel>학자금 대출 이자 (Student Loan Interest)</FormLabel>
                             <FormControl>
                               <Input
                                 type="number"

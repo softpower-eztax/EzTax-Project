@@ -14,7 +14,7 @@ const Footer: React.FC = () => {
             </div>
             <p className="text-sm text-gray-light max-w-md">
               EzTax는 개인과 가족이 자신감을 가지고 연방세 신고서를 준비하고 제출할 수 있도록 도와드립니다.
-              저희의 단계별 과정을 통해 세금 신고가 쉽고 스트레스 없이 가능합니다.
+              저희의 간단한 과정을 통해 세금 신고가 쉽고 스트레스 없이 가능합니다.
             </p>
           </div>
           

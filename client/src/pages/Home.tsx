@@ -14,7 +14,7 @@ const Home: React.FC = () => {
           세상쉬운 세금 보고
         </h1>
         <p className="text-xl text-gray-dark max-w-3xl mx-auto mb-8">
-          EzTax로 간단한 단계별 과정을 통해 자신감 있게 세금 보고를 완료하세요.
+          EzTax로 간단한 과정을 통해 자신감 있게 세금 보고를 완료하세요.
         </p>
         <Button 
           size="lg" 
@@ -83,7 +83,7 @@ const Home: React.FC = () => {
           </CardHeader>
           <CardContent>
             <p className="mb-4">
-              저희의 단계별 과정은 다음 여섯 가지 간단한 섹션으로 안내합니다:
+              저희의 간단한 과정은 다음 여섯 가지 섹션으로 안내합니다:
             </p>
             <ol className="list-decimal pl-6 mb-4 space-y-2">
               <li><strong>개인 정보</strong> - 기본 정보 및 신고 상태</li>

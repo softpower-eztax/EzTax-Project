@@ -344,7 +344,7 @@ const IncomePage: React.FC = () => {
                         <div className="flex flex-col items-start gap-2">
                           <div className="w-full">
                             <p className="text-sm text-gray-700 mb-2">
-                              W-2를 업로드하세요 (없다면 직접입력하세요)
+                              W-2입력(없으면 직접 입력)
                             </p>
                           </div>
                           <div>

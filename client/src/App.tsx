@@ -7,7 +7,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import Home from "@/pages/Home";
 import PersonalInfo from "@/pages/PersonalInfo";
-import IncomePage from "@/pages/Income";
+import IncomePage from "@/pages/Income-fixed";
 import Deductions from "@/pages/Deductions";
 import TaxCredits from "@/pages/TaxCredits";
 import AdditionalTax from "@/pages/AdditionalTax";

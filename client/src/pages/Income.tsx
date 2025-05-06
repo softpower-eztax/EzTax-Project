@@ -413,6 +413,30 @@ const IncomePage: React.FC = () => {
                       />
                     </div>
                     
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
+                      <FormField
+                        control={form.control}
+                        name="businessIncome"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>사업 소득 (Business Income)</FormLabel>
+                            <FormControl>
+                              <Input
+                                type="number"
+                                step="0.01"
+                                min="0"
+                                {...field}
+                                onChange={(e) => {
+                                  field.onChange(parseFloat(e.target.value) || 0);
+                                }}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                    
                     <div className="mt-6 mb-6">
                       <h3 className="text-lg font-semibold mb-4">기타 소득 (Unearned Income etc.)</h3>
                     </div>
@@ -593,30 +617,6 @@ const IncomePage: React.FC = () => {
                           )}
                         />
                       </div>
-                    </div>
-                    
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-                      <FormField
-                        control={form.control}
-                        name="businessIncome"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>사업 소득 (Business Income)</FormLabel>
-                            <FormControl>
-                              <Input
-                                type="number"
-                                step="0.01"
-                                min="0"
-                                {...field}
-                                onChange={(e) => {
-                                  field.onChange(parseFloat(e.target.value) || 0);
-                                }}
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
                     </div>
                     
                     {/* 1099-B Upload Section */}

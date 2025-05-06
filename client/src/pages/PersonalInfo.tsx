@@ -154,7 +154,7 @@ const PersonalInfo: React.FC = () => {
                         name="middleInitial"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Middle Initial</FormLabel>
+                            <FormLabel>Middle Initial (선택)</FormLabel>
                             <FormControl>
                               <Input {...field} maxLength={1} />
                             </FormControl>
@@ -280,7 +280,7 @@ const PersonalInfo: React.FC = () => {
                             name="spouseInfo.middleInitial"
                             render={({ field }) => (
                               <FormItem>
-                                <FormLabel>Middle Initial</FormLabel>
+                                <FormLabel>Middle Initial (선택)</FormLabel>
                                 <FormControl>
                                   <Input {...field} maxLength={1} />
                                 </FormControl>
@@ -349,7 +349,7 @@ const PersonalInfo: React.FC = () => {
                         name="email"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Email Address</FormLabel>
+                            <FormLabel>이메일 주소</FormLabel>
                             <FormControl>
                               <Input {...field} type="email" />
                             </FormControl>
@@ -363,7 +363,7 @@ const PersonalInfo: React.FC = () => {
                         name="phone"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Phone Number</FormLabel>
+                            <FormLabel>전화번호</FormLabel>
                             <FormControl>
                               <Input 
                                 {...field} 

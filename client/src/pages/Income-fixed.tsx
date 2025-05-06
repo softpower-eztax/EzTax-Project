@@ -358,7 +358,7 @@ export default function IncomePage() {
                       className="text-sm flex items-center"
                     >
                       <Plus className="h-4 w-4 mr-1" />
-                      소득조정 추가 입력
+                      기타소득입력
                     </Button>
                   </div>
                     

@@ -345,7 +345,7 @@ const Review: React.FC = () => {
                     className="border-primary text-primary font-semibold rounded hover:bg-primary-light hover:text-white transition duration-200 w-[240px] justify-center"
                     onClick={() => navigate('/additional-tax')}
                   >
-                    이전: 추가 세금(Previous: Additional Tax)
+                    이전페이지로 이동
                   </Button>
                   
                   <Button

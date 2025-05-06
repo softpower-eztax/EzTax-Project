@@ -206,22 +206,22 @@ const PersonalInfo: React.FC = () => {
                         name="filingStatus"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Filing Status</FormLabel>
+                            <FormLabel>신고 상태(Filing Status)</FormLabel>
                             <Select
                               onValueChange={field.onChange}
                               defaultValue={field.value}
                             >
                               <FormControl>
                                 <SelectTrigger>
-                                  <SelectValue placeholder="Select filing status" />
+                                  <SelectValue placeholder="신고 상태를 선택하세요" />
                                 </SelectTrigger>
                               </FormControl>
                               <SelectContent>
-                                <SelectItem value="single">Single</SelectItem>
-                                <SelectItem value="married_joint">Married Filing Jointly</SelectItem>
-                                <SelectItem value="married_separate">Married Filing Separately</SelectItem>
-                                <SelectItem value="head_of_household">Head of Household</SelectItem>
-                                <SelectItem value="qualifying_widow">Qualifying Widow(er)</SelectItem>
+                                <SelectItem value="single">미혼(Single)</SelectItem>
+                                <SelectItem value="married_joint">부부 공동 신고(Married Filing Jointly)</SelectItem>
+                                <SelectItem value="married_separate">부부 개별 신고(Married Filing Separately)</SelectItem>
+                                <SelectItem value="head_of_household">세대주(Head of Household)</SelectItem>
+                                <SelectItem value="qualifying_widow">유자격 미망인(Qualifying Widow(er))</SelectItem>
                               </SelectContent>
                             </Select>
                             <FormMessage />

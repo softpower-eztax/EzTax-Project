@@ -17,10 +17,12 @@ import { useTaxContext } from '@/context/TaxContext';
 import { Label } from '@/components/ui/label';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { calculateStandardDeduction } from '@/lib/taxCalculations';
+import { useLocation } from 'wouter';
 
 const Deductions: React.FC = () => {
   const { taxData, updateTaxData } = useTaxContext();
   const { toast } = useToast();
+  const [, navigate] = useLocation();
   const [isItemizedDisabled, setIsItemizedDisabled] = useState(true);
   
   // Calculate standard deduction based on filing status
@@ -143,11 +145,41 @@ const Deductions: React.FC = () => {
       <ProgressTracker currentStep={3} />
       
       <div className="md:hidden mb-4 border-b border-gray-medium">
-        <button className="py-2 px-4 border-b-2 border-transparent text-gray-dark">Personal</button>
-        <button className="py-2 px-4 border-b-2 border-primary text-primary font-semibold">Deductions</button>
-        <button className="py-2 px-4 border-b-2 border-transparent text-gray-dark">Credits</button>
-        <button className="py-2 px-4 border-b-2 border-transparent text-gray-dark">Add. Tax</button>
-        <button className="py-2 px-4 border-b-2 border-transparent text-gray-dark">Review</button>
+        <button 
+          onClick={() => navigate('/personal-info')} 
+          className="py-2 px-4 border-b-2 border-transparent text-gray-dark cursor-pointer"
+        >
+          개인 정보
+        </button>
+        <button 
+          onClick={() => navigate('/income')} 
+          className="py-2 px-4 border-b-2 border-transparent text-gray-dark cursor-pointer"
+        >
+          소득
+        </button>
+        <button 
+          className="py-2 px-4 border-b-2 border-primary text-primary font-semibold cursor-pointer"
+        >
+          공제 항목
+        </button>
+        <button 
+          onClick={() => navigate('/tax-credits')} 
+          className="py-2 px-4 border-b-2 border-transparent text-gray-dark cursor-pointer"
+        >
+          세액 공제
+        </button>
+        <button 
+          onClick={() => navigate('/additional-tax')} 
+          className="py-2 px-4 border-b-2 border-transparent text-gray-dark cursor-pointer"
+        >
+          추가 세금
+        </button>
+        <button 
+          onClick={() => navigate('/review')} 
+          className="py-2 px-4 border-b-2 border-transparent text-gray-dark cursor-pointer"
+        >
+          검토
+        </button>
       </div>
 
       <div className="flex flex-col md:flex-row gap-6">

@@ -26,10 +26,8 @@ const ProgressTracker: React.FC<ProgressTrackerProps> = ({ currentStep }) => {
   ];
 
   const handleStepClick = (step: Step) => {
-    // Only allow clicking on completed steps or the current step
-    if (step.completed || step.id === currentStep) {
-      navigate(step.path);
-    }
+    // 모든 단계를 클릭 가능하게 함
+    navigate(step.path);
   };
 
   return (
@@ -37,7 +35,7 @@ const ProgressTracker: React.FC<ProgressTrackerProps> = ({ currentStep }) => {
       {steps.map((step) => (
         <div 
           key={step.id} 
-          className={`step flex-1 text-center 
+          className={`step flex-1 text-center cursor-pointer
             ${step.id === currentStep ? 'active-step' : ''} 
             ${step.completed ? 'completed-step' : ''}`}
           onClick={() => handleStepClick(step)}

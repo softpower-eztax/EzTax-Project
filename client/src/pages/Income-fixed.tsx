@@ -145,7 +145,7 @@ export default function IncomePage() {
     });
   };
   
-  // 지정된 필드 값이 변경될 때마다 자동 계산
+  // 지정된 필드 값이 변경될 때마다 자동 계산 및 저장
   useEffect(() => {
     const formValues = form.getValues();
     const wages = formValues.wages || 0;
@@ -184,6 +184,22 @@ export default function IncomePage() {
     // 폼 필드 값 설정
     form.setValue('totalIncome', totalIncome);
     form.setValue('adjustedGrossIncome', adjustedGrossIncome);
+    
+    // 폼 데이터를 컨텍스트에 자동 저장
+    // 이렇게 하면 다른 페이지로 이동했다가 돌아와도 데이터가 유지됨
+    const currentFormData = form.getValues();
+    
+    // additionalIncomeItems와 additionalAdjustmentItems 추가
+    currentFormData.additionalIncomeItems = additionalIncomeItems;
+    currentFormData.additionalAdjustmentItems = additionalAdjustmentItems;
+    
+    // 입력값 저장 - 약간의 디바운싱을 위해 타이머 사용
+    const saveTimer = setTimeout(() => {
+      updateTaxData({ income: currentFormData });
+      console.log('자동 저장됨', currentFormData);
+    }, 500);
+    
+    return () => clearTimeout(saveTimer);
   }, [
     form.watch('wages'),
     form.watch('otherEarnedIncome'),
@@ -200,7 +216,8 @@ export default function IncomePage() {
     form.watch('adjustments.healthSavingsAccount'),
     form.watch('adjustments.otherAdjustments'),
     additionalIncomeItems,
-    additionalAdjustmentItems
+    additionalAdjustmentItems,
+    updateTaxData
   ]);
   
   return (

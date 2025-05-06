@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useLocation } from 'wouter';
 import { AdditionalIncomeItem, Income } from '@shared/schema';
 import { useTaxContext } from '@/context/TaxContext';
@@ -78,6 +78,77 @@ export default function AdditionalIncomePage() {
     updatedItems.splice(index, 1);
     setAddedItems(updatedItems);
   };
+  
+  // 항목이 변경될 때마다 자동으로 데이터 저장
+  useEffect(() => {
+    if (addedItems) {
+      try {
+        // 추가 소득 항목의 총액 계산
+        const totalAmount = addedItems.reduce((sum, item) => sum + item.amount, 0);
+        
+        // 기존 소득 데이터 가져오기
+        const currentIncome = taxData.income || {
+          wages: 0,
+          otherEarnedIncome: 0,
+          interestIncome: 0,
+          dividends: 0,
+          businessIncome: 0,
+          capitalGains: 0,
+          rentalIncome: 0,
+          retirementIncome: 0,
+          unemploymentIncome: 0,
+          otherIncome: 0,
+          additionalIncomeItems: [],
+          totalIncome: 0,
+          adjustments: {
+            studentLoanInterest: 0,
+            retirementContributions: 0,
+            healthSavingsAccount: 0,
+            otherAdjustments: 0,
+          },
+          adjustedGrossIncome: 0,
+        };
+        
+        // 기타 소득에 추가하고 총소득 업데이트
+        const updatedIncome = {
+          ...currentIncome,
+          additionalIncomeItems: addedItems,
+          otherIncome: totalAmount
+        };
+        
+        // 총소득 재계산
+        updatedIncome.totalIncome = 
+          updatedIncome.wages + 
+          updatedIncome.otherEarnedIncome + 
+          updatedIncome.interestIncome + 
+          updatedIncome.dividends + 
+          updatedIncome.businessIncome + 
+          updatedIncome.capitalGains + 
+          updatedIncome.rentalIncome + 
+          updatedIncome.retirementIncome + 
+          updatedIncome.unemploymentIncome + 
+          updatedIncome.otherIncome;
+        
+        // 조정총소득(AGI) 재계산
+        updatedIncome.adjustedGrossIncome = 
+          updatedIncome.totalIncome - 
+          (updatedIncome.adjustments.studentLoanInterest + 
+           updatedIncome.adjustments.retirementContributions + 
+           updatedIncome.adjustments.healthSavingsAccount + 
+           updatedIncome.adjustments.otherAdjustments);
+        
+        // 컨텍스트 자동 업데이트 (타이머로 작업 디바운싱)
+        const saveTimer = setTimeout(() => {
+          updateTaxData({ income: updatedIncome });
+          console.log("기타소득 항목 자동 저장됨", addedItems);
+        }, 500);
+        
+        return () => clearTimeout(saveTimer);
+      } catch (error) {
+        console.error('Error auto-saving income items:', error);
+      }
+    }
+  }, [addedItems, updateTaxData, taxData.income]);
 
   const saveAndReturn = () => {
     try {

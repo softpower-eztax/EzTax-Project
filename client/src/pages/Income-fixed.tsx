@@ -3,7 +3,6 @@ import { useLocation } from 'wouter';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { Income, incomeSchema } from '@shared/schema';
-import { formatCurrency } from '@/lib/taxCalculations';
 import { useTaxContext } from '@/context/TaxContext';
 import ProgressTracker from '@/components/ProgressTracker';
 import StepNavigation from '@/components/StepNavigation';
@@ -291,6 +290,128 @@ export default function IncomePage() {
                       />
                     </div>
                   </div>
+                  
+                  <div className="mt-8">
+                    <h3 className="text-lg font-semibold mb-4">소득 조정 (Adjustments to Income)</h3>
+                    <p className="text-sm text-gray-dark mb-4">
+                      소득에서 차감되는 항목을 입력하세요. 이 금액은 과세 대상 소득을 줄입니다.
+                    </p>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <FormField
+                        control={form.control}
+                        name="adjustments.studentLoanInterest"
+                        render={({ field }) => (
+                          <FormItem>
+                            <div className="flex justify-between">
+                              <FormLabel>학자금 대출 이자 (Student Loan Interest)</FormLabel>
+                              <div className="tooltip">
+                                <InfoIcon className="h-4 w-4 text-gray-dark" />
+                                <span className="tooltip-text">Maximum deduction is $2,500</span>
+                              </div>
+                            </div>
+                            <FormControl>
+                              <Input
+                                type="number"
+                                step="0.01"
+                                min="0"
+                                max="2500"
+                                {...field}
+                                onChange={(e) => {
+                                  field.onChange(parseFloat(e.target.value) || 0);
+                                }}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      
+                      <FormField
+                        control={form.control}
+                        name="adjustments.retirementContributions"
+                        render={({ field }) => (
+                          <FormItem>
+                            <div className="flex justify-between">
+                              <FormLabel>은퇴 계좌 기여금 (Retirement Contributions)</FormLabel>
+                              <div className="tooltip">
+                                <InfoIcon className="h-4 w-4 text-gray-dark" />
+                                <span className="tooltip-text">IRA, 401k, etc. contributions</span>
+                              </div>
+                            </div>
+                            <FormControl>
+                              <Input
+                                type="number"
+                                step="0.01"
+                                min="0"
+                                {...field}
+                                onChange={(e) => {
+                                  field.onChange(parseFloat(e.target.value) || 0);
+                                }}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      
+                      <FormField
+                        control={form.control}
+                        name="adjustments.healthSavingsAccount"
+                        render={({ field }) => (
+                          <FormItem>
+                            <div className="flex justify-between">
+                              <FormLabel>건강 저축 계좌 (HSA Contributions)</FormLabel>
+                              <div className="tooltip">
+                                <InfoIcon className="h-4 w-4 text-gray-dark" />
+                                <span className="tooltip-text">Health Savings Account contributions</span>
+                              </div>
+                            </div>
+                            <FormControl>
+                              <Input
+                                type="number"
+                                step="0.01"
+                                min="0"
+                                {...field}
+                                onChange={(e) => {
+                                  field.onChange(parseFloat(e.target.value) || 0);
+                                }}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      
+                      <FormField
+                        control={form.control}
+                        name="adjustments.otherAdjustments"
+                        render={({ field }) => (
+                          <FormItem>
+                            <div className="flex justify-between">
+                              <FormLabel>기타 조정 항목 (Other Adjustments)</FormLabel>
+                              <div className="tooltip">
+                                <InfoIcon className="h-4 w-4 text-gray-dark" />
+                                <span className="tooltip-text">Moving expenses, self-employment tax, etc.</span>
+                              </div>
+                            </div>
+                            <FormControl>
+                              <Input
+                                type="number"
+                                step="0.01"
+                                min="0"
+                                {...field}
+                                onChange={(e) => {
+                                  field.onChange(parseFloat(e.target.value) || 0);
+                                }}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                  </div>
                 </CardContent>
               </Card>
               
@@ -317,7 +438,7 @@ export default function IncomePage() {
                     </div>
                     <div className="income-total-row highlight">
                       <span>조정 총소득 (Adjusted Gross Income)</span>
-                      <span>{formatCurrency(form.getValues('adjustedGrossIncome'))}</span>
+                      <span>{new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", minimumFractionDigits: 2 }).format(form.getValues('adjustedGrossIncome'))}</span>
                     </div>
                   </div>
                 </CardContent>

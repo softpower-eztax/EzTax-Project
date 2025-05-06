@@ -230,7 +230,7 @@ export default function IncomePage() {
                   </div>
                   
                   <div className="mt-8">
-                    <h3 className="text-lg font-semibold mb-4">기타 소득 (Unearned Income etc.)</h3>
+                    <h3 className="text-lg font-semibold mb-4">비근로 소득 (Unearned Income)</h3>
                     
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <FormField

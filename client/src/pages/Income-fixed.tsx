@@ -53,49 +53,58 @@ export default function IncomePage() {
   });
   
   // 총소득과 조정 총소득을 계산하는 함수
-  const calculateTotals = (formValues?: any) => {
-    // 폼의 현재 값을 가져오거나 인자로 받은 값을 사용
-    const values = formValues || form.getValues();
+  // 재귀 호출 방지를 위한 플래그
+  const [isCalculating, setIsCalculating] = useState(false);
+  
+  const calculateTotals = () => {
+    // 이미 계산 중이면 중복 실행 방지
+    if (isCalculating) return;
     
-    // 총소득 계산
-    const wages = values.wages || 0;
-    const otherEarnedIncome = values.otherEarnedIncome || 0;
-    const interestIncome = values.interestIncome || 0;
-    const dividends = values.dividends || 0;
-    const businessIncome = values.businessIncome || 0;
-    const capitalGains = values.capitalGains || 0;
-    const rentalIncome = values.rentalIncome || 0;
-    const retirementIncome = values.retirementIncome || 0;
-    const unemploymentIncome = values.unemploymentIncome || 0;
-    const otherIncome = values.otherIncome || 0;
+    setIsCalculating(true);
     
-    // 추가 소득 항목이 있으면 포함
-    const additionalItemsTotal = additionalIncomeItems.reduce((sum, item) => sum + (item.amount || 0), 0);
-    
-    // 총소득 합계
-    const totalIncome = wages + otherEarnedIncome + interestIncome + dividends + businessIncome + capitalGains + 
-                      rentalIncome + retirementIncome + unemploymentIncome + otherIncome + additionalItemsTotal;
-    
-    // 소득 조정 항목 계산
-    const adjustments = values.adjustments || {};
-    const studentLoanInterest = adjustments.studentLoanInterest || 0;
-    const retirementContributions = adjustments.retirementContributions || 0;
-    const healthSavingsAccount = adjustments.healthSavingsAccount || 0;
-    const otherAdjustments = adjustments.otherAdjustments || 0;
-    
-    // 총 조정 금액
-    const totalAdjustments = studentLoanInterest + retirementContributions + healthSavingsAccount + otherAdjustments;
-    
-    // 조정 총소득(AGI) 계산
-    const adjustedGrossIncome = totalIncome - totalAdjustments;
-    
-    // 결과를 폼에 설정 (단, 인자로 값을 받은 경우에는 설정하지 않음)
-    if (!formValues) {
-      form.setValue('totalIncome', totalIncome, { shouldValidate: true });
-      form.setValue('adjustedGrossIncome', adjustedGrossIncome, { shouldValidate: true });
+    try {
+      // 폼의 현재 값을 가져옴
+      const values = form.getValues();
+      
+      // 총소득 계산
+      const wages = values.wages || 0;
+      const otherEarnedIncome = values.otherEarnedIncome || 0;
+      const interestIncome = values.interestIncome || 0;
+      const dividends = values.dividends || 0;
+      const businessIncome = values.businessIncome || 0;
+      const capitalGains = values.capitalGains || 0;
+      const rentalIncome = values.rentalIncome || 0;
+      const retirementIncome = values.retirementIncome || 0;
+      const unemploymentIncome = values.unemploymentIncome || 0;
+      const otherIncome = values.otherIncome || 0;
+      
+      // 추가 소득 항목이 있으면 포함
+      const additionalItemsTotal = additionalIncomeItems.reduce((sum, item) => sum + (item.amount || 0), 0);
+      
+      // 총소득 합계
+      const totalIncome = wages + otherEarnedIncome + interestIncome + dividends + businessIncome + capitalGains + 
+                        rentalIncome + retirementIncome + unemploymentIncome + otherIncome + additionalItemsTotal;
+      
+      // 소득 조정 항목 계산
+      const adjustments = values.adjustments || {};
+      const studentLoanInterest = adjustments.studentLoanInterest || 0;
+      const retirementContributions = adjustments.retirementContributions || 0;
+      const healthSavingsAccount = adjustments.healthSavingsAccount || 0;
+      const otherAdjustments = adjustments.otherAdjustments || 0;
+      
+      // 총 조정 금액
+      const totalAdjustments = studentLoanInterest + retirementContributions + healthSavingsAccount + otherAdjustments;
+      
+      // 조정 총소득(AGI) 계산
+      const adjustedGrossIncome = totalIncome - totalAdjustments;
+      
+      // 갱신된 총소득과 AGI값 설정
+      form.setValue('totalIncome', totalIncome);
+      form.setValue('adjustedGrossIncome', adjustedGrossIncome);
+    } finally {
+      // 계산 완료 표시
+      setIsCalculating(false);
     }
-    
-    return { totalIncome, adjustedGrossIncome, totalAdjustments };
   };
   
   const onSubmit = async (data: Income) => {
@@ -183,12 +192,14 @@ export default function IncomePage() {
     });
   };
   
-  // 값이 변경될 때마다 총소득과 AGI 재계산
+  // 초기 로딩 시 한 번만 계산
   useEffect(() => {
-    const subscription = form.watch(() => {
+    // 폼 값이 모두 로드된 후 초기 계산 수행
+    const timer = setTimeout(() => {
       calculateTotals();
-    });
-    return () => subscription.unsubscribe();
+    }, 100);
+    
+    return () => clearTimeout(timer);
   }, []);
   
   return (

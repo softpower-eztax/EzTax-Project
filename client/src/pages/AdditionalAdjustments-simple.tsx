@@ -214,6 +214,12 @@ export default function AdditionalAdjustmentsSimplePage() {
       // 컨텍스트 업데이트
       updateTaxData({ income: updatedIncome });
       console.log("소득 데이터 업데이트 (조정 항목):", updatedIncome);
+      console.log("저장된 조정 항목 목록:", items);
+      
+      // 추가된 부분: 디버깅을 위해 특정 시간 후 taxData 출력
+      setTimeout(() => {
+        console.log("조정 항목 저장 후 taxData 확인:", taxData.income?.additionalAdjustmentItems);
+      }, 500);
     } catch (error) {
       console.error("조정 항목 데이터 업데이트 중 오류:", error);
     }

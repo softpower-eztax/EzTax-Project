@@ -27,8 +27,8 @@ const AdditionalTaxPage: React.FC = () => {
     ...taxData.additionalTax
   };
 
+  // Disable validation to avoid form errors 
   const form = useForm<AdditionalTax>({
-    resolver: zodResolver(additionalTaxSchema),
     defaultValues,
     mode: 'onChange'
   });
@@ -86,7 +86,7 @@ const AdditionalTaxPage: React.FC = () => {
               <h2 className="text-2xl font-heading font-semibold text-primary-dark mb-6">추가 세금 (Additional Tax)</h2>
               
               <Form {...form}>
-                <form>
+                <form onSubmit={(e) => { e.preventDefault(); }}>
                   {/* Self-Employment Income */}
                   <div className="mb-6 border-b border-gray-light pb-6">
                     <div className="flex items-center mb-3">

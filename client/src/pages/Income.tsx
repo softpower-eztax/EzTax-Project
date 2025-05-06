@@ -310,7 +310,36 @@ const IncomePage: React.FC = () => {
                     <h3 className="text-lg font-semibold mb-4">근로소득 (Earned Income)</h3>
                     
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      {/* W2 Upload Button */}
+                      {/* Wages Input Field (Left) */}
+                      <FormField
+                        control={form.control}
+                        name="wages"
+                        render={({ field }) => (
+                          <FormItem className="flex flex-col justify-center h-full">
+                            <div className="flex justify-between">
+                              <FormLabel>급여, 월급, 팁 (Wages, Salaries, Tips)</FormLabel>
+                              <div className="tooltip">
+                                <InfoIcon className="h-4 w-4 text-gray-dark" />
+                                <span className="tooltip-text">Include income from all W-2 forms</span>
+                              </div>
+                            </div>
+                            <FormControl>
+                              <Input
+                                type="number"
+                                step="0.01"
+                                min="0"
+                                {...field}
+                                onChange={(e) => {
+                                  field.onChange(parseFloat(e.target.value) || 0);
+                                }}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      
+                      {/* W2 Upload Button (Right) */}
                       <div className="border rounded-md p-3 bg-gray-50/50">
                         <div className="flex items-center gap-2">
                           <div className="flex-1">
@@ -382,35 +411,6 @@ const IncomePage: React.FC = () => {
                           </div>
                         </div>
                       </div>
-                      
-                      {/* Wages Input Field */}
-                      <FormField
-                        control={form.control}
-                        name="wages"
-                        render={({ field }) => (
-                          <FormItem className="flex flex-col justify-center h-full">
-                            <div className="flex justify-between">
-                              <FormLabel>급여, 월급, 팁 (Wages, Salaries, Tips)</FormLabel>
-                              <div className="tooltip">
-                                <InfoIcon className="h-4 w-4 text-gray-dark" />
-                                <span className="tooltip-text">Include income from all W-2 forms</span>
-                              </div>
-                            </div>
-                            <FormControl>
-                              <Input
-                                type="number"
-                                step="0.01"
-                                min="0"
-                                {...field}
-                                onChange={(e) => {
-                                  field.onChange(parseFloat(e.target.value) || 0);
-                                }}
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
                     </div>
                     
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">

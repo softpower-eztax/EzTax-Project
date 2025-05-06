@@ -1,6 +1,7 @@
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
+import { storage } from "./storage";
 
 const app = express();
 app.use(express.json());
@@ -37,6 +38,17 @@ app.use((req, res, next) => {
 });
 
 (async () => {
+  // 데이터베이스 초기화
+  if ('initialize' in storage) {
+    try {
+      log("데이터베이스 초기화 시작");
+      await (storage as any).initialize();
+      log("데이터베이스 초기화 완료");
+    } catch (error) {
+      log(`데이터베이스 초기화 중 오류: ${error}`);
+    }
+  }
+
   const server = await registerRoutes(app);
 
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {

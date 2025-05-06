@@ -1,4 +1,6 @@
 import { users, type User, type InsertUser, taxReturns, type TaxReturn, type InsertTaxReturn } from "@shared/schema";
+import { db } from "./db";
+import { eq, desc } from "drizzle-orm";
 
 // modify the interface with any CRUD methods
 // you might need
@@ -143,4 +145,143 @@ export class MemStorage implements IStorage {
   }
 }
 
-export const storage = new MemStorage();
+// 데이터베이스 기반 저장소 구현
+export class DatabaseStorage implements IStorage {
+  // 사용자 메서드
+  async getUser(id: number): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.id, id));
+    return user || undefined;
+  }
+
+  async getUserByUsername(username: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.username, username));
+    return user || undefined;
+  }
+
+  async createUser(insertUser: InsertUser): Promise<User> {
+    const [user] = await db
+      .insert(users)
+      .values({
+        ...insertUser,
+        createdAt: insertUser.createdAt || new Date().toISOString(),
+        updatedAt: insertUser.updatedAt || new Date().toISOString()
+      })
+      .returning();
+    return user;
+  }
+
+  // 세금 신고서 메서드
+  async getTaxReturn(id: number): Promise<TaxReturn | undefined> {
+    const [taxReturn] = await db.select().from(taxReturns).where(eq(taxReturns.id, id));
+    return taxReturn || undefined;
+  }
+
+  async getAllTaxReturns(): Promise<TaxReturn[]> {
+    return await db.select().from(taxReturns);
+  }
+
+  async getCurrentTaxReturn(): Promise<TaxReturn | undefined> {
+    const [taxReturn] = await db
+      .select()
+      .from(taxReturns)
+      .orderBy(desc(taxReturns.updatedAt))
+      .limit(1);
+    return taxReturn || undefined;
+  }
+
+  async createTaxReturn(insertTaxReturn: InsertTaxReturn): Promise<TaxReturn> {
+    const [taxReturn] = await db
+      .insert(taxReturns)
+      .values({
+        ...insertTaxReturn,
+        createdAt: insertTaxReturn.createdAt || new Date().toISOString(),
+        updatedAt: insertTaxReturn.updatedAt || new Date().toISOString()
+      })
+      .returning();
+    return taxReturn;
+  }
+
+  async updateTaxReturn(id: number, taxReturnUpdate: Partial<TaxReturn>): Promise<TaxReturn> {
+    const [updatedTaxReturn] = await db
+      .update(taxReturns)
+      .set({
+        ...taxReturnUpdate,
+        updatedAt: new Date().toISOString()
+      })
+      .where(eq(taxReturns.id, id))
+      .returning();
+    
+    if (!updatedTaxReturn) {
+      throw new Error(`세금 신고서 ID ${id}를 찾을 수 없습니다`);
+    }
+    
+    return updatedTaxReturn;
+  }
+
+  async deleteTaxReturn(id: number): Promise<void> {
+    const result = await db
+      .delete(taxReturns)
+      .where(eq(taxReturns.id, id))
+      .returning({ id: taxReturns.id });
+    
+    if (!result || result.length === 0) {
+      throw new Error(`세금 신고서 ID ${id}를 찾을 수 없습니다`);
+    }
+  }
+
+  // 데이터베이스 초기화 메서드
+  async initialize(): Promise<void> {
+    // 사용자 테이블이 비어있는지 확인
+    const userCount = await db.select().from(users).limit(1);
+    
+    if (userCount.length === 0) {
+      console.log("데이터베이스 초기화: 기본 사용자 및 샘플 세금 신고서 생성");
+      
+      // 기본 사용자 생성
+      const user = await this.createUser({
+        username: "default",
+        password: "password"
+      });
+      
+      // 기본 세금 신고서 생성
+      await this.createTaxReturn({
+        userId: user.id,
+        taxYear: new Date().getFullYear() - 1,
+        status: "in_progress",
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        personalInfo: {
+          firstName: "",
+          lastName: "",
+          ssn: "",
+          dateOfBirth: "",
+          occupation: "",
+          email: "",
+          phone: "",
+          address1: "",
+          city: "",
+          state: "",
+          zipCode: "",
+          filingStatus: "single",
+          dependents: []
+        },
+        calculatedResults: {
+          totalIncome: 0,
+          adjustments: 0,
+          adjustedGrossIncome: 0,
+          deductions: 0,
+          taxableIncome: 0,
+          federalTax: 0,
+          credits: 0,
+          taxDue: 0,
+          payments: 0,
+          refundAmount: 0,
+          amountOwed: 0
+        }
+      });
+    }
+  }
+}
+
+// 데이터베이스 스토리지 사용
+export const storage = new DatabaseStorage();

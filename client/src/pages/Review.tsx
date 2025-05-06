@@ -267,7 +267,7 @@ const Review: React.FC = () => {
               </SectionSummary>
               
               {/* Tax Credits Summary */}
-              <SectionSummary title="Tax Credits" editLink="/tax-credits">
+              <SectionSummary title="세액공제(Tax Credits)" editLink="/tax-credits">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <Field label="Child Tax Credit" value={formatCurrency(taxCredits.childTaxCredit)} />
@@ -283,7 +283,7 @@ const Review: React.FC = () => {
               </SectionSummary>
               
               {/* Additional Tax Summary */}
-              <SectionSummary title="Additional Tax" editLink="/additional-tax">
+              <SectionSummary title="추가 세금(Additional Tax)" editLink="/additional-tax">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <Field label="Self-Employment Income" value={formatCurrency(additionalTax.selfEmploymentIncome)} />
@@ -299,7 +299,7 @@ const Review: React.FC = () => {
               
               {/* Tax Calculation Summary */}
               <div className="border border-primary rounded-lg p-6 bg-primary/5 mb-6">
-                <h3 className="text-lg font-heading font-semibold text-primary-dark mb-4">Tax Calculation Summary</h3>
+                <h3 className="text-lg font-heading font-semibold text-primary-dark mb-4">세금 계산 요약(Tax Calculation Summary)</h3>
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
@@ -336,7 +336,7 @@ const Review: React.FC = () => {
                   onClick={handleGeneratePdf}
                 >
                   <File className="mr-2 h-4 w-4" />
-                  Download Tax Return PDF
+                  세금 신고서 PDF 다운로드(Download Tax Return PDF)
                 </Button>
                 
                 <div className="flex flex-col sm:flex-row gap-4">

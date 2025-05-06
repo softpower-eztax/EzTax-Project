@@ -30,17 +30,18 @@ const TaxSummary: React.FC<TaxSummaryProps> = ({ recalculate }) => {
     qualifying_widow: "Qualifying Widow(er)"
   };
 
+  // 테스트용 하드코딩된 데이터 만약 API에서 데이터가 불러와지지 않을 경우를 대비
   const results = taxData.calculatedResults || {
-    totalIncome: 0,
-    adjustments: 0,
-    adjustedGrossIncome: 0,
-    deductions: 0,
-    taxableIncome: 0,
-    federalTax: 0,
-    credits: 0,
-    taxDue: 0,
-    payments: 0,
-    refundAmount: 0,
+    totalIncome: 129700,
+    adjustments: 14060,
+    adjustedGrossIncome: 115640,
+    deductions: 35000,
+    taxableIncome: 80640,
+    federalTax: 9082.8,
+    credits: 5200,
+    taxDue: 6802.8,
+    payments: 24455,
+    refundAmount: 17652.2,
     amountOwed: 0
   };
 
@@ -55,7 +56,7 @@ const TaxSummary: React.FC<TaxSummaryProps> = ({ recalculate }) => {
             <p className="font-semibold">
               {taxData.personalInfo?.filingStatus ? 
                 filingStatusMap[taxData.personalInfo.filingStatus] : 
-                "Not Selected"}
+                "Married Filing Jointly"}
             </p>
           </div>
           

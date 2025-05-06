@@ -47,7 +47,7 @@ const PricingPage = () => {
             </div>
             <CardDescription>개인 기본 세금 신고 검토</CardDescription>
             <div className="mt-4">
-              <span className="text-3xl font-bold text-primary-dark">99,000원</span>
+              <span className="text-3xl font-bold text-primary-dark">$99</span>
               <span className="text-gray-500 ml-1">/ 건당</span>
             </div>
           </CardHeader>
@@ -97,7 +97,7 @@ const PricingPage = () => {
             </div>
             <CardDescription>심층적인 세금 분석 및 최적화</CardDescription>
             <div className="mt-4">
-              <span className="text-3xl font-bold text-primary-dark">199,000원</span>
+              <span className="text-3xl font-bold text-primary-dark">$199</span>
               <span className="text-gray-500 ml-1">/ 건당</span>
             </div>
           </CardHeader>
@@ -148,7 +148,7 @@ const PricingPage = () => {
             </div>
             <CardDescription>맞춤형 세무 컨설팅</CardDescription>
             <div className="mt-4">
-              <span className="text-3xl font-bold text-primary-dark">399,000원</span>
+              <span className="text-3xl font-bold text-primary-dark">$399</span>
               <span className="text-gray-500 ml-1">/ 건당</span>
             </div>
           </CardHeader>

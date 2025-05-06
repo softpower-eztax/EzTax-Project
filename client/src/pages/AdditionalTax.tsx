@@ -182,7 +182,7 @@ const AdditionalTaxPage: React.FC = () => {
                         name="otherIncome"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Additional Income</FormLabel>
+                            <FormLabel>추가 소득 (Additional Income)</FormLabel>
                             <FormControl>
                               <div className="relative">
                                 <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-dark">$</span>
@@ -199,7 +199,8 @@ const AdditionalTaxPage: React.FC = () => {
                               </div>
                             </FormControl>
                             <FormDescription>
-                              Income not reported elsewhere (unemployment, gambling, etc.)
+                              다른 곳에 보고되지 않은 소득 (실업급여, 도박, 등)
+                              (Income not reported elsewhere (unemployment, gambling, etc.))
                             </FormDescription>
                             <FormMessage />
                           </FormItem>
@@ -211,7 +212,7 @@ const AdditionalTaxPage: React.FC = () => {
                   {/* Other Taxes */}
                   <div className="mb-6 border-b border-gray-light pb-6">
                     <div className="flex items-center mb-3">
-                      <h4 className="font-semibold">Other Taxes</h4>
+                      <h4 className="font-semibold">기타 세금 (Other Taxes)</h4>
                       <TooltipProvider>
                         <Tooltip>
                           <TooltipTrigger asChild>
@@ -219,7 +220,8 @@ const AdditionalTaxPage: React.FC = () => {
                           </TooltipTrigger>
                           <TooltipContent>
                             <p className="w-64">
-                              Other taxes include early withdrawal penalties, household employment taxes, etc.
+                              기타 세금에는 조기 인출 벌금, 가정 고용 세금 등이 포함됩니다.
+                              (Other taxes include early withdrawal penalties, household employment taxes, etc.)
                             </p>
                           </TooltipContent>
                         </Tooltip>
@@ -232,7 +234,7 @@ const AdditionalTaxPage: React.FC = () => {
                         name="otherTaxes"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Additional Taxes</FormLabel>
+                            <FormLabel>추가 세금 (Additional Taxes)</FormLabel>
                             <FormControl>
                               <div className="relative">
                                 <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-dark">$</span>
@@ -249,7 +251,8 @@ const AdditionalTaxPage: React.FC = () => {
                               </div>
                             </FormControl>
                             <FormDescription>
-                              Additional taxes not calculated elsewhere
+                              다른 곳에서 계산되지 않은 추가 세금
+                              (Additional taxes not calculated elsewhere)
                             </FormDescription>
                             <FormMessage />
                           </FormItem>
@@ -261,7 +264,7 @@ const AdditionalTaxPage: React.FC = () => {
                   {/* Estimated Tax Payments */}
                   <div className="mb-6">
                     <div className="flex items-center mb-3">
-                      <h4 className="font-semibold">Estimated Tax Payments</h4>
+                      <h4 className="font-semibold">예상 세금 납부 (Estimated Tax Payments)</h4>
                       <TooltipProvider>
                         <Tooltip>
                           <TooltipTrigger asChild>
@@ -269,7 +272,8 @@ const AdditionalTaxPage: React.FC = () => {
                           </TooltipTrigger>
                           <TooltipContent>
                             <p className="w-64">
-                              Include the total of your quarterly estimated tax payments made for the 2023 tax year.
+                              2025년 세무연도에 납부한 분기별 예상 세금 납부액의 총액을 포함하세요.
+                              (Include the total of your quarterly estimated tax payments made for the 2025 tax year.)
                             </p>
                           </TooltipContent>
                         </Tooltip>
@@ -282,7 +286,7 @@ const AdditionalTaxPage: React.FC = () => {
                         name="estimatedTaxPayments"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Total Estimated Tax Payments</FormLabel>
+                            <FormLabel>총 예상 세금 납부액 (Total Estimated Tax Payments)</FormLabel>
                             <FormControl>
                               <div className="relative">
                                 <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-dark">$</span>
@@ -299,7 +303,8 @@ const AdditionalTaxPage: React.FC = () => {
                               </div>
                             </FormControl>
                             <FormDescription>
-                              Total of all quarterly payments made during 2023
+                              2025년 동안 납부한 모든 분기별 납부액의 총액
+                              (Total of all quarterly payments made during 2025)
                             </FormDescription>
                             <FormMessage />
                           </FormItem>

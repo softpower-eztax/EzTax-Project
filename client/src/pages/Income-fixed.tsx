@@ -26,6 +26,7 @@ export default function IncomePage() {
   
   const defaultValues: Income = {
     wages: taxData.income?.wages || 0,
+    otherEarnedIncome: taxData.income?.otherEarnedIncome || 0,
     interestIncome: taxData.income?.interestIncome || 0,
     dividends: taxData.income?.dividends || 0,
     businessIncome: taxData.income?.businessIncome || 0,
@@ -53,6 +54,7 @@ export default function IncomePage() {
   const calculateTotals = () => {
     // 총소득 계산
     const wages = form.getValues('wages') || 0;
+    const otherEarnedIncome = form.getValues('otherEarnedIncome') || 0;
     const interestIncome = form.getValues('interestIncome') || 0;
     const dividends = form.getValues('dividends') || 0;
     const businessIncome = form.getValues('businessIncome') || 0;
@@ -65,7 +67,7 @@ export default function IncomePage() {
     // 추가 소득 항목이 있으면 포함
     const additionalItemsTotal = form.getValues('additionalIncomeItems')?.reduce((sum, item) => sum + (item.amount || 0), 0) || 0;
     
-    const totalIncome = wages + interestIncome + dividends + businessIncome + capitalGains + 
+    const totalIncome = wages + otherEarnedIncome + interestIncome + dividends + businessIncome + capitalGains + 
                       rentalIncome + retirementIncome + unemploymentIncome + otherIncome + additionalItemsTotal;
     
     form.setValue('totalIncome', totalIncome);
@@ -226,6 +228,34 @@ export default function IncomePage() {
                           </div>
                         </div>
                       </div>
+                      
+                      <FormField
+                        control={form.control}
+                        name="otherEarnedIncome"
+                        render={({ field }) => (
+                          <FormItem className="flex flex-col justify-center h-full">
+                            <div className="flex justify-between">
+                              <FormLabel>기타 근로소득 (Other Earned Income)</FormLabel>
+                              <div className="tooltip">
+                                <InfoIcon className="h-4 w-4 text-gray-dark" />
+                                <span className="tooltip-text">Other earned income not reported on W-2</span>
+                              </div>
+                            </div>
+                            <FormControl>
+                              <Input
+                                type="number"
+                                step="0.01"
+                                min="0"
+                                {...field}
+                                onChange={(e) => {
+                                  field.onChange(parseFloat(e.target.value) || 0);
+                                }}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
                     </div>
                   </div>
                   

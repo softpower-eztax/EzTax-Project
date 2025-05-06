@@ -94,6 +94,7 @@ export interface AdditionalIncomeItem {
 
 export interface Income {
   wages: number;
+  otherEarnedIncome: number;
   interestIncome: number;
   dividends: number;
   businessIncome: number;
@@ -201,6 +202,7 @@ export const additionalIncomeItemSchema = z.object({
 
 export const incomeSchema = z.object({
   wages: z.number().min(0),
+  otherEarnedIncome: z.number().min(0),
   interestIncome: z.number().min(0),
   dividends: z.number().min(0),
   businessIncome: z.number().min(0),

@@ -269,7 +269,7 @@ export default function IncomePage() {
                         render={({ field }) => (
                           <FormItem className="flex flex-col justify-center h-full">
                             <div className="flex justify-between">
-                              <FormLabel>이자 소득 (Interest Income)</FormLabel>
+                              <FormLabel>이자소득 (Interest Income)</FormLabel>
                               <div className="tooltip">
                                 <InfoIcon className="h-4 w-4 text-gray-dark" />
                                 <span className="tooltip-text">Include interest from bank accounts, CDs, etc.</span>
@@ -297,7 +297,7 @@ export default function IncomePage() {
                         render={({ field }) => (
                           <FormItem className="flex flex-col justify-center h-full">
                             <div className="flex justify-between">
-                              <FormLabel>배당금 (Dividends)</FormLabel>
+                              <FormLabel>배당소득 (Dividends)</FormLabel>
                               <div className="tooltip">
                                 <InfoIcon className="h-4 w-4 text-gray-dark" />
                                 <span className="tooltip-text">Include dividends from stocks and mutual funds</span>
@@ -325,7 +325,7 @@ export default function IncomePage() {
                         render={({ field }) => (
                           <FormItem className="flex flex-col justify-center h-full">
                             <div className="flex justify-between">
-                              <FormLabel>임대 소득 (Rental Income)</FormLabel>
+                              <FormLabel>임대소득 (Rental Income)</FormLabel>
                               <div className="tooltip">
                                 <InfoIcon className="h-4 w-4 text-gray-dark" />
                                 <span className="tooltip-text">Income from renting property after expenses</span>
@@ -362,7 +362,7 @@ export default function IncomePage() {
                         render={({ field }) => (
                           <FormItem>
                             <div className="flex justify-between">
-                              <FormLabel>학자금 대출 이자 (Student Loan Interest)</FormLabel>
+                              <FormLabel>학자금대출이자 (Student Loan Interest)</FormLabel>
                               <div className="tooltip">
                                 <InfoIcon className="h-4 w-4 text-gray-dark" />
                                 <span className="tooltip-text">Maximum deduction is $2,500</span>
@@ -391,7 +391,7 @@ export default function IncomePage() {
                         render={({ field }) => (
                           <FormItem>
                             <div className="flex justify-between">
-                              <FormLabel>은퇴 계좌 기여금 (Retirement Contributions)</FormLabel>
+                              <FormLabel>은퇴계좌기여금 (Retirement Contributions)</FormLabel>
                               <div className="tooltip">
                                 <InfoIcon className="h-4 w-4 text-gray-dark" />
                                 <span className="tooltip-text">IRA, 401k, etc. contributions</span>
@@ -419,7 +419,7 @@ export default function IncomePage() {
                         render={({ field }) => (
                           <FormItem>
                             <div className="flex justify-between">
-                              <FormLabel>건강 저축 계좌 (HSA Contributions)</FormLabel>
+                              <FormLabel>건강저축계좌 (HSA Contributions)</FormLabel>
                               <div className="tooltip">
                                 <InfoIcon className="h-4 w-4 text-gray-dark" />
                                 <span className="tooltip-text">Health Savings Account contributions</span>
@@ -447,7 +447,7 @@ export default function IncomePage() {
                         render={({ field }) => (
                           <FormItem>
                             <div className="flex justify-between">
-                              <FormLabel>기타 조정 항목 (Other Adjustments)</FormLabel>
+                              <FormLabel>기타조정항목 (Other Adjustments)</FormLabel>
                               <div className="tooltip">
                                 <InfoIcon className="h-4 w-4 text-gray-dark" />
                                 <span className="tooltip-text">Moving expenses, self-employment tax, etc.</span>
@@ -484,7 +484,7 @@ export default function IncomePage() {
                       <span>{new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", minimumFractionDigits: 2 }).format(form.getValues('totalIncome'))}</span>
                     </div>
                     <div className="income-total-row">
-                      <span>조정 항목 총액 (Total Adjustments)</span>
+                      <span>조정항목총액 (Total Adjustments)</span>
                       <span>
                         {new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", minimumFractionDigits: 2 }).format(
                           (form.getValues('adjustments.studentLoanInterest') || 0) +

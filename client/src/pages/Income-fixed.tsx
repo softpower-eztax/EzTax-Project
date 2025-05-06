@@ -120,7 +120,56 @@ export default function IncomePage() {
     if (taxData.income?.additionalAdjustmentItems) {
       setAdditionalAdjustmentItems(taxData.income.additionalAdjustmentItems);
     }
+    
+    // 디버깅
+    console.log('taxData updated:', {
+      additionalIncomeItems: taxData.income?.additionalIncomeItems || [],
+      additionalAdjustmentItems: taxData.income?.additionalAdjustmentItems || []
+    });
   }, [taxData.income]);
+  
+  // 테스트용 함수 - 더미 데이터 추가
+  const addDummyData = () => {
+    // 더미 소득 항목 추가
+    const dummyIncomeItems: AdditionalIncomeItem[] = [
+      { type: '도박 소득 (Gambling winnings)', amount: 1200, description: '복권 당첨금' },
+      { type: '배심원 수당 (Jury duty pay)', amount: 480, description: '지방법원 배심원 참여' }
+    ];
+    
+    // 더미 조정 항목 추가
+    const dummyAdjustmentItems: AdditionalAdjustmentItem[] = [
+      { type: '교육자 비용 (Educator expenses)', amount: 250, description: '교육 자료 구입' },
+      { type: '학자금대출 이자 (Student loan interest)', amount: 1500, description: '연간 지불 이자' }
+    ];
+    
+    // 상태 업데이트
+    setAdditionalIncomeItems(dummyIncomeItems);
+    setAdditionalAdjustmentItems(dummyAdjustmentItems);
+    
+    // 폼 데이터 업데이트
+    const currentIncome = form.getValues();
+    currentIncome.additionalIncomeItems = dummyIncomeItems;
+    currentIncome.additionalAdjustmentItems = dummyAdjustmentItems;
+    
+    // otherIncome 필드 업데이트 (기타소득 합계)
+    const totalOtherIncome = dummyIncomeItems.reduce((sum, item) => sum + item.amount, 0);
+    form.setValue('otherIncome', totalOtherIncome);
+    
+    // otherAdjustments 필드 업데이트 (기타조정 합계)
+    const totalOtherAdjustments = dummyAdjustmentItems.reduce((sum, item) => sum + item.amount, 0);
+    form.setValue('adjustments.otherAdjustments', totalOtherAdjustments);
+    
+    // 총소득 재계산
+    calculateTotals();
+    
+    // 콘텍스트 업데이트
+    updateTaxData({ income: currentIncome });
+    
+    toast({
+      title: "테스트 데이터 추가됨",
+      description: "기타소득 및 기타조정 테스트 데이터가 추가되었습니다."
+    });
+  };
   
   // 값이 변경될 때마다 총소득과 AGI 재계산
   useEffect(() => {
@@ -142,7 +191,17 @@ export default function IncomePage() {
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
               <Card className="mb-8">
                 <CardHeader>
-                  <CardTitle className="text-xl font-heading text-primary-dark">소득정보 (Income Information)</CardTitle>
+                  <div className="flex justify-between items-center">
+                    <CardTitle className="text-xl font-heading text-primary-dark">소득정보 (Income Information)</CardTitle>
+                    <Button 
+                      type="button" 
+                      size="sm" 
+                      variant="outline" 
+                      onClick={addDummyData}
+                    >
+                      테스트 데이터 추가
+                    </Button>
+                  </div>
                 </CardHeader>
                 <CardContent className="space-y-6">
                   <div>

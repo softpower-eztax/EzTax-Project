@@ -3,7 +3,7 @@ import { useLocation } from 'wouter';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
-import { Income } from '@shared/schema';
+import { Income, AdditionalAdjustmentItem } from '@shared/schema';
 import { useTaxContext } from '@/context/TaxContext';
 import { Button } from '@/components/ui/button';
 import {

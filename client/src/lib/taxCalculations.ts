@@ -1,5 +1,6 @@
 import { 
   PersonalInformation, 
+  Income,
   Deductions, 
   TaxCredits, 
   AdditionalTax, 
@@ -9,6 +10,7 @@ import {
 
 interface TaxData {
   personalInfo?: PersonalInformation;
+  income?: Income;
   deductions?: Deductions;
   taxCredits?: TaxCredits;
   additionalTax?: AdditionalTax;

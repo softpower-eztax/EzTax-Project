@@ -169,11 +169,26 @@ export const TaxProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         if (response.ok) {
           const data = await response.json();
           if (data) {
-            setTaxData(data);
+            // Apply test data but preserve the ID if it exists
+            const testData = { ...taxData, id: data.id, userId: data.userId };
+            // Immediately recalculate taxes
+            const calculatedResults = calculateTaxes(testData);
+            setTaxData({
+              ...testData,
+              calculatedResults,
+              updatedAt: new Date().toISOString()
+            });
           }
         }
       } catch (error) {
         console.error('Error loading tax data:', error);
+        // If error loading from server, still initialize with calculated values
+        const calculatedResults = calculateTaxes(taxData);
+        setTaxData(prev => ({
+          ...prev,
+          calculatedResults,
+          updatedAt: new Date().toISOString()
+        }));
       } finally {
         setIsLoading(false);
       }

@@ -193,11 +193,11 @@ export default function AdditionalAdjustmentsPage() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
               <div>
-                <FormLabel>항목 (Item)</FormLabel>
+                <label className="text-sm font-medium">항목 (Item)</label>
                 <select 
                   value={selectedType}
                   onChange={(e) => setSelectedType(e.target.value)}
-                  className="w-full p-2 border rounded"
+                  className="w-full p-2 border rounded mt-1"
                 >
                   <option value="">선택하세요</option>
                   {ADJUSTMENT_TYPES.map((type) => (
@@ -207,23 +207,25 @@ export default function AdditionalAdjustmentsPage() {
               </div>
 
               <div>
-                <FormLabel>금액 (Amount)</FormLabel>
+                <label className="text-sm font-medium">금액 (Amount)</label>
                 <Input
                   type="number"
                   step="0.01"
                   min="0"
                   value={amount}
                   onChange={(e) => setAmount(parseFloat(e.target.value) || 0)}
+                  className="mt-1"
                 />
               </div>
 
               <div className="md:col-span-2">
-                <FormLabel>설명 (Description) - 선택사항</FormLabel>
+                <label className="text-sm font-medium">설명 (Description) - 선택사항</label>
                 <Input
                   type="text"
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   placeholder="추가 정보를 입력하세요 (선택사항)"
+                  className="mt-1"
                 />
               </div>
             </div>

@@ -1,28 +1,56 @@
-import React, { useState, useEffect } from 'react';
-import { useLocation } from 'wouter';
-import { AdditionalIncomeItem, Income } from '@shared/schema';
-import { useTaxContext } from '@/context/TaxContext';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Info as InfoIcon, ArrowLeft, Plus } from 'lucide-react';
-import { useToast } from '@/hooks/use-toast';
-import { formatCurrency } from '@/lib/taxCalculations';
+import { useEffect, useState } from "react";
+import { useLocation } from "wouter";
+import { useTaxContext } from "@/context/TaxContext";
+import { useToast } from "@/hooks/use-toast";
+import { formatCurrency } from "@/lib/taxCalculations";
+import { AdditionalIncomeItem } from "@shared/schema";
+import { ArrowLeft, Info as InfoIcon, Plus, X, Save } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 
-// 소득 유형 상수 정의
+// 소득 항목 타입 정의
 const INCOME_TYPES = [
-  { id: 'gambling_winnings', label: '도박 소득 (Gambling winnings)', info: '카지노, 로또, 및 기타 도박 활동에서 발생한 소득' },
-  { id: 'debt_cancellation', label: '부채 탕감 (Cancellation of debt)', info: '대출기관에 의해 탕감된 부채는 일반적으로 소득으로 간주됩니다' },
-  { id: 'foreign_income', label: '해외 근로소득 제외액 (Form 2555) (Foreign earned income exclusion)', info: '해외에서 근무하며 얻은 소득에 대한 특별 처리' },
-  { id: 'archer_msa', label: 'Archer 의료 저축 계좌 인출액 및 장기요양보험 지급금 (Form 8853)', info: '의료 저축 계좌에서 인출된 금액' },
-  { id: 'hsa_distributions', label: 'HSA 계좌 인출액 (Form 8889) (Health Savings Accounts)', info: '건강 저축 계좌에서 인출된 자금' },
-  { id: 'alaska_fund', label: '알래스카 영구 기금 배당금 (Alaska Permanent Fund dividends)', info: '알래스카 주민이 받는 배당금' },
-  { id: 'jury_duty', label: '배심원 수당 (Jury duty pay)', info: '배심원으로 봉사하면서 받은 보상' },
-  { id: 'prizes', label: '상금 및 수상금 (Prizes and awards)', info: '경쟁, 게임 또는 대회에서 받은 상금' },
-  { id: 'hobby_income', label: '취미활동 소득 (Activity not engaged in for profit income)', info: '영리 목적이 아닌 활동에서 발생한 소득' },
-  { id: 'stock_options', label: '스톡옵션 소득 (Stock options)', info: '회사 스톡옵션 행사로 인한 소득' },
-  { id: 'incarceration_income', label: '수감 중 벌어들인 임금 (Wages earned while incarcerated)', info: '교도소에서 근무하면서 받은 임금' },
-  { id: 'digital_assets', label: '다른 곳에 보고되지 않은 일반 소득으로 수령한 디지털 자산', info: '암호화폐나 NFT와 같은 디지털 자산 형태로 받은 소득' }
+  {
+    id: "gambling_winnings",
+    label: "도박 소득 (Gambling winnings)",
+    info: "카지노, 로또, 온라인 게임 등에서 얻은 소득을 포함합니다."
+  },
+  {
+    id: "alimony",
+    label: "위자료 (Alimony)",
+    info: "이혼 합의에 따라 받은 정기적인 위자료 지급금입니다."
+  },
+  {
+    id: "jury_duty",
+    label: "배심원 수당 (Jury duty pay)",
+    info: "배심원으로 참여하여 받은 보수입니다."
+  },
+  {
+    id: "prizes_awards",
+    label: "상금 및 경품 (Prizes and awards)",
+    info: "대회, 경연, 이벤트 등에서 받은 상금이나 경품입니다."
+  },
+  {
+    id: "hobby_income",
+    label: "취미 활동 소득 (Hobby income)",
+    info: "사업이 아닌 취미 활동을 통해 얻은 수입입니다."
+  },
+  {
+    id: "royalties",
+    label: "저작권 사용료 (Royalties)",
+    info: "책, 음악, 특허 등의 지적재산권에서 발생한 수입입니다."
+  },
+  {
+    id: "virtual_currency",
+    label: "가상화폐 소득 (Virtual currency income)",
+    info: "비트코인 등 가상화폐 거래로 인한 소득입니다."
+  },
+  {
+    id: "other_income",
+    label: "기타 소득 (Other income)",
+    info: "위 항목에 해당하지 않는 기타 소득입니다."
+  }
 ];
 
 export default function AdditionalIncomeFixedPage() {
@@ -33,10 +61,15 @@ export default function AdditionalIncomeFixedPage() {
   // 상태 정의 - 초기화 시에는 빈 배열로 설정하고, useEffect에서 데이터 로딩
   const [itemsList, setItemsList] = useState<AdditionalIncomeItem[]>([]);
   
-  // 새 항목 입력 필드용 상태
-  const [itemType, setItemType] = useState<string>('');
-  const [itemAmount, setItemAmount] = useState<string>('');
-  const [itemDescription, setItemDescription] = useState<string>('');
+  // 여러 개의 입력 필드를 관리하기 위한 상태
+  const [inputFields, setInputFields] = useState<{
+    id: number;
+    type: string;
+    amount: string;
+    description: string;
+  }[]>([
+    { id: 1, type: '', amount: '', description: '' } // 초기 입력 필드 하나
+  ]);
   
   // 컴포넌트 마운트 시 기존 데이터 로드
   useEffect(() => {
@@ -48,57 +81,85 @@ export default function AdditionalIncomeFixedPage() {
   
   console.log("현재 아이템 목록:", itemsList);
 
-  // 항목 추가 핸들러
-  const handleAddItem = () => {
-    console.log("항목 추가 함수 호출됨");
-    console.log("현재 값:", { 항목: itemType, 금액: itemAmount, 설명: itemDescription });
+  // 새 입력 필드 추가 핸들러
+  const addInputField = () => {
+    const newId = inputFields.length > 0 
+      ? Math.max(...inputFields.map(field => field.id)) + 1 
+      : 1;
     
-    // 유효성 검사
-    if (!itemType) {
-      toast({
-        title: "항목 선택 필요",
-        description: "추가할 소득 항목을 선택해주세요.",
-        variant: "destructive"
-      });
-      return;
-    }
-    
-    const amount = parseFloat(itemAmount);
-    if (isNaN(amount) || amount <= 0) {
-      toast({
-        title: "금액 입력 오류",
-        description: "금액은 0보다 큰 숫자여야 합니다.",
-        variant: "destructive"
-      });
-      return;
-    }
-    
-    // 항목 라벨 찾기
-    const selectedTypeLabel = INCOME_TYPES.find(type => type.id === itemType)?.label || itemType;
-    console.log("선택된 항목 라벨:", selectedTypeLabel);
-    
-    // 새 항목 생성
-    const newItem: AdditionalIncomeItem = {
-      type: selectedTypeLabel,
-      amount: amount,
-      description: itemDescription || undefined
-    };
-    
-    console.log("새 항목 생성:", newItem);
-    
-    // 항목 목록에 추가
-    const updatedItems = [...itemsList, newItem];
-    console.log("업데이트된 항목 목록:", updatedItems);
-    setItemsList(updatedItems);
-    
-    // 입력 필드 초기화
-    setItemType('');
-    setItemAmount('');
-    setItemDescription('');
+    setInputFields([
+      ...inputFields,
+      { id: newId, type: '', amount: '', description: '' }
+    ]);
     
     toast({
-      title: "항목 추가됨",
-      description: "소득 항목이 목록에 추가되었습니다."
+      title: "입력 필드 추가됨",
+      description: "새로운 항목을 입력할 수 있습니다."
+    });
+  };
+  
+  // 입력 필드 값 업데이트 핸들러
+  const handleInputChange = (id: number, field: string, value: string) => {
+    const updatedFields = inputFields.map(item => 
+      item.id === id ? { ...item, [field]: value } : item
+    );
+    setInputFields(updatedFields);
+  };
+  
+  // 입력 필드 삭제 핸들러
+  const removeInputField = (id: number) => {
+    if (inputFields.length === 1) {
+      toast({
+        title: "삭제 불가",
+        description: "최소 하나의 입력 필드는 있어야 합니다.",
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    setInputFields(inputFields.filter(field => field.id !== id));
+  };
+  
+  // 항목 저장 핸들러
+  const saveItems = () => {
+    console.log("항목 저장 함수 호출됨");
+    
+    // 유효한 항목들만 필터링
+    const validItems = inputFields.filter(field => 
+      field.type && parseFloat(field.amount) > 0
+    );
+    
+    if (validItems.length === 0) {
+      toast({
+        title: "저장 불가",
+        description: "유효한 항목이 없습니다. 최소한 하나의 항목과 금액을 입력해주세요.",
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    // 유효한 항목들을 AdditionalIncomeItem 형식으로 변환
+    const newItems: AdditionalIncomeItem[] = validItems.map(field => {
+      const amount = parseFloat(field.amount);
+      const typeLabel = INCOME_TYPES.find(type => type.id === field.type)?.label || field.type;
+      
+      return {
+        type: typeLabel,
+        amount,
+        description: field.description || undefined
+      };
+    });
+    
+    // 항목 목록에 추가
+    const updatedItems = [...itemsList, ...newItems];
+    setItemsList(updatedItems);
+    
+    // 입력 필드 초기화 - 하나의 빈 필드만 남김
+    setInputFields([{ id: 1, type: '', amount: '', description: '' }]);
+    
+    toast({
+      title: "항목 저장 성공",
+      description: `${newItems.length}개의 소득 항목이 저장되었습니다.`
     });
   };
   
@@ -283,63 +344,87 @@ export default function AdditionalIncomeFixedPage() {
         <CardContent>
           <div className="mb-8">
             <p className="text-sm text-gray-dark mb-4">
-              주 소득 외에 추가로 신고해야 하는 소득 항목을 입력하세요. 해당하는 항목이 있으면 선택하여 금액을 입력하세요.
+              주 소득 외에 추가로 신고해야 하는 소득 항목을 입력하세요. 항목 추가 버튼을 클릭하여 새로운 입력 필드를 추가할 수 있습니다.
             </p>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-              <div>
-                <label className="text-sm font-medium">항목 (Item)</label>
-                <select 
-                  value={itemType}
-                  onChange={(e) => setItemType(e.target.value)}
-                  className="w-full p-2 border rounded mt-1"
-                >
-                  <option value="">선택하세요</option>
-                  {INCOME_TYPES.map((type) => (
-                    <option key={type.id} value={type.id}>{type.label}</option>
-                  ))}
-                </select>
-              </div>
-              
-              <div>
-                <label className="text-sm font-medium">금액 (Amount)</label>
-                <Input
-                  type="number"
-                  step="0.01"
-                  min="0"
-                  value={itemAmount}
-                  onChange={(e) => {
-                    console.log("금액 변경:", e.target.value);
-                    setItemAmount(e.target.value);
-                  }}
-                  className="mt-1"
-                />
-              </div>
-              
-              <div className="md:col-span-2">
-                <label className="text-sm font-medium">설명 (Description) - 선택사항</label>
-                <Input
-                  type="text"
-                  value={itemDescription}
-                  onChange={(e) => setItemDescription(e.target.value)}
-                  placeholder="추가 정보를 입력하세요 (선택사항)"
-                  className="mt-1"
-                />
-              </div>
+            <div className="space-y-6 mb-6">
+              {inputFields.map((field) => (
+                <div key={field.id} className="p-4 border rounded-md bg-gray-50">
+                  <div className="flex justify-between items-center mb-4">
+                    <h4 className="font-medium">소득 항목 #{field.id}</h4>
+                    {inputFields.length > 1 && (
+                      <Button 
+                        variant="destructive" 
+                        size="sm"
+                        onClick={() => removeInputField(field.id)}
+                      >
+                        <X className="h-4 w-4 mr-1" />
+                        필드 삭제
+                      </Button>
+                    )}
+                  </div>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="text-sm font-medium">항목 (Item)</label>
+                      <select 
+                        value={field.type}
+                        onChange={(e) => handleInputChange(field.id, 'type', e.target.value)}
+                        className="w-full p-2 border rounded mt-1"
+                      >
+                        <option value="">선택하세요</option>
+                        {INCOME_TYPES.map((type) => (
+                          <option key={type.id} value={type.id}>{type.label}</option>
+                        ))}
+                      </select>
+                    </div>
+                    
+                    <div>
+                      <label className="text-sm font-medium">금액 (Amount)</label>
+                      <Input
+                        type="number"
+                        step="0.01"
+                        min="0"
+                        value={field.amount}
+                        onChange={(e) => handleInputChange(field.id, 'amount', e.target.value)}
+                        className="mt-1"
+                      />
+                    </div>
+                    
+                    <div className="md:col-span-2">
+                      <label className="text-sm font-medium">설명 (Description) - 선택사항</label>
+                      <Input
+                        type="text"
+                        value={field.description}
+                        onChange={(e) => handleInputChange(field.id, 'description', e.target.value)}
+                        placeholder="추가 정보를 입력하세요 (선택사항)"
+                        className="mt-1"
+                      />
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
             
-            <Button 
-              type="button"
-              onClick={(e) => {
-                e.preventDefault();
-                console.log("항목 추가 버튼 직접 클릭 이벤트", e);
-                handleAddItem();
-              }}
-              className="w-full md:w-auto bg-blue-600 hover:bg-blue-700 text-white"
-            >
-              <Plus className="h-4 w-4 mr-1" />
-              항목 추가
-            </Button>
+            <div className="flex flex-col md:flex-row gap-3">
+              <Button 
+                type="button"
+                onClick={addInputField}
+                className="bg-blue-600 hover:bg-blue-700 text-white"
+              >
+                <Plus className="h-4 w-4 mr-1" />
+                항목 추가
+              </Button>
+              
+              <Button
+                type="button" 
+                onClick={saveItems}
+                className="bg-green-600 hover:bg-green-700 text-white"
+              >
+                <Save className="h-4 w-4 mr-1" />
+                항목 저장
+              </Button>
+            </div>
           </div>
           
           {itemsList.length > 0 && (

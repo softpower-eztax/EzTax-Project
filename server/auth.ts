@@ -177,17 +177,33 @@ export function setupAuth(app: Express) {
     });
   });
 
-  // 구글 인증 라우트
+  // 구글 인증 라우트 - 디버깅용 정보 포함
   app.get(
     "/auth/google",
-    passport.authenticate("google", { scope: ["profile", "email"] })
+    (req, res, next) => {
+      console.log("구글 인증 요청 받음: ", req.url);
+      next();
+    },
+    passport.authenticate("google", { 
+      scope: ["profile", "email"],
+      prompt: "select_account"
+    })
   );
 
   app.get(
     "/auth/google/callback",
-    passport.authenticate("google", { failureRedirect: "/auth" }),
+    (req, res, next) => {
+      console.log("구글 콜백 받음: ", req.url);
+      next();
+    },
+    passport.authenticate("google", { 
+      failureRedirect: "/auth",
+      failureMessage: true,
+      successMessage: true
+    }),
     (req, res) => {
       // 인증 성공 시 홈페이지로 리다이렉트
+      console.log("구글 인증 성공");
       res.redirect("/");
     }
   );

@@ -185,7 +185,7 @@ export default function AuthPage() {
                     variant="outline" 
                     className="w-full" 
                     type="button"
-                    onClick={() => window.location.href = "/auth/google"}
+                    onClick={() => window.location.href = "https://" + window.location.host + "/auth/google"}
                   >
                     <div className="flex items-center">
                       <FcGoogle className="mr-2 h-5 w-5" />
@@ -314,7 +314,7 @@ export default function AuthPage() {
                     variant="outline" 
                     className="w-full" 
                     type="button"
-                    onClick={() => window.location.href = "/auth/google"}
+                    onClick={() => window.location.href = "https://" + window.location.host + "/auth/google"}
                   >
                     <div className="flex items-center">
                       <FcGoogle className="mr-2 h-5 w-5" />

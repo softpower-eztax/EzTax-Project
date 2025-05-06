@@ -349,7 +349,7 @@ const Review: React.FC = () => {
                   </Button>
                   
                   <Button
-                    className="bg-primary text-white font-semibold rounded hover:bg-primary-dark transition duration-200"
+                    className="bg-primary text-white font-semibold rounded hover:bg-primary-dark transition duration-200 mr-2"
                     onClick={() => setShowSubmitDialog(true)}
                     disabled={isLoading}
                   >
@@ -361,6 +361,19 @@ const Review: React.FC = () => {
                     ) : (
                       '세금 신고서 제출(Submit Tax Return)'
                     )}
+                  </Button>
+                  
+                  <Button
+                    className="bg-success text-white font-semibold rounded hover:bg-success/80 transition duration-200"
+                    onClick={() => {
+                      toast({
+                        title: "유료검토 신청",
+                        description: "세무사와 연결 중입니다. 곧 연락드리겠습니다.",
+                        variant: "success",
+                      });
+                    }}
+                  >
+                    유료검토(Review)
                   </Button>
                 </div>
               </div>

@@ -154,7 +154,7 @@ const Review: React.FC = () => {
       toast({
         title: "PDF Generated",
         description: "Your tax return PDF has been downloaded.",
-        variant: "success",
+        variant: "default",
       });
     } catch (error) {
       console.error('Error generating PDF:', error);
@@ -176,7 +176,7 @@ const Review: React.FC = () => {
       toast({
         title: "Tax Return Submitted",
         description: "Your tax return has been successfully submitted.",
-        variant: "success",
+        variant: "default",
       });
     } catch (error) {
       console.error('Error submitting tax return:', error);
@@ -332,7 +332,7 @@ const Review: React.FC = () => {
               <div className="flex flex-col sm:flex-row justify-between mt-10 gap-4">
                 <Button
                   variant="outline"
-                  className="flex items-center"
+                  className="flex items-center min-w-[240px] justify-center"
                   onClick={handleGeneratePdf}
                 >
                   <File className="mr-2 h-4 w-4" />
@@ -342,14 +342,14 @@ const Review: React.FC = () => {
                 <div className="flex flex-col sm:flex-row gap-4">
                   <Button
                     variant="outline"
-                    className="border-primary text-primary font-semibold rounded hover:bg-primary-light hover:text-white transition duration-200"
+                    className="border-primary text-primary font-semibold rounded hover:bg-primary-light hover:text-white transition duration-200 min-w-[240px] justify-center"
                     onClick={() => navigate('/additional-tax')}
                   >
                     이전: 추가 세금(Previous: Additional Tax)
                   </Button>
                   
                   <Button
-                    className="bg-primary text-white font-semibold rounded hover:bg-primary-dark transition duration-200 mr-2"
+                    className="bg-primary text-white font-semibold rounded hover:bg-primary-dark transition duration-200 mr-2 min-w-[240px] justify-center"
                     onClick={() => setShowSubmitDialog(true)}
                     disabled={isLoading}
                   >
@@ -364,12 +364,12 @@ const Review: React.FC = () => {
                   </Button>
                   
                   <Button
-                    className="bg-success text-white font-semibold rounded hover:bg-success/80 transition duration-200"
+                    className="bg-success text-white font-semibold rounded hover:bg-success/80 transition duration-200 min-w-[240px] justify-center"
                     onClick={() => {
                       toast({
                         title: "유료검토 신청",
                         description: "세무사와 연결 중입니다. 곧 연락드리겠습니다.",
-                        variant: "success",
+                        variant: "default",
                       });
                     }}
                   >

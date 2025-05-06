@@ -64,8 +64,8 @@ const AdditionalTaxPage: React.FC = () => {
   return (
     <div className="max-w-5xl mx-auto">
       <div className="mb-8">
-        <h1 className="text-3xl font-heading font-bold text-primary-dark mb-2">귀하의 2025년 세금 신고서</h1>
-        <p className="text-gray-dark">세금 신고서를 준비하기 위해 모든 섹션을 작성하세요. 입력한 정보는 자동으로 저장됩니다.</p>
+        <h1 className="text-3xl font-heading font-bold text-primary-dark mb-2">귀하의 2025년 세금 신고서 (Your 2025 Tax Return)</h1>
+        <p className="text-gray-dark">세금 신고서를 준비하기 위해 모든 섹션을 작성하세요. 입력한 정보는 자동으로 저장됩니다. (Complete all sections to prepare your tax return. Your information is saved automatically.)</p>
       </div>
 
       <ProgressTracker currentStep={5} />
@@ -318,7 +318,7 @@ const AdditionalTaxPage: React.FC = () => {
               <StepNavigation
                 prevStep="/tax-credits"
                 nextStep="/review"
-                submitText="Review & Calculate"
+                submitText="검토 및 계산 (Review & Calculate)"
                 onNext={() => {
                   if (form.formState.isValid) {
                     onSubmit(form.getValues());
@@ -327,8 +327,8 @@ const AdditionalTaxPage: React.FC = () => {
                     form.trigger();
                     if (!form.formState.isValid) {
                       toast({
-                        title: "Invalid form",
-                        description: "Please fix the errors in the form before proceeding.",
+                        title: "잘못된 양식 (Invalid form)",
+                        description: "계속하기 전에 양식의 오류를 수정해주세요. (Please fix the errors in the form before proceeding.)",
                         variant: "destructive",
                       });
                     }

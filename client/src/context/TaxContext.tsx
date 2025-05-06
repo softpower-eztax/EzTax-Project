@@ -254,7 +254,7 @@ export const TaxProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   // Reset tax return to default values
   const resetTaxReturn = () => {
     setTaxData({
-      taxYear: new Date().getFullYear() - 1,
+      taxYear: 2025,
       status: 'in_progress',
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),

@@ -34,40 +34,40 @@ const Home: React.FC = () => {
           <Card>
             <CardHeader className="pb-2">
               <File className="h-10 w-10 text-primary mb-2" />
-              <CardTitle className="text-lg">Simple Process</CardTitle>
+              <CardTitle className="text-lg">간편한 절차</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-gray-dark">Step-by-step guidance through each section of your tax return.</p>
+              <p className="text-gray-dark">세금 신고의 각 단계를 차례대로 안내해 드립니다.</p>
             </CardContent>
           </Card>
           
           <Card>
             <CardHeader className="pb-2">
               <FileText className="h-10 w-10 text-primary mb-2" />
-              <CardTitle className="text-lg">Maximum Deductions</CardTitle>
+              <CardTitle className="text-lg">최대 공제 혜택</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-gray-dark">We help identify all deductions and credits you're eligible for.</p>
+              <p className="text-gray-dark">귀하가 받을 수 있는 모든 공제와 세액 공제를 찾아드립니다.</p>
             </CardContent>
           </Card>
           
           <Card>
             <CardHeader className="pb-2">
               <Clock className="h-10 w-10 text-primary mb-2" />
-              <CardTitle className="text-lg">Save & Resume</CardTitle>
+              <CardTitle className="text-lg">저장 및 재개</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-gray-dark">Work at your own pace with automatic saving of your progress.</p>
+              <p className="text-gray-dark">자동 저장 기능으로 원하는 속도에 맞춰 작업할 수 있습니다.</p>
             </CardContent>
           </Card>
           
           <Card>
             <CardHeader className="pb-2">
               <Shield className="h-10 w-10 text-primary mb-2" />
-              <CardTitle className="text-lg">Secure & Private</CardTitle>
+              <CardTitle className="text-lg">안전하고 비공개적</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-gray-dark">Your data is encrypted and protected with bank-level security.</p>
+              <p className="text-gray-dark">귀하의 데이터는 은행 수준의 보안으로 암호화되고 보호됩니다.</p>
             </CardContent>
           </Card>
         </div>
@@ -83,14 +83,15 @@ const Home: React.FC = () => {
           </CardHeader>
           <CardContent>
             <p className="mb-4">
-              Our step-by-step process guides you through five easy sections:
+              저희의 단계별 과정은 다음 여섯 가지 간단한 섹션으로 안내합니다:
             </p>
             <ol className="list-decimal pl-6 mb-4 space-y-2">
-              <li><strong>Personal Information</strong> - Basic details and filing status</li>
-              <li><strong>Deductions</strong> - Choose standard or itemized deductions</li>
-              <li><strong>Tax Credits</strong> - Identify credits you qualify for</li>
-              <li><strong>Additional Tax</strong> - Self-employment and other income</li>
-              <li><strong>Review & Calculate</strong> - Finalize and generate your return</li>
+              <li><strong>개인 정보</strong> - 기본 정보 및 신고 상태</li>
+              <li><strong>소득 정보</strong> - 급여, 이자, 기타 소득 입력</li>
+              <li><strong>공제 항목</strong> - 표준 공제 또는 항목별 공제 선택</li>
+              <li><strong>세액 공제</strong> - 자격이 있는 공제 항목 확인</li>
+              <li><strong>추가 세금</strong> - 자영업 및 기타 소득</li>
+              <li><strong>검토 및 계산</strong> - 최종 확인 및 신고서 생성</li>
             </ol>
           </CardContent>
           <CardFooter>

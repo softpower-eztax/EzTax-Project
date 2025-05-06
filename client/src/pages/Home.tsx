@@ -11,9 +11,9 @@ const Home: React.FC = () => {
   const { updateTaxData } = useTaxContext();
   const { user } = useAuth();
   
-  // Initialize with test data when the home page loads
+  // 초기 데이터는 한 번만 로드
   useEffect(() => {
-    // Hardcode test tax data directly
+    // 하드코딩된 테스트 데이터
     const testData = {
       personalInfo: {
         firstName: 'John',
@@ -48,7 +48,7 @@ const Home: React.FC = () => {
       },
       income: {
         wages: 75000,
-        otherEarnedIncome: 0, // Adding missing property
+        otherEarnedIncome: 0, 
         interestIncome: 1200,
         dividends: 3500,
         businessIncome: 15000,
@@ -96,9 +96,11 @@ const Home: React.FC = () => {
       }
     };
     
-    // Update tax data in context with test data
-    updateTaxData(testData);
-  }, [updateTaxData]);
+    // 데이터 업데이트 - 빈 의존성 배열로 최초 마운트시에만 실행
+    if(updateTaxData) {
+      updateTaxData(testData);
+    }
+  }, []);
 
   return (
     <div className="max-w-5xl mx-auto">
@@ -133,6 +135,14 @@ const Home: React.FC = () => {
               onClick={() => navigate('/auth')}
             >
               계정 만들기(Create Account)
+            </Button>
+            <Button 
+              size="lg" 
+              variant="secondary"
+              className="bg-green-500 hover:bg-green-600 text-white"
+              onClick={() => navigate('/personal-info')}
+            >
+              로그온 없이 시작하기(Start without Login)
             </Button>
           </div>
         )}
@@ -207,12 +217,18 @@ const Home: React.FC = () => {
               <li><strong>검토 및 계산</strong> - 최종 확인 및 신고서 생성</li>
             </ol>
           </CardContent>
-          <CardFooter>
+          <CardFooter className="flex flex-col sm:flex-row gap-4">
             <Button 
               className="w-full bg-primary hover:bg-primary-dark text-white font-bold"
               onClick={() => user ? navigate('/personal-info') : navigate('/auth')}
             >
               {user ? '지금 시작하기' : '로그인하고 시작하기(Login to Start)'}
+            </Button>
+            <Button 
+              className="w-full bg-green-500 hover:bg-green-600 text-white"
+              onClick={() => navigate('/personal-info')}
+            >
+              로그온 없이 시작하기(Start without Login)
             </Button>
           </CardFooter>
         </Card>

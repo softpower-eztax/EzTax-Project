@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useLocation } from 'wouter';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
-import { Income, incomeSchema } from '@shared/schema';
+import { Income, incomeSchema, AdditionalIncomeItem, AdditionalAdjustmentItem } from '@shared/schema';
 import { useTaxContext } from '@/context/TaxContext';
 import ProgressTracker from '@/components/ProgressTracker';
 import StepNavigation from '@/components/StepNavigation';
@@ -107,6 +107,20 @@ export default function IncomePage() {
       });
     }
   };
+  
+  // 추가 소득 항목이 변경될 때마다 표시되도록 상태 관리
+  const [additionalIncomeItems, setAdditionalIncomeItems] = useState<AdditionalIncomeItem[]>([]);
+  const [additionalAdjustmentItems, setAdditionalAdjustmentItems] = useState<AdditionalAdjustmentItem[]>([]);
+  
+  // taxData가 변경될 때마다 추가 소득 항목과 조정 항목을 업데이트
+  useEffect(() => {
+    if (taxData.income?.additionalIncomeItems) {
+      setAdditionalIncomeItems(taxData.income.additionalIncomeItems);
+    }
+    if (taxData.income?.additionalAdjustmentItems) {
+      setAdditionalAdjustmentItems(taxData.income.additionalAdjustmentItems);
+    }
+  }, [taxData.income]);
   
   // 값이 변경될 때마다 총소득과 AGI 재계산
   useEffect(() => {
@@ -363,11 +377,11 @@ export default function IncomePage() {
                       </Button>
                     </div>
                     
-                    {taxData.income?.additionalIncomeItems && taxData.income.additionalIncomeItems.length > 0 && (
+                    {additionalIncomeItems.length > 0 && (
                       <div className="bg-gray-50 p-3 rounded-md border mb-4">
                         <h4 className="text-sm font-semibold mb-2">기타소득 항목 요약</h4>
                         <div className="space-y-1 text-sm">
-                          {taxData.income.additionalIncomeItems.map((item, index) => (
+                          {additionalIncomeItems.map((item, index) => (
                             <div key={index} className="flex justify-between">
                               <span>{item.type}</span>
                               <span>{new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(item.amount)}</span>
@@ -377,7 +391,7 @@ export default function IncomePage() {
                             <span>총 기타소득:</span>
                             <span>
                               {new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(
-                                taxData.income.additionalIncomeItems.reduce((sum, item) => sum + item.amount, 0)
+                                additionalIncomeItems.reduce((sum, item) => sum + item.amount, 0)
                               )}
                             </span>
                           </div>
@@ -514,11 +528,11 @@ export default function IncomePage() {
                               </Button>
                             </div>
                             
-                            {taxData.income?.additionalAdjustmentItems && taxData.income.additionalAdjustmentItems.length > 0 && (
+                            {additionalAdjustmentItems.length > 0 && (
                               <div className="bg-gray-50 p-3 rounded-md border mb-2">
                                 <h4 className="text-sm font-semibold mb-2">기타조정 항목 요약</h4>
                                 <div className="space-y-1 text-sm">
-                                  {taxData.income.additionalAdjustmentItems.map((item, index) => (
+                                  {additionalAdjustmentItems.map((item, index) => (
                                     <div key={index} className="flex justify-between">
                                       <span>{item.type}</span>
                                       <span>{new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(item.amount)}</span>
@@ -528,7 +542,7 @@ export default function IncomePage() {
                                     <span>총 기타조정:</span>
                                     <span>
                                       {new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(
-                                        taxData.income.additionalAdjustmentItems.reduce((sum, item) => sum + item.amount, 0)
+                                        additionalAdjustmentItems.reduce((sum, item) => sum + item.amount, 0)
                                       )}
                                     </span>
                                   </div>

@@ -467,7 +467,7 @@ const PersonalInfo: React.FC = () => {
                               name={`dependents.${index}.dateOfBirth`}
                               render={({ field }) => (
                                 <FormItem>
-                                  <FormLabel>Date of Birth</FormLabel>
+                                  <FormLabel>생년월일</FormLabel>
                                   <FormControl>
                                     <Input 
                                       {...field} 

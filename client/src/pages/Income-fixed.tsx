@@ -127,7 +127,7 @@ export default function IncomePage() {
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
               <Card className="mb-8">
                 <CardHeader>
-                  <CardTitle className="text-xl font-heading text-primary-dark">소득 정보 (Income Information)</CardTitle>
+                  <CardTitle className="text-xl font-heading text-primary-dark">소득정보 (Income Information)</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-6">
                   <div>
@@ -235,7 +235,7 @@ export default function IncomePage() {
                         render={({ field }) => (
                           <FormItem className="flex flex-col justify-center h-full">
                             <div className="flex justify-between">
-                              <FormLabel>기타 근로소득 (Other Earned Income)</FormLabel>
+                              <FormLabel>기타근로소득 (Other Earned Income)</FormLabel>
                               <div className="tooltip">
                                 <InfoIcon className="h-4 w-4 text-gray-dark" />
                                 <span className="tooltip-text">Other earned income not reported on W-2</span>
@@ -260,7 +260,7 @@ export default function IncomePage() {
                   </div>
                   
                   <div className="mt-8">
-                    <h3 className="text-lg font-semibold mb-4">비근로 소득 (Unearned Income)</h3>
+                    <h3 className="text-lg font-semibold mb-4">비근로소득 (Unearned Income)</h3>
                     
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <FormField
@@ -350,7 +350,7 @@ export default function IncomePage() {
                   </div>
                   
                   <div className="mt-8">
-                    <h3 className="text-lg font-semibold mb-4">소득 조정 (Adjustments to Income)</h3>
+                    <h3 className="text-lg font-semibold mb-4">소득조정 (Adjustments to Income)</h3>
                     <p className="text-sm text-gray-dark mb-4">
                       소득에서 차감되는 항목을 입력하세요. 이 금액은 과세 대상 소득을 줄입니다.
                     </p>
@@ -475,12 +475,12 @@ export default function IncomePage() {
               
               <Card>
                 <CardHeader>
-                  <CardTitle className="text-xl font-heading text-primary-dark">소득 요약 (Income Summary)</CardTitle>
+                  <CardTitle className="text-xl font-heading text-primary-dark">소득요약 (Income Summary)</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="income-total-box">
                     <div className="income-total-row">
-                      <span>총 소득 (Total Income)</span>
+                      <span>총소득 (Total Income)</span>
                       <span>{new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", minimumFractionDigits: 2 }).format(form.getValues('totalIncome'))}</span>
                     </div>
                     <div className="income-total-row">
@@ -495,7 +495,7 @@ export default function IncomePage() {
                       </span>
                     </div>
                     <div className="income-total-row highlight">
-                      <span>조정 총소득 (Adjusted Gross Income)</span>
+                      <span>조정총소득 (Adjusted Gross Income)</span>
                       <span>{new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", minimumFractionDigits: 2 }).format(form.getValues('adjustedGrossIncome'))}</span>
                     </div>
                   </div>

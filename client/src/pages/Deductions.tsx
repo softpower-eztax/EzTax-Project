@@ -74,18 +74,13 @@ const Deductions: React.FC = () => {
   }, [watchDeductionType, form, standardDeductionAmount]);
 
   // Recalculate total itemized deductions when any value changes
-  const itemizedFields = [
-    'itemizedDeductions.medicalExpenses',
-    'itemizedDeductions.stateLocalIncomeTax',
-    'itemizedDeductions.realEstateTaxes',
-    'itemizedDeductions.mortgageInterest',
-    'itemizedDeductions.charitableCash',
-    'itemizedDeductions.charitableNonCash'
-  ];
-
-  itemizedFields.forEach(field => {
-    form.watch(field);
-  });
+  // Watch itemized fields individually to calculate total
+  const watchMedicalExpenses = form.watch('itemizedDeductions.medicalExpenses');
+  const watchStateLocalIncomeTax = form.watch('itemizedDeductions.stateLocalIncomeTax');
+  const watchRealEstateTaxes = form.watch('itemizedDeductions.realEstateTaxes');
+  const watchMortgageInterest = form.watch('itemizedDeductions.mortgageInterest');
+  const watchCharitableCash = form.watch('itemizedDeductions.charitableCash');
+  const watchCharitableNonCash = form.watch('itemizedDeductions.charitableNonCash');
 
   useEffect(() => {
     if (!watchDeductionType) {
@@ -102,7 +97,16 @@ const Deductions: React.FC = () => {
         form.setValue('totalDeductions', total);
       }
     }
-  }, itemizedFields.map(field => form.watch(field)));
+  }, [
+    watchMedicalExpenses, 
+    watchStateLocalIncomeTax, 
+    watchRealEstateTaxes, 
+    watchMortgageInterest, 
+    watchCharitableCash, 
+    watchCharitableNonCash, 
+    watchDeductionType,
+    form
+  ]);
 
   const onSubmit = (data: Deductions) => {
     updateTaxData({ deductions: data });
@@ -159,9 +163,9 @@ const Deductions: React.FC = () => {
                                 <div className="flex items-start">
                                   <RadioGroupItem value="standard" id="standard_deduction" className="mt-1" />
                                   <Label htmlFor="standard_deduction" className="ml-2 cursor-pointer">
-                                    <div className="font-semibold mb-1">Standard Deduction</div>
+                                    <div className="font-semibold mb-1">표준공제 (Standard Deduction)</div>
                                     <p className="text-sm text-gray-dark">
-                                      Take the pre-defined deduction amount based on your filing status.
+                                      신고 상태에 따라 미리 정해진 공제 금액을 적용합니다.
                                     </p>
                                     <p className="mt-2 text-primary-dark font-semibold">
                                       ${standardDeductionAmount.toLocaleString()}
@@ -174,12 +178,12 @@ const Deductions: React.FC = () => {
                                 <div className="flex items-start">
                                   <RadioGroupItem value="itemized" id="itemized_deduction" className="mt-1" />
                                   <Label htmlFor="itemized_deduction" className="ml-2 cursor-pointer">
-                                    <div className="font-semibold mb-1">Itemized Deductions</div>
+                                    <div className="font-semibold mb-1">항목별공제 (Itemized Deductions)</div>
                                     <p className="text-sm text-gray-dark">
-                                      Individually list each qualified deduction you want to claim.
+                                      청구하려는 각 적격 공제를 개별적으로 나열합니다.
                                     </p>
                                     <p className="mt-2 text-gray-dark italic text-sm">
-                                      Complete the sections below
+                                      아래 섹션을 작성하세요
                                     </p>
                                   </Label>
                                 </div>
@@ -417,7 +421,7 @@ const Deductions: React.FC = () => {
                           name="itemizedDeductions.charitableNonCash"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel>Non-Cash Contributions</FormLabel>
+                              <FormLabel>비현금기부 (Non-Cash Contributions)</FormLabel>
                               <FormControl>
                                 <div className="relative">
                                   <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-dark">$</span>
@@ -447,7 +451,7 @@ const Deductions: React.FC = () => {
               <StepNavigation
                 prevStep="/income"
                 nextStep="/tax-credits"
-                submitText="Tax Credits"
+                submitText="세금공제 (Tax Credits)"
                 onNext={() => {
                   if (form.formState.isValid) {
                     onSubmit(form.getValues());

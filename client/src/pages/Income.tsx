@@ -1,8 +1,8 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useLocation } from 'wouter';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
-import { Income, incomeSchema } from '@shared/schema';
+import { AdditionalIncomeItem, Income, incomeSchema } from '@shared/schema';
 import { useTaxContext } from '@/context/TaxContext';
 import { Button } from '@/components/ui/button';
 import {
@@ -21,13 +21,32 @@ import StepNavigation from '@/components/StepNavigation';
 import TaxSummary from '@/components/TaxSummary';
 import { useToast } from '@/hooks/use-toast';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { InfoIcon } from 'lucide-react';
+import { InfoIcon, Plus, X } from 'lucide-react';
 import { formatCurrency } from '@/lib/taxCalculations';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const IncomePage: React.FC = () => {
   const [, navigate] = useLocation();
   const { taxData, updateTaxData, saveTaxReturn } = useTaxContext();
   const { toast } = useToast();
+  const [showAdditionalIncomeDialog, setShowAdditionalIncomeDialog] = useState(false);
+  const [selectedIncomeType, setSelectedIncomeType] = useState<string>("");
+  const [additionalIncomeAmount, setAdditionalIncomeAmount] = useState<number>(0);
+  const [additionalIncomeDescription, setAdditionalIncomeDescription] = useState<string>("");
 
   // 테스트용 하드코딩된 데이터로 시작
   const defaultValues: Income = {
@@ -58,11 +77,51 @@ const IncomePage: React.FC = () => {
   });
 
   // Update calculated fields when form values change
+  // Additional income types
+  const additionalIncomeTypes = [
+    "종교지도자 및 자영업자 소득 (Income of clergy and self-employed)",
+    "파트너쉽 소득 (Partnership income)",
+    "S Corp 소득 (S Corporation income)",
+    "농업 및 어업 관련 소득 (Farm and fishing income)",
+    "프리랜서, 독립계약자(1099-NEC), 사업자 등록 없이 활동하는 파트너십 파트너 등 해당 수입 (For freelancers, independent contractors, and partners without a business under their name)"
+  ];
+
+  // Handle adding additional income
+  const handleAddAdditionalIncome = () => {
+    if (!selectedIncomeType || additionalIncomeAmount <= 0) return;
+    
+    const newItem: AdditionalIncomeItem = {
+      type: selectedIncomeType,
+      amount: additionalIncomeAmount,
+      description: additionalIncomeDescription || undefined
+    };
+    
+    const currentItems = form.getValues('additionalIncomeItems') || [];
+    form.setValue('additionalIncomeItems', [...currentItems, newItem]);
+    
+    // Reset form fields
+    setSelectedIncomeType("");
+    setAdditionalIncomeAmount(0);
+    setAdditionalIncomeDescription("");
+    setShowAdditionalIncomeDialog(false);
+    
+    // Recalculate totals
+    calculateTotals();
+  };
+  
+  // Handle removing additional income
+  const handleRemoveAdditionalIncome = (index: number) => {
+    const currentItems = form.getValues('additionalIncomeItems') || [];
+    const newItems = currentItems.filter((_, i) => i !== index);
+    form.setValue('additionalIncomeItems', newItems);
+    calculateTotals();
+  };
+
   const calculateTotals = () => {
     const values = form.getValues();
     
-    // Calculate total income
-    const totalIncome = 
+    // Calculate base income
+    let totalIncome = 
       Number(values.wages) +
       Number(values.interestIncome) +
       Number(values.dividends) +
@@ -72,6 +131,14 @@ const IncomePage: React.FC = () => {
       Number(values.retirementIncome) +
       Number(values.unemploymentIncome) +
       Number(values.otherIncome);
+    
+    // Add additional income items
+    if (values.additionalIncomeItems && values.additionalIncomeItems.length > 0) {
+      const additionalTotal = values.additionalIncomeItems.reduce(
+        (sum, item) => sum + Number(item.amount), 0
+      );
+      totalIncome += additionalTotal;
+    }
     
     // Calculate total adjustments
     const totalAdjustments = 
@@ -359,10 +426,46 @@ const IncomePage: React.FC = () => {
                       />
                     </div>
                     
-                    <div className="mt-4 p-4 bg-gray-bg rounded-md">
-                      <div className="flex justify-between">
-                        <span className="font-semibold">총 소득 (Total Income):</span>
-                        <span className="font-semibold">{formatCurrency(form.watch('totalIncome'))}</span>
+                    <div className="mt-4">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        className="text-sm mb-4"
+                        onClick={() => setShowAdditionalIncomeDialog(true)}
+                      >
+                        <Plus className="w-4 h-4 mr-2" />
+                        추가 소득 항목 (Add Additional Income)
+                      </Button>
+                      
+                      {form.watch('additionalIncomeItems')?.length > 0 && (
+                        <div className="mb-4 p-4 bg-gray-50 rounded-md border">
+                          <h4 className="font-medium mb-2">추가 소득 항목 (Additional Income Items)</h4>
+                          <ul className="space-y-2">
+                            {form.watch('additionalIncomeItems')?.map((item, index) => (
+                              <li key={index} className="flex justify-between">
+                                <span>{item.type}</span>
+                                <div className="flex items-center space-x-2">
+                                  <span>{formatCurrency(item.amount)}</span>
+                                  <Button
+                                    type="button"
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => handleRemoveAdditionalIncome(index)}
+                                  >
+                                    <X className="w-4 h-4" />
+                                  </Button>
+                                </div>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+                      
+                      <div className="p-4 bg-gray-bg rounded-md">
+                        <div className="flex justify-between">
+                          <span className="font-semibold">총 소득 (Total Income):</span>
+                          <span className="font-semibold">{formatCurrency(form.watch('totalIncome'))}</span>
+                        </div>
                       </div>
                     </div>
                   </div>

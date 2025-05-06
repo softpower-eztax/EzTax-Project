@@ -86,6 +86,12 @@ export interface PersonalInformation {
   dependents: Dependent[];
 }
 
+export interface AdditionalIncomeItem {
+  type: string;
+  amount: number;
+  description?: string;
+}
+
 export interface Income {
   wages: number;
   interestIncome: number;
@@ -96,6 +102,7 @@ export interface Income {
   retirementIncome: number;
   unemploymentIncome: number;
   otherIncome: number;
+  additionalIncomeItems?: AdditionalIncomeItem[];
   totalIncome: number;
   adjustments: {
     studentLoanInterest: number;
@@ -186,6 +193,12 @@ export const personalInfoSchema = z.object({
   dependents: z.array(dependentSchema).optional(),
 });
 
+export const additionalIncomeItemSchema = z.object({
+  type: z.string(),
+  amount: z.number().min(0),
+  description: z.string().optional(),
+});
+
 export const incomeSchema = z.object({
   wages: z.number().min(0),
   interestIncome: z.number().min(0),
@@ -196,6 +209,7 @@ export const incomeSchema = z.object({
   retirementIncome: z.number().min(0),
   unemploymentIncome: z.number().min(0),
   otherIncome: z.number().min(0),
+  additionalIncomeItems: z.array(additionalIncomeItemSchema).optional(),
   totalIncome: z.number().min(0),
   adjustments: z.object({
     studentLoanInterest: z.number().min(0),

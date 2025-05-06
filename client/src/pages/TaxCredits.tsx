@@ -79,8 +79,8 @@ const TaxCreditsPage: React.FC = () => {
   return (
     <div className="max-w-5xl mx-auto">
       <div className="mb-8">
-        <h1 className="text-3xl font-heading font-bold text-primary-dark mb-2">Your 2023 Tax Return</h1>
-        <p className="text-gray-dark">Complete all sections to prepare your tax return. Your information is saved as you go.</p>
+        <h1 className="text-3xl font-heading font-bold text-primary-dark mb-2">귀하의 2025년 세금 신고서</h1>
+        <p className="text-gray-dark">세금 신고서를 준비하기 위해 모든 섹션을 작성하세요. 입력한 정보는 자동으로 저장됩니다.</p>
       </div>
 
       <ProgressTracker currentStep={4} />
@@ -89,14 +89,14 @@ const TaxCreditsPage: React.FC = () => {
         <div className="flex-grow">
           <Card className="mb-6">
             <CardContent className="pt-6">
-              <h2 className="text-2xl font-heading font-semibold text-primary-dark mb-6">Tax Credits</h2>
+              <h2 className="text-2xl font-heading font-semibold text-primary-dark mb-6">세금공제 (Tax Credits)</h2>
               
               <Form {...form}>
                 <form>
                   {/* Child Tax Credit */}
                   <div className="mb-6 border-b border-gray-light pb-6">
                     <div className="flex items-center mb-3">
-                      <h4 className="font-semibold">Child Tax Credit</h4>
+                      <h4 className="font-semibold">자녀세액공제 (Child Tax Credit)</h4>
                       <TooltipProvider>
                         <Tooltip>
                           <TooltipTrigger asChild>
@@ -153,7 +153,7 @@ const TaxCreditsPage: React.FC = () => {
                   {/* Child and Dependent Care Credit */}
                   <div className="mb-6 border-b border-gray-light pb-6">
                     <div className="flex items-center mb-3">
-                      <h4 className="font-semibold">Child and Dependent Care Credit</h4>
+                      <h4 className="font-semibold">자녀및부양가족돌봄공제 (Child and Dependent Care Credit)</h4>
                       <TooltipProvider>
                         <Tooltip>
                           <TooltipTrigger asChild>
@@ -200,7 +200,7 @@ const TaxCreditsPage: React.FC = () => {
                   {/* Education Credits */}
                   <div className="mb-6 border-b border-gray-light pb-6">
                     <div className="flex items-center mb-3">
-                      <h4 className="font-semibold">Education Credits</h4>
+                      <h4 className="font-semibold">교육공제 (Education Credits)</h4>
                       <TooltipProvider>
                         <Tooltip>
                           <TooltipTrigger asChild>
@@ -250,7 +250,7 @@ const TaxCreditsPage: React.FC = () => {
                   {/* Retirement Savings Credit */}
                   <div className="mb-6 border-b border-gray-light pb-6">
                     <div className="flex items-center mb-3">
-                      <h4 className="font-semibold">Retirement Savings Credit</h4>
+                      <h4 className="font-semibold">은퇴저축공제 (Retirement Savings Credit)</h4>
                       <TooltipProvider>
                         <Tooltip>
                           <TooltipTrigger asChild>
@@ -297,7 +297,7 @@ const TaxCreditsPage: React.FC = () => {
                   {/* Other Credits */}
                   <div className="mb-6">
                     <div className="flex items-center mb-3">
-                      <h4 className="font-semibold">Other Credits</h4>
+                      <h4 className="font-semibold">기타공제 (Other Credits)</h4>
                     </div>
                     
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -335,7 +335,7 @@ const TaxCreditsPage: React.FC = () => {
                   {/* Total Credits - Read Only */}
                   <div className="mb-6 bg-gray-bg p-4 rounded-md">
                     <div className="flex justify-between items-center">
-                      <h4 className="font-semibold">Total Credits</h4>
+                      <h4 className="font-semibold">총공제액 (Total Credits)</h4>
                       <p className="font-bold text-primary-dark text-xl">
                         ${form.getValues('totalCredits').toLocaleString()}
                       </p>

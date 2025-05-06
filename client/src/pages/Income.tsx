@@ -129,8 +129,8 @@ const IncomePage: React.FC = () => {
   return (
     <div className="max-w-5xl mx-auto">
       <div className="mb-8">
-        <h1 className="text-3xl font-heading font-bold text-primary-dark mb-2">Your 2023 Tax Return</h1>
-        <p className="text-gray-dark">Complete all sections to prepare your tax return. Your information is saved as you go.</p>
+        <h1 className="text-3xl font-heading font-bold text-primary-dark mb-2">2023년 세금 신고</h1>
+        <p className="text-gray-dark">세금 신고를 준비하기 위해 모든 섹션을 작성하세요. 정보는 입력하는 대로 저장됩니다.</p>
       </div>
 
       <ProgressTracker currentStep={2} />
@@ -141,11 +141,11 @@ const IncomePage: React.FC = () => {
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
               <Card>
                 <CardHeader>
-                  <CardTitle className="text-xl font-heading text-primary-dark">Income Information</CardTitle>
+                  <CardTitle className="text-xl font-heading text-primary-dark">소득 정보 (Income Information)</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-6">
                   <div>
-                    <h3 className="text-lg font-semibold mb-4">Employment & Other Income</h3>
+                    <h3 className="text-lg font-semibold mb-4">근로 및 기타 소득 (Employment & Other Income)</h3>
                     
                     <FormField
                       control={form.control}
@@ -153,7 +153,7 @@ const IncomePage: React.FC = () => {
                       render={({ field }) => (
                         <FormItem>
                           <div className="flex justify-between">
-                            <FormLabel>Wages, Salaries, Tips (W-2)</FormLabel>
+                            <FormLabel>급여, 월급, 팁 (Wages, Salaries, Tips)</FormLabel>
                             <div className="tooltip">
                               <InfoIcon className="h-4 w-4 text-gray-dark" />
                               <span className="tooltip-text">Include income from all W-2 forms</span>
@@ -181,7 +181,7 @@ const IncomePage: React.FC = () => {
                         name="interestIncome"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Interest Income</FormLabel>
+                            <FormLabel>이자 소득 (Interest Income)</FormLabel>
                             <FormControl>
                               <Input
                                 type="number"
@@ -203,7 +203,7 @@ const IncomePage: React.FC = () => {
                         name="dividends"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Dividends</FormLabel>
+                            <FormLabel>배당금 (Dividends)</FormLabel>
                             <FormControl>
                               <Input
                                 type="number"
@@ -227,7 +227,7 @@ const IncomePage: React.FC = () => {
                         name="businessIncome"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Business Income (Schedule C)</FormLabel>
+                            <FormLabel>사업 소득 (Business Income)</FormLabel>
                             <FormControl>
                               <Input
                                 type="number"
@@ -249,7 +249,7 @@ const IncomePage: React.FC = () => {
                         name="capitalGains"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Capital Gains</FormLabel>
+                            <FormLabel>자본 이득 (Capital Gains)</FormLabel>
                             <FormControl>
                               <Input
                                 type="number"

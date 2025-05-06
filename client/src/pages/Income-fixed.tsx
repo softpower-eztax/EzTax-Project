@@ -10,7 +10,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
-import { Info as InfoIcon, Upload, Loader2 } from 'lucide-react';
+import { Info as InfoIcon, Upload, Loader2, Plus } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import {
   Tooltip,
   TooltipContent,
@@ -349,6 +350,18 @@ export default function IncomePage() {
                     </div>
                   </div>
                   
+                  <div className="flex justify-between items-center mt-6 mb-4">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => navigate('/additional-income')}
+                      className="text-sm flex items-center"
+                    >
+                      <Plus className="h-4 w-4 mr-1" />
+                      소득조정 추가 입력
+                    </Button>
+                  </div>
+                    
                   <div className="mt-8">
                     <h3 className="text-lg font-semibold mb-4">소득조정 (Adjustments to Income)</h3>
                     <p className="text-sm text-gray-dark mb-4">

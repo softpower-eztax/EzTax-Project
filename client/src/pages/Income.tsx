@@ -413,50 +413,182 @@ const IncomePage: React.FC = () => {
                       />
                     </div>
                     
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-                      <FormField
-                        control={form.control}
-                        name="interestIncome"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>이자 소득 (Interest Income)</FormLabel>
-                            <FormControl>
-                              <Input
-                                type="number"
-                                step="0.01"
-                                min="0"
-                                {...field}
-                                onChange={(e) => {
-                                  field.onChange(parseFloat(e.target.value) || 0);
-                                }}
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
+                    <div className="space-y-4 mt-4">
+                      {/* 1099-INT Upload Section */}
+                      <div className="border rounded-md p-3 bg-gray-50/50">
+                        <div className="flex items-center gap-2">
+                          <div className="flex-1">
+                            <h4 className="text-base font-medium mb-1">
+                              1099-INT 폼 업로드 (Upload 1099-INT Form)
+                            </h4>
+                            <p className="text-sm text-gray-500 mb-2">
+                              1099-INT 파일을 업로드하여 이자 소득 정보를 자동으로 추출합니다.
+                            </p>
+                          </div>
+                          <div>
+                            <TooltipProvider>
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <label className="cursor-pointer">
+                                    <div className="flex items-center gap-2 rounded-md border bg-white px-4 py-2 text-sm shadow-sm">
+                                      <Upload className="h-4 w-4" />
+                                      <span>파일 업로드</span>
+                                    </div>
+                                    <input 
+                                      type="file" 
+                                      accept=".pdf,.jpg,.jpeg,.png" 
+                                      className="hidden" 
+                                      onChange={(e) => {
+                                        const file = e.target.files?.[0];
+                                        if (file) {
+                                          // 실제 환경에서는 파일을 서버에 업로드하고 데이터를 추출하는 API를 호출합니다.
+                                          // 여기서는 시뮬레이션을 위해 타이머를 사용하여 1초 후에 임의의 데이터를 설정합니다.
+                                          toast({
+                                            title: "1099-INT 처리 중",
+                                            description: "잠시만 기다려주세요...",
+                                          });
+                                          
+                                          setTimeout(() => {
+                                            // 1099-INT에서 추출한 이자 소득 데이터 (시뮬레이션)
+                                            const extractedInterestIncome = 2450;
+                                            
+                                            // 폼 값 업데이트
+                                            form.setValue('interestIncome', extractedInterestIncome);
+                                            
+                                            // 총소득 재계산
+                                            calculateTotals();
+                                            
+                                            // 알림 표시
+                                            toast({
+                                              title: "1099-INT 데이터 추출 완료",
+                                              description: "이자 소득 정보가 자동으로 입력되었습니다.",
+                                            });
+                                          }, 1000);
+                                        }
+                                      }}
+                                    />
+                                  </label>
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                  <p>1099-INT 폼에서 이자 소득 정보를 추출합니다</p>
+                                </TooltipContent>
+                              </Tooltip>
+                            </TooltipProvider>
+                          </div>
+                        </div>
+                      </div>
                       
-                      <FormField
-                        control={form.control}
-                        name="dividends"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>배당금 (Dividends)</FormLabel>
-                            <FormControl>
-                              <Input
-                                type="number"
-                                step="0.01"
-                                min="0"
-                                {...field}
-                                onChange={(e) => {
-                                  field.onChange(parseFloat(e.target.value) || 0);
-                                }}
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <FormField
+                          control={form.control}
+                          name="interestIncome"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>이자 소득 (Interest Income)</FormLabel>
+                              <FormControl>
+                                <Input
+                                  type="number"
+                                  step="0.01"
+                                  min="0"
+                                  {...field}
+                                  onChange={(e) => {
+                                    field.onChange(parseFloat(e.target.value) || 0);
+                                  }}
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+                      
+                      {/* 1099-DIV Upload Section */}
+                      <div className="border rounded-md p-3 bg-gray-50/50 mt-6">
+                        <div className="flex items-center gap-2">
+                          <div className="flex-1">
+                            <h4 className="text-base font-medium mb-1">
+                              1099-DIV 폼 업로드 (Upload 1099-DIV Form)
+                            </h4>
+                            <p className="text-sm text-gray-500 mb-2">
+                              1099-DIV 파일을 업로드하여 배당금 정보를 자동으로 추출합니다.
+                            </p>
+                          </div>
+                          <div>
+                            <TooltipProvider>
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <label className="cursor-pointer">
+                                    <div className="flex items-center gap-2 rounded-md border bg-white px-4 py-2 text-sm shadow-sm">
+                                      <Upload className="h-4 w-4" />
+                                      <span>파일 업로드</span>
+                                    </div>
+                                    <input 
+                                      type="file" 
+                                      accept=".pdf,.jpg,.jpeg,.png" 
+                                      className="hidden" 
+                                      onChange={(e) => {
+                                        const file = e.target.files?.[0];
+                                        if (file) {
+                                          // 실제 환경에서는 파일을 서버에 업로드하고 데이터를 추출하는 API를 호출합니다.
+                                          // 여기서는 시뮬레이션을 위해 타이머를 사용하여 1초 후에 임의의 데이터를 설정합니다.
+                                          toast({
+                                            title: "1099-DIV 처리 중",
+                                            description: "잠시만 기다려주세요...",
+                                          });
+                                          
+                                          setTimeout(() => {
+                                            // 1099-DIV에서 추출한 배당금 데이터 (시뮬레이션)
+                                            const extractedDividends = 4250;
+                                            
+                                            // 폼 값 업데이트
+                                            form.setValue('dividends', extractedDividends);
+                                            
+                                            // 총소득 재계산
+                                            calculateTotals();
+                                            
+                                            // 알림 표시
+                                            toast({
+                                              title: "1099-DIV 데이터 추출 완료",
+                                              description: "배당금 정보가 자동으로 입력되었습니다.",
+                                            });
+                                          }, 1000);
+                                        }
+                                      }}
+                                    />
+                                  </label>
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                  <p>1099-DIV 폼에서 배당금 정보를 추출합니다</p>
+                                </TooltipContent>
+                              </Tooltip>
+                            </TooltipProvider>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <FormField
+                          control={form.control}
+                          name="dividends"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>배당금 (Dividends)</FormLabel>
+                              <FormControl>
+                                <Input
+                                  type="number"
+                                  step="0.01"
+                                  min="0"
+                                  {...field}
+                                  onChange={(e) => {
+                                    field.onChange(parseFloat(e.target.value) || 0);
+                                  }}
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
                     </div>
                     
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">

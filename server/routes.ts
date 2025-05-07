@@ -13,6 +13,11 @@ import { z } from "zod";
 import { setupAuth } from "./auth";
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Health check endpoint for deployment
+  app.get("/", (_req, res) => {
+    res.status(200).send("OK");
+  });
+
   // Set up authentication routes
   setupAuth(app);
   // Get current tax return (always gets the most recent one)

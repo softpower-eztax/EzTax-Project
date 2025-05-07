@@ -114,8 +114,7 @@ export const TaxProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       adjustments: {
         studentLoanInterest: 2500,
         retirementContributions: 6000,
-        healthSavingsAccount: 3500,
-        otherAdjustments: 1000
+        otherAdjustments: 4500 // HSA 값 3500을 otherAdjustments에 추가
       },
       adjustedGrossIncome: 100200,
       additionalIncomeItems: [],
@@ -404,7 +403,6 @@ export const TaxProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         adjustments: {
           studentLoanInterest: 0,
           retirementContributions: 0,
-          healthSavingsAccount: 0,
           otherAdjustments: 0
         },
         adjustedGrossIncome: 0,

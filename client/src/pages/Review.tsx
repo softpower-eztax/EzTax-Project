@@ -367,7 +367,7 @@ const Review: React.FC = () => {
                     className="bg-success text-white font-semibold rounded hover:bg-success/80 transition duration-200 w-[240px] justify-center"
                     onClick={() => navigate('/pricing')}
                   >
-                    유료검토(Review)
+                    유료검토 서비스(Paid Review)
                   </Button>
                 </div>
               </div>

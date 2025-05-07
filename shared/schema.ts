@@ -119,7 +119,6 @@ export interface Income {
   adjustments: {
     studentLoanInterest: number;
     retirementContributions: number;
-    healthSavingsAccount: number;
     otherAdjustments: number;
   };
   adjustedGrossIncome: number;
@@ -234,7 +233,6 @@ export const incomeSchema = z.object({
   adjustments: z.object({
     studentLoanInterest: z.number().min(0),
     retirementContributions: z.number().min(0),
-    healthSavingsAccount: z.number().min(0),
     otherAdjustments: z.number().min(0),
   }),
   adjustedGrossIncome: z.number().min(0),

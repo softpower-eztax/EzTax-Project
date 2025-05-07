@@ -71,7 +71,6 @@ const IncomePage: React.FC = () => {
     adjustments: {
       studentLoanInterest: 2500,
       retirementContributions: 6000,
-      healthSavingsAccount: 3500,
       otherAdjustments: 1000
     },
     adjustedGrossIncome: 100200
@@ -928,27 +927,6 @@ const IncomePage: React.FC = () => {
                     </div>
                     
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-                      <FormField
-                        control={form.control}
-                        name="adjustments.healthSavingsAccount"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Health Savings Account</FormLabel>
-                            <FormControl>
-                              <Input
-                                type="number"
-                                step="0.01"
-                                min="0"
-                                {...field}
-                                onChange={(e) => {
-                                  field.onChange(parseFloat(e.target.value) || 0);
-                                }}
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
                       
                       <FormField
                         control={form.control}
@@ -980,7 +958,6 @@ const IncomePage: React.FC = () => {
                           {formatCurrency(
                             Number(form.watch('adjustments.studentLoanInterest')) +
                             Number(form.watch('adjustments.retirementContributions')) +
-                            Number(form.watch('adjustments.healthSavingsAccount')) +
                             Number(form.watch('adjustments.otherAdjustments'))
                           )}
                         </span>

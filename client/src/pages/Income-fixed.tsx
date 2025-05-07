@@ -844,30 +844,80 @@ export default function IncomePage() {
                 </CardContent>
               </Card>
               
-              {/* 저장 버튼 추가 */}
-              <div className="mt-6 mb-6">
-                <Button 
-                  type="button" 
+              {/* 초기화 및 저장 버튼 */}
+              <div className="flex gap-4 mt-6 mb-6">
+                <Button
+                  type="button"
                   variant="outline"
-                  className="w-full flex items-center gap-2 py-6"
+                  className="bg-rose-50 text-rose-800 border-rose-200 hover:bg-rose-100 hover:text-rose-900 flex-1"
                   onClick={() => {
-                    saveTaxReturn()
-                      .then(() => {
-                        toast({
-                          title: "진행 상황 저장 완료",
-                          description: "입력하신 정보가 성공적으로 저장되었습니다.",
-                        });
-                      })
-                      .catch((error) => {
-                        toast({
-                          title: "저장 실패",
-                          description: "저장 중 오류가 발생했습니다. 다시 시도해주세요.",
-                          variant: "destructive",
-                        });
-                      });
+                    // 모든 값 초기화
+                    resetToZero();
+                    // 폼 리셋
+                    form.reset({
+                      wages: 0,
+                      otherEarnedIncome: 0,
+                      interestIncome: 0,
+                      dividends: 0,
+                      businessIncome: 0,
+                      capitalGains: 0,
+                      rentalIncome: 0,
+                      retirementIncome: 0,
+                      unemploymentIncome: 0,
+                      otherIncome: 0,
+                      additionalIncomeItems: [],
+                      totalIncome: 0,
+                      adjustments: {
+                        studentLoanInterest: 0,
+                        retirementContributions: 0,
+                        healthSavingsAccount: 0,
+                        otherAdjustments: 0
+                      },
+                      adjustedGrossIncome: 0
+                    });
+                    
+                    // 추가 소득 항목과 조정 항목 초기화
+                    setAdditionalIncomeItems([]);
+                    setAdditionalAdjustmentItems([]);
+                    
+                    toast({
+                      title: "값 초기화 완료",
+                      description: "모든 소득 항목 값이 초기화되었습니다.",
+                    });
                   }}
                 >
-                  <Save className="h-5 w-5" />
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-2 h-5 w-5"><path d="M3 2v6h6"></path><path d="M3 13a9 9 0 1 0 3-7.7L3 8"></path></svg>
+                  <span className="text-lg">값 초기화</span>
+                </Button>
+                
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="bg-blue-50 text-blue-800 border-blue-200 hover:bg-blue-100 hover:text-blue-900 flex-1"
+                  onClick={async () => {
+                    try {
+                      // 현재 폼 데이터 저장
+                      const currentData = form.getValues();
+                      updateTaxData({ income: currentData });
+                      
+                      // 세금 신고서 저장
+                      await saveTaxReturn();
+                      
+                      toast({
+                        title: "저장 완료",
+                        description: "세금 신고서가 저장되었습니다.",
+                      });
+                    } catch (error) {
+                      console.error("저장 오류:", error);
+                      toast({
+                        title: "저장 오류",
+                        description: "세금 신고서 저장 중 오류가 발생했습니다.",
+                        variant: "destructive",
+                      });
+                    }
+                  }}
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-2 h-5 w-5"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
                   <span className="text-lg">진행 상황 저장</span>
                 </Button>
               </div>

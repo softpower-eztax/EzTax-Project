@@ -15,7 +15,7 @@ import { Info } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 const AdditionalTaxPage: React.FC = () => {
-  const { taxData, updateTaxData, recalculateTaxes } = useTaxContext();
+  const { taxData, updateTaxData, recalculateTaxes, resetToZero, saveTaxReturn } = useTaxContext();
   const { toast } = useToast();
   
   const defaultValues: AdditionalTax = {
@@ -320,6 +320,69 @@ const AdditionalTaxPage: React.FC = () => {
                         )}
                       />
                     </div>
+                  </div>
+                  
+                  <div className="flex gap-4 mt-8 mb-4">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      className="bg-rose-50 text-rose-800 border-rose-200 hover:bg-rose-100 hover:text-rose-900 flex-1"
+                      onClick={() => {
+                        // Reset all form fields to 0
+                        form.reset({
+                          selfEmploymentIncome: 0,
+                          selfEmploymentTax: 0,
+                          estimatedTaxPayments: 0,
+                          otherIncome: 0,
+                          otherTaxes: 0
+                        });
+                        
+                        // Update tax context
+                        const resetData = form.getValues();
+                        updateTaxData({ additionalTax: resetData });
+                        recalculateTaxes();
+                        
+                        toast({
+                          title: "값 초기화 완료",
+                          description: "모든 추가 세금 항목 값이 초기화되었습니다.",
+                        });
+                      }}
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-2 h-5 w-5"><path d="M3 2v6h6"></path><path d="M3 13a9 9 0 1 0 3-7.7L3 8"></path></svg>
+                      <span className="text-lg">값 초기화</span>
+                    </Button>
+                    
+                    <Button
+                      type="button"
+                      variant="outline"
+                      className="bg-blue-50 text-blue-800 border-blue-200 hover:bg-blue-100 hover:text-blue-900 flex-1"
+                      onClick={async () => {
+                        try {
+                          // 현재 폼 데이터 저장
+                          const currentData = form.getValues();
+                          updateTaxData({ additionalTax: currentData });
+                          recalculateTaxes();
+                          
+                          // 세금 신고서 저장
+                          await saveTaxReturn();
+                          
+                          toast({
+                            title: "저장 완료",
+                            description: "세금 신고서가 저장되었습니다.",
+                          });
+                        } catch (error) {
+                          console.error("저장 오류:", error);
+                          toast({
+                            title: "저장 오류",
+                            description: "세금 신고서 저장 중 오류가 발생했습니다.",
+                            variant: "destructive",
+                          });
+                        }
+                      }}
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-2 h-5 w-5"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
+                      <span className="text-lg">진행 상황 저장</span>
+                    </Button>
                   </div>
                 </form>
               </Form>

@@ -249,10 +249,10 @@ export function calculateTaxes(taxData: TaxData): CalculatedResults {
   // Add self-employment tax
   result.taxDue += selfEmploymentTax;
   
-  // Calculate payments (estimated tax payments and an assumed withholding)
+  // 선납세금으로는 사용자가 입력한 estimatedTaxPayments만 사용
   const estimatedPayments = additionalTax.estimatedTaxPayments;
-  const assumedWithholding = Math.round(result.totalIncome * 0.15 * 100) / 100; // Assuming 15% withholding on base income
-  result.payments = estimatedPayments + assumedWithholding;
+  // 원천징수액 계산을 제거하고 사용자 입력값만 사용
+  result.payments = estimatedPayments;
   
   // Calculate refund or amount owed
   if (result.payments > result.taxDue) {

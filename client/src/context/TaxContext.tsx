@@ -122,17 +122,17 @@ export const TaxProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       additionalAdjustmentItems: []
     },
     deductions: {
-      useStandardDeduction: false,
-      standardDeductionAmount: 27700,
+      useStandardDeduction: true,
+      standardDeductionAmount: 12950, // 기본 표준공제액, filingStatus에 따라 계산됨
       itemizedDeductions: {
-        medicalExpenses: 5000,
-        stateLocalIncomeTax: 7500,
-        realEstateTaxes: 8000,
-        mortgageInterest: 9500,
-        charitableCash: 3000,
-        charitableNonCash: 2000
+        medicalExpenses: 0,
+        stateLocalIncomeTax: 0,
+        realEstateTaxes: 0,
+        mortgageInterest: 0,
+        charitableCash: 0,
+        charitableNonCash: 0
       },
-      totalDeductions: 35000
+      totalDeductions: 12950
     },
     taxCredits: {
       childTaxCredit: 2000,

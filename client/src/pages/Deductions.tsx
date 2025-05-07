@@ -28,19 +28,19 @@ const Deductions: React.FC = () => {
   // Calculate standard deduction based on filing status
   const standardDeductionAmount = calculateStandardDeduction(taxData.personalInfo?.filingStatus || 'single');
   
-  // 테스트용 하드코딩된 데이터로 시작
+  // 모든 필드 값을 0으로 시작하는 기본값 설정
   const defaultValues: Deductions = {
-    useStandardDeduction: false,
-    standardDeductionAmount: 27700,
+    useStandardDeduction: true, // 기본적으로 표준공제 선택
+    standardDeductionAmount: standardDeductionAmount,
     itemizedDeductions: {
-      medicalExpenses: 5000,
-      stateLocalIncomeTax: 7500,
-      realEstateTaxes: 8000,
-      mortgageInterest: 9500,
-      charitableCash: 3000,
-      charitableNonCash: 2000
+      medicalExpenses: 0,
+      stateLocalIncomeTax: 0,
+      realEstateTaxes: 0,
+      mortgageInterest: 0,
+      charitableCash: 0,
+      charitableNonCash: 0
     },
-    totalDeductions: 35000,
+    totalDeductions: standardDeductionAmount,
     ...taxData.deductions
   };
 

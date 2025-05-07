@@ -62,6 +62,8 @@ export interface Dependent {
   ssn: string;
   relationship: string;
   dateOfBirth: string;
+  isDisabled: boolean;
+  isNonresidentAlien: boolean;
 }
 
 export interface SpouseInformation {
@@ -176,6 +178,8 @@ export const dependentSchema = z.object({
   ssn: z.string().regex(/^\d{3}-\d{2}-\d{4}$/, "SSN must be in format XXX-XX-XXXX"),
   relationship: z.string().min(1, "Relationship is required"),
   dateOfBirth: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Date must be in YYYY-MM-DD format"),
+  isDisabled: z.boolean().default(false),
+  isNonresidentAlien: z.boolean().default(false),
 });
 
 export const spouseInfoSchema = z.object({

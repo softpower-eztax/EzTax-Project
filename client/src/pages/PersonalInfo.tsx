@@ -902,9 +902,9 @@ const PersonalInfo: React.FC = () => {
                                     />
                                   </FormControl>
                                   <div className="space-y-1 leading-none">
-                                    <FormLabel>19세미만이며 부모와 반년이상 거주 또는 24세미만 Full Time 학생</FormLabel>
+                                    <FormLabel>19세미만이며 부모(부양인)와 반년이상 거주 또는 24세미만 Full Time 학생</FormLabel>
                                     <FormDescription className="text-xs">
-                                      부양가족이 19세 미만이고 부모와 일년의 반 이상 함께 살거나, 24세 미만인 풀타임 학생인 경우 체크하세요.
+                                      부양가족이 19세 미만이고 부모(부양인)와 일년의 반 이상 함께 살거나, 24세 미만인 풀타임 학생인 경우 체크하세요.
                                     </FormDescription>
                                   </div>
                                 </FormItem>

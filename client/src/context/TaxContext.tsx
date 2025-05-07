@@ -101,6 +101,7 @@ export const TaxProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     },
     income: {
       wages: 75000,
+      otherEarnedIncome: 0,
       interestIncome: 1200,
       dividends: 3500,
       businessIncome: 15000,
@@ -116,7 +117,9 @@ export const TaxProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         healthSavingsAccount: 3500,
         otherAdjustments: 1000
       },
-      adjustedGrossIncome: 100200
+      adjustedGrossIncome: 100200,
+      additionalIncomeItems: [],
+      additionalAdjustmentItems: []
     },
     deductions: {
       useStandardDeduction: false,

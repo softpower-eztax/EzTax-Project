@@ -351,14 +351,52 @@ export default function IncomePage() {
                 <CardHeader>
                   <div className="flex justify-between items-center">
                     <CardTitle className="text-xl font-heading text-primary-dark">소득정보 (Income Information)</CardTitle>
-                    <Button 
-                      type="button" 
-                      size="sm" 
-                      variant="outline" 
-                      onClick={addDummyData}
-                    >
-                      테스트 데이터 추가
-                    </Button>
+                    <div className="flex space-x-2">
+                      <Button 
+                        type="button" 
+                        size="sm" 
+                        variant="outline"
+                        className="bg-red-50 hover:bg-red-100 border-red-200"
+                        onClick={() => {
+                          resetToZero();
+                          // 폼 값도 리셋
+                          form.reset({
+                            wages: 0,
+                            otherEarnedIncome: 0,
+                            interestIncome: 0,
+                            dividends: 0,
+                            businessIncome: 0,
+                            capitalGains: 0,
+                            rentalIncome: 0,
+                            retirementIncome: 0,
+                            unemploymentIncome: 0,
+                            otherIncome: 0,
+                            additionalIncomeItems: [],
+                            totalIncome: 0,
+                            adjustments: {
+                              studentLoanInterest: 0,
+                              retirementContributions: 0,
+                              healthSavingsAccount: 0,
+                              otherAdjustments: 0,
+                            },
+                            adjustedGrossIncome: 0,
+                            additionalAdjustmentItems: []
+                          });
+                          setAdditionalIncomeItems([]);
+                          setAdditionalAdjustmentItems([]);
+                        }}
+                      >
+                        <Calculator className="h-4 w-4 mr-1" /> 값 초기화
+                      </Button>
+                      <Button 
+                        type="button" 
+                        size="sm" 
+                        variant="outline" 
+                        onClick={addDummyData}
+                      >
+                        <FileText className="h-4 w-4 mr-1" /> 테스트 데이터 추가
+                      </Button>
+                    </div>
                   </div>
                 </CardHeader>
                 <CardContent className="space-y-6">

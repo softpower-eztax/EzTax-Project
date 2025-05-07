@@ -177,6 +177,32 @@ export const TaxProvider: React.FC<{ children: React.ReactNode }> = ({ children 
           if (data) {
             // Apply test data but preserve the ID if it exists
             const testData = { ...taxData, id: data.id, userId: data.userId };
+            
+            // 데이터 마이그레이션: HSA 필드 제거
+            if (data.income?.adjustments?.healthSavingsAccount) {
+              console.log("마이그레이션: HSA 필드 제거");
+              // HSA 값을 otherAdjustments에 더하기
+              if (data.income && data.income.adjustments) {
+                const hsaValue = data.income.adjustments.healthSavingsAccount || 0;
+                const currentOtherAdjustments = data.income.adjustments.otherAdjustments || 0;
+                
+                // otherAdjustments에 HSA 값을 추가
+                testData.income = {
+                  ...data.income,
+                  adjustments: {
+                    studentLoanInterest: data.income.adjustments.studentLoanInterest || 0,
+                    retirementContributions: data.income.adjustments.retirementContributions || 0,
+                    otherAdjustments: currentOtherAdjustments + hsaValue
+                  }
+                };
+              }
+            } else {
+              // HSA 필드가 없으면 기존 income 데이터 사용
+              if (data.income) {
+                testData.income = data.income;
+              }
+            }
+            
             // Immediately recalculate taxes
             const calculatedResults = calculateTaxes(testData);
             setTaxData({

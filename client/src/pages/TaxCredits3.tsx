@@ -39,7 +39,7 @@ const TaxCredits3Page: React.FC = () => {
   });
   
   // 부양가족이 있는지 확인
-  const hasDependents = taxData.personalInfo?.dependents?.length > 0 || false;
+  const hasDependents = (taxData.personalInfo?.dependents && taxData.personalInfo.dependents.length > 0) || false;
   
   // 폼 스키마 정의
   const taxCreditsSchema = z.object({
@@ -78,7 +78,8 @@ const TaxCredits3Page: React.FC = () => {
     form.setValue('totalCredits', calculatedTotal);
   }, [calculatedTotal, form]);
   
-  // 서버에서 데이터가 변경되면 폼 리셋
+  // 서버에서 데이터가 변경되면 폼을 업데이트하지만
+  // 사용자가 편집 중인 필드에 대해서는 덮어쓰지 않음 (최초 로드시에만 실행)
   useEffect(() => {
     if (taxData.taxCredits) {
       const newValues = {
@@ -89,10 +90,20 @@ const TaxCredits3Page: React.FC = () => {
         otherCredits: taxData.taxCredits.otherCredits || 0,
         totalCredits: taxData.taxCredits.totalCredits || 0
       };
-      setSavedValues(newValues);
-      form.reset(newValues);
+      // 최초에만 값 설정
+      if (JSON.stringify(savedValues) === JSON.stringify({
+        childTaxCredit: 0,
+        childDependentCareCredit: 0,
+        educationCredits: 0,
+        retirementSavingsCredit: 0,
+        otherCredits: 0,
+        totalCredits: 0
+      })) {
+        setSavedValues(newValues);
+        form.reset(newValues);
+      }
     }
-  }, [taxData.taxCredits, form]);
+  }, []);
   
   // 진행 상황 저장 처리
   const handleSave = async () => {

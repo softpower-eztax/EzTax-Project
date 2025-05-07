@@ -283,17 +283,46 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Invalid ID format" });
       }
 
-      // Validate the request body against the schema
-      const parsedData = insertTaxReturnSchema.parse(req.body);
-      
       // Check if the tax return exists
       const existingTaxReturn = await storage.getTaxReturn(id);
       if (!existingTaxReturn) {
         return res.status(404).json({ message: "Tax return not found" });
       }
 
-      // Update the tax return
-      const updatedTaxReturn = await storage.updateTaxReturn(id, parsedData);
+      // Deep merge/preserve the existing data - don't validate with schema
+      // This allows partial updates and preserves fields not included in the request
+      const existingData = { ...existingTaxReturn };
+      const updatedData = req.body;
+      
+      // Deep merge taxCredits if they exist in both objects
+      if (existingData.taxCredits && updatedData.taxCredits) {
+        updatedData.taxCredits = {
+          ...existingData.taxCredits,
+          ...updatedData.taxCredits
+        };
+      }
+      
+      // Deep merge deductions if they exist in both objects
+      if (existingData.deductions && updatedData.deductions) {
+        updatedData.deductions = {
+          ...existingData.deductions,
+          ...updatedData.deductions
+        };
+        
+        // Handle itemizedDeductions specifically
+        if (existingData.deductions.itemizedDeductions && updatedData.deductions.itemizedDeductions) {
+          updatedData.deductions.itemizedDeductions = {
+            ...existingData.deductions.itemizedDeductions,
+            ...updatedData.deductions.itemizedDeductions
+          };
+        }
+      }
+      
+      // Update the merged data
+      const updatedTaxReturn = await storage.updateTaxReturn(id, { 
+        ...existingData,
+        ...updatedData 
+      });
       
       res.json(updatedTaxReturn);
     } catch (error) {

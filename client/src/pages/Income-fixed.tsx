@@ -31,7 +31,7 @@ import {
 
 export default function IncomePage() {
   const [, navigate] = useLocation();
-  const { taxData, updateTaxData } = useTaxContext();
+  const { taxData, updateTaxData, resetToZero } = useTaxContext();
   const { toast } = useToast();
   const [isUploading, setIsUploading] = useState(false);
   

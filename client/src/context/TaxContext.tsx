@@ -36,6 +36,7 @@ interface TaxContextState {
   saveTaxReturn: () => Promise<void>;
   recalculateTaxes: () => void;
   resetTaxReturn: () => void;
+  resetToZero: () => void; // 모든 숫자 필드를 0으로 초기화하는 함수
   isLoading: boolean;
   formErrors?: Record<string, string[]>;
 }
@@ -52,6 +53,7 @@ const TaxContext = createContext<TaxContextState>({
   saveTaxReturn: async () => {},
   recalculateTaxes: () => {},
   resetTaxReturn: () => {},
+  resetToZero: () => {}, // 빈 함수 추가
   isLoading: false,
 });
 
@@ -283,6 +285,85 @@ export const TaxProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   // 폼 오류 상태 (필요한 경우 여기에 추가)
   const [formErrors, setFormErrors] = useState<Record<string, string[]>>({});
 
+  // 모든 숫자 필드를 0으로 초기화하는 함수
+  const resetToZero = () => {
+    setTaxData(prevData => {
+      const emptyIncome = {
+        wages: 0,
+        otherEarnedIncome: 0,
+        interestIncome: 0,
+        dividends: 0,
+        businessIncome: 0,
+        capitalGains: 0,
+        rentalIncome: 0,
+        retirementIncome: 0,
+        unemploymentIncome: 0,
+        otherIncome: 0,
+        totalIncome: 0,
+        additionalIncomeItems: [],
+        adjustments: {
+          studentLoanInterest: 0,
+          retirementContributions: 0,
+          healthSavingsAccount: 0,
+          otherAdjustments: 0
+        },
+        adjustedGrossIncome: 0,
+        additionalAdjustmentItems: []
+      };
+
+      const emptyDeductions = {
+        useStandardDeduction: true,
+        standardDeductionAmount: 12950, // Basic standard deduction
+        itemizedDeductions: {
+          medicalExpenses: 0,
+          stateLocalIncomeTax: 0,
+          realEstateTaxes: 0,
+          mortgageInterest: 0,
+          charitableCash: 0,
+          charitableNonCash: 0
+        },
+        totalDeductions: 12950
+      };
+
+      const emptyTaxCredits = {
+        childTaxCredit: 0,
+        childDependentCareCredit: 0,
+        educationCredits: 0,
+        retirementSavingsCredit: 0,
+        otherCredits: 0,
+        totalCredits: 0
+      };
+
+      const emptyAdditionalTax = {
+        selfEmploymentIncome: 0,
+        selfEmploymentTax: 0,
+        estimatedTaxPayments: 0,
+        otherIncome: 0,
+        otherTaxes: 0
+      };
+
+      const updatedData = {
+        ...prevData,
+        income: emptyIncome,
+        deductions: emptyDeductions,
+        taxCredits: emptyTaxCredits,
+        additionalTax: emptyAdditionalTax,
+        updatedAt: new Date().toISOString()
+      };
+      
+      // 세금 재계산
+      const calculatedResults = calculateTaxes(updatedData);
+      updatedData.calculatedResults = calculatedResults;
+      
+      toast({
+        title: "모든 값을 0으로 초기화했습니다",
+        description: "테스트 데이터를 추가하기 전 모든 숫자 필드가 0으로 설정되었습니다.",
+      });
+      
+      return updatedData;
+    });
+  };
+
   return (
     <TaxContext.Provider value={{ 
       taxData, 
@@ -290,6 +371,7 @@ export const TaxProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       saveTaxReturn, 
       recalculateTaxes, 
       resetTaxReturn,
+      resetToZero,
       isLoading,
       formErrors
     }}>

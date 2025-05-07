@@ -10,7 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/componen
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
-import { Info as InfoIcon, Upload, Loader2, Plus, BarChart2, FileText, Calculator } from 'lucide-react';
+import { Info as InfoIcon, Upload, Loader2, Plus, BarChart2, FileText, Calculator, Save } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   Tooltip,
@@ -31,7 +31,7 @@ import {
 
 export default function IncomePage() {
   const [, navigate] = useLocation();
-  const { taxData, updateTaxData, resetToZero } = useTaxContext();
+  const { taxData, updateTaxData, resetToZero, saveTaxReturn } = useTaxContext();
   const { toast } = useToast();
   const [isUploading, setIsUploading] = useState(false);
   
@@ -844,8 +844,33 @@ export default function IncomePage() {
                 </CardContent>
               </Card>
               
-              {/* 여백을 위한 div */}
-              <div className="mt-6 mb-6"></div>
+              {/* 저장 버튼 추가 */}
+              <div className="mt-6 mb-6">
+                <Button 
+                  type="button" 
+                  variant="outline"
+                  className="w-full flex items-center gap-2 py-6"
+                  onClick={() => {
+                    saveTaxReturn()
+                      .then(() => {
+                        toast({
+                          title: "진행 상황 저장 완료",
+                          description: "입력하신 정보가 성공적으로 저장되었습니다.",
+                        });
+                      })
+                      .catch((error) => {
+                        toast({
+                          title: "저장 실패",
+                          description: "저장 중 오류가 발생했습니다. 다시 시도해주세요.",
+                          variant: "destructive",
+                        });
+                      });
+                  }}
+                >
+                  <Save className="h-5 w-5" />
+                  <span className="text-lg">진행 상황 저장</span>
+                </Button>
+              </div>
               
               <StepNavigation 
                 prevStep="/personal-info" 

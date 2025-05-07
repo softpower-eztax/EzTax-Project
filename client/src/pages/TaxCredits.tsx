@@ -117,7 +117,7 @@ const TaxCreditsPage: React.FC = () => {
               <h2 className="text-2xl font-heading font-semibold text-primary-dark mb-6">세금공제 (Tax Credits)</h2>
               
               <Form {...form}>
-                <form>
+                <form onSubmit={(e) => { e.preventDefault(); }}>
                   {/* Child Tax Credit */}
                   <div className="mb-6 border-b border-gray-light pb-6">
                     <div className="flex items-center mb-3">

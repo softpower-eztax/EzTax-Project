@@ -78,11 +78,27 @@ const TaxCredits3Page: React.FC = () => {
     form.setValue('totalCredits', calculatedTotal);
   }, [calculatedTotal, form]);
   
-  // 서버에서 데이터가 변경되면 폼을 업데이트하지만
-  // 사용자가 편집 중인 필드에 대해서는 덮어쓰지 않음 (최초 로드시에만 실행)
+  // 최초 로드 시 폼 초기값 설정
   useEffect(() => {
+    console.log("TaxCredits3 - 최초 로드 시 taxData:", taxData);
+    
+    // 1. 로컬 스토리지에서 먼저 확인 (가장 최신 상태)
+    const storedValues = localStorage.getItem('taxCredits');
+    if (storedValues) {
+      try {
+        const parsedValues = JSON.parse(storedValues);
+        console.log("TaxCredits3 - 로컬스토리지에서 복원:", parsedValues);
+        setSavedValues(parsedValues);
+        form.reset(parsedValues);
+        return; // 로컬스토리지에서 값 찾았으면 여기서 종료
+      } catch (e) {
+        console.error("로컬스토리지 데이터 파싱 실패:", e);
+      }
+    }
+    
+    // 2. 컨텍스트에서 값 확인
     if (taxData.taxCredits) {
-      const newValues = {
+      const contextValues = {
         childTaxCredit: taxData.taxCredits.childTaxCredit || 0,
         childDependentCareCredit: taxData.taxCredits.childDependentCareCredit || 0,
         educationCredits: taxData.taxCredits.educationCredits || 0,
@@ -90,18 +106,24 @@ const TaxCredits3Page: React.FC = () => {
         otherCredits: taxData.taxCredits.otherCredits || 0,
         totalCredits: taxData.taxCredits.totalCredits || 0
       };
-      // 최초에만 값 설정
-      if (JSON.stringify(savedValues) === JSON.stringify({
+      
+      console.log("TaxCredits3 - 컨텍스트에서 초기값 설정:", contextValues);
+      setSavedValues(contextValues);
+      form.reset(contextValues);
+    } else {
+      // 3. 기본값 설정
+      const defaultValues = {
         childTaxCredit: 0,
         childDependentCareCredit: 0,
         educationCredits: 0,
         retirementSavingsCredit: 0,
         otherCredits: 0,
         totalCredits: 0
-      })) {
-        setSavedValues(newValues);
-        form.reset(newValues);
-      }
+      };
+      
+      console.log("TaxCredits3 - 기본값 설정:", defaultValues);
+      setSavedValues(defaultValues);
+      form.reset(defaultValues);
     }
   }, []);
   
@@ -120,8 +142,14 @@ const TaxCredits3Page: React.FC = () => {
       console.log("저장 전 현재 값:", currentValues);
       console.log("저장 대상 업데이트 값:", updatedValues);
       
-      // 로컬 상태 업데이트
+      // 중요! 클라이언트 측 로컬 state를 먼저 업데이트하여 UI 일관성 유지
       setSavedValues(updatedValues);
+      
+      // UI에 즉시 변경사항 반영 (사용자가 변경한 값이 사라지지 않도록)
+      form.reset(updatedValues);
+      
+      // 브라우저 스토리지에 저장 (세션 간에도 유지됨)
+      localStorage.setItem('taxCredits', JSON.stringify(updatedValues));
       
       // 컨텍스트 업데이트
       updateTaxData({ taxCredits: updatedValues });
@@ -129,10 +157,25 @@ const TaxCredits3Page: React.FC = () => {
       // 서버 저장
       await saveTaxReturn();
       
-      // 저장 후 폼의 현재 값 확인
+      // 현재 state 유지 확인
       console.log("저장 후 form.getValues():", form.getValues());
       console.log("저장 후 savedValues:", savedValues);
       console.log("저장 후 taxData.taxCredits:", taxData.taxCredits);
+      
+      // 서버 저장 후 3초 후에 로컬 상태와 값을 확인 (비동기 문제 대비)
+      setTimeout(() => {
+        const afterSaveValues = form.getValues();
+        console.log("3초 후 form.getValues():", afterSaveValues);
+        
+        // 만약 저장 후 값이 초기화되었으면 다시 설정
+        if (JSON.stringify(afterSaveValues) !== JSON.stringify(updatedValues)) {
+          console.log("값이 초기화됨 감지! 폼 값 복원 중...");
+          form.reset(updatedValues);
+          
+          // 컨텍스트도 업데이트 (서버에서 잘못된 값을 받았을 경우)
+          updateTaxData({ taxCredits: updatedValues });
+        }
+      }, 3000);
       
       toast({
         title: "저장 완료",
@@ -191,6 +234,10 @@ const TaxCredits3Page: React.FC = () => {
     
     // 컨텍스트 업데이트
     updateTaxData({ taxCredits: updatedValues });
+    
+    // 브라우저에 현재 상태 저장 (페이지 간 이동 시 데이터 보존을 위해)
+    localStorage.setItem('taxCredits', JSON.stringify(updatedValues));
+    
     return true;
   };
   

@@ -281,6 +281,7 @@ export const TaxProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const saveTaxReturn = async () => {
     try {
       setIsLoading(true);
+      console.log("서버 저장 시작 - 현재 taxData:", taxData);
       
       const method = taxData.id ? 'PUT' : 'POST';
       const url = taxData.id ? `/api/tax-return/${taxData.id}` : '/api/tax-return';
@@ -291,8 +292,21 @@ export const TaxProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       });
       
       if (response.ok) {
-        const updatedTaxReturn = await response.json();
-        setTaxData(updatedTaxReturn);
+        // 서버에서 받은 데이터 그대로 상태 업데이트하는 대신 ID만 업데이트
+        // 이렇게 하면 서버 응답이 클라이언트의 현재 상태를 덮어쓰지 않음
+        const serverResponse = await response.json();
+        console.log("서버 응답:", serverResponse);
+        
+        // ID는 업데이트하되 다른 데이터는 현재 상태 유지
+        if (!taxData.id && serverResponse.id) {
+          setTaxData(prevData => ({
+            ...prevData,
+            id: serverResponse.id
+          }));
+        }
+        
+        console.log("서버 저장 완료 - 현재 상태 유지됨");
+        return serverResponse;
       }
     } catch (error) {
       console.error('Error saving tax return:', error);

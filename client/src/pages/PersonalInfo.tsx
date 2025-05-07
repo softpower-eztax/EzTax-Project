@@ -49,7 +49,9 @@ const PersonalInfo: React.FC = () => {
         lastName: 'Smith',
         ssn: '111-22-3333',
         relationship: 'Son',
-        dateOfBirth: '2010-03-12'
+        dateOfBirth: '2010-03-12',
+        isDisabled: false,
+        isNonresidentAlien: false
       }
     ],
     ...taxData.personalInfo
@@ -106,7 +108,9 @@ const PersonalInfo: React.FC = () => {
       lastName: '',
       ssn: '',
       relationship: '',
-      dateOfBirth: ''
+      dateOfBirth: '',
+      isDisabled: false,
+      isNonresidentAlien: false
     });
   };
 
@@ -700,6 +704,54 @@ const PersonalInfo: React.FC = () => {
                                     />
                                   </FormControl>
                                   <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                          </div>
+                          
+                          <div className="mt-4 space-y-3">
+                            <FormField
+                              control={form.control}
+                              name={`dependents.${index}.isDisabled`}
+                              render={({ field }) => (
+                                <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                                  <FormControl>
+                                    <input
+                                      type="checkbox"
+                                      checked={field.value}
+                                      onChange={field.onChange}
+                                      className="h-4 w-4 mt-1"
+                                    />
+                                  </FormControl>
+                                  <div className="space-y-1 leading-none">
+                                    <FormLabel>시각장애인, 영구 장애인 (Legally blind, permanently disabled)</FormLabel>
+                                    <FormDescription className="text-xs">
+                                      부양가족에게 영구적인 장애가 있는 경우 체크하세요.
+                                    </FormDescription>
+                                  </div>
+                                </FormItem>
+                              )}
+                            />
+                            
+                            <FormField
+                              control={form.control}
+                              name={`dependents.${index}.isNonresidentAlien`}
+                              render={({ field }) => (
+                                <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                                  <FormControl>
+                                    <input
+                                      type="checkbox"
+                                      checked={field.value}
+                                      onChange={field.onChange}
+                                      className="h-4 w-4 mt-1"
+                                    />
+                                  </FormControl>
+                                  <div className="space-y-1 leading-none">
+                                    <FormLabel>비거주 외국인 (Nonresident Alien)</FormLabel>
+                                    <FormDescription className="text-xs">
+                                      부양가족이 비거주 외국인 상태인 경우 체크하세요.
+                                    </FormDescription>
+                                  </div>
                                 </FormItem>
                               )}
                             />

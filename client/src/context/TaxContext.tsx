@@ -95,7 +95,9 @@ export const TaxProvider: React.FC<{ children: React.ReactNode }> = ({ children 
           lastName: 'Smith',
           ssn: '111-22-3333',
           relationship: 'Son',
-          dateOfBirth: '2010-03-12'
+          dateOfBirth: '2010-03-12',
+          isDisabled: false,
+          isNonresidentAlien: false
         }
       ]
     },

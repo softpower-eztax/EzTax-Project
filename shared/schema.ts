@@ -64,6 +64,7 @@ export interface Dependent {
   dateOfBirth: string;
   isDisabled: boolean;
   isNonresidentAlien: boolean;
+  isQualifyingChild: boolean; // 19세미만 또는 24세미만 학생
 }
 
 export interface SpouseInformation {
@@ -184,6 +185,7 @@ export const dependentSchema = z.object({
   dateOfBirth: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Date must be in YYYY-MM-DD format"),
   isDisabled: z.boolean().default(false),
   isNonresidentAlien: z.boolean().default(false),
+  isQualifyingChild: z.boolean().default(false),
 });
 
 export const spouseInfoSchema = z.object({

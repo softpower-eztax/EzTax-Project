@@ -69,7 +69,8 @@ const PersonalInfo: React.FC = () => {
         relationship: 'Son',
         dateOfBirth: '2010-03-12',
         isDisabled: false,
-        isNonresidentAlien: false
+        isNonresidentAlien: false,
+        isQualifyingChild: true // 추가된 필드
       }
     ],
     ...taxData.personalInfo
@@ -128,7 +129,8 @@ const PersonalInfo: React.FC = () => {
       relationship: relationshipOptions[0].value, // 첫 번째 관계 옵션을 기본값으로 설정
       dateOfBirth: '',
       isDisabled: false,
-      isNonresidentAlien: false
+      isNonresidentAlien: false,
+      isQualifyingChild: false // 추가된 필드
     });
   };
 
@@ -880,6 +882,29 @@ const PersonalInfo: React.FC = () => {
                                     <FormLabel>비거주 외국인 (Nonresident Alien)</FormLabel>
                                     <FormDescription className="text-xs">
                                       부양가족이 비거주 외국인 상태인 경우 체크하세요.
+                                    </FormDescription>
+                                  </div>
+                                </FormItem>
+                              )}
+                            />
+
+                            <FormField
+                              control={form.control}
+                              name={`dependents.${index}.isQualifyingChild`}
+                              render={({ field }) => (
+                                <FormItem className="flex flex-row items-start space-x-3 space-y-0 mt-3">
+                                  <FormControl>
+                                    <input
+                                      type="checkbox"
+                                      checked={field.value}
+                                      onChange={field.onChange}
+                                      className="h-4 w-4 mt-1"
+                                    />
+                                  </FormControl>
+                                  <div className="space-y-1 leading-none">
+                                    <FormLabel>19세미만이며 부모와 반년이상 거주 또는 24세미만 Full Time 학생</FormLabel>
+                                    <FormDescription className="text-xs">
+                                      부양가족이 19세 미만이고 부모와 일년의 반 이상 함께 살거나, 24세 미만인 풀타임 학생인 경우 체크하세요.
                                     </FormDescription>
                                   </div>
                                 </FormItem>

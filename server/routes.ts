@@ -13,8 +13,8 @@ import { z } from "zod";
 import { setupAuth } from "./auth";
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  // Health check endpoint for deployment
-  app.get("/", (_req, res) => {
+  // Health check endpoint for deployment - use /health instead of root
+  app.get("/health", (_req, res) => {
     res.status(200).send("OK");
   });
 

@@ -231,7 +231,6 @@ export default function IncomePage() {
     // 조정 항목 계산
     const studentLoanInterest = Number(form.watch('adjustments.studentLoanInterest') || 0);
     const retirementContributions = Number(form.watch('adjustments.retirementContributions') || 0);
-    const healthSavingsAccount = Number(form.watch('adjustments.healthSavingsAccount') || 0);
     
     // 추가 조정 항목 계산
     let additionalAdjustmentsTotal = 0;
@@ -245,7 +244,6 @@ export default function IncomePage() {
     // 조정 항목 합계 계산
     const totalAdjustments = studentLoanInterest + 
                            retirementContributions + 
-                           healthSavingsAccount + 
                            additionalAdjustmentsTotal;
     
     // 조정 총소득(AGI) 계산
@@ -254,7 +252,6 @@ export default function IncomePage() {
     console.log("조정 계산 세부사항:", {
       학자금대출이자: studentLoanInterest,
       은퇴기여금: retirementContributions,
-      의료저축계좌: healthSavingsAccount,
       추가조정항목합계: additionalAdjustmentsTotal,
       총조정금액: totalAdjustments,
       조정총소득: adjustedGrossIncome
@@ -293,7 +290,6 @@ export default function IncomePage() {
     form.watch('otherIncome'),
     form.watch('adjustments.studentLoanInterest'),
     form.watch('adjustments.retirementContributions'),
-    form.watch('adjustments.healthSavingsAccount'),
     form.watch('adjustments.otherAdjustments'),
     additionalIncomeItems,
     additionalAdjustmentItems,
@@ -325,7 +321,6 @@ export default function IncomePage() {
     
     const studentLoanInterest = Number(form.watch('adjustments.studentLoanInterest') || 0);
     const retirementContributions = Number(form.watch('adjustments.retirementContributions') || 0);
-    const healthSavingsAccount = Number(form.watch('adjustments.healthSavingsAccount') || 0);
     
     let additionalAdjustmentsTotal = 0;
     if (additionalAdjustmentItems.length > 0) {
@@ -333,8 +328,7 @@ export default function IncomePage() {
         sum + Number(item.amount || 0), 0);
     }
     
-    const totalAdjustments = studentLoanInterest + retirementContributions + 
-                           healthSavingsAccount + additionalAdjustmentsTotal;
+    const totalAdjustments = studentLoanInterest + retirementContributions + additionalAdjustmentsTotal;
     
     const adjustedGrossIncome = totalIncome - totalAdjustments;
     
@@ -347,7 +341,6 @@ export default function IncomePage() {
       totalIncome,
       studentLoanInterest,
       retirementContributions,
-      healthSavingsAccount,
       additionalAdjustmentsTotal,
       totalAdjustments,
       adjustedGrossIncome
@@ -401,7 +394,6 @@ export default function IncomePage() {
                           adjustments: {
                             studentLoanInterest: 0,
                             retirementContributions: 0,
-                            healthSavingsAccount: 0,
                             otherAdjustments: 0,
                           },
                           adjustedGrossIncome: 0,
@@ -735,33 +727,7 @@ export default function IncomePage() {
                         )}
                       />
                       
-                      <FormField
-                        control={form.control}
-                        name="adjustments.healthSavingsAccount"
-                        render={({ field }) => (
-                          <FormItem>
-                            <div className="flex justify-between">
-                              <FormLabel>건강저축계좌 (HSA Contributions)</FormLabel>
-                              <div className="tooltip">
-                                <InfoIcon className="h-4 w-4 text-gray-dark" />
-                                <span className="tooltip-text">Health Savings Account contributions</span>
-                              </div>
-                            </div>
-                            <FormControl>
-                              <Input
-                                type="number"
-                                step="0.01"
-                                min="0"
-                                {...field}
-                                onChange={(e) => {
-                                  field.onChange(parseFloat(e.target.value) || 0);
-                                }}
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
+
                       
                       <div className="flex items-center md:col-span-2 mt-2">
                         <Button
@@ -870,7 +836,6 @@ export default function IncomePage() {
                       adjustments: {
                         studentLoanInterest: 0,
                         retirementContributions: 0,
-                        healthSavingsAccount: 0,
                         otherAdjustments: 0
                       },
                       adjustedGrossIncome: 0

@@ -502,26 +502,35 @@ const Deductions: React.FC = () => {
                 nextStep="/tax-credits"
                 submitText="세금공제 (Tax Credits)"
                 onNext={() => {
+                  console.log("Next 버튼 클릭됨");
+                  
                   // 표준 공제를 선택한 경우 폼 유효성 검사를 무시하고 진행
                   if (form.watch('useStandardDeduction')) {
-                    onSubmit(form.getValues());
+                    console.log("표준 공제 선택됨, 자동 저장 및 진행");
+                    const data = form.getValues();
+                    updateTaxData({ deductions: data });
                     return true;
                   }
                   
-                  if (form.formState.isValid) {
-                    onSubmit(form.getValues());
-                    return true;
-                  } else {
-                    form.trigger();
-                    if (!form.formState.isValid) {
+                  // 항목별 공제를 선택한 경우 유효성 검사 실행
+                  return form.trigger().then(isValid => {
+                    console.log("폼 유효성 검사 결과:", isValid);
+                    
+                    if (isValid) {
+                      console.log("폼이 유효함, 데이터 저장 후 진행");
+                      const data = form.getValues();
+                      updateTaxData({ deductions: data });
+                      return true;
+                    } else {
+                      console.log("폼이 유효하지 않음, 오류 메시지 표시");
                       toast({
                         title: "폼 오류",
                         description: "다음으로 진행하기 전에 폼의 오류를 수정해주세요.",
                         variant: "destructive",
                       });
+                      return false;
                     }
-                    return false;
-                  }
+                  });
                 }}
               />
             </CardContent>

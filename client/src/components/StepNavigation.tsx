@@ -5,7 +5,7 @@ import { useLocation } from 'wouter';
 interface StepNavigationProps {
   prevStep: string;
   nextStep: string;
-  onNext?: () => boolean; // Return true to proceed, false to prevent navigation
+  onNext?: () => boolean | Promise<boolean>; // Return true to proceed, false to prevent navigation
   onPrev?: () => void;
   submitText?: string;
   isLastStep?: boolean;
@@ -21,13 +21,31 @@ const StepNavigation: React.FC<StepNavigationProps> = ({
 }) => {
   const [, navigate] = useLocation();
 
-  const handleNext = () => {
+  const handleNext = async () => {
+    console.log("StepNavigation: handleNext 호출됨");
     if (onNext) {
-      const canProceed = onNext();
-      if (canProceed) {
-        navigate(nextStep);
+      try {
+        const result = onNext();
+        let canProceed;
+        
+        if (result instanceof Promise) {
+          console.log("StepNavigation: Promise 감지됨, Promise 결과 대기중...");
+          canProceed = await result;
+        } else {
+          console.log("StepNavigation: 동기 결과 감지됨:", result);
+          canProceed = result;
+        }
+        
+        console.log("StepNavigation: 진행 가능 여부:", canProceed);
+        if (canProceed) {
+          console.log("StepNavigation: 다음 단계로 이동:", nextStep);
+          navigate(nextStep);
+        }
+      } catch (error) {
+        console.error("StepNavigation: 오류 발생", error);
       }
     } else {
+      console.log("StepNavigation: onNext 콜백 없음, 바로 다음 단계로 이동");
       navigate(nextStep);
     }
   };

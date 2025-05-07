@@ -10,7 +10,7 @@ import StepNavigation from '@/components/StepNavigation';
 import { File, Check, FileEdit, Loader2 } from 'lucide-react';
 import { downloadTaxFormPDF } from '@/lib/pdfGenerator';
 import { formatCurrency } from '@/lib/taxCalculations';
-import { PersonalInformation, Deductions, TaxCredits, AdditionalTax, CalculatedResults } from '@shared/schema';
+import { PersonalInformation, Deductions, TaxCredits, AdditionalTax, CalculatedResults, Income } from '@shared/schema';
 import { Link, useLocation } from 'wouter';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
@@ -41,8 +41,8 @@ const SectionSummary: React.FC<SectionSummaryProps> = ({ title, editLink, childr
 };
 
 // Helper component to format field data
-const Field: React.FC<{ label: string; value: string | number | undefined | null }> = ({ label, value }) => (
-  <div className="flex justify-between py-1 border-b border-gray-light last:border-0">
+const Field: React.FC<{ label: string; value: string | number | undefined | null; className?: string }> = ({ label, value, className }) => (
+  <div className={`flex justify-between py-1 border-b border-gray-light last:border-0 ${className || ''}`}>
     <span className="text-gray-dark">{label}:</span>
     <span className="font-semibold">{value !== undefined && value !== null ? value : 'Not provided'}</span>
   </div>
@@ -102,6 +102,29 @@ const Review: React.FC = () => {
       }
     ]
   } as PersonalInformation;
+  
+  const income = taxData.income || {
+    wages: 75000,
+    otherEarnedIncome: 0,
+    interestIncome: 1200,
+    dividends: 3500,
+    businessIncome: 15000,
+    capitalGains: 5000,
+    rentalIncome: 12000,
+    retirementIncome: 0,
+    unemploymentIncome: 0,
+    otherIncome: 1500,
+    totalIncome: 113200,
+    adjustments: {
+      studentLoanInterest: 2500,
+      retirementContributions: 6000,
+      healthSavingsAccount: 3500,
+      otherAdjustments: 1000
+    },
+    adjustedGrossIncome: 100200,
+    additionalIncomeItems: [],
+    additionalAdjustmentItems: []
+  } as Income;
   
   const deductions = taxData.deductions || {
     useStandardDeduction: false,
@@ -231,6 +254,28 @@ const Review: React.FC = () => {
                       label="Dependents" 
                       value={personalInfo.dependents?.length ? `${personalInfo.dependents.length} dependent(s)` : 'None'} 
                     />
+                  </div>
+                </div>
+              </SectionSummary>
+              
+              {/* Income Summary */}
+              <SectionSummary title="소득(Income)" editLink="/income">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <Field label="Wages" value={formatCurrency(income.wages)} />
+                    <Field label="Interest Income" value={formatCurrency(income.interestIncome)} />
+                    <Field label="Dividend Income" value={formatCurrency(income.dividends)} />
+                    <Field label="Business Income" value={formatCurrency(income.businessIncome)} />
+                    <Field label="Capital Gains" value={formatCurrency(income.capitalGains)} />
+                    <Field label="Rental Income" value={formatCurrency(income.rentalIncome)} />
+                  </div>
+                  <div>
+                    <Field label="Retirement Income" value={formatCurrency(income.retirementIncome)} />
+                    <Field label="Unemployment Income" value={formatCurrency(income.unemploymentIncome)} />
+                    <Field label="Other Income" value={formatCurrency(income.otherIncome)} />
+                    <Field label="Total Income" value={formatCurrency(income.totalIncome)} />
+                    <Field label="Adjustments" value={formatCurrency(income.adjustments.studentLoanInterest + income.adjustments.retirementContributions + income.adjustments.healthSavingsAccount + income.adjustments.otherAdjustments)} />
+                    <Field label="Adjusted Gross Income" value={formatCurrency(income.adjustedGrossIncome)} className="font-semibold" />
                   </div>
                 </div>
               </SectionSummary>

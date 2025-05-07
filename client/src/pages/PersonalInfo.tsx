@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useForm, useFieldArray } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { personalInfoSchema, type PersonalInformation, type Dependent } from '@shared/schema';
@@ -9,15 +9,18 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { Separator } from '@/components/ui/separator';
-import { PlusCircle, Trash2 } from 'lucide-react';
+import { PlusCircle, Trash2, RotateCcw, Save } from 'lucide-react';
 import ProgressTracker from '@/components/ProgressTracker';
 import TaxSummary from '@/components/TaxSummary';
 import StepNavigation from '@/components/StepNavigation';
 import { useTaxContext } from '@/context/TaxContext';
 
 const PersonalInfo: React.FC = () => {
-  const { taxData, updateTaxData } = useTaxContext();
+  const { taxData, updateTaxData, saveTaxReturn } = useTaxContext();
   const { toast } = useToast();
+  
+  // 로컬 상태 관리 (폼과 로컬스토리지 간 동기화)
+  const [savedValues, setSavedValues] = useState<PersonalInformation | null>(null);
   
   // 테스트용 하드코딩된 데이터로 시작
   const defaultValues: PersonalInformation = {
@@ -52,6 +55,24 @@ const PersonalInfo: React.FC = () => {
     ],
     ...taxData.personalInfo
   };
+
+  // 로컬 스토리지에서 데이터 불러오기 (페이지 로드 시)
+  useEffect(() => {
+    const storedData = localStorage.getItem('personalInfo');
+    console.log("PersonalInfo - 최초 로드 시 taxData:", taxData);
+    
+    // 로컬 스토리지에서 데이터 복원
+    if (storedData) {
+      try {
+        const parsedData = JSON.parse(storedData);
+        console.log("PersonalInfo - 로컬스토리지에서 복원:", parsedData);
+        setSavedValues(parsedData);
+        form.reset(parsedData); // 폼 데이터 설정
+      } catch (e) {
+        console.error("로컬 스토리지 데이터 파싱 오류:", e);
+      }
+    }
+  }, []);
 
   // Disable zod validation to avoid form validation errors
   const form = useForm<PersonalInformation>({

@@ -36,12 +36,16 @@ const PersonalInfo: React.FC = () => {
     state: 'IL',
     zipCode: '62704',
     filingStatus: 'married_joint',
+    isDisabled: false,
+    isNonresidentAlien: false,
     spouseInfo: {
       firstName: 'Jane',
       middleInitial: 'B',
       lastName: 'Smith',
       ssn: '987-65-4321',
-      dateOfBirth: '1982-05-20'
+      dateOfBirth: '1982-05-20',
+      isDisabled: false,
+      isNonresidentAlien: false
     },
     dependents: [
       {
@@ -160,6 +164,8 @@ const PersonalInfo: React.FC = () => {
       state: '',
       zipCode: '',
       filingStatus: 'single',
+      isDisabled: false,
+      isNonresidentAlien: false,
       dependents: []
     };
     
@@ -359,6 +365,54 @@ const PersonalInfo: React.FC = () => {
                         )}
                       />
                     </div>
+                    
+                    <div className="mt-4 space-y-3">
+                      <FormField
+                        control={form.control}
+                        name="isDisabled"
+                        render={({ field }) => (
+                          <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                            <FormControl>
+                              <input
+                                type="checkbox"
+                                checked={field.value}
+                                onChange={field.onChange}
+                                className="h-4 w-4 mt-1"
+                              />
+                            </FormControl>
+                            <div className="space-y-1 leading-none">
+                              <FormLabel>시각장애인, 영구 장애인 (Legally blind, permanently disabled)</FormLabel>
+                              <FormDescription className="text-xs">
+                                신고자가 법적으로 시각장애인이거나 영구적인 장애가 있는 경우 체크하세요.
+                              </FormDescription>
+                            </div>
+                          </FormItem>
+                        )}
+                      />
+                      
+                      <FormField
+                        control={form.control}
+                        name="isNonresidentAlien"
+                        render={({ field }) => (
+                          <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                            <FormControl>
+                              <input
+                                type="checkbox"
+                                checked={field.value}
+                                onChange={field.onChange}
+                                className="h-4 w-4 mt-1"
+                              />
+                            </FormControl>
+                            <div className="space-y-1 leading-none">
+                              <FormLabel>비거주 외국인 (Nonresident Alien)</FormLabel>
+                              <FormDescription className="text-xs">
+                                신고자가 비거주 외국인 상태인 경우 체크하세요.
+                              </FormDescription>
+                            </div>
+                          </FormItem>
+                        )}
+                      />
+                    </div>
                   </div>
                   
                   {/* Spouse Information - Only shows when filing status is married_joint */}
@@ -451,6 +505,54 @@ const PersonalInfo: React.FC = () => {
                                   />
                                 </FormControl>
                                 <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                        </div>
+                        
+                        <div className="mt-4 space-y-3">
+                          <FormField
+                            control={form.control}
+                            name="spouseInfo.isDisabled"
+                            render={({ field }) => (
+                              <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                                <FormControl>
+                                  <input
+                                    type="checkbox"
+                                    checked={field.value}
+                                    onChange={field.onChange}
+                                    className="h-4 w-4 mt-1"
+                                  />
+                                </FormControl>
+                                <div className="space-y-1 leading-none">
+                                  <FormLabel>시각장애인, 영구 장애인 (Legally blind, permanently disabled)</FormLabel>
+                                  <FormDescription className="text-xs">
+                                    배우자가 법적으로 시각장애인이거나 영구적인 장애가 있는 경우 체크하세요.
+                                  </FormDescription>
+                                </div>
+                              </FormItem>
+                            )}
+                          />
+                          
+                          <FormField
+                            control={form.control}
+                            name="spouseInfo.isNonresidentAlien"
+                            render={({ field }) => (
+                              <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                                <FormControl>
+                                  <input
+                                    type="checkbox"
+                                    checked={field.value}
+                                    onChange={field.onChange}
+                                    className="h-4 w-4 mt-1"
+                                  />
+                                </FormControl>
+                                <div className="space-y-1 leading-none">
+                                  <FormLabel>비거주 외국인 (Nonresident Alien)</FormLabel>
+                                  <FormDescription className="text-xs">
+                                    배우자가 비거주 외국인 상태인 경우 체크하세요.
+                                  </FormDescription>
+                                </div>
                               </FormItem>
                             )}
                           />

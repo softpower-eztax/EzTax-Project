@@ -30,13 +30,25 @@ const TaxSummary: React.FC<TaxSummaryProps> = ({ recalculate }) => {
     qualifying_widow: "Qualifying Widow(er)"
   };
 
-  // 테스트용 하드코딩된 데이터 만약 API에서 데이터가 불러와지지 않을 경우를 대비
+  // 현재 taxData에서 값을 직접 가져오도록 변경
+  const income = taxData.income || {
+    totalIncome: 0,
+    adjustments: { studentLoanInterest: 0, retirementContributions: 0, healthSavingsAccount: 0, otherAdjustments: 0 },
+    adjustedGrossIncome: 0
+  };
+  
+  const adjustmentsTotal = income.adjustments.studentLoanInterest + 
+                         income.adjustments.retirementContributions + 
+                         income.adjustments.healthSavingsAccount + 
+                         income.adjustments.otherAdjustments;
+  
+  // Income 섹션 값을 사용하되 없는 경우 fallback 값을 사용
   const results = taxData.calculatedResults || {
-    totalIncome: 129700,
-    adjustments: 14060,
-    adjustedGrossIncome: 115640,
-    deductions: 35000,
-    taxableIncome: 80640,
+    totalIncome: income.totalIncome || 113200,
+    adjustments: adjustmentsTotal || 13000,
+    adjustedGrossIncome: income.adjustedGrossIncome || 100200,
+    deductions: taxData.deductions?.totalDeductions || 35000,
+    taxableIncome: (income.adjustedGrossIncome || 100200) - (taxData.deductions?.totalDeductions || 35000),
     federalTax: 9082.8,
     credits: 5200,
     taxDue: 6802.8,

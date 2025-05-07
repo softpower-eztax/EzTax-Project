@@ -124,9 +124,23 @@ export function calculateTaxes(taxData: TaxData): CalculatedResults {
   // Get filing status or default to single
   const filingStatus: FilingStatus = taxData.personalInfo?.filingStatus || 'single';
   
+  // 추가 정보 미리 가져오기
+  const additionalTax = taxData.additionalTax || {
+    selfEmploymentIncome: 0,
+    selfEmploymentTax: 0,
+    estimatedTaxPayments: 0,
+    otherIncome: 0,
+    otherTaxes: 0
+  };
+  
+  // 자영업 세금 정보
+  const selfEmploymentTax = additionalTax.selfEmploymentTax;
+  const halfSETax = Math.round((selfEmploymentTax / 2) * 100) / 100;
+  
   // Calculate total income
   const income = taxData.income || {
     wages: 0,
+    otherEarnedIncome: 0,
     interestIncome: 0,
     dividends: 0,
     businessIncome: 0,
@@ -136,49 +150,79 @@ export function calculateTaxes(taxData: TaxData): CalculatedResults {
     unemploymentIncome: 0,
     otherIncome: 0,
     totalIncome: 0,
+    adjustments: {
+      studentLoanInterest: 0,
+      retirementContributions: 0,
+      healthSavingsAccount: 0,
+      otherAdjustments: 0
+    },
+    adjustedGrossIncome: 0,
+    additionalIncomeItems: [],
+    additionalAdjustmentItems: []
   };
   
-  const selfEmploymentIncome = taxData.additionalTax?.selfEmploymentIncome || 0;
-  const additionalOtherIncome = taxData.additionalTax?.otherIncome || 0;
-  
-  // Calculate total income from all sources
-  result.totalIncome = (
-    income.wages +
-    income.interestIncome +
-    income.dividends +
-    income.businessIncome +
-    income.capitalGains +
-    income.rentalIncome + 
-    income.retirementIncome +
-    income.unemploymentIncome +
-    income.otherIncome +
-    selfEmploymentIncome +
-    additionalOtherIncome
-  );
-  
-  // Calculate adjustments (both from income section and half of self-employment tax)
-  const selfEmploymentTax = taxData.additionalTax?.selfEmploymentTax || 0;
-  const halfSETax = Math.round((selfEmploymentTax / 2) * 100) / 100;
-  
-  // Get adjustments from income section if available
-  const incomeAdjustments = income.adjustments || {
-    studentLoanInterest: 0,
-    retirementContributions: 0,
-    healthSavingsAccount: 0,
-    otherAdjustments: 0
-  };
-  
-  // Sum all adjustments
-  result.adjustments = (
-    incomeAdjustments.studentLoanInterest +
-    incomeAdjustments.retirementContributions +
-    incomeAdjustments.healthSavingsAccount +
-    incomeAdjustments.otherAdjustments +
-    halfSETax
-  );
-  
-  // Calculate adjusted gross income (AGI)
-  result.adjustedGrossIncome = result.totalIncome - result.adjustments;
+  // 이미 income.totalIncome이 설정되어 있다면 그 값을 사용
+  if (income.totalIncome > 0) {
+    result.totalIncome = income.totalIncome;
+  } else {
+    // 그렇지 않으면 개별 항목들을 합산
+    const selfEmploymentIncome = additionalTax.selfEmploymentIncome;
+    const additionalOtherIncome = additionalTax.otherIncome;
+    
+    // additionalIncomeItems 합계
+    const additionalIncomeTotal = (income.additionalIncomeItems || [])
+      .reduce((sum, item) => sum + (item.amount || 0), 0);
+    
+    // Calculate total income from all sources
+    result.totalIncome = (
+      income.wages +
+      income.otherEarnedIncome +
+      income.interestIncome +
+      income.dividends +
+      income.businessIncome +
+      income.capitalGains +
+      income.rentalIncome + 
+      income.retirementIncome +
+      income.unemploymentIncome +
+      income.otherIncome +
+      selfEmploymentIncome +
+      additionalOtherIncome +
+      additionalIncomeTotal
+    );
+  }
+
+  // 이미 income.adjustedGrossIncome이 설정되어 있고 income.totalIncome도 설정되어 있다면,
+  // 역계산으로 조정액을 계산
+  if (income.adjustedGrossIncome > 0 && income.totalIncome > 0) {
+    result.adjustments = income.totalIncome - income.adjustedGrossIncome;
+    // 역계산한 조정액으로 AGI 계산
+    result.adjustedGrossIncome = income.adjustedGrossIncome;
+  } else {
+    // Get adjustments from income section if available
+    const incomeAdjustments = income.adjustments || {
+      studentLoanInterest: 0,
+      retirementContributions: 0,
+      healthSavingsAccount: 0,
+      otherAdjustments: 0
+    };
+    
+    // additionalAdjustmentItems 합계
+    const additionalAdjustmentsTotal = (income.additionalAdjustmentItems || [])
+      .reduce((sum, item) => sum + (item.amount || 0), 0);
+    
+    // Sum all adjustments
+    result.adjustments = (
+      incomeAdjustments.studentLoanInterest +
+      incomeAdjustments.retirementContributions +
+      incomeAdjustments.healthSavingsAccount +
+      incomeAdjustments.otherAdjustments +
+      halfSETax +
+      additionalAdjustmentsTotal
+    );
+    
+    // Calculate adjusted gross income (AGI)
+    result.adjustedGrossIncome = result.totalIncome - result.adjustments;
+  }
   
   // Calculate deductions
   if (taxData.deductions?.useStandardDeduction) {
@@ -200,14 +244,13 @@ export function calculateTaxes(taxData: TaxData): CalculatedResults {
   result.taxDue = Math.max(0, result.federalTax - result.credits);
   
   // Add additional taxes
-  const additionalTaxes = taxData.additionalTax?.otherTaxes || 0;
-  result.taxDue += additionalTaxes;
+  result.taxDue += additionalTax.otherTaxes;
   
   // Add self-employment tax
   result.taxDue += selfEmploymentTax;
   
   // Calculate payments (estimated tax payments and an assumed withholding)
-  const estimatedPayments = taxData.additionalTax?.estimatedTaxPayments || 0;
+  const estimatedPayments = additionalTax.estimatedTaxPayments;
   const assumedWithholding = Math.round(result.totalIncome * 0.15 * 100) / 100; // Assuming 15% withholding on base income
   result.payments = estimatedPayments + assumedWithholding;
   

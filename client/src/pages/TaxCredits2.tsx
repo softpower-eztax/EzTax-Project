@@ -62,23 +62,34 @@ const TaxCredits2Page: React.FC = () => {
     form.trigger();
   }, [form]);
 
-  // 값이 변경될 때마다 총액 계산
+  // 값이 변경될 때마다 총액 계산 - 별도의 state로 관리
+  const [totalCredits, setTotalCredits] = React.useState(0);
+  
+  // 개별 필드 감시
+  const watchChildTaxCredit = form.watch('childTaxCredit');
+  const watchChildDependentCareCredit = form.watch('childDependentCareCredit');
+  const watchEducationCredits = form.watch('educationCredits');
+  const watchRetirementSavingsCredit = form.watch('retirementSavingsCredit');
+  const watchOtherCredits = form.watch('otherCredits');
+  
+  // 합계 계산
   React.useEffect(() => {
-    const subscription = form.watch((value) => {
-      if (!value) return;
-      
-      const total = 
-        Number(value.childTaxCredit || 0) +
-        Number(value.childDependentCareCredit || 0) +
-        Number(value.educationCredits || 0) +
-        Number(value.retirementSavingsCredit || 0) +
-        Number(value.otherCredits || 0);
-        
-      form.setValue('totalCredits', total);
-    });
+    const total = 
+      Number(watchChildTaxCredit || 0) +
+      Number(watchChildDependentCareCredit || 0) +
+      Number(watchEducationCredits || 0) +
+      Number(watchRetirementSavingsCredit || 0) +
+      Number(watchOtherCredits || 0);
     
-    return () => subscription.unsubscribe();
-  }, [form]);
+    setTotalCredits(total);
+    form.setValue('totalCredits', total, { shouldValidate: false });
+  }, [
+    watchChildTaxCredit,
+    watchChildDependentCareCredit,
+    watchEducationCredits,
+    watchRetirementSavingsCredit,
+    watchOtherCredits
+  ]);
 
   const onSubmit = (data: TaxCredits) => {
     updateTaxData({ taxCredits: data });
@@ -362,7 +373,7 @@ const TaxCredits2Page: React.FC = () => {
                     <div className="flex justify-between items-center">
                       <h4 className="font-semibold">총공제액 (Total Credits)</h4>
                       <p className="font-bold text-primary-dark text-xl">
-                        ${form.getValues('totalCredits').toLocaleString()}
+                        ${totalCredits.toLocaleString()}
                       </p>
                     </div>
                   </div>

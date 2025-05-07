@@ -202,14 +202,26 @@ const TaxCredits3Page: React.FC = () => {
       totalCredits: 0
     };
     
+    console.log("값 초기화 실행:", resetValues);
+    
     // 폼 초기화
     form.reset(resetValues);
     
     // 로컬 상태 초기화
     setSavedValues(resetValues);
     
+    // 로컬 스토리지에서도 초기화된 값 저장
+    localStorage.setItem('taxCredits', JSON.stringify(resetValues));
+    
     // 컨텍스트 업데이트
     updateTaxData({ taxCredits: resetValues });
+    
+    // 서버에도 저장
+    saveTaxReturn().then(() => {
+      console.log("초기화된 값 서버에 저장 완료");
+    }).catch(error => {
+      console.error("초기화된 값 서버 저장 실패:", error);
+    });
     
     toast({
       title: "값 초기화 완료",

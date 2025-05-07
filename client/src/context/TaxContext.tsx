@@ -203,7 +203,7 @@ export const TaxProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     loadTaxData();
   }, []);
 
-  // Update tax data and recalculate taxes
+  // Update tax data and recalculate taxes - without auto-saving to server
   const updateTaxData = (data: Partial<TaxData>) => {
     setTaxData(prevData => {
       const updatedData = {
@@ -215,6 +215,9 @@ export const TaxProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       // Recalculate tax results whenever data changes
       const calculatedResults = calculateTaxes(updatedData);
       updatedData.calculatedResults = calculatedResults;
+      
+      // 콘솔에 "자동 저장됨" 메시지를 출력하지 않고 로컬 상태만 업데이트
+      console.log("로컬 상태 업데이트:", data);
       
       return updatedData;
     });

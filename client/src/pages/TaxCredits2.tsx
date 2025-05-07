@@ -92,7 +92,13 @@ const TaxCredits2Page: React.FC = () => {
   ]);
 
   const onSubmit = (data: TaxCredits) => {
-    updateTaxData({ taxCredits: data });
+    // 현재 세액 공제 값을 그대로 유지하면서 업데이트
+    const updatedData = {
+      ...data,
+      totalCredits: totalCredits // 계산된 totalCredits 값 사용
+    };
+    
+    updateTaxData({ taxCredits: updatedData });
     return true;
   };
 
@@ -416,7 +422,14 @@ const TaxCredits2Page: React.FC = () => {
                         try {
                           // 현재 폼 데이터 저장
                           const currentData = form.getValues();
-                          updateTaxData({ taxCredits: currentData });
+                          
+                          // totalCredits 값을 계산된 값으로 업데이트
+                          const updatedData = {
+                            ...currentData,
+                            totalCredits: totalCredits // 계산된 totalCredits 값 사용
+                          };
+                          
+                          updateTaxData({ taxCredits: updatedData });
                           
                           // 세금 신고서 저장
                           await saveTaxReturn();
@@ -447,8 +460,17 @@ const TaxCredits2Page: React.FC = () => {
                 nextStep="/additional-tax"
                 submitText="추가세금 (Additional Tax)"
                 onNext={() => {
-                  // Just save and continue, since all fields have valid defaults
-                  onSubmit(form.getValues());
+                  // 현재 폼 데이터 가져오기
+                  const currentData = form.getValues();
+                  
+                  // totalCredits 값을 계산된 값으로 업데이트
+                  const updatedData = {
+                    ...currentData,
+                    totalCredits: totalCredits // 계산된 totalCredits 값 사용
+                  };
+                  
+                  // 업데이트된 데이터로 onSubmit 호출
+                  onSubmit(updatedData);
                   return true;
                 }}
               />

@@ -112,18 +112,44 @@ export default function IncomePage() {
     });
   }, [taxData.income]);
   
-  // 테스트용 함수 - 더미 데이터 추가
+  // 테스트용 함수 - 난수를 사용한 테스트 데이터 추가
   const addDummyData = () => {
-    // 더미 소득 항목 추가
+    // 범위 내 난수 생성 함수
+    const getRandomAmount = (min: number, max: number): number => {
+      return Math.floor(Math.random() * (max - min + 1)) + min;
+    };
+    
+    // 소수점 2자리까지의 난수 생성 (세금 계산용)
+    const getRandomDecimal = (min: number, max: number): number => {
+      return Math.round((Math.random() * (max - min) + min) * 100) / 100;
+    };
+    
+    // 무작위 금액으로 더미 소득 항목 추가
     const dummyIncomeItems: AdditionalIncomeItem[] = [
-      { type: '도박 소득 (Gambling winnings)', amount: 1200, description: '복권 당첨금' },
-      { type: '배심원 수당 (Jury duty pay)', amount: 480, description: '지방법원 배심원 참여' }
+      { 
+        type: '도박 소득 (Gambling winnings)', 
+        amount: getRandomAmount(500, 3000), 
+        description: '복권 당첨금' 
+      },
+      { 
+        type: '배심원 수당 (Jury duty pay)', 
+        amount: getRandomAmount(200, 900), 
+        description: '지방법원 배심원 참여' 
+      }
     ];
     
-    // 더미 조정 항목 추가
+    // 무작위 금액으로 더미 조정 항목 추가
     const dummyAdjustmentItems: AdditionalAdjustmentItem[] = [
-      { type: '교육자 비용 (Educator expenses)', amount: 250, description: '교육 자료 구입' },
-      { type: '학자금대출 이자 (Student loan interest)', amount: 1500, description: '연간 지불 이자' }
+      { 
+        type: '교육자 비용 (Educator expenses)', 
+        amount: getRandomAmount(100, 400), 
+        description: '교육 자료 구입' 
+      },
+      { 
+        type: '학자금대출 이자 (Student loan interest)', 
+        amount: getRandomAmount(500, 2500), 
+        description: '연간 지불 이자' 
+      }
     ];
     
     // 상태 업데이트

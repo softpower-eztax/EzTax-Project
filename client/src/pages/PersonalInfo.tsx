@@ -140,12 +140,89 @@ const PersonalInfo: React.FC = () => {
       return `${digits.slice(0, 3)}-${digits.slice(3, 6)}-${digits.slice(6, 10)}`;
     }
   };
+  
+  // 값 초기화 처리
+  const handleReset = () => {
+    const resetValues: PersonalInformation = {
+      firstName: '',
+      lastName: '',
+      middleInitial: '',
+      ssn: '',
+      dateOfBirth: '',
+      email: '',
+      phone: '',
+      address1: '',
+      address2: '',
+      city: '',
+      state: '',
+      zipCode: '',
+      filingStatus: 'single',
+      dependents: []
+    };
+    
+    console.log("값 초기화 실행:", resetValues);
+    
+    // 폼 초기화
+    form.reset(resetValues);
+    
+    // 로컬 상태 초기화
+    setSavedValues(resetValues);
+    
+    // 로컬 스토리지에서도 초기화된 값 저장
+    localStorage.setItem('personalInfo', JSON.stringify(resetValues));
+    
+    // 컨텍스트 업데이트
+    updateTaxData({ personalInfo: resetValues });
+    
+    // 서버에도 저장
+    saveTaxReturn().then(() => {
+      console.log("초기화된 값 서버에 저장 완료");
+    }).catch(error => {
+      console.error("초기화된 값 서버 저장 실패:", error);
+    });
+    
+    toast({
+      title: "값 초기화 완료",
+      description: "모든 개인정보 항목이 초기화되었습니다.",
+    });
+  };
+  
+  // 진행 상황 저장 처리
+  const handleSaveProgress = () => {
+    const currentValues = form.getValues();
+    console.log("진행 상황 저장 - 현재 값:", currentValues);
+    
+    // 로컬 상태 업데이트
+    setSavedValues(currentValues);
+    
+    // 컨텍스트 업데이트
+    updateTaxData({ personalInfo: currentValues });
+    
+    // 로컬 스토리지에 저장
+    localStorage.setItem('personalInfo', JSON.stringify(currentValues));
+    
+    // 서버에 저장
+    saveTaxReturn().then(() => {
+      console.log("서버 저장 완료 - 현재 상태 유지됨");
+      toast({
+        title: "진행 상황 저장 완료",
+        description: "개인정보가 성공적으로 저장되었습니다.",
+      });
+    }).catch(error => {
+      console.error("서버 저장 실패:", error);
+      toast({
+        title: "저장 실패",
+        description: "서버에 데이터를 저장하는 중 오류가 발생했습니다.",
+        variant: "destructive",
+      });
+    });
+  };
 
   return (
     <div className="max-w-5xl mx-auto">
       <div className="mb-8">
-        <h1 className="text-3xl font-heading font-bold text-primary-dark mb-2">2023년 세금 신고</h1>
-        <p className="text-gray-dark">세금 신고를 준비하기 위해 모든 섹션을 작성하세요. 정보는 입력하는 대로 저장됩니다.</p>
+        <h1 className="text-3xl font-heading font-bold text-primary-dark mb-2">귀하의 2025년 세금 신고서 (Your 2025 Tax Return)</h1>
+        <p className="text-gray-dark">세금 신고서를 준비하기 위해 모든 섹션을 작성하세요. (Complete all sections to prepare your tax return.)</p>
       </div>
 
       <ProgressTracker currentStep={1} />
@@ -635,17 +712,46 @@ const PersonalInfo: React.FC = () => {
                 </form>
               </Form>
               
+              {/* 버튼 컨트롤러 */}
+              <div className="flex flex-col sm:flex-row gap-4 my-6">
+                <Button 
+                  variant="destructive" 
+                  className="w-full sm:w-auto" 
+                  type="button" 
+                  onClick={handleReset}
+                >
+                  <RotateCcw className="mr-2 h-4 w-4" /> 값 초기화
+                </Button>
+                
+                <Button 
+                  variant="secondary" 
+                  className="w-full sm:w-auto" 
+                  type="button"
+                  onClick={handleSaveProgress}
+                >
+                  <Save className="mr-2 h-4 w-4" /> 진행 상황 저장
+                </Button>
+              </div>
+              
               <StepNavigation
                 prevStep="/"
                 nextStep="/income"
                 submitText="Income"
                 onNext={() => {
-                  // Always submit the form and allow navigation
-                  // This is a workaround for the validation issues
+                  // 다음 단계로 진행 시 현재 폼 데이터 저장
                   try {
                     const values = form.getValues();
-                    console.log("Submitting form values:", values);
-                    onSubmit(values);
+                    console.log("다음 단계로 이동 - 현재 값:", values);
+                    
+                    // 로컬 상태 업데이트
+                    setSavedValues(values);
+                    
+                    // 컨텍스트 업데이트
+                    updateTaxData({ personalInfo: values });
+                    
+                    // 로컬 스토리지에 저장
+                    localStorage.setItem('personalInfo', JSON.stringify(values));
+                    
                     return true;
                   } catch (error) {
                     console.error("Error in step navigation:", error);

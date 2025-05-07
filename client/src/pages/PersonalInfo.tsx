@@ -14,6 +14,20 @@ import ProgressTracker from '@/components/ProgressTracker';
 import StepNavigation from '@/components/StepNavigation';
 import { useTaxContext } from '@/context/TaxContext';
 
+// 부양가족 관계 옵션
+const relationshipOptions = [
+  { value: "child", label: "자녀 (Child)" },
+  { value: "parent", label: "부모 (Parent)" },
+  { value: "grandparent", label: "조부모 (Grandparent)" },
+  { value: "sibling", label: "형제자매 (Sibling)" },
+  { value: "grandchild", label: "손자녀 (Grandchild)" },
+  { value: "niece_nephew", label: "조카 (Niece/Nephew)" },
+  { value: "aunt_uncle", label: "삼촌/이모/고모 (Aunt/Uncle)" },
+  { value: "in_law", label: "인척 (In-law)" },
+  { value: "foster_child", label: "위탁 자녀 (Foster Child)" },
+  { value: "other", label: "기타 (Other)" },
+];
+
 const PersonalInfo: React.FC = () => {
   const { taxData, updateTaxData, saveTaxReturn } = useTaxContext();
   const { toast } = useToast();
@@ -111,7 +125,7 @@ const PersonalInfo: React.FC = () => {
       firstName: '',
       lastName: '',
       ssn: '',
-      relationship: '',
+      relationship: relationshipOptions[0].value, // 첫 번째 관계 옵션을 기본값으로 설정
       dateOfBirth: '',
       isDisabled: false,
       isNonresidentAlien: false
@@ -781,10 +795,24 @@ const PersonalInfo: React.FC = () => {
                               name={`dependents.${index}.relationship`}
                               render={({ field }) => (
                                 <FormItem>
-                                  <FormLabel>Relationship</FormLabel>
-                                  <FormControl>
-                                    <Input {...field} placeholder="Child, Parent, etc." />
-                                  </FormControl>
+                                  <FormLabel>납세자와의 관계 (Relationship)</FormLabel>
+                                  <Select
+                                    onValueChange={field.onChange}
+                                    defaultValue={field.value || ""}
+                                  >
+                                    <FormControl>
+                                      <SelectTrigger>
+                                        <SelectValue placeholder="관계를 선택하세요" />
+                                      </SelectTrigger>
+                                    </FormControl>
+                                    <SelectContent>
+                                      {relationshipOptions.map(option => (
+                                        <SelectItem key={option.value} value={option.value}>
+                                          {option.label}
+                                        </SelectItem>
+                                      ))}
+                                    </SelectContent>
+                                  </Select>
                                   <FormMessage />
                                 </FormItem>
                               )}

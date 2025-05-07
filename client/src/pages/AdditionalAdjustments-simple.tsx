@@ -53,7 +53,7 @@ const ADJUSTMENT_TYPES = [
   },
   {
     id: "ira_deduction",
-    label: "IRA 공제 (IRA deduction)",
+    label: "Traditional IRA 납입금",
     info: "전통적인 개인 은퇴 계좌에 납입한 금액에 대한 공제입니다."
   },
   {

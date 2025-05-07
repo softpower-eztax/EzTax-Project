@@ -41,7 +41,7 @@ const ADJUSTMENT_TYPES = [
   { id: 'self_employment_tax', label: '자영업자 세금의 50% 공제 (Deductible part of Self-Employment Tax)', info: '자영업자 세금의 50%를 조정합니다' },
   { id: 'self_employed_health_insurance', label: '자영업자 건강보험료 (Self-Employed Health Insurance Deduction)', info: '자영업자가 납부한 건강보험료 공제' },
   { id: 'self_employed_retirement', label: '자영업자 퇴직금 불입액 (Self-Employed SEP, SIMPLE, and Qualified Plans)', info: '자영업자 은퇴 계좌 기여금 공제' },
-  { id: 'traditional_ira', label: '전통 IRA 납입 공제 (Traditional IRA Deduction)', info: '전통적 개인 은퇴 계좌 기여금 공제' },
+  { id: 'traditional_ira', label: 'Traditional IRA 납입금', info: '전통적 개인 은퇴 계좌 기여금 공제' },
   { id: 'student_loan_interest', label: '학생론 이자 공제 (Student Loan Interest Deduction)', info: '학자금 대출 이자에 대한 공제, 최대 $2,500' },
   { id: 'disaster_losses', label: '연방 피해지역 피해 손실 (Certain Business Losses or Casualty Losses from Federally Declared Disaster)', info: '연방 재난 지역으로 선언된 지역에서의 피해 손실' },
   { id: 'unreimbursed_expenses', label: '예술가/공직자 등 업무 관련 비용 (Unreimbursed Expenses for Armed Forces, Performing Artists, Fee-Basis Government Officials)', info: '특정 직업군의 상환되지 않은 업무 관련 비용' },

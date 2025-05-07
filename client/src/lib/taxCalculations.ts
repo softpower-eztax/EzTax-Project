@@ -107,8 +107,9 @@ function isEligibleForChildTaxCredit(dependent: Dependent): boolean {
   // Basic age check
   if (age >= 17) return false;
   
-  // Check if dependent has a qualifying child status (added property)
-  return dependent.isQualifyingChild;
+  // For now, assume all dependents under 17 are eligible
+  // In the future, we can add more criteria when isQualifyingChild is properly implemented in all dependents
+  return dependent.isQualifyingChild !== undefined ? dependent.isQualifyingChild : true;
 }
 
 // Calculate the Child Tax Credit based on dependents and income

@@ -844,47 +844,8 @@ export default function IncomePage() {
                 </CardContent>
               </Card>
               
-              {/* 소득 요약 다이얼로그 버튼 */}
-              <div className="mt-6 mb-6">
-                <Dialog>
-                  <DialogTrigger asChild>
-                    <Button 
-                      type="button" 
-                      variant="outline"
-                      className="w-full flex items-center gap-2 py-6"
-                    >
-                      <BarChart2 className="h-5 w-5" />
-                      <span className="text-lg">계산 결과 보기 (View Calculation)</span>
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent className="sm:max-w-[500px]">
-                    <DialogHeader>
-                      <DialogTitle className="sr-only">계산 결과</DialogTitle>
-                      <DialogDescription className="sr-only">소득 및 조정금액 계산 결과</DialogDescription>
-                    </DialogHeader>
-                    
-                    {/* 간소화된 소득 요약 */}
-                    <div className="p-4 space-y-4 border rounded-lg">
-                      <div className="grid grid-cols-2 gap-y-4 text-lg">
-                        <div className="font-medium">총소득 (Total Income)</div>
-                        <div className="text-right font-semibold">{formatCurrency(getIncomeSummary().totalIncome)}</div>
-                        
-                        <div className="font-medium">조정항목총액 (Total Adjustments)</div>
-                        <div className="text-right font-semibold">{formatCurrency(getIncomeSummary().totalAdjustments)}</div>
-                        
-                        <div className="font-medium border-t pt-4">조정총소득 (Adjusted Gross Income)</div>
-                        <div className="text-right font-bold text-primary border-t pt-4">{formatCurrency(getIncomeSummary().adjustedGrossIncome)}</div>
-                      </div>
-                    </div>
-                    
-                    <DialogFooter className="mt-4">
-                      <DialogClose asChild>
-                        <Button type="button">확인</Button>
-                      </DialogClose>
-                    </DialogFooter>
-                  </DialogContent>
-                </Dialog>
-              </div>
+              {/* 여백을 위한 div */}
+              <div className="mt-6 mb-6"></div>
               
               <StepNavigation 
                 prevStep="/personal-info" 

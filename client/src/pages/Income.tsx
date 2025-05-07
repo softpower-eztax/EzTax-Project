@@ -176,7 +176,6 @@ const IncomePage: React.FC = () => {
     const totalAdjustments = 
       Number(values.adjustments.studentLoanInterest) +
       Number(values.adjustments.retirementContributions) +
-      Number(values.adjustments.healthSavingsAccount) +
       Number(values.adjustments.otherAdjustments);
     
     // Calculate adjusted gross income (AGI)

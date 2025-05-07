@@ -52,6 +52,16 @@ const Deductions: React.FC = () => {
 
   const watchDeductionType = form.watch('useStandardDeduction');
   
+  // Track changes to itemized deduction fields separately
+  const watchItemizedFields = [
+    form.watch('itemizedDeductions.medicalExpenses'),
+    form.watch('itemizedDeductions.stateLocalIncomeTax'),
+    form.watch('itemizedDeductions.realEstateTaxes'),
+    form.watch('itemizedDeductions.mortgageInterest'),
+    form.watch('itemizedDeductions.charitableCash'),
+    form.watch('itemizedDeductions.charitableNonCash'),
+  ];
+
   // When useStandardDeduction changes, update form field status
   useEffect(() => {
     setIsItemizedDisabled(watchDeductionType);
@@ -60,19 +70,13 @@ const Deductions: React.FC = () => {
     if (watchDeductionType) {
       form.setValue('totalDeductions', standardDeductionAmount);
       
-      // 표준 공제 선택 시 항목별 공제 필드의 유효성 검사 오류를 초기화하고 값을 빈 값으로 설정
+      // 표준 공제 선택 시 항목별 공제 필드의 유효성 검사 오류를 초기화
       form.clearErrors('itemizedDeductions');
       
-      // 표준 공제 선택 시 항목별 공제 필드를 기본값으로 초기화
-      form.setValue('itemizedDeductions', {
-        medicalExpenses: 0,
-        stateLocalIncomeTax: 0,
-        realEstateTaxes: 0,
-        mortgageInterest: 0,
-        charitableCash: 0,
-        charitableNonCash: 0
-      });
+      // 표준 공제 선택 시에는 항목별 공제 필드 값을 초기화하지 않고 유지
+      // 사용자가 다시 항목별 공제로 돌아올 때 이전 값들을 볼 수 있게 함
     } else {
+      // 항목별 공제를 선택한 경우, 현재 입력된 항목별 공제 값들의 합계를 계산
       const itemized = form.getValues('itemizedDeductions');
       if (itemized) {
         const total = 
@@ -87,6 +91,25 @@ const Deductions: React.FC = () => {
       }
     }
   }, [watchDeductionType, form, standardDeductionAmount]);
+  
+  // Update total deductions when any itemized deduction field changes
+  useEffect(() => {
+    if (!watchDeductionType) {
+      // 항목별 공제를 선택한 경우에만 합계 다시 계산
+      const itemized = form.getValues('itemizedDeductions');
+      if (itemized) {
+        const total = 
+          Number(itemized.medicalExpenses || 0) +
+          Number(itemized.stateLocalIncomeTax || 0) +
+          Number(itemized.realEstateTaxes || 0) +
+          Number(itemized.mortgageInterest || 0) +
+          Number(itemized.charitableCash || 0) +
+          Number(itemized.charitableNonCash || 0);
+        
+        form.setValue('totalDeductions', total);
+      }
+    }
+  }, [watchItemizedFields, watchDeductionType, form]);
 
   // Recalculate total itemized deductions when any value changes
   // Watch itemized fields individually to calculate total
@@ -124,6 +147,15 @@ const Deductions: React.FC = () => {
   ]);
 
   const onSubmit = (data: Deductions) => {
+    // 표준 공제를 선택한 경우에도 항목별 공제 값을 유지하기 위해 
+    // taxData에서 기존 itemizedDeductions 값을 보존
+    if (data.useStandardDeduction && taxData.deductions?.itemizedDeductions) {
+      data = {
+        ...data,
+        itemizedDeductions: taxData.deductions.itemizedDeductions
+      };
+    }
+    
     updateTaxData({ deductions: data });
     return true;
   };
@@ -537,7 +569,19 @@ const Deductions: React.FC = () => {
                       onClick={async () => {
                         try {
                           // 현재 폼 데이터 저장
-                          const currentData = form.getValues();
+                          // 항목별 공제 값을 유지하기 위해 현재 폼 데이터 전체를 가져옴
+                          let currentData = form.getValues();
+                          
+                          // 표준 공제를 선택한 경우에도 항목별 공제 값을 유지하기 위해 
+                          // taxData에서 기존 itemizedDeductions 값을 보존
+                          if (currentData.useStandardDeduction && taxData.deductions?.itemizedDeductions) {
+                            currentData = {
+                              ...currentData,
+                              itemizedDeductions: taxData.deductions.itemizedDeductions
+                            };
+                          }
+                          
+                          // 업데이트된 데이터 저장
                           updateTaxData({ deductions: currentData });
                           
                           // 세금 신고서 저장
@@ -574,7 +618,19 @@ const Deductions: React.FC = () => {
                   // 표준 공제를 선택한 경우 폼 유효성 검사를 무시하고 진행
                   if (form.watch('useStandardDeduction')) {
                     console.log("표준 공제 선택됨, 자동 저장 및 진행");
-                    const data = form.getValues();
+                    
+                    // 현재 폼 데이터 가져오기
+                    let data = form.getValues();
+                    
+                    // 표준 공제를 선택한 경우에도 항목별 공제 값을 유지하기 위해 
+                    // taxData에서 기존 itemizedDeductions 값을 보존
+                    if (taxData.deductions?.itemizedDeductions) {
+                      data = {
+                        ...data,
+                        itemizedDeductions: taxData.deductions.itemizedDeductions
+                      };
+                    }
+                    
                     updateTaxData({ deductions: data });
                     return true;
                   }

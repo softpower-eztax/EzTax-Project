@@ -117,6 +117,9 @@ const TaxCredits3Page: React.FC = () => {
         totalCredits: calculatedTotal
       };
       
+      console.log("저장 전 현재 값:", currentValues);
+      console.log("저장 대상 업데이트 값:", updatedValues);
+      
       // 로컬 상태 업데이트
       setSavedValues(updatedValues);
       
@@ -125,6 +128,11 @@ const TaxCredits3Page: React.FC = () => {
       
       // 서버 저장
       await saveTaxReturn();
+      
+      // 저장 후 폼의 현재 값 확인
+      console.log("저장 후 form.getValues():", form.getValues());
+      console.log("저장 후 savedValues:", savedValues);
+      console.log("저장 후 taxData.taxCredits:", taxData.taxCredits);
       
       toast({
         title: "저장 완료",
@@ -175,6 +183,13 @@ const TaxCredits3Page: React.FC = () => {
       totalCredits: calculatedTotal
     };
     
+    console.log("다음 단계로 이동 - 현재 값:", currentValues);
+    console.log("다음 단계로 이동 - 업데이트 값:", updatedValues);
+    
+    // 로컬 상태 업데이트 (form 값 보존을 위해)
+    setSavedValues(updatedValues);
+    
+    // 컨텍스트 업데이트
     updateTaxData({ taxCredits: updatedValues });
     return true;
   };

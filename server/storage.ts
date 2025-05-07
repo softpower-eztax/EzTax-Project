@@ -216,17 +216,91 @@ export class DatabaseStorage implements IStorage {
   }
 
   async updateTaxReturn(id: number, taxReturnUpdate: Partial<TaxReturn>): Promise<TaxReturn> {
+    // 먼저 기존 데이터를 가져옴
+    const existingTaxReturn = await this.getTaxReturn(id);
+    if (!existingTaxReturn) {
+      throw new Error(`세금 신고서 ID ${id}를 찾을 수 없습니다`);
+    }
+    
+    // 중첩 객체들을 위한 깊은 병합을 수행
+    const updateData: Partial<TaxReturn> = {
+      ...taxReturnUpdate, 
+      updatedAt: new Date().toISOString()
+    };
+    
+    // 세금 공제 정보 병합
+    if (existingTaxReturn.taxCredits && taxReturnUpdate.taxCredits) {
+      updateData.taxCredits = {
+        ...existingTaxReturn.taxCredits,
+        ...taxReturnUpdate.taxCredits
+      };
+    }
+    
+    // 공제 정보 병합
+    if (existingTaxReturn.deductions && taxReturnUpdate.deductions) {
+      // 표준 공제 사용 여부는 덮어쓰기
+      const useStandardDeduction = taxReturnUpdate.deductions.useStandardDeduction !== undefined
+        ? taxReturnUpdate.deductions.useStandardDeduction
+        : existingTaxReturn.deductions.useStandardDeduction;
+        
+      updateData.deductions = {
+        ...existingTaxReturn.deductions,
+        ...taxReturnUpdate.deductions,
+        useStandardDeduction
+      };
+      
+      // 항목별 공제 데이터 병합 (있는 경우)
+      if (existingTaxReturn.deductions.itemizedDeductions && 
+          taxReturnUpdate.deductions.itemizedDeductions) {
+        updateData.deductions.itemizedDeductions = {
+          ...existingTaxReturn.deductions.itemizedDeductions,
+          ...taxReturnUpdate.deductions.itemizedDeductions
+        };
+      }
+    }
+    
+    // 수입 정보 병합
+    if (existingTaxReturn.income && taxReturnUpdate.income) {
+      updateData.income = {
+        ...existingTaxReturn.income,
+        ...taxReturnUpdate.income
+      };
+      
+      // 수입 조정 정보 병합 (있는 경우)
+      if (existingTaxReturn.income.adjustments && 
+          taxReturnUpdate.income.adjustments) {
+        updateData.income.adjustments = {
+          ...existingTaxReturn.income.adjustments,
+          ...taxReturnUpdate.income.adjustments
+        };
+      }
+    }
+    
+    // 추가 세금 정보 병합
+    if (existingTaxReturn.additionalTax && taxReturnUpdate.additionalTax) {
+      updateData.additionalTax = {
+        ...existingTaxReturn.additionalTax,
+        ...taxReturnUpdate.additionalTax
+      };
+    }
+    
+    // 계산 결과 병합
+    if (existingTaxReturn.calculatedResults && taxReturnUpdate.calculatedResults) {
+      updateData.calculatedResults = {
+        ...existingTaxReturn.calculatedResults,
+        ...taxReturnUpdate.calculatedResults
+      };
+    }
+    
+    // 업데이트 실행
     const [updatedTaxReturn] = await db
       .update(taxReturns)
-      .set({
-        ...taxReturnUpdate,
-        updatedAt: new Date().toISOString()
-      })
+      .set(updateData)
       .where(eq(taxReturns.id, id))
       .returning();
     
     if (!updatedTaxReturn) {
-      throw new Error(`세금 신고서 ID ${id}를 찾을 수 없습니다`);
+      throw new Error(`업데이트 후 세금 신고서 ID ${id}를 찾을 수 없습니다`);
     }
     
     return updatedTaxReturn;

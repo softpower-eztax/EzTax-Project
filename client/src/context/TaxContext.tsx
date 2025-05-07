@@ -206,9 +206,62 @@ export const TaxProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   // Update tax data and recalculate taxes - without auto-saving to server
   const updateTaxData = (data: Partial<TaxData>) => {
     setTaxData(prevData => {
+      // 중첩된 객체들의 깊은 병합을 위한 새로운 데이터 객체 생성
+      const newData = { ...data };
+      
+      // 세금 공제 정보 깊은 병합
+      if (prevData.taxCredits && newData.taxCredits) {
+        newData.taxCredits = {
+          ...prevData.taxCredits,
+          ...newData.taxCredits
+        };
+      }
+      
+      // 공제 정보 깊은 병합
+      if (prevData.deductions && newData.deductions) {
+        newData.deductions = {
+          ...prevData.deductions,
+          ...newData.deductions
+        };
+        
+        // 항목별 공제 데이터 병합 (있는 경우)
+        if (prevData.deductions.itemizedDeductions && 
+            newData.deductions.itemizedDeductions) {
+          newData.deductions.itemizedDeductions = {
+            ...prevData.deductions.itemizedDeductions,
+            ...newData.deductions.itemizedDeductions
+          };
+        }
+      }
+      
+      // 수입 정보 깊은 병합
+      if (prevData.income && newData.income) {
+        newData.income = {
+          ...prevData.income,
+          ...newData.income
+        };
+        
+        // 조정 항목 병합 (있는 경우)
+        if (prevData.income.adjustments && newData.income.adjustments) {
+          newData.income.adjustments = {
+            ...prevData.income.adjustments,
+            ...newData.income.adjustments
+          };
+        }
+      }
+      
+      // 추가 세금 정보 깊은 병합
+      if (prevData.additionalTax && newData.additionalTax) {
+        newData.additionalTax = {
+          ...prevData.additionalTax,
+          ...newData.additionalTax
+        };
+      }
+      
+      // 최종 데이터 병합
       const updatedData = {
         ...prevData,
-        ...data,
+        ...newData,
         updatedAt: new Date().toISOString()
       };
       
@@ -216,8 +269,9 @@ export const TaxProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       const calculatedResults = calculateTaxes(updatedData);
       updatedData.calculatedResults = calculatedResults;
       
-      // 콘솔에 "자동 저장됨" 메시지를 출력하지 않고 로컬 상태만 업데이트
-      console.log("로컬 상태 업데이트:", data);
+      // 로컬 상태 업데이트 로깅
+      console.log("로컬 상태 업데이트:", newData);
+      console.log("업데이트 된 세금 데이터:", updatedData);
       
       return updatedData;
     });

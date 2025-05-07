@@ -5,7 +5,8 @@ import {
   TaxCredits, 
   AdditionalTax, 
   CalculatedResults,
-  FilingStatus 
+  FilingStatus,
+  Dependent
 } from '@shared/schema';
 
 interface TaxData {
@@ -78,6 +79,72 @@ const STANDARD_DEDUCTION_2023 = {
 // Calculate standard deduction based on filing status
 export function calculateStandardDeduction(filingStatus: FilingStatus): number {
   return STANDARD_DEDUCTION_2023[filingStatus] || STANDARD_DEDUCTION_2023.single;
+}
+
+// Child Tax Credit constants
+const CHILD_TAX_CREDIT = {
+  BASE_CREDIT_PER_CHILD: 2000,
+  REFUNDABLE_LIMIT_PER_CHILD: 1500,
+  MINIMUM_EARNED_INCOME: 2500,
+  PHASE_OUT_THRESHOLD: {
+    single: 200000,
+    married_joint: 400000,
+    married_separate: 200000,
+    head_of_household: 200000,
+    qualifying_widow: 400000
+  },
+  PHASE_OUT_RATE: 50, // $50 reduction per $1000 above threshold
+  PHASE_OUT_INCREMENT: 1000
+};
+
+// Check if a dependent is eligible for the Child Tax Credit
+function isEligibleForChildTaxCredit(dependent: Dependent): boolean {
+  // Must be under 17 at the end of the tax year
+  const birthDate = new Date(dependent.dateOfBirth);
+  const taxYearEnd = new Date('2025-12-31'); // Use the appropriate tax year
+  const age = taxYearEnd.getFullYear() - birthDate.getFullYear();
+  
+  // Basic age check
+  if (age >= 17) return false;
+  
+  // Check if dependent has a qualifying child status (added property)
+  return dependent.isQualifyingChild;
+}
+
+// Calculate the Child Tax Credit based on dependents and income
+export function calculateChildTaxCredit(
+  dependents: Dependent[] = [], 
+  adjustedGrossIncome: number, 
+  filingStatus: FilingStatus
+): number {
+  // If no dependents, return 0 credit
+  if (!dependents || dependents.length === 0) return 0;
+  
+  // Count eligible children
+  const eligibleChildren = dependents.filter(isEligibleForChildTaxCredit);
+  if (eligibleChildren.length === 0) return 0;
+  
+  // Calculate initial credit
+  let creditAmount = eligibleChildren.length * CHILD_TAX_CREDIT.BASE_CREDIT_PER_CHILD;
+  
+  // Apply income phase-out
+  const threshold = CHILD_TAX_CREDIT.PHASE_OUT_THRESHOLD[filingStatus];
+  if (adjustedGrossIncome > threshold) {
+    // Calculate excess income
+    const excessIncome = adjustedGrossIncome - threshold;
+    
+    // Calculate number of phase-out increments (round up)
+    const phaseOutIncrements = Math.ceil(excessIncome / CHILD_TAX_CREDIT.PHASE_OUT_INCREMENT);
+    
+    // Calculate phase-out amount
+    const phaseOutAmount = phaseOutIncrements * CHILD_TAX_CREDIT.PHASE_OUT_RATE;
+    
+    // Apply phase-out
+    creditAmount = Math.max(0, creditAmount - phaseOutAmount);
+  }
+  
+  // Round to nearest cent
+  return Math.round(creditAmount * 100) / 100;
 }
 
 // Calculate federal income tax based on taxable income and filing status
@@ -237,8 +304,42 @@ export function calculateTaxes(taxData: TaxData): CalculatedResults {
   // Calculate federal tax
   result.federalTax = calculateFederalTax(result.taxableIncome, filingStatus);
   
-  // Apply tax credits
-  result.credits = taxData.taxCredits?.totalCredits || 0;
+  // Calculate Child Tax Credit automatically if enabled
+  let calculatedChildTaxCredit = 0;
+  
+  // Only auto-calculate if there are dependents
+  if (taxData.personalInfo?.dependents && taxData.personalInfo.dependents.length > 0) {
+    calculatedChildTaxCredit = calculateChildTaxCredit(
+      taxData.personalInfo.dependents,
+      result.adjustedGrossIncome,
+      filingStatus
+    );
+  }
+  
+  // If there are tax credits in the data, use those values, otherwise use calculated ones
+  const taxCredits = taxData.taxCredits || {
+    childTaxCredit: calculatedChildTaxCredit,
+    childDependentCareCredit: 0,
+    educationCredits: 0,
+    retirementSavingsCredit: 0,
+    otherCredits: 0,
+    totalCredits: calculatedChildTaxCredit
+  };
+  
+  // If the user hasn't explicitly set a child tax credit value, use the calculated one
+  if (!taxData.taxCredits || taxData.taxCredits.childTaxCredit === 0) {
+    // Update the total credits with our calculated child tax credit
+    result.credits = (
+      calculatedChildTaxCredit + 
+      (taxCredits.childDependentCareCredit || 0) + 
+      (taxCredits.educationCredits || 0) + 
+      (taxCredits.retirementSavingsCredit || 0) + 
+      (taxCredits.otherCredits || 0)
+    );
+  } else {
+    // Use the user's manually entered total credits
+    result.credits = taxCredits.totalCredits || 0;
+  }
   
   // Calculate tax due
   result.taxDue = Math.max(0, result.federalTax - result.credits);

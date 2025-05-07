@@ -82,6 +82,8 @@ export const TaxProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       state: 'IL',
       zipCode: '62704',
       filingStatus: 'married_joint',
+      isDisabled: false,
+      isNonresidentAlien: false,
       spouseInfo: {
         firstName: 'Jane',
         middleInitial: 'B',
@@ -99,7 +101,8 @@ export const TaxProvider: React.FC<{ children: React.ReactNode }> = ({ children 
           relationship: 'Son',
           dateOfBirth: '2010-03-12',
           isDisabled: false,
-          isNonresidentAlien: false
+          isNonresidentAlien: false,
+          isQualifyingChild: true
         }
       ]
     },
@@ -181,10 +184,11 @@ export const TaxProvider: React.FC<{ children: React.ReactNode }> = ({ children 
             // Apply test data but preserve the ID if it exists
             const testData = { ...taxData, id: data.id, userId: data.userId };
             
-            // 데이터 마이그레이션: HSA 필드 제거
+            // 데이터 마이그레이션 및 수정
+            console.log("마이그레이션: 데이터 수정");
+            
+            // 1. HSA 필드 제거
             if (data.income?.adjustments?.healthSavingsAccount) {
-              console.log("마이그레이션: HSA 필드 제거");
-              // HSA 값을 otherAdjustments에 더하기
               if (data.income && data.income.adjustments) {
                 const hsaValue = data.income.adjustments.healthSavingsAccount || 0;
                 const currentOtherAdjustments = data.income.adjustments.otherAdjustments || 0;
@@ -199,10 +203,39 @@ export const TaxProvider: React.FC<{ children: React.ReactNode }> = ({ children 
                   }
                 };
               }
-            } else {
-              // HSA 필드가 없으면 기존 income 데이터 사용
-              if (data.income) {
-                testData.income = data.income;
+            } else if (data.income) {
+              testData.income = data.income;
+            }
+            
+            // 2. 부양가족 isQualifyingChild 필드 확인
+            if (data.personalInfo?.dependents) {
+              // 기존 부양가족 데이터에 isQualifyingChild 프로퍼티가 없으면 기본값 설정
+              testData.personalInfo = {
+                ...data.personalInfo,
+                dependents: data.personalInfo.dependents.map(dependent => {
+                  if (dependent.isQualifyingChild === undefined) {
+                    return {
+                      ...dependent,
+                      isQualifyingChild: true  // 기본값은 true로 설정
+                    };
+                  }
+                  return dependent;
+                })
+              };
+            }
+            
+            // 3. SpouseInfo에 필수 필드 없으면 추가
+            if (data.personalInfo?.spouseInfo) {
+              const spouseInfo = data.personalInfo.spouseInfo;
+              if (spouseInfo.isDisabled === undefined || spouseInfo.isNonresidentAlien === undefined) {
+                testData.personalInfo = {
+                  ...testData.personalInfo,
+                  spouseInfo: {
+                    ...spouseInfo,
+                    isDisabled: spouseInfo.isDisabled !== undefined ? spouseInfo.isDisabled : false,
+                    isNonresidentAlien: spouseInfo.isNonresidentAlien !== undefined ? spouseInfo.isNonresidentAlien : false
+                  }
+                };
               }
             }
             

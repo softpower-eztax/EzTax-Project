@@ -11,7 +11,6 @@ import { useToast } from '@/hooks/use-toast';
 import { Separator } from '@/components/ui/separator';
 import { PlusCircle, Trash2, RotateCcw, Save } from 'lucide-react';
 import ProgressTracker from '@/components/ProgressTracker';
-import TaxSummary from '@/components/TaxSummary';
 import StepNavigation from '@/components/StepNavigation';
 import { useTaxContext } from '@/context/TaxContext';
 
@@ -227,11 +226,11 @@ const PersonalInfo: React.FC = () => {
 
       <ProgressTracker currentStep={1} />
 
-      <div className="flex flex-col md:flex-row gap-6">
-        <div className="flex-grow">
+      <div className="flex flex-col">
+        <div className="w-full">
           <Card className="mb-6">
             <CardContent className="pt-6">
-              <h2 className="text-2xl font-heading font-semibold text-primary-dark mb-6">개인 정보</h2>
+              <h2 className="text-2xl font-heading font-semibold text-primary-dark mb-6">개인 정보 (Personal Information)</h2>
               
               <Form {...form}>
                 <form onSubmit={(e) => { e.preventDefault(); }}>
@@ -768,8 +767,6 @@ const PersonalInfo: React.FC = () => {
             </CardContent>
           </Card>
         </div>
-        
-        <TaxSummary />
       </div>
     </div>
   );

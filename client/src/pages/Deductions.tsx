@@ -11,7 +11,7 @@ import { Separator } from '@/components/ui/separator';
 import { Info } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import ProgressTracker from '@/components/ProgressTracker';
-import TaxSummary from '@/components/TaxSummary';
+
 import StepNavigation from '@/components/StepNavigation';
 import { useTaxContext } from '@/context/TaxContext';
 import { Label } from '@/components/ui/label';
@@ -710,7 +710,6 @@ const Deductions: React.FC = () => {
           </Card>
         </div>
         
-        <TaxSummary />
       </div>
     </div>
   );

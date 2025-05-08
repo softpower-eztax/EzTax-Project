@@ -18,7 +18,7 @@ import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
 import ProgressTracker from '@/components/ProgressTracker';
 import StepNavigation from '@/components/StepNavigation';
-import TaxSummary from '@/components/TaxSummary';
+
 import { useToast } from '@/hooks/use-toast';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { InfoIcon, Plus, X, Upload, Loader2 } from 'lucide-react';
@@ -1045,10 +1045,6 @@ const IncomePage: React.FC = () => {
               />
             </form>
           </Form>
-        </div>
-        
-        <div className="hidden md:block">
-          <TaxSummary recalculate={calculateTotals} />
         </div>
       </div>
     </div>

@@ -1497,6 +1497,7 @@ const TaxCredits3Page: React.FC = () => {
               prevStep="/deductions" 
               nextStep="/additional-tax"
               onNext={handleNext}
+              submitText="추가 세금 (Add. Taxes)"
             />
           </div>
         </div>

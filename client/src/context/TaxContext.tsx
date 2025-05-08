@@ -147,6 +147,19 @@ export const TaxProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       aotcCredit: 1000,
       llcCredit: 500,
       retirementSavingsCredit: 500,
+      retirementContributions: {
+        traditionalIRA: 0,
+        rothIRA: 0,
+        plan401k: 0,
+        plan403b: 0,
+        plan457: 0,
+        simpleIRA: 0,
+        sepIRA: 0,
+        able: 0,
+        tsp: 0,
+        otherRetirementPlans: 0,
+        totalContributions: 0
+      },
       otherCredits: 200,
       totalCredits: 5200
     },
@@ -469,6 +482,19 @@ export const TaxProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         aotcCredit: 0,
         llcCredit: 0,
         retirementSavingsCredit: 0,
+        retirementContributions: {
+          traditionalIRA: 0,
+          rothIRA: 0,
+          plan401k: 0,
+          plan403b: 0,
+          plan457: 0,
+          simpleIRA: 0,
+          sepIRA: 0,
+          able: 0,
+          tsp: 0,
+          otherRetirementPlans: 0,
+          totalContributions: 0
+        },
         otherCredits: 0,
         totalCredits: 0
       };

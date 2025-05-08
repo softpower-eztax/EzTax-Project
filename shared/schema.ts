@@ -145,6 +145,20 @@ export interface Deductions {
   totalDeductions: number;
 }
 
+export interface RetirementContributions {
+  traditionalIRA: number;
+  rothIRA: number;
+  plan401k: number;
+  plan403b: number;
+  plan457: number;
+  simpleIRA: number;
+  sepIRA: number;
+  able: number;
+  tsp: number;
+  otherRetirementPlans: number;
+  totalContributions: number;
+}
+
 export interface TaxCredits {
   childTaxCredit: number;
   childDependentCareCredit: number;
@@ -152,6 +166,7 @@ export interface TaxCredits {
   aotcCredit: number;
   llcCredit: number;
   retirementSavingsCredit: number;
+  retirementContributions: RetirementContributions;
   otherCredits: number;
   totalCredits: number;
 }
@@ -268,6 +283,20 @@ export const deductionsSchema = z.object({
   totalDeductions: z.number().min(0),
 });
 
+export const retirementContributionsSchema = z.object({
+  traditionalIRA: z.number().min(0),
+  rothIRA: z.number().min(0),
+  plan401k: z.number().min(0),
+  plan403b: z.number().min(0),
+  plan457: z.number().min(0),
+  simpleIRA: z.number().min(0),
+  sepIRA: z.number().min(0),
+  able: z.number().min(0),
+  tsp: z.number().min(0),
+  otherRetirementPlans: z.number().min(0),
+  totalContributions: z.number().min(0),
+});
+
 export const taxCreditsSchema = z.object({
   childTaxCredit: z.number().min(0),
   childDependentCareCredit: z.number().min(0),
@@ -275,6 +304,7 @@ export const taxCreditsSchema = z.object({
   aotcCredit: z.number().min(0),
   llcCredit: z.number().min(0),
   retirementSavingsCredit: z.number().min(0),
+  retirementContributions: retirementContributionsSchema.optional(),
   otherCredits: z.number().min(0),
   totalCredits: z.number().min(0),
 });

@@ -5,7 +5,7 @@ import { Separator } from '@/components/ui/separator';
 import { useTaxContext } from '@/context/TaxContext';
 import { useToast } from '@/hooks/use-toast';
 import ProgressTracker from '@/components/ProgressTracker';
-import TaxSummary from '@/components/TaxSummary';
+
 import StepNavigation from '@/components/StepNavigation';
 import { File, Check, FileEdit, Loader2 } from 'lucide-react';
 import { downloadTaxFormPDF } from '@/lib/pdfGenerator';
@@ -419,8 +419,6 @@ const Review: React.FC = () => {
             </CardContent>
           </Card>
         </div>
-        
-        <TaxSummary />
       </div>
       
       {/* Submit Confirmation Dialog */}

@@ -144,6 +144,8 @@ export const TaxProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       childTaxCredit: 2000,
       childDependentCareCredit: 1000,
       educationCredits: 1500,
+      aotcCredit: 1000,
+      llcCredit: 500,
       retirementSavingsCredit: 500,
       otherCredits: 200,
       totalCredits: 5200
@@ -464,6 +466,8 @@ export const TaxProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         childTaxCredit: 0,
         childDependentCareCredit: 0,
         educationCredits: 0,
+        aotcCredit: 0,
+        llcCredit: 0,
         retirementSavingsCredit: 0,
         otherCredits: 0,
         totalCredits: 0

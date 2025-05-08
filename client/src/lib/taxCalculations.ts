@@ -97,6 +97,22 @@ const CHILD_TAX_CREDIT = {
   PHASE_OUT_INCREMENT: 1000
 };
 
+// Retirement Savings Credit constants (2023 tax year)
+const RETIREMENT_SAVINGS_CREDIT = {
+  // Income thresholds by filing status
+  INCOME_THRESHOLDS: {
+    single: [21750, 23750, 36500], // 50%, 20%, 10% thresholds
+    head_of_household: [32625, 35625, 54750],
+    married_joint: [43500, 47500, 73000],
+    married_separate: [21750, 23750, 36500],
+    qualifying_widow: [43500, 47500, 73000]
+  },
+  // Credit rates based on income (50%, 20%, 10%, 0%)
+  CREDIT_RATES: [0.5, 0.2, 0.1, 0], 
+  // Maximum eligible contribution
+  MAX_CONTRIBUTION_PER_PERSON: 2000
+};
+
 // Check if a dependent is eligible for the Child Tax Credit
 function isEligibleForChildTaxCredit(dependent: Dependent): boolean {
   // Must be under 17 at the end of the tax year
@@ -143,6 +159,48 @@ export function calculateChildTaxCredit(
     // Apply phase-out
     creditAmount = Math.max(0, creditAmount - phaseOutAmount);
   }
+  
+  // Round to nearest cent
+  return Math.round(creditAmount * 100) / 100;
+}
+
+// Calculate the Retirement Savings Credit based on contributions and income
+export function calculateRetirementSavingsCredit(
+  retirementContributions: number,
+  adjustedGrossIncome: number,
+  filingStatus: FilingStatus,
+  isMarried: boolean = filingStatus === 'married_joint' || filingStatus === 'qualifying_widow'
+): number {
+  // If no retirement contributions, return 0 credit
+  if (!retirementContributions || retirementContributions <= 0) return 0;
+  
+  // Cap contributions at the maximum eligible amount
+  // For married filing jointly, consider contributions from both spouses (up to $2,000 each)
+  const maxEligibleContribution = isMarried 
+    ? RETIREMENT_SAVINGS_CREDIT.MAX_CONTRIBUTION_PER_PERSON * 2
+    : RETIREMENT_SAVINGS_CREDIT.MAX_CONTRIBUTION_PER_PERSON;
+    
+  const eligibleContribution = Math.min(retirementContributions, maxEligibleContribution);
+  
+  // Get income thresholds for the filing status
+  const thresholds = RETIREMENT_SAVINGS_CREDIT.INCOME_THRESHOLDS[filingStatus];
+  
+  // Determine credit rate based on income
+  let creditRate = RETIREMENT_SAVINGS_CREDIT.CREDIT_RATES[3]; // Default to 0%
+  
+  if (adjustedGrossIncome <= thresholds[0]) {
+    // 50% credit rate
+    creditRate = RETIREMENT_SAVINGS_CREDIT.CREDIT_RATES[0];
+  } else if (adjustedGrossIncome <= thresholds[1]) {
+    // 20% credit rate
+    creditRate = RETIREMENT_SAVINGS_CREDIT.CREDIT_RATES[1];
+  } else if (adjustedGrossIncome <= thresholds[2]) {
+    // 10% credit rate
+    creditRate = RETIREMENT_SAVINGS_CREDIT.CREDIT_RATES[2];
+  }
+  
+  // Calculate credit amount
+  const creditAmount = eligibleContribution * creditRate;
   
   // Round to nearest cent
   return Math.round(creditAmount * 100) / 100;

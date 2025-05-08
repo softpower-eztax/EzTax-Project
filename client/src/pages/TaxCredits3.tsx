@@ -13,7 +13,7 @@ import StepNavigation from '@/components/StepNavigation';
 import { useTaxContext } from '@/context/TaxContext';
 import { Info, RefreshCw } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { calculateChildTaxCredit } from '@/lib/taxCalculations';
+import { calculateChildTaxCredit, calculateRetirementSavingsCredit } from '@/lib/taxCalculations';
 
 // Tax Credits 인터페이스 정의
 interface TaxCredits {

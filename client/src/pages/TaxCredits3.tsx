@@ -1078,7 +1078,7 @@ const TaxCredits3Page: React.FC = () => {
                         
                         <FormField
                           control={form.control}
-                          name="taxCredits.retirementContributions.simpleIRA"
+                          name="retirementContributions.simpleIRA"
                           render={({ field }) => (
                             <FormItem>
                               <FormLabel>SIMPLE IRA</FormLabel>
@@ -1113,7 +1113,7 @@ const TaxCredits3Page: React.FC = () => {
                         
                         <FormField
                           control={form.control}
-                          name="taxCredits.retirementContributions.sepIRA"
+                          name="retirementContributions.sepIRA"
                           render={({ field }) => (
                             <FormItem>
                               <FormLabel>SEP IRA</FormLabel>
@@ -1148,7 +1148,7 @@ const TaxCredits3Page: React.FC = () => {
                         
                         <FormField
                           control={form.control}
-                          name="taxCredits.retirementContributions.able"
+                          name="retirementContributions.able"
                           render={({ field }) => (
                             <FormItem>
                               <FormLabel>ABLE 계좌 (ABLE Account)</FormLabel>
@@ -1183,7 +1183,7 @@ const TaxCredits3Page: React.FC = () => {
                         
                         <FormField
                           control={form.control}
-                          name="taxCredits.retirementContributions.tsp"
+                          name="retirementContributions.tsp"
                           render={({ field }) => (
                             <FormItem>
                               <FormLabel>TSP (Thrift Savings Plan)</FormLabel>
@@ -1218,7 +1218,7 @@ const TaxCredits3Page: React.FC = () => {
                         
                         <FormField
                           control={form.control}
-                          name="taxCredits.retirementContributions.otherRetirementPlans"
+                          name="retirementContributions.otherRetirementPlans"
                           render={({ field }) => (
                             <FormItem>
                               <FormLabel>기타 은퇴 계좌 (Other Retirement Plans)</FormLabel>
@@ -1255,7 +1255,7 @@ const TaxCredits3Page: React.FC = () => {
                       <div className="mt-4">
                         <FormField
                           control={form.control}
-                          name="taxCredits.retirementContributions.totalContributions"
+                          name="retirementContributions.totalContributions"
                           render={({ field }) => (
                             <FormItem>
                               <FormLabel>총 은퇴 계좌 납입금 (Total Retirement Contributions)</FormLabel>

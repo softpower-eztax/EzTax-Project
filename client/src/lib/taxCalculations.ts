@@ -97,6 +97,21 @@ const CHILD_TAX_CREDIT = {
   PHASE_OUT_INCREMENT: 1000
 };
 
+// Credit for Other Dependents constants
+const CREDIT_FOR_OTHER_DEPENDENTS = {
+  BASE_CREDIT_PER_DEPENDENT: 500,
+  // Using same phase-out thresholds as the Child Tax Credit
+  PHASE_OUT_THRESHOLD: {
+    single: 200000,
+    married_joint: 400000,
+    married_separate: 200000,
+    head_of_household: 200000,
+    qualifying_widow: 400000
+  },
+  PHASE_OUT_RATE: 50, // $50 reduction per $1000 above threshold
+  PHASE_OUT_INCREMENT: 1000
+};
+
 // Retirement Savings Credit constants (2023 tax year)
 const RETIREMENT_SAVINGS_CREDIT = {
   // Income thresholds by filing status
@@ -143,6 +158,53 @@ function isEligibleForChildTaxCredit(dependent: Dependent): boolean {
   // For now, assume all dependents under 17 are eligible
   // In the future, we can add more criteria when isQualifyingChild is properly implemented in all dependents
   return dependent.isQualifyingChild !== undefined ? dependent.isQualifyingChild : true;
+}
+
+// Check if a dependent is eligible for the Credit for Other Dependents
+function isEligibleForCreditForOtherDependents(dependent: Dependent): boolean {
+  // Must NOT be eligible for Child Tax Credit
+  if (isEligibleForChildTaxCredit(dependent)) return false;
+  
+  // Must be a qualifying dependent
+  // For now, we'll assume all dependents who aren't eligible for Child Tax Credit are eligible for COD
+  // This can be expanded with additional criteria as needed
+  return true;
+}
+
+// Calculate the Credit for Other Dependents based on dependents and income
+export function calculateCreditForOtherDependents(
+  dependents: Dependent[] = [], 
+  adjustedGrossIncome: number, 
+  filingStatus: FilingStatus
+): number {
+  // If no dependents, return 0 credit
+  if (!dependents || dependents.length === 0) return 0;
+  
+  // Count eligible dependents
+  const eligibleDependents = dependents.filter(isEligibleForCreditForOtherDependents);
+  if (eligibleDependents.length === 0) return 0;
+  
+  // Calculate initial credit
+  let creditAmount = eligibleDependents.length * CREDIT_FOR_OTHER_DEPENDENTS.BASE_CREDIT_PER_DEPENDENT;
+  
+  // Apply income phase-out
+  const threshold = CREDIT_FOR_OTHER_DEPENDENTS.PHASE_OUT_THRESHOLD[filingStatus];
+  if (adjustedGrossIncome > threshold) {
+    // Calculate excess income
+    const excessIncome = adjustedGrossIncome - threshold;
+    
+    // Calculate number of phase-out increments (round up)
+    const phaseOutIncrements = Math.ceil(excessIncome / CREDIT_FOR_OTHER_DEPENDENTS.PHASE_OUT_INCREMENT);
+    
+    // Calculate phase-out amount
+    const phaseOutAmount = phaseOutIncrements * CREDIT_FOR_OTHER_DEPENDENTS.PHASE_OUT_RATE;
+    
+    // Apply phase-out
+    creditAmount = Math.max(0, creditAmount - phaseOutAmount);
+  }
+  
+  // Round to nearest cent
+  return Math.round(creditAmount * 100) / 100;
 }
 
 // Calculate the Child Tax Credit based on dependents and income

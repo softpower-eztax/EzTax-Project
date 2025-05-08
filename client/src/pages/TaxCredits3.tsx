@@ -254,8 +254,6 @@ const TaxCredits3Page: React.FC = () => {
     return true;
   };
   
-  // Using formatNumberInput from taxCalculations.ts
-  
   return (
     <div className="max-w-5xl mx-auto">
       <div className="mb-8">
@@ -350,7 +348,7 @@ const TaxCredits3Page: React.FC = () => {
                                   className="pl-8"
                                   value={field.value || ''}
                                   onChange={(e) => {
-                                    const formatted = formatCurrency(e.target.value);
+                                    const formatted = formatNumberInput(e.target.value);
                                     field.onChange(formatted ? Number(formatted) : 0);
                                   }}
                                 />
@@ -463,8 +461,10 @@ const TaxCredits3Page: React.FC = () => {
                     
                     {!hasDependents && (
                       <div className="bg-gray-bg p-3 rounded-md mb-3 text-sm">
-                        <p>이 공제를 계산하려면 개인정보 섹션에 부양가족을 추가해야 합니다.</p>
-                        <p className="text-xs mt-1">(To calculate this credit, you need to add dependents in the Personal Information section.)</p>
+                        <p>개인정보 섹션에 부양가족을 추가하지 않았습니다. 
+                        자격을 갖춘 부양가족이 있다면, 뒤로 돌아가 추가해주세요.</p>
+                        <p className="text-xs mt-1">(You have not added any dependents in the Personal Information section. 
+                        If you have qualifying dependents, please go back and add them.)</p>
                       </div>
                     )}
                     
@@ -474,7 +474,7 @@ const TaxCredits3Page: React.FC = () => {
                         name="childDependentCareCredit"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>돌봄공제액 (Care Credit Amount)</FormLabel>
+                            <FormLabel>자녀및부양가족돌봄공제액 (Child and Dependent Care Credit Amount)</FormLabel>
                             <FormControl>
                               <div className="relative">
                                 <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-dark">$</span>
@@ -483,15 +483,15 @@ const TaxCredits3Page: React.FC = () => {
                                   className="pl-8"
                                   value={field.value || ''}
                                   onChange={(e) => {
-                                    const formatted = formatCurrency(e.target.value);
+                                    const formatted = formatNumberInput(e.target.value);
                                     field.onChange(formatted ? Number(formatted) : 0);
                                   }}
                                 />
                               </div>
                             </FormControl>
                             <FormDescription>
-                              보육 비용에 대한 세액공제입니다. 일반적으로 소득에 따라 비용의 20%-35%가 공제됩니다.
-                              (Credit for care expenses. Generally, 20%-35% of expenses based on income.)
+                              자녀및부양가족돌봄공제액을 수동으로 입력하거나 자동 계산된 값을 사용하세요.
+                              (Enter your estimated child and dependent care credit amount.)
                             </FormDescription>
                             <FormMessage />
                           </FormItem>
@@ -499,11 +499,11 @@ const TaxCredits3Page: React.FC = () => {
                       />
                     </div>
                   </div>
-
+                  
                   {/* Education Credits */}
                   <div className="mb-6 border-b border-gray-light pb-6">
                     <div className="flex items-center mb-3">
-                      <h4 className="font-semibold">교육공제 (Education Credits)</h4>
+                      <h4 className="font-semibold">교육비공제 (Education Credits)</h4>
                       <TooltipProvider>
                         <Tooltip>
                           <TooltipTrigger asChild>
@@ -511,8 +511,8 @@ const TaxCredits3Page: React.FC = () => {
                           </TooltipTrigger>
                           <TooltipContent>
                             <p className="w-64">
-                              미국 기회 세액공제와 평생 학습 세액공제는 교육 비용을 상쇄하는 데 도움이 됩니다.
-                              (The American Opportunity Credit and Lifetime Learning Credit help offset the costs of education.)
+                              적격 학생의 교육 비용에 대한 공제입니다. 미국학력장려세액공제(American Opportunity Credit)와 평생교육세액공제(Lifetime Learning Credit)가 포함됩니다.
+                              (Credits for education expenses for eligible students. Includes the American Opportunity Credit and Lifetime Learning Credit.)
                             </p>
                           </TooltipContent>
                         </Tooltip>
@@ -525,7 +525,7 @@ const TaxCredits3Page: React.FC = () => {
                         name="educationCredits"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>교육공제액 (Education Credits Amount)</FormLabel>
+                            <FormLabel>교육비공제액 (Education Credit Amount)</FormLabel>
                             <FormControl>
                               <div className="relative">
                                 <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-dark">$</span>
@@ -534,15 +534,15 @@ const TaxCredits3Page: React.FC = () => {
                                   className="pl-8"
                                   value={field.value || ''}
                                   onChange={(e) => {
-                                    const formatted = formatCurrency(e.target.value);
+                                    const formatted = formatNumberInput(e.target.value);
                                     field.onChange(formatted ? Number(formatted) : 0);
                                   }}
                                 />
                               </div>
                             </FormControl>
                             <FormDescription>
-                              미국 기회 세액공제와 평생 학습 세액공제의 총액입니다.
-                              (Total of American Opportunity and Lifetime Learning credits.)
+                              교육비공제액을 입력하세요.
+                              (Enter your education credit amount.)
                             </FormDescription>
                             <FormMessage />
                           </FormItem>
@@ -550,7 +550,7 @@ const TaxCredits3Page: React.FC = () => {
                       />
                     </div>
                   </div>
-
+                  
                   {/* Retirement Savings Credit */}
                   <div className="mb-6 border-b border-gray-light pb-6">
                     <div className="flex items-center mb-3">
@@ -562,8 +562,8 @@ const TaxCredits3Page: React.FC = () => {
                           </TooltipTrigger>
                           <TooltipContent>
                             <p className="w-64">
-                              이 공제는 401(k)와 IRA와 같은 은퇴 계좌에 대한 적격 기여금에 대한 것입니다.
-                              (This credit is for eligible contributions to retirement accounts like 401(k)s and IRAs.)
+                              적격 은퇴 계좌에 대한 기여금에 대해 소득에 따라 최대 50%까지 공제 받을 수 있습니다.
+                              (You may be eligible for a credit of up to 50% of your contributions to eligible retirement accounts, depending on your income.)
                             </p>
                           </TooltipContent>
                         </Tooltip>
@@ -574,52 +574,63 @@ const TaxCredits3Page: React.FC = () => {
                     <div className="bg-blue-50 p-3 rounded-md mb-3 border border-blue-200">
                       <p className="text-sm flex items-center">
                         <span className="font-medium">자동 계산된 은퇴저축공제액 (Auto-calculated Retirement Savings Credit):</span>
-                        <span className="ml-2 font-bold">${calculateRetirementSavingsCredit(
-                          taxData.income?.adjustments?.retirementContributions || 0,
-                          taxData.income?.adjustedGrossIncome || 0,
-                          taxData.personalInfo?.filingStatus || 'single',
-                          taxData.personalInfo?.filingStatus === 'married_joint' || taxData.personalInfo?.filingStatus === 'qualifying_widow'
-                        ).toFixed(2)}</span>
-                        <Button 
-                          type="button" 
-                          size="sm" 
-                          variant="ghost" 
-                          className="ml-2 h-6 px-2 text-xs"
-                          onClick={() => {
-                            const calculatedAmount = calculateRetirementSavingsCredit(
-                              taxData.income?.adjustments?.retirementContributions || 0,
-                              taxData.income?.adjustedGrossIncome || 0,
-                              taxData.personalInfo?.filingStatus || 'single',
-                              taxData.personalInfo?.filingStatus === 'married_joint' || taxData.personalInfo?.filingStatus === 'qualifying_widow'
-                            );
-                            form.setValue('retirementSavingsCredit', calculatedAmount);
-                          }}
-                        >
-                          <RefreshCw className="h-3 w-3 mr-1" />
-                          적용 (Apply)
-                        </Button>
+                        {(() => {
+                          const retirementContributions = taxData.income?.adjustments?.retirementContributions || 0;
+                          const agi = taxData.income?.adjustedGrossIncome || 0;
+                          const filingStatus = taxData.personalInfo?.filingStatus || 'single';
+                          
+                          const calculatedCredit = calculateRetirementSavingsCredit(
+                            retirementContributions,
+                            agi,
+                            filingStatus
+                          );
+                          
+                          return (
+                            <>
+                              <span className="ml-2 font-bold">${calculatedCredit.toFixed(2)}</span>
+                              <Button 
+                                type="button" 
+                                size="sm" 
+                                variant="ghost" 
+                                className="ml-2 h-6 px-2 text-xs"
+                                onClick={() => {
+                                  form.setValue('retirementSavingsCredit', calculatedCredit);
+                                }}
+                              >
+                                <RefreshCw className="h-3 w-3 mr-1" />
+                                적용 (Apply)
+                              </Button>
+                            </>
+                          );
+                        })()}
                       </p>
                       <p className="text-xs mt-1 text-gray-600">
-                        소득과 은퇴 계좌 기여금을 기준으로 계산됩니다. 위의 버튼을 클릭하여 자동 계산된 값을 적용할 수 있습니다.
-                        (Calculated based on your income and retirement contributions. Click the button above to apply the calculated value.)
+                        은퇴 저축 기여금과 소득을 기준으로 계산됩니다. 위의 버튼을 클릭하여 자동 계산된 값을 적용할 수 있습니다.
+                        (Calculated based on your retirement contributions and income. Click the button above to apply the calculated value.)
                       </p>
                       <p className="text-xs mt-1 text-gray-600">
-                        적격 기여금: ${taxData.income?.adjustments?.retirementContributions || 0} | 소득 기준 세액공제율: 
+                        은퇴 저축 기여금: ${taxData.income?.adjustments?.retirementContributions || 0} | 조정된 총소득: ${taxData.income?.adjustedGrossIncome || 0} | 공제율: 
                         {(() => {
                           const agi = taxData.income?.adjustedGrossIncome || 0;
                           const filingStatus = taxData.personalInfo?.filingStatus || 'single';
-                          const thresholds = {
-                            single: [21750, 23750, 36500],
-                            head_of_household: [32625, 35625, 54750],
-                            married_joint: [43500, 47500, 73000],
-                            married_separate: [21750, 23750, 36500],
-                            qualifying_widow: [43500, 47500, 73000]
-                          };
                           
-                          if (agi <= thresholds[filingStatus][0]) return " 50%";
-                          if (agi <= thresholds[filingStatus][1]) return " 20%";
-                          if (agi <= thresholds[filingStatus][2]) return " 10%";
-                          return " 0%";
+                          let creditRate = 0;
+                          
+                          if (filingStatus === 'married_joint') {
+                            if (agi <= 41000) creditRate = 0.5;
+                            else if (agi <= 44000) creditRate = 0.2;
+                            else if (agi <= 68000) creditRate = 0.1;
+                          } else if (filingStatus === 'head_of_household') {
+                            if (agi <= 30750) creditRate = 0.5;
+                            else if (agi <= 33000) creditRate = 0.2;
+                            else if (agi <= 51000) creditRate = 0.1;
+                          } else { // single, married_separate, qualifying_widow
+                            if (agi <= 20500) creditRate = 0.5;
+                            else if (agi <= 22000) creditRate = 0.2;
+                            else if (agi <= 34000) creditRate = 0.1;
+                          }
+                          
+                          return ` ${Math.round(creditRate * 100)}%`;
                         })()}
                       </p>
                     </div>
@@ -639,15 +650,15 @@ const TaxCredits3Page: React.FC = () => {
                                   className="pl-8"
                                   value={field.value || ''}
                                   onChange={(e) => {
-                                    const formatted = formatCurrency(e.target.value);
+                                    const formatted = formatNumberInput(e.target.value);
                                     field.onChange(formatted ? Number(formatted) : 0);
                                   }}
                                 />
                               </div>
                             </FormControl>
                             <FormDescription>
-                              소득 수준에 따라 최대 50%의 세액공제를 받을 수 있습니다.
-                              (You may qualify for up to 50% credit rate depending on your income level.)
+                              은퇴저축공제액을 수동으로 입력하거나 자동 계산된 값을 사용하세요.
+                              (Enter your retirement savings credit amount.)
                             </FormDescription>
                             <FormMessage />
                           </FormItem>
@@ -655,17 +666,33 @@ const TaxCredits3Page: React.FC = () => {
                       />
                     </div>
                   </div>
-
+                  
                   {/* Other Credits */}
                   <div className="mb-6 border-b border-gray-light pb-6">
-                    <h4 className="font-semibold mb-3">기타공제 (Other Credits)</h4>
+                    <div className="flex items-center mb-3">
+                      <h4 className="font-semibold">기타 세액공제 (Other Credits)</h4>
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Info className="h-4 w-4 text-gray-dark ml-2 cursor-help" />
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p className="w-64">
+                              외국납부세액공제, 에너지 효율 세액공제 등 기타 모든 세액공제를 입력하세요.
+                              (Enter any other tax credits such as foreign tax credit, energy efficiency credits, etc.)
+                            </p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    </div>
+                    
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <FormField
                         control={form.control}
                         name="otherCredits"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>기타 세금공제 (Other Tax Credits)</FormLabel>
+                            <FormLabel>기타 세액공제액 (Other Credit Amount)</FormLabel>
                             <FormControl>
                               <div className="relative">
                                 <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-dark">$</span>
@@ -674,15 +701,15 @@ const TaxCredits3Page: React.FC = () => {
                                   className="pl-8"
                                   value={field.value || ''}
                                   onChange={(e) => {
-                                    const formatted = formatCurrency(e.target.value);
+                                    const formatted = formatNumberInput(e.target.value);
                                     field.onChange(formatted ? Number(formatted) : 0);
                                   }}
                                 />
                               </div>
                             </FormControl>
                             <FormDescription>
-                              위에 나열되지 않은 다른 세금공제의 총액을 입력하세요.
-                              (Enter the total of any other tax credits not listed above.)
+                              기타 세액공제액을 입력하세요.
+                              (Enter any other tax credits you may be eligible for.)
                             </FormDescription>
                             <FormMessage />
                           </FormItem>
@@ -690,53 +717,74 @@ const TaxCredits3Page: React.FC = () => {
                       />
                     </div>
                   </div>
-
+                  
                   {/* Total Credits */}
-                  <div className="mb-6 bg-gray-bg p-4 rounded-md">
-                    <div className="flex justify-between items-center">
-                      <h4 className="font-semibold">총공제액 (Total Credits)</h4>
-                      <p className="font-bold text-primary-dark text-xl">
-                        ${calculatedTotal.toLocaleString()}
-                      </p>
+                  <div className="mb-6">
+                    <div className="flex items-center mb-3">
+                      <h4 className="font-semibold">총 세액공제 (Total Credits)</h4>
+                    </div>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <FormField
+                        control={form.control}
+                        name="totalCredits"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>총 세액공제액 (Total Credit Amount)</FormLabel>
+                            <FormControl>
+                              <div className="relative">
+                                <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-dark">$</span>
+                                <Input 
+                                  placeholder="0.00"
+                                  className="pl-8 bg-gray-50"
+                                  value={field.value || ''}
+                                  disabled
+                                />
+                              </div>
+                            </FormControl>
+                            <FormDescription>
+                              자동으로 계산된 총 세액공제액입니다.
+                              (This is your automatically calculated total tax credits.)
+                            </FormDescription>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
                     </div>
                   </div>
                   
-                  {/* Buttons */}
-                  <div className="flex flex-wrap gap-4 mt-8 mb-4">
-                    <Button
-                      type="button"
-                      variant="outline"
-                      className="flex-1 bg-rose-50 text-rose-800 border-rose-200 hover:bg-rose-100 hover:text-rose-900"
+                  <div className="flex justify-between mt-8">
+                    <Button 
+                      type="button" 
+                      variant="destructive" 
                       onClick={handleReset}
                     >
-                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-2 h-5 w-5"><path d="M3 2v6h6"></path><path d="M3 13a9 9 0 1 0 3-7.7L3 8"></path></svg>
-                      <span className="text-lg">값 초기화</span>
+                      값 초기화 (Reset Values)
                     </Button>
-                    
-                    <Button
-                      type="button"
-                      variant="outline"
-                      className="flex-1 bg-blue-50 text-blue-800 border-blue-200 hover:bg-blue-100 hover:text-blue-900"
+                    <Button 
+                      type="button" 
+                      variant="secondary" 
                       onClick={handleSave}
                     >
-                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-2 h-5 w-5"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
-                      <span className="text-lg">진행 상황 저장</span>
+                      진행 상황 저장 (Save Progress)
                     </Button>
                   </div>
                 </form>
               </Form>
-              
-              <StepNavigation
-                prevStep="/deductions"
-                nextStep="/additional-tax"
-                submitText="추가세금 (Additional Tax)"
-                onNext={handleNext}
-              />
             </CardContent>
           </Card>
         </div>
         
-        <TaxSummary />
+        <div className="w-full md:w-80">
+          <div className="sticky top-6">
+            <TaxSummary recalculate={() => form.trigger()} />
+            <StepNavigation 
+              prevStep="/deductions" 
+              nextStep="/additional-tax"
+              onNext={handleNext}
+            />
+          </div>
+        </div>
       </div>
     </div>
   );

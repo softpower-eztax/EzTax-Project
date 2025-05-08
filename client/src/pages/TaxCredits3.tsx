@@ -55,7 +55,7 @@ const TaxCredits3Page: React.FC = () => {
     aotcCredit: taxData.taxCredits?.aotcCredit || 0,
     llcCredit: taxData.taxCredits?.llcCredit || 0,
     retirementSavingsCredit: taxData.taxCredits?.retirementSavingsCredit || 0,
-    retirementContributions: taxData.taxCredits?.retirementContributions || {
+    retirementContributions: taxData.retirementContributions || {
       traditionalIRA: 0,
       rothIRA: 0,
       plan401k: 0,
@@ -97,19 +97,6 @@ const TaxCredits3Page: React.FC = () => {
     aotcCredit: z.coerce.number().min(0).default(0),
     llcCredit: z.coerce.number().min(0).default(0),
     retirementSavingsCredit: z.coerce.number().min(0).default(0),
-    retirementContributions: retirementContributionsSchema.default({
-      traditionalIRA: 0,
-      rothIRA: 0,
-      plan401k: 0,
-      plan403b: 0,
-      plan457: 0,
-      simpleIRA: 0,
-      sepIRA: 0,
-      able: 0,
-      tsp: 0,
-      otherRetirementPlans: 0,
-      totalContributions: 0
-    }),
     otherCredits: z.coerce.number().min(0).default(0),
     totalCredits: z.coerce.number().min(0).default(0)
   });

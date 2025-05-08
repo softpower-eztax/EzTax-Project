@@ -256,7 +256,19 @@ const PersonalInfo: React.FC = () => {
         <div className="w-full">
           <Card className="mb-6">
             <CardContent className="pt-6">
-              <h2 className="text-2xl font-heading font-semibold text-primary-dark mb-6">개인 정보 (Personal Information)</h2>
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-2xl font-heading font-semibold text-primary-dark">개인 정보 (Personal Information)</h2>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  className="text-red-500 border-red-200 hover:bg-red-50 hover:text-red-600"
+                  onClick={handleReset}
+                >
+                  <RotateCcw className="h-4 w-4 mr-1" />
+                  값 초기화
+                </Button>
+              </div>
               
               <Form {...form}>
                 <form onSubmit={(e) => { e.preventDefault(); }}>

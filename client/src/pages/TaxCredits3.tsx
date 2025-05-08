@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import ProgressTracker from '@/components/ProgressTracker';
-import TaxSummary from '@/components/TaxSummary';
+
 import StepNavigation from '@/components/StepNavigation';
 import { useTaxContext } from '@/context/TaxContext';
 import { Info, RefreshCw } from 'lucide-react';

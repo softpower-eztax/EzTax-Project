@@ -404,8 +404,6 @@ const AdditionalTaxPage: React.FC = () => {
             </CardContent>
           </Card>
         </div>
-        
-        <TaxSummary />
       </div>
     </div>
   );

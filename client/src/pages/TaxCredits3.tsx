@@ -1241,7 +1241,15 @@ const TaxCredits3Page: React.FC = () => {
                     </div>
                   </div>
                   
-                  <div className="flex justify-end mt-8">
+                  <div className="flex justify-between mt-8">
+                    <div>
+                      <StepNavigation 
+                        prevStep="/deductions" 
+                        nextStep="/additional-tax"
+                        onNext={handleNext}
+                        submitText="다음 단계 (Next Step)"
+                      />
+                    </div>
                     <Button 
                       type="button" 
                       variant="secondary" 
@@ -1254,17 +1262,6 @@ const TaxCredits3Page: React.FC = () => {
               </Form>
             </CardContent>
           </Card>
-        </div>
-        
-        <div className="w-full md:w-80">
-          <div className="sticky top-6">
-            <StepNavigation 
-              prevStep="/deductions" 
-              nextStep="/additional-tax"
-              onNext={handleNext}
-              submitText="다음 단계 (Next Step)"
-            />
-          </div>
         </div>
       </div>
     </div>

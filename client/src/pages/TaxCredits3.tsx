@@ -667,10 +667,10 @@ const TaxCredits3Page: React.FC = () => {
                     </div>
                   </div>
                   
-                  {/* Other Credits */}
+                  {/* Credit for Other Dependents */}
                   <div className="mb-6 border-b border-gray-light pb-6">
                     <div className="flex items-center mb-3">
-                      <h4 className="font-semibold">기타 세액공제 (Other Credits)</h4>
+                      <h4 className="font-semibold">기타 부양가족 세액공제 (Credit for Other Dependents)</h4>
                       <TooltipProvider>
                         <Tooltip>
                           <TooltipTrigger asChild>
@@ -678,13 +678,66 @@ const TaxCredits3Page: React.FC = () => {
                           </TooltipTrigger>
                           <TooltipContent>
                             <p className="w-64">
-                              외국납부세액공제, 에너지 효율 세액공제 등 기타 모든 세액공제를 입력하세요.
-                              (Enter any other tax credits such as foreign tax credit, energy efficiency credits, etc.)
+                              자녀세액공제 대상이 아닌 부양가족 각각에 대해 최대 $500까지의 세액공제를 받을 수 있습니다.
+                              (You may be eligible for a Credit for Other Dependents of up to $500 for each qualifying dependent who doesn't qualify for the Child Tax Credit.)
                             </p>
                           </TooltipContent>
                         </Tooltip>
                       </TooltipProvider>
                     </div>
+                    
+                    {!hasDependents && (
+                      <div className="bg-gray-bg p-3 rounded-md mb-3 text-sm">
+                        <p>개인정보 섹션에 부양가족을 추가하지 않았습니다. 
+                        부양가족이 있다면, 뒤로 돌아가 추가해주세요.</p>
+                        <p className="text-xs mt-1">(You have not added any dependents in the Personal Information section. 
+                        If you have dependents, please go back and add them.)</p>
+                      </div>
+                    )}
+                    
+                    {hasDependents && (
+                      <div className="bg-blue-50 p-3 rounded-md mb-3 border border-blue-200">
+                        <p className="text-sm flex items-center">
+                          <span className="font-medium">자동 계산된 기타 부양가족 세액공제액 (Auto-calculated Credit for Other Dependents):</span>
+                          <span className="ml-2 font-bold">${calculateCreditForOtherDependents(
+                            taxData.personalInfo?.dependents || [],
+                            taxData.income?.adjustedGrossIncome || 0,
+                            taxData.personalInfo?.filingStatus || 'single'
+                          ).toFixed(2)}</span>
+                          <Button 
+                            type="button" 
+                            size="sm" 
+                            variant="ghost" 
+                            className="ml-2 h-6 px-2 text-xs"
+                            onClick={() => {
+                              const calculatedAmount = calculateCreditForOtherDependents(
+                                taxData.personalInfo?.dependents || [],
+                                taxData.income?.adjustedGrossIncome || 0,
+                                taxData.personalInfo?.filingStatus || 'single'
+                              );
+                              form.setValue('otherCredits', calculatedAmount);
+                            }}
+                          >
+                            <RefreshCw className="h-3 w-3 mr-1" />
+                            적용 (Apply)
+                          </Button>
+                        </p>
+                        <p className="text-xs mt-1 text-gray-600">
+                          17세 이상 부양가족 또는 자녀세액공제 대상이 아닌 부양가족 수와 소득을 기준으로 계산됩니다.
+                          (Calculated based on dependents who are 17 or older, or who don't qualify for the Child Tax Credit, and your income.)
+                        </p>
+                        <p className="text-xs mt-1 text-gray-600">
+                          적격 부양가족 수: {(taxData.personalInfo?.dependents || []).filter(dependent => {
+                            // Check if NOT eligible for Child Tax Credit (so eligible for COD)
+                            const birthDate = new Date(dependent.dateOfBirth);
+                            const taxYearEnd = new Date('2025-12-31');
+                            const age = taxYearEnd.getFullYear() - birthDate.getFullYear();
+                            return age >= 17 || !dependent.isQualifyingChild;
+                          }).length} | 부양가족당 공제액: $500 | 소득 수준: $
+                          {(taxData.income?.adjustedGrossIncome || 0).toLocaleString()}
+                        </p>
+                      </div>
+                    )}
                     
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <FormField
@@ -692,7 +745,7 @@ const TaxCredits3Page: React.FC = () => {
                         name="otherCredits"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>기타 세액공제액 (Other Credit Amount)</FormLabel>
+                            <FormLabel>기타 부양가족 세액공제액 (Credit for Other Dependents Amount)</FormLabel>
                             <FormControl>
                               <div className="relative">
                                 <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-dark">$</span>
@@ -708,8 +761,8 @@ const TaxCredits3Page: React.FC = () => {
                               </div>
                             </FormControl>
                             <FormDescription>
-                              기타 세액공제액을 입력하세요.
-                              (Enter any other tax credits you may be eligible for.)
+                              기타 부양가족 세액공제액을 입력하세요.
+                              (Enter the credit amount for other dependents you may be eligible for.)
                             </FormDescription>
                             <FormMessage />
                           </FormItem>

@@ -511,6 +511,18 @@ export function calculateTaxes(taxData: TaxData): CalculatedResults {
     );
   }
   
+  // Auto-calculate Credit for Other Dependents if applicable
+  let calculatedCreditForOtherDependents = 0;
+  
+  // Only auto-calculate if there are dependents
+  if (taxData.personalInfo?.dependents && taxData.personalInfo.dependents.length > 0) {
+    calculatedCreditForOtherDependents = calculateCreditForOtherDependents(
+      taxData.personalInfo.dependents,
+      result.adjustedGrossIncome,
+      filingStatus
+    );
+  }
+  
   // Auto-calculate Child and Dependent Care Credit if applicable
   let calculatedChildDependentCareCredit = 0;
   
@@ -545,22 +557,23 @@ export function calculateTaxes(taxData: TaxData): CalculatedResults {
     childDependentCareCredit: calculatedChildDependentCareCredit,
     educationCredits: 0,
     retirementSavingsCredit: calculatedRetirementSavingsCredit,
-    otherCredits: 0,
-    totalCredits: calculatedChildTaxCredit + calculatedRetirementSavingsCredit + calculatedChildDependentCareCredit
+    otherCredits: calculatedCreditForOtherDependents,
+    totalCredits: calculatedChildTaxCredit + calculatedRetirementSavingsCredit + calculatedChildDependentCareCredit + calculatedCreditForOtherDependents
   };
   
   // If the user hasn't explicitly set tax credit values, use the calculated ones
   if (!taxData.taxCredits || 
       (taxData.taxCredits.childTaxCredit === 0 && 
        taxData.taxCredits.retirementSavingsCredit === 0 &&
-       taxData.taxCredits.childDependentCareCredit === 0)) {
+       taxData.taxCredits.childDependentCareCredit === 0 &&
+       taxData.taxCredits.otherCredits === 0)) {
     // Update the total credits with our calculated credits
     result.credits = (
       calculatedChildTaxCredit + 
       calculatedRetirementSavingsCredit +
       calculatedChildDependentCareCredit +
-      (taxCredits.educationCredits || 0) + 
-      (taxCredits.otherCredits || 0)
+      calculatedCreditForOtherDependents +
+      (taxCredits.educationCredits || 0)
     );
   } else {
     // Use the user's manually entered total credits

@@ -1493,7 +1493,6 @@ const TaxCredits3Page: React.FC = () => {
         
         <div className="w-full md:w-80">
           <div className="sticky top-6">
-            <TaxSummary recalculate={() => form.trigger()} />
             <StepNavigation 
               prevStep="/deductions" 
               nextStep="/additional-tax"

@@ -403,22 +403,44 @@ const TaxCredits3Page: React.FC = () => {
   const handleNext = () => {
     // 현재 폼 데이터로 세금 컨텍스트 업데이트
     const currentValues = form.getValues();
-    const updatedValues = {
-      ...currentValues,
+    
+    // 은퇴 기여금 분리
+    const retirementContributions = currentValues.retirementContributions || {};
+    
+    // 세금 공제 정보만 포함
+    const taxCreditsValues = {
+      childTaxCredit: currentValues.childTaxCredit || 0,
+      childDependentCareCredit: currentValues.childDependentCareCredit || 0,
+      educationCredits: currentValues.educationCredits || 0,
+      aotcCredit: currentValues.aotcCredit || 0,
+      llcCredit: currentValues.llcCredit || 0,
+      retirementSavingsCredit: currentValues.retirementSavingsCredit || 0,
+      otherCredits: currentValues.otherCredits || 0,
       totalCredits: calculatedTotal
     };
     
+    // 폼 데이터 로그
     console.log("다음 단계로 이동 - 현재 값:", currentValues);
-    console.log("다음 단계로 이동 - 업데이트 값:", updatedValues);
+    console.log("다음 단계로 이동 - 세금 공제 값:", taxCreditsValues);
+    console.log("다음 단계로 이동 - 은퇴 기여금:", retirementContributions);
+    
+    // 로컬 상태와 로컬 스토리지에 저장할 통합 데이터
+    const combinedValues = {
+      ...taxCreditsValues,
+      retirementContributions
+    };
     
     // 로컬 상태 업데이트 (form 값 보존을 위해)
-    setSavedValues(updatedValues);
+    setSavedValues(combinedValues);
     
-    // 컨텍스트 업데이트
-    updateTaxData({ taxCredits: updatedValues });
+    // 컨텍스트 업데이트 - 분리된 데이터로 업데이트
+    updateTaxData({ 
+      taxCredits: taxCreditsValues,
+      retirementContributions
+    });
     
     // 브라우저에 현재 상태 저장 (페이지 간 이동 시 데이터 보존을 위해)
-    localStorage.setItem('taxCredits', JSON.stringify(updatedValues));
+    localStorage.setItem('taxCredits', JSON.stringify(combinedValues));
     
     return true;
   };

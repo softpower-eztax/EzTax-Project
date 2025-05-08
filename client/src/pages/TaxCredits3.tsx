@@ -15,6 +15,21 @@ import { Info, RefreshCw } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { calculateChildTaxCredit, calculateRetirementSavingsCredit, calculateChildDependentCareCredit, calculateCreditForOtherDependents, formatNumberInput } from '@/lib/taxCalculations';
 
+// Retirement Contributions 인터페이스 정의
+interface RetirementContributions {
+  traditionalIRA: number;
+  rothIRA: number;
+  plan401k: number;
+  plan403b: number;
+  plan457: number;
+  simpleIRA: number;
+  sepIRA: number;
+  able: number;
+  tsp: number;
+  otherRetirementPlans: number;
+  totalContributions: number;
+}
+
 // Tax Credits 인터페이스 정의
 interface TaxCredits {
   childTaxCredit: number;
@@ -23,6 +38,7 @@ interface TaxCredits {
   aotcCredit: number;
   llcCredit: number;
   retirementSavingsCredit: number;
+  retirementContributions: RetirementContributions;
   otherCredits: number;
   totalCredits: number;
 }
@@ -39,6 +55,19 @@ const TaxCredits3Page: React.FC = () => {
     aotcCredit: taxData.taxCredits?.aotcCredit || 0,
     llcCredit: taxData.taxCredits?.llcCredit || 0,
     retirementSavingsCredit: taxData.taxCredits?.retirementSavingsCredit || 0,
+    retirementContributions: taxData.taxCredits?.retirementContributions || {
+      traditionalIRA: 0,
+      rothIRA: 0,
+      plan401k: 0,
+      plan403b: 0,
+      plan457: 0,
+      simpleIRA: 0,
+      sepIRA: 0,
+      able: 0,
+      tsp: 0,
+      otherRetirementPlans: 0,
+      totalContributions: 0
+    },
     otherCredits: taxData.taxCredits?.otherCredits || 0,
     totalCredits: taxData.taxCredits?.totalCredits || 0
   });
@@ -47,6 +76,20 @@ const TaxCredits3Page: React.FC = () => {
   const hasDependents = (taxData.personalInfo?.dependents && taxData.personalInfo.dependents.length > 0) || false;
   
   // 폼 스키마 정의
+  const retirementContributionsSchema = z.object({
+    traditionalIRA: z.coerce.number().min(0).default(0),
+    rothIRA: z.coerce.number().min(0).default(0),
+    plan401k: z.coerce.number().min(0).default(0),
+    plan403b: z.coerce.number().min(0).default(0),
+    plan457: z.coerce.number().min(0).default(0),
+    simpleIRA: z.coerce.number().min(0).default(0),
+    sepIRA: z.coerce.number().min(0).default(0),
+    able: z.coerce.number().min(0).default(0),
+    tsp: z.coerce.number().min(0).default(0),
+    otherRetirementPlans: z.coerce.number().min(0).default(0),
+    totalContributions: z.coerce.number().min(0).default(0)
+  });
+  
   const taxCreditsSchema = z.object({
     childTaxCredit: z.coerce.number().min(0).default(0),
     childDependentCareCredit: z.coerce.number().min(0).default(0),
@@ -54,6 +97,19 @@ const TaxCredits3Page: React.FC = () => {
     aotcCredit: z.coerce.number().min(0).default(0),
     llcCredit: z.coerce.number().min(0).default(0),
     retirementSavingsCredit: z.coerce.number().min(0).default(0),
+    retirementContributions: retirementContributionsSchema.default({
+      traditionalIRA: 0,
+      rothIRA: 0,
+      plan401k: 0,
+      plan403b: 0,
+      plan457: 0,
+      simpleIRA: 0,
+      sepIRA: 0,
+      able: 0,
+      tsp: 0,
+      otherRetirementPlans: 0,
+      totalContributions: 0
+    }),
     otherCredits: z.coerce.number().min(0).default(0),
     totalCredits: z.coerce.number().min(0).default(0)
   });
@@ -94,6 +150,43 @@ const TaxCredits3Page: React.FC = () => {
     form.setValue('totalCredits', calculatedTotal);
   }, [calculatedTotal, form]);
   
+  // 은퇴 저축 공제액 계산 함수
+  const calculateRetirementCredit = () => {
+    const totalContributions = form.getValues('retirementContributions.totalContributions') || 0;
+    const agi = taxData.income?.adjustedGrossIncome || 0;
+    const filingStatus = taxData.personalInfo?.filingStatus || 'single';
+    
+    let creditRate = 0;
+    
+    // 소득 구간에 따른 공제율 결정
+    if (filingStatus === 'married_joint') {
+      if (agi <= 41000) creditRate = 0.5;
+      else if (agi <= 44000) creditRate = 0.2;
+      else if (agi <= 68000) creditRate = 0.1;
+    } else if (filingStatus === 'head_of_household') {
+      if (agi <= 30750) creditRate = 0.5;
+      else if (agi <= 33000) creditRate = 0.2;
+      else if (agi <= 51000) creditRate = 0.1;
+    } else { // single, married_separate, qualifying_widow
+      if (agi <= 20500) creditRate = 0.5;
+      else if (agi <= 22000) creditRate = 0.2;
+      else if (agi <= 34000) creditRate = 0.1;
+    }
+    
+    // 최대 적격 금액 제한 (개인당 $2,000)
+    const eligibleContribution = Math.min(totalContributions, filingStatus === 'married_joint' ? 4000 : 2000);
+    
+    // 공제액 계산
+    const creditAmount = eligibleContribution * creditRate;
+    
+    // 최대 공제액 제한 (부부 공동 신고의 경우 $2,000, 그 외 $1,000)
+    const maxCredit = filingStatus === 'married_joint' ? 2000 : 1000;
+    const finalCredit = Math.min(creditAmount, maxCredit);
+    
+    // 폼에 계산된 공제액 설정
+    form.setValue('retirementSavingsCredit', finalCredit);
+  };
+  
   // 최초 로드 시 폼 초기값 설정
   useEffect(() => {
     console.log("TaxCredits3 - 최초 로드 시 taxData:", taxData);
@@ -121,6 +214,19 @@ const TaxCredits3Page: React.FC = () => {
         aotcCredit: taxData.taxCredits.aotcCredit || 0,
         llcCredit: taxData.taxCredits.llcCredit || 0,
         retirementSavingsCredit: taxData.taxCredits.retirementSavingsCredit || 0,
+        retirementContributions: taxData.taxCredits.retirementContributions || {
+          traditionalIRA: 0,
+          rothIRA: 0,
+          plan401k: 0,
+          plan403b: 0,
+          plan457: 0,
+          simpleIRA: 0,
+          sepIRA: 0,
+          able: 0,
+          tsp: 0,
+          otherRetirementPlans: 0,
+          totalContributions: 0
+        },
         otherCredits: taxData.taxCredits.otherCredits || 0,
         totalCredits: taxData.taxCredits.totalCredits || 0
       };
@@ -137,6 +243,19 @@ const TaxCredits3Page: React.FC = () => {
         aotcCredit: 0,
         llcCredit: 0,
         retirementSavingsCredit: 0,
+        retirementContributions: {
+          traditionalIRA: 0,
+          rothIRA: 0,
+          plan401k: 0,
+          plan403b: 0,
+          plan457: 0,
+          simpleIRA: 0,
+          sepIRA: 0,
+          able: 0,
+          tsp: 0,
+          otherRetirementPlans: 0,
+          totalContributions: 0
+        },
         otherCredits: 0,
         totalCredits: 0
       };
@@ -220,6 +339,19 @@ const TaxCredits3Page: React.FC = () => {
       aotcCredit: 0,
       llcCredit: 0,
       retirementSavingsCredit: 0,
+      retirementContributions: {
+        traditionalIRA: 0,
+        rothIRA: 0,
+        plan401k: 0,
+        plan403b: 0,
+        plan457: 0,
+        simpleIRA: 0,
+        sepIRA: 0,
+        able: 0,
+        tsp: 0,
+        otherRetirementPlans: 0,
+        totalContributions: 0
+      },
       otherCredits: 0,
       totalCredits: 0
     };
@@ -764,20 +896,422 @@ const TaxCredits3Page: React.FC = () => {
                       </TooltipProvider>
                     </div>
                     
+                    {/* Retirement Account Contributions Form */}
+                    <div className="bg-gray-50 p-4 rounded-md mb-4">
+                      <h5 className="font-medium mb-3">은퇴 계좌 납입금 (Retirement Account Contributions)</h5>
+                      
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <FormField
+                          control={form.control}
+                          name="taxCredits.retirementContributions.traditionalIRA"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>전통적 IRA (Traditional IRA)</FormLabel>
+                              <FormControl>
+                                <div className="relative">
+                                  <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-dark">$</span>
+                                  <Input 
+                                    placeholder="0.00"
+                                    className="pl-8"
+                                    value={field.value || ''}
+                                    onChange={(e) => {
+                                      const formatted = formatNumberInput(e.target.value);
+                                      const value = formatted ? Number(formatted) : 0;
+                                      field.onChange(value);
+                                      
+                                      // Update total contributions
+                                      const currentContributions = form.getValues('taxCredits.retirementContributions');
+                                      const total = Object.entries(currentContributions)
+                                        .filter(([key]) => key !== 'totalContributions')
+                                        .reduce((sum, [_, val]) => sum + (Number(val) || 0), 0);
+                                      
+                                      form.setValue('taxCredits.retirementContributions.totalContributions', total);
+                                      calculateRetirementCredit();
+                                    }}
+                                  />
+                                </div>
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        
+                        <FormField
+                          control={form.control}
+                          name="taxCredits.retirementContributions.rothIRA"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>로스 IRA (Roth IRA)</FormLabel>
+                              <FormControl>
+                                <div className="relative">
+                                  <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-dark">$</span>
+                                  <Input 
+                                    placeholder="0.00"
+                                    className="pl-8"
+                                    value={field.value || ''}
+                                    onChange={(e) => {
+                                      const formatted = formatNumberInput(e.target.value);
+                                      const value = formatted ? Number(formatted) : 0;
+                                      field.onChange(value);
+                                      
+                                      // Update total contributions
+                                      const currentContributions = form.getValues('taxCredits.retirementContributions');
+                                      const total = Object.entries(currentContributions)
+                                        .filter(([key]) => key !== 'totalContributions')
+                                        .reduce((sum, [_, val]) => sum + (Number(val) || 0), 0);
+                                      
+                                      form.setValue('taxCredits.retirementContributions.totalContributions', total);
+                                      calculateRetirementCredit();
+                                    }}
+                                  />
+                                </div>
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        
+                        <FormField
+                          control={form.control}
+                          name="taxCredits.retirementContributions.plan401k"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>401(k) 플랜</FormLabel>
+                              <FormControl>
+                                <div className="relative">
+                                  <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-dark">$</span>
+                                  <Input 
+                                    placeholder="0.00"
+                                    className="pl-8"
+                                    value={field.value || ''}
+                                    onChange={(e) => {
+                                      const formatted = formatNumberInput(e.target.value);
+                                      const value = formatted ? Number(formatted) : 0;
+                                      field.onChange(value);
+                                      
+                                      // Update total contributions
+                                      const currentContributions = form.getValues('taxCredits.retirementContributions');
+                                      const total = Object.entries(currentContributions)
+                                        .filter(([key]) => key !== 'totalContributions')
+                                        .reduce((sum, [_, val]) => sum + (Number(val) || 0), 0);
+                                      
+                                      form.setValue('taxCredits.retirementContributions.totalContributions', total);
+                                      calculateRetirementCredit();
+                                    }}
+                                  />
+                                </div>
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        
+                        <FormField
+                          control={form.control}
+                          name="taxCredits.retirementContributions.plan403b"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>403(b) 플랜</FormLabel>
+                              <FormControl>
+                                <div className="relative">
+                                  <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-dark">$</span>
+                                  <Input 
+                                    placeholder="0.00"
+                                    className="pl-8"
+                                    value={field.value || ''}
+                                    onChange={(e) => {
+                                      const formatted = formatNumberInput(e.target.value);
+                                      const value = formatted ? Number(formatted) : 0;
+                                      field.onChange(value);
+                                      
+                                      // Update total contributions
+                                      const currentContributions = form.getValues('taxCredits.retirementContributions');
+                                      const total = Object.entries(currentContributions)
+                                        .filter(([key]) => key !== 'totalContributions')
+                                        .reduce((sum, [_, val]) => sum + (Number(val) || 0), 0);
+                                      
+                                      form.setValue('taxCredits.retirementContributions.totalContributions', total);
+                                      calculateRetirementCredit();
+                                    }}
+                                  />
+                                </div>
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        
+                        <FormField
+                          control={form.control}
+                          name="taxCredits.retirementContributions.plan457"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>457 플랜</FormLabel>
+                              <FormControl>
+                                <div className="relative">
+                                  <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-dark">$</span>
+                                  <Input 
+                                    placeholder="0.00"
+                                    className="pl-8"
+                                    value={field.value || ''}
+                                    onChange={(e) => {
+                                      const formatted = formatNumberInput(e.target.value);
+                                      const value = formatted ? Number(formatted) : 0;
+                                      field.onChange(value);
+                                      
+                                      // Update total contributions
+                                      const currentContributions = form.getValues('taxCredits.retirementContributions');
+                                      const total = Object.entries(currentContributions)
+                                        .filter(([key]) => key !== 'totalContributions')
+                                        .reduce((sum, [_, val]) => sum + (Number(val) || 0), 0);
+                                      
+                                      form.setValue('taxCredits.retirementContributions.totalContributions', total);
+                                      calculateRetirementCredit();
+                                    }}
+                                  />
+                                </div>
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        
+                        <FormField
+                          control={form.control}
+                          name="taxCredits.retirementContributions.simpleIRA"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>SIMPLE IRA</FormLabel>
+                              <FormControl>
+                                <div className="relative">
+                                  <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-dark">$</span>
+                                  <Input 
+                                    placeholder="0.00"
+                                    className="pl-8"
+                                    value={field.value || ''}
+                                    onChange={(e) => {
+                                      const formatted = formatNumberInput(e.target.value);
+                                      const value = formatted ? Number(formatted) : 0;
+                                      field.onChange(value);
+                                      
+                                      // Update total contributions
+                                      const currentContributions = form.getValues('taxCredits.retirementContributions');
+                                      const total = Object.entries(currentContributions)
+                                        .filter(([key]) => key !== 'totalContributions')
+                                        .reduce((sum, [_, val]) => sum + (Number(val) || 0), 0);
+                                      
+                                      form.setValue('taxCredits.retirementContributions.totalContributions', total);
+                                      calculateRetirementCredit();
+                                    }}
+                                  />
+                                </div>
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        
+                        <FormField
+                          control={form.control}
+                          name="taxCredits.retirementContributions.sepIRA"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>SEP IRA</FormLabel>
+                              <FormControl>
+                                <div className="relative">
+                                  <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-dark">$</span>
+                                  <Input 
+                                    placeholder="0.00"
+                                    className="pl-8"
+                                    value={field.value || ''}
+                                    onChange={(e) => {
+                                      const formatted = formatNumberInput(e.target.value);
+                                      const value = formatted ? Number(formatted) : 0;
+                                      field.onChange(value);
+                                      
+                                      // Update total contributions
+                                      const currentContributions = form.getValues('taxCredits.retirementContributions');
+                                      const total = Object.entries(currentContributions)
+                                        .filter(([key]) => key !== 'totalContributions')
+                                        .reduce((sum, [_, val]) => sum + (Number(val) || 0), 0);
+                                      
+                                      form.setValue('taxCredits.retirementContributions.totalContributions', total);
+                                      calculateRetirementCredit();
+                                    }}
+                                  />
+                                </div>
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        
+                        <FormField
+                          control={form.control}
+                          name="taxCredits.retirementContributions.able"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>ABLE 계좌 (ABLE Account)</FormLabel>
+                              <FormControl>
+                                <div className="relative">
+                                  <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-dark">$</span>
+                                  <Input 
+                                    placeholder="0.00"
+                                    className="pl-8"
+                                    value={field.value || ''}
+                                    onChange={(e) => {
+                                      const formatted = formatNumberInput(e.target.value);
+                                      const value = formatted ? Number(formatted) : 0;
+                                      field.onChange(value);
+                                      
+                                      // Update total contributions
+                                      const currentContributions = form.getValues('taxCredits.retirementContributions');
+                                      const total = Object.entries(currentContributions)
+                                        .filter(([key]) => key !== 'totalContributions')
+                                        .reduce((sum, [_, val]) => sum + (Number(val) || 0), 0);
+                                      
+                                      form.setValue('taxCredits.retirementContributions.totalContributions', total);
+                                      calculateRetirementCredit();
+                                    }}
+                                  />
+                                </div>
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        
+                        <FormField
+                          control={form.control}
+                          name="taxCredits.retirementContributions.tsp"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>TSP (Thrift Savings Plan)</FormLabel>
+                              <FormControl>
+                                <div className="relative">
+                                  <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-dark">$</span>
+                                  <Input 
+                                    placeholder="0.00"
+                                    className="pl-8"
+                                    value={field.value || ''}
+                                    onChange={(e) => {
+                                      const formatted = formatNumberInput(e.target.value);
+                                      const value = formatted ? Number(formatted) : 0;
+                                      field.onChange(value);
+                                      
+                                      // Update total contributions
+                                      const currentContributions = form.getValues('taxCredits.retirementContributions');
+                                      const total = Object.entries(currentContributions)
+                                        .filter(([key]) => key !== 'totalContributions')
+                                        .reduce((sum, [_, val]) => sum + (Number(val) || 0), 0);
+                                      
+                                      form.setValue('taxCredits.retirementContributions.totalContributions', total);
+                                      calculateRetirementCredit();
+                                    }}
+                                  />
+                                </div>
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        
+                        <FormField
+                          control={form.control}
+                          name="taxCredits.retirementContributions.otherRetirementPlans"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>기타 은퇴 계좌 (Other Retirement Plans)</FormLabel>
+                              <FormControl>
+                                <div className="relative">
+                                  <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-dark">$</span>
+                                  <Input 
+                                    placeholder="0.00"
+                                    className="pl-8"
+                                    value={field.value || ''}
+                                    onChange={(e) => {
+                                      const formatted = formatNumberInput(e.target.value);
+                                      const value = formatted ? Number(formatted) : 0;
+                                      field.onChange(value);
+                                      
+                                      // Update total contributions
+                                      const currentContributions = form.getValues('taxCredits.retirementContributions');
+                                      const total = Object.entries(currentContributions)
+                                        .filter(([key]) => key !== 'totalContributions')
+                                        .reduce((sum, [_, val]) => sum + (Number(val) || 0), 0);
+                                      
+                                      form.setValue('taxCredits.retirementContributions.totalContributions', total);
+                                      calculateRetirementCredit();
+                                    }}
+                                  />
+                                </div>
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+                      
+                      <div className="mt-4">
+                        <FormField
+                          control={form.control}
+                          name="taxCredits.retirementContributions.totalContributions"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>총 은퇴 계좌 납입금 (Total Retirement Contributions)</FormLabel>
+                              <FormControl>
+                                <div className="relative">
+                                  <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-dark">$</span>
+                                  <Input 
+                                    placeholder="0.00"
+                                    className="pl-8 bg-gray-100"
+                                    value={field.value || ''}
+                                    disabled
+                                  />
+                                </div>
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+                    </div>
+
                     {/* Automatic calculation for Retirement Savings Credit */}
                     <div className="bg-blue-50 p-3 rounded-md mb-3 border border-blue-200">
                       <p className="text-sm flex items-center">
                         <span className="font-medium">자동 계산된 은퇴저축공제액 (Auto-calculated Retirement Savings Credit):</span>
                         {(() => {
-                          const retirementContributions = taxData.income?.adjustments?.retirementContributions || 0;
+                          // Get total contributions from the form
+                          const totalContributions = form.getValues('taxCredits.retirementContributions.totalContributions') || 0;
                           const agi = taxData.income?.adjustedGrossIncome || 0;
                           const filingStatus = taxData.personalInfo?.filingStatus || 'single';
                           
-                          const calculatedCredit = calculateRetirementSavingsCredit(
-                            retirementContributions,
-                            agi,
-                            filingStatus
-                          );
+                          let creditRate = 0;
+                          
+                          if (filingStatus === 'married_joint') {
+                            if (agi <= 41000) creditRate = 0.5;
+                            else if (agi <= 44000) creditRate = 0.2;
+                            else if (agi <= 68000) creditRate = 0.1;
+                          } else if (filingStatus === 'head_of_household') {
+                            if (agi <= 30750) creditRate = 0.5;
+                            else if (agi <= 33000) creditRate = 0.2;
+                            else if (agi <= 51000) creditRate = 0.1;
+                          } else { // single, married_separate, qualifying_widow
+                            if (agi <= 20500) creditRate = 0.5;
+                            else if (agi <= 22000) creditRate = 0.2;
+                            else if (agi <= 34000) creditRate = 0.1;
+                          }
+                          
+                          // 최대 적격 금액 제한 (개인당 $2,000)
+                          const eligibleContribution = Math.min(totalContributions, filingStatus === 'married_joint' ? 4000 : 2000);
+                          
+                          // 공제액 계산
+                          const creditAmount = eligibleContribution * creditRate;
+                          
+                          // 최대 공제액 제한 (부부 공동 신고의 경우 $2,000, 그 외 $1,000)
+                          const maxCredit = filingStatus === 'married_joint' ? 2000 : 1000;
+                          const calculatedCredit = Math.min(creditAmount, maxCredit);
                           
                           return (
                             <>
@@ -803,7 +1337,7 @@ const TaxCredits3Page: React.FC = () => {
                         (Calculated based on your retirement contributions and income. Click the button above to apply the calculated value.)
                       </p>
                       <p className="text-xs mt-1 text-gray-600">
-                        은퇴 저축 기여금: ${taxData.income?.adjustments?.retirementContributions || 0} | 조정된 총소득: ${taxData.income?.adjustedGrossIncome || 0} | 공제율: 
+                        총 은퇴 저축 기여금: ${form.getValues('taxCredits.retirementContributions.totalContributions') || 0} | 조정된 총소득: ${taxData.income?.adjustedGrossIncome || 0} | 공제율:  
                         {(() => {
                           const agi = taxData.income?.adjustedGrossIncome || 0;
                           const filingStatus = taxData.personalInfo?.filingStatus || 'single';

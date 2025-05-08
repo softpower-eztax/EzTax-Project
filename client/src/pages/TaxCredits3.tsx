@@ -1060,12 +1060,12 @@ const TaxCredits3Page: React.FC = () => {
                                       field.onChange(value);
                                       
                                       // Update total contributions
-                                      const currentContributions = form.getValues('taxCredits.retirementContributions');
+                                      const currentContributions = form.getValues('retirementContributions');
                                       const total = Object.entries(currentContributions)
                                         .filter(([key]) => key !== 'totalContributions')
                                         .reduce((sum, [_, val]) => sum + (Number(val) || 0), 0);
                                       
-                                      form.setValue('taxCredits.retirementContributions.totalContributions', total);
+                                      form.setValue('retirementContributions.totalContributions', total);
                                       calculateRetirementCredit();
                                     }}
                                   />
@@ -1095,12 +1095,12 @@ const TaxCredits3Page: React.FC = () => {
                                       field.onChange(value);
                                       
                                       // Update total contributions
-                                      const currentContributions = form.getValues('taxCredits.retirementContributions');
+                                      const currentContributions = form.getValues('retirementContributions');
                                       const total = Object.entries(currentContributions)
                                         .filter(([key]) => key !== 'totalContributions')
                                         .reduce((sum, [_, val]) => sum + (Number(val) || 0), 0);
                                       
-                                      form.setValue('taxCredits.retirementContributions.totalContributions', total);
+                                      form.setValue('retirementContributions.totalContributions', total);
                                       calculateRetirementCredit();
                                     }}
                                   />
@@ -1130,12 +1130,12 @@ const TaxCredits3Page: React.FC = () => {
                                       field.onChange(value);
                                       
                                       // Update total contributions
-                                      const currentContributions = form.getValues('taxCredits.retirementContributions');
+                                      const currentContributions = form.getValues('retirementContributions');
                                       const total = Object.entries(currentContributions)
                                         .filter(([key]) => key !== 'totalContributions')
                                         .reduce((sum, [_, val]) => sum + (Number(val) || 0), 0);
                                       
-                                      form.setValue('taxCredits.retirementContributions.totalContributions', total);
+                                      form.setValue('retirementContributions.totalContributions', total);
                                       calculateRetirementCredit();
                                     }}
                                   />
@@ -1165,12 +1165,12 @@ const TaxCredits3Page: React.FC = () => {
                                       field.onChange(value);
                                       
                                       // Update total contributions
-                                      const currentContributions = form.getValues('taxCredits.retirementContributions');
+                                      const currentContributions = form.getValues('retirementContributions');
                                       const total = Object.entries(currentContributions)
                                         .filter(([key]) => key !== 'totalContributions')
                                         .reduce((sum, [_, val]) => sum + (Number(val) || 0), 0);
                                       
-                                      form.setValue('taxCredits.retirementContributions.totalContributions', total);
+                                      form.setValue('retirementContributions.totalContributions', total);
                                       calculateRetirementCredit();
                                     }}
                                   />
@@ -1200,12 +1200,12 @@ const TaxCredits3Page: React.FC = () => {
                                       field.onChange(value);
                                       
                                       // Update total contributions
-                                      const currentContributions = form.getValues('taxCredits.retirementContributions');
+                                      const currentContributions = form.getValues('retirementContributions');
                                       const total = Object.entries(currentContributions)
                                         .filter(([key]) => key !== 'totalContributions')
                                         .reduce((sum, [_, val]) => sum + (Number(val) || 0), 0);
                                       
-                                      form.setValue('taxCredits.retirementContributions.totalContributions', total);
+                                      form.setValue('retirementContributions.totalContributions', total);
                                       calculateRetirementCredit();
                                     }}
                                   />
@@ -1235,12 +1235,12 @@ const TaxCredits3Page: React.FC = () => {
                                       field.onChange(value);
                                       
                                       // Update total contributions
-                                      const currentContributions = form.getValues('taxCredits.retirementContributions');
+                                      const currentContributions = form.getValues('retirementContributions');
                                       const total = Object.entries(currentContributions)
                                         .filter(([key]) => key !== 'totalContributions')
                                         .reduce((sum, [_, val]) => sum + (Number(val) || 0), 0);
                                       
-                                      form.setValue('taxCredits.retirementContributions.totalContributions', total);
+                                      form.setValue('retirementContributions.totalContributions', total);
                                       calculateRetirementCredit();
                                     }}
                                   />

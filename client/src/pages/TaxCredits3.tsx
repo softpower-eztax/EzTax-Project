@@ -548,80 +548,7 @@ const TaxCredits3Page: React.FC = () => {
                       </TooltipProvider>
                     </div>
                     
-                    {/* Automatic calculation for Child and Dependent Care Credit */}
-                    {hasDependents && (
-                      <div className="bg-blue-50 p-3 rounded-md mb-3 border border-blue-200">
-                        <p className="text-sm flex items-center">
-                          <span className="font-medium">자동 계산된 자녀및부양가족돌봄공제액 (Auto-calculated Child and Dependent Care Credit):</span>
-                          {(() => {
-                            // Count qualifying dependents under 13
-                            const qualifyingDependents = (taxData.personalInfo?.dependents || []).filter(dependent => {
-                              const birthDate = new Date(dependent.dateOfBirth);
-                              const taxYearEnd = new Date('2025-12-31');
-                              const age = taxYearEnd.getFullYear() - birthDate.getFullYear();
-                              return age < 13;
-                            });
-                            
-                            // For prototype, we're assuming average care expenses of $2,000 per qualifying dependent
-                            const estimatedCareExpenses = qualifyingDependents.length * 2000;
-                            
-                            // Calculate the credit
-                            const calculatedCredit = calculateChildDependentCareCredit(
-                              estimatedCareExpenses,
-                              taxData.income?.adjustedGrossIncome || 0,
-                              qualifyingDependents.length
-                            );
-                            
-                            return (
-                              <>
-                                <span className="ml-2 font-bold">${calculatedCredit.toFixed(2)}</span>
-                                <Button 
-                                  type="button" 
-                                  size="sm" 
-                                  variant="ghost" 
-                                  className="ml-2 h-6 px-2 text-xs"
-                                  onClick={() => {
-                                    form.setValue('childDependentCareCredit', calculatedCredit);
-                                  }}
-                                >
-                                  <RefreshCw className="h-3 w-3 mr-1" />
-                                  적용 (Apply)
-                                </Button>
-                              </>
-                            );
-                          })()}
-                        </p>
-                        <p className="text-xs mt-1 text-gray-600">
-                          13세 미만의 부양가족 수와 소득을 기준으로 계산됩니다. 위의 버튼을 클릭하여 자동 계산된 값을 적용할 수 있습니다.
-                          (Calculated based on the number of dependents under 13 and your income. Click the button above to apply the calculated value.)
-                        </p>
-                        <p className="text-xs mt-1 text-gray-600">
-                          적격 부양가족 수: {(taxData.personalInfo?.dependents || []).filter(dependent => {
-                            const birthDate = new Date(dependent.dateOfBirth);
-                            const taxYearEnd = new Date('2025-12-31');
-                            const age = taxYearEnd.getFullYear() - birthDate.getFullYear();
-                            return age < 13;
-                          }).length} | 예상 보육 비용: $
-                          {(taxData.personalInfo?.dependents || []).filter(dependent => {
-                            const birthDate = new Date(dependent.dateOfBirth);
-                            const taxYearEnd = new Date('2025-12-31');
-                            const age = taxYearEnd.getFullYear() - birthDate.getFullYear();
-                            return age < 13;
-                          }).length * 2000} | 세액공제율: 
-                          {(() => {
-                            const agi = taxData.income?.adjustedGrossIncome || 0;
-                            let creditRate = 0.35; // Base rate
-                            
-                            if (agi > 15000) {
-                              const excessAGIIncrements = Math.floor((agi - 15000) / 2000);
-                              creditRate = Math.max(0.20, 0.35 - (excessAGIIncrements * 0.01));
-                            }
-                            
-                            return ` ${Math.round(creditRate * 100)}%`;
-                          })()}
-                        </p>
-                      </div>
-                    )}
+
                     
                     {!hasDependents && (
                       <div className="bg-gray-bg p-3 rounded-md mb-3 text-sm">
@@ -688,49 +615,7 @@ const TaxCredits3Page: React.FC = () => {
                       </div>
                     )}
                     
-                    {hasDependents && (
-                      <div className="bg-blue-50 p-3 rounded-md mb-3 border border-blue-200">
-                        <p className="text-sm flex items-center">
-                          <span className="font-medium">자동 계산된 기타 부양가족 세액공제액 (Auto-calculated Credit for Other Dependents):</span>
-                          <span className="ml-2 font-bold">${calculateCreditForOtherDependents(
-                            taxData.personalInfo?.dependents || [],
-                            taxData.income?.adjustedGrossIncome || 0,
-                            taxData.personalInfo?.filingStatus || 'single'
-                          ).toFixed(2)}</span>
-                          <Button 
-                            type="button" 
-                            size="sm" 
-                            variant="ghost" 
-                            className="ml-2 h-6 px-2 text-xs"
-                            onClick={() => {
-                              const calculatedAmount = calculateCreditForOtherDependents(
-                                taxData.personalInfo?.dependents || [],
-                                taxData.income?.adjustedGrossIncome || 0,
-                                taxData.personalInfo?.filingStatus || 'single'
-                              );
-                              form.setValue('otherCredits', calculatedAmount);
-                            }}
-                          >
-                            <RefreshCw className="h-3 w-3 mr-1" />
-                            적용 (Apply)
-                          </Button>
-                        </p>
-                        <p className="text-xs mt-1 text-gray-600">
-                          17세 이상 부양가족 또는 자녀세액공제 대상이 아닌 부양가족 수와 소득을 기준으로 계산됩니다.
-                          (Calculated based on dependents who are 17 or older, or who don't qualify for the Child Tax Credit, and your income.)
-                        </p>
-                        <p className="text-xs mt-1 text-gray-600">
-                          적격 부양가족 수: {(taxData.personalInfo?.dependents || []).filter(dependent => {
-                            // Check if NOT eligible for Child Tax Credit (so eligible for COD)
-                            const birthDate = new Date(dependent.dateOfBirth);
-                            const taxYearEnd = new Date('2025-12-31');
-                            const age = taxYearEnd.getFullYear() - birthDate.getFullYear();
-                            return age >= 17 || !dependent.isQualifyingChild;
-                          }).length} | 부양가족당 공제액: $500 | 소득 수준: $
-                          {(taxData.income?.adjustedGrossIncome || 0).toLocaleString()}
-                        </p>
-                      </div>
-                    )}
+
                     
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <FormField

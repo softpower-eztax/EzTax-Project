@@ -903,11 +903,11 @@ const IncomePage: React.FC = () => {
                         </div>
                       </div>
                       
-                      {form.watch('additionalIncomeItems') && form.watch('additionalIncomeItems').length > 0 && (
+                      {form.watch('additionalIncomeItems')?.length > 0 && (
                         <div className="mb-4 p-4 bg-gray-50 rounded-md border">
                           <h4 className="font-medium mb-2">추가 소득 항목 (Additional Income Items)</h4>
                           <ul className="space-y-2">
-                            {form.watch('additionalIncomeItems').map((item, index) => (
+                            {form.watch('additionalIncomeItems')?.map((item, index) => (
                               <li key={index} className="flex justify-between">
                                 <span>{item.type}</span>
                                 <div className="flex items-center space-x-2">

@@ -323,315 +323,19 @@ const Deductions: React.FC = () => {
                     />
                   </div>
 
-                  <div id="itemized-deductions-section" className={isItemizedDisabled ? 'opacity-50' : ''}>
-                    <h3 className="text-lg font-heading font-semibold mb-4">항목별공제 (Itemized Deductions)</h3>
-
-                    {/* Medical Expenses */}
-                    <div className="mb-6 border-b border-gray-light pb-6">
-                      <div className="flex items-center mb-3">
-                        <h4 className="font-semibold">의료비 (Medical Expenses)</h4>
-                        <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <Info className="h-4 w-4 text-gray-dark ml-2 cursor-help" />
-                            </TooltipTrigger>
-                            <TooltipContent>
-                              <p className="w-64">
-                                의료비는 조정총소득(AGI)의 7.5%를 초과하는 부분에 대해 공제될 수 있습니다.
-                                (Medical expenses are deductible to the extent they exceed 7.5% of your adjusted gross income.)
-                              </p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
-                      </div>
-                      
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <FormField
-                          control={form.control}
-                          name="itemizedDeductions.medicalExpenses"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>의료비및치과비용 (Medical and Dental Expenses)</FormLabel>
-                              <FormControl>
-                                <div className="relative">
-                                  <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-dark">$</span>
-                                  <Input 
-                                    {...field} 
-                                    placeholder="0.00"
-                                    disabled={isItemizedDisabled}
-                                    className="pl-8"
-                                    value={field.value || ''}
-                                    onChange={(e) => {
-                                      const formatted = formatCurrency(e.target.value);
-                                      field.onChange(Number(formatted));
-                                    }}
-                                  />
-                                </div>
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                      </div>
-                    </div>
-
-                    {/* State and Local Taxes */}
-                    <div className="mb-6 border-b border-gray-light pb-6">
-                      <div className="flex items-center mb-3">
-                        <h4 className="font-semibold">주세및지방세 (State and Local Taxes)</h4>
-                        <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <Info className="h-4 w-4 text-gray-dark ml-2 cursor-help" />
-                            </TooltipTrigger>
-                            <TooltipContent>
-                              <p className="w-64">
-                                주세 및 지방세에 대한 공제는 $10,000로 제한됩니다 (부부별도신고의 경우 $5,000).
-                                (Deduction for state and local taxes is limited to $10,000 ($5,000 if married filing separately).)
-                              </p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
-                      </div>
-                      
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <FormField
-                          control={form.control}
-                          name="itemizedDeductions.stateLocalIncomeTax"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>주및지방소득세 (State and Local Income Taxes)</FormLabel>
-                              <FormControl>
-                                <div className="relative">
-                                  <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-dark">$</span>
-                                  <Input 
-                                    {...field} 
-                                    placeholder="0.00"
-                                    disabled={isItemizedDisabled}
-                                    className="pl-8"
-                                    value={field.value || ''}
-                                    onChange={(e) => {
-                                      const formatted = formatCurrency(e.target.value);
-                                      field.onChange(Number(formatted));
-                                    }}
-                                  />
-                                </div>
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                        
-                        <FormField
-                          control={form.control}
-                          name="itemizedDeductions.realEstateTaxes"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>부동산세 (Real Estate Taxes)</FormLabel>
-                              <FormControl>
-                                <div className="relative">
-                                  <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-dark">$</span>
-                                  <Input 
-                                    {...field} 
-                                    placeholder="0.00"
-                                    disabled={isItemizedDisabled}
-                                    className="pl-8"
-                                    value={field.value || ''}
-                                    onChange={(e) => {
-                                      const formatted = formatCurrency(e.target.value);
-                                      field.onChange(Number(formatted));
-                                    }}
-                                  />
-                                </div>
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                      </div>
-                    </div>
-
-                    {/* Interest Paid */}
-                    <div className="mb-6 border-b border-gray-light pb-6">
-                      <div className="flex items-center mb-3">
-                        <h4 className="font-semibold">지급이자 (Interest Paid)</h4>
-                        <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <Info className="h-4 w-4 text-gray-dark ml-2 cursor-help" />
-                            </TooltipTrigger>
-                            <TooltipContent>
-                              <p className="w-64">
-                                주택담보대출 이자는 최대 $750,000까지의 대출에 대해 공제 가능합니다.
-                                (Mortgage interest on up to $750,000 of mortgage debt is deductible.)
-                              </p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
-                      </div>
-                      
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <FormField
-                          control={form.control}
-                          name="itemizedDeductions.mortgageInterest"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>주택담보대출이자 (Mortgage Interest)</FormLabel>
-                              <FormControl>
-                                <div className="relative">
-                                  <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-dark">$</span>
-                                  <Input 
-                                    {...field} 
-                                    placeholder="0.00"
-                                    disabled={isItemizedDisabled}
-                                    className="pl-8"
-                                    value={field.value || ''}
-                                    onChange={(e) => {
-                                      const formatted = formatCurrency(e.target.value);
-                                      field.onChange(Number(formatted));
-                                    }}
-                                  />
-                                </div>
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                      </div>
-                    </div>
-
-                    {/* Charitable Contributions */}
-                    <div className="mb-6">
-                      <div className="flex items-center mb-3">
-                        <h4 className="font-semibold">자선기부 (Charitable Contributions)</h4>
-                        <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <Info className="h-4 w-4 text-gray-dark ml-2 cursor-help" />
-                            </TooltipTrigger>
-                            <TooltipContent>
-                              <p className="w-64">
-                                적격 기관에 대한 현금 기부는 일반적으로 조정총소득의 최대 60%까지 공제 가능합니다.
-                                (Cash contributions to qualified organizations are generally deductible up to 60% of your adjusted gross income.)
-                              </p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
-                      </div>
-                      
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <FormField
-                          control={form.control}
-                          name="itemizedDeductions.charitableCash"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>현금기부 (Cash Contributions)</FormLabel>
-                              <FormControl>
-                                <div className="relative">
-                                  <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-dark">$</span>
-                                  <Input 
-                                    {...field} 
-                                    placeholder="0.00"
-                                    disabled={isItemizedDisabled}
-                                    className="pl-8"
-                                    value={field.value || ''}
-                                    onChange={(e) => {
-                                      const formatted = formatCurrency(e.target.value);
-                                      field.onChange(Number(formatted));
-                                    }}
-                                  />
-                                </div>
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                        
-                        <FormField
-                          control={form.control}
-                          name="itemizedDeductions.charitableNonCash"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>비현금기부 (Non-Cash Contributions)</FormLabel>
-                              <FormControl>
-                                <div className="relative">
-                                  <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-dark">$</span>
-                                  <Input 
-                                    {...field} 
-                                    placeholder="0.00"
-                                    disabled={isItemizedDisabled}
-                                    className="pl-8"
-                                    value={field.value || ''}
-                                    onChange={(e) => {
-                                      const formatted = formatCurrency(e.target.value);
-                                      field.onChange(Number(formatted));
-                                    }}
-                                  />
-                                </div>
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                      </div>
-                    </div>
-                  </div>
+                  {/* More fields would be here */}
                   
-                  <div className="flex gap-4 mt-8 mb-4">
+                  <div className="flex justify-between mt-8">
                     <Button
                       type="button"
                       variant="outline"
-                      className="bg-rose-50 text-rose-800 border-rose-200 hover:bg-rose-100 hover:text-rose-900"
-                      onClick={() => {
-                        // Reset all form fields to 0
-                        form.reset({
-                          useStandardDeduction: true,
-                          standardDeductionAmount: standardDeductionAmount,
-                          itemizedDeductions: {
-                            medicalExpenses: 0,
-                            stateLocalIncomeTax: 0,
-                            realEstateTaxes: 0,
-                            mortgageInterest: 0,
-                            charitableCash: 0,
-                            charitableNonCash: 0
-                          },
-                          totalDeductions: standardDeductionAmount
-                        });
-                        
-                        // Update tax context
-                        const resetData = form.getValues();
-                        updateTaxData({ deductions: resetData });
-                        
-                        toast({
-                          title: "값 초기화 완료",
-                          description: "모든 공제 항목 값이 초기화되었습니다.",
-                        });
-                      }}
-                    >
-                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-2 h-5 w-5"><path d="M3 2v6h6"></path><path d="M3 13a9 9 0 1 0 3-7.7L3 8"></path></svg>
-                      <span className="text-lg">값 초기화</span>
-                    </Button>
-                    
-                    <Button
-                      type="button"
-                      variant="outline"
-                      className="bg-blue-50 text-blue-800 border-blue-200 hover:bg-blue-100 hover:text-blue-900"
+                      className="text-destructive border-destructive hover:bg-destructive hover:text-white"
                       onClick={async () => {
                         try {
-                          // 현재 폼 데이터 저장
-                          // 항목별 공제 값을 유지하기 위해 현재 폼 데이터 전체를 가져옴
-                          let currentData = form.getValues();
+                          // 현재 데이터 가져오기
+                          const currentData = form.getValues();
                           
-                          // 표준 공제를 선택한 경우에도 항목별 공제 값을 유지하기 위해 
-                          // taxData에서 기존 itemizedDeductions 값을 보존
-                          if (currentData.useStandardDeduction && taxData.deductions?.itemizedDeductions) {
-                            currentData = {
-                              ...currentData,
-                              itemizedDeductions: taxData.deductions.itemizedDeductions
-                            };
-                          }
-                          
-                          // 업데이트된 데이터 저장
+                          // 세금 데이터 업데이트
                           updateTaxData({ deductions: currentData });
                           
                           // 세금 신고서 저장
@@ -655,61 +359,77 @@ const Deductions: React.FC = () => {
                       <span className="text-lg">진행 상황 저장</span>
                     </Button>
                   </div>
+                  
+                  <div className="flex justify-between mt-8">
+                    <div>
+                      <StepNavigation
+                        prevStep="/income"
+                        nextStep="/tax-credits"
+                        submitText="다음 단계 (Next Step)"
+                        onNext={() => {
+                          console.log("Next 버튼 클릭됨");
+                          
+                          // 표준 공제를 선택한 경우 폼 유효성 검사를 무시하고 진행
+                          if (form.watch('useStandardDeduction')) {
+                            console.log("표준 공제 선택됨, 자동 저장 및 진행");
+                            
+                            // 현재 폼 데이터 가져오기
+                            let data = form.getValues();
+                            
+                            // 표준 공제를 선택한 경우에도 항목별 공제 값을 유지하기 위해 
+                            // taxData에서 기존 itemizedDeductions 값을 보존
+                            if (taxData.deductions?.itemizedDeductions) {
+                              data = {
+                                ...data,
+                                itemizedDeductions: taxData.deductions.itemizedDeductions
+                              };
+                            }
+                            
+                            updateTaxData({ deductions: data });
+                            return true;
+                          }
+                          
+                          // 항목별 공제를 선택한 경우 유효성 검사 실행
+                          return form.trigger().then(isValid => {
+                            console.log("폼 유효성 검사 결과:", isValid);
+                            
+                            if (isValid) {
+                              console.log("폼이 유효함, 데이터 저장 후 진행");
+                              const data = form.getValues();
+                              updateTaxData({ deductions: data });
+                              return true;
+                            } else {
+                              console.log("폼이 유효하지 않음, 오류 메시지 표시");
+                              toast({
+                                title: "폼 오류",
+                                description: "다음으로 진행하기 전에 폼의 오류를 수정해주세요.",
+                                variant: "destructive",
+                              });
+                              return false;
+                            }
+                          });
+                        }}
+                      />
+                    </div>
+                    <Button 
+                      type="button" 
+                      variant="secondary" 
+                      onClick={async () => {
+                        await saveTaxReturn();
+                        toast({
+                          title: "진행 상황 저장됨",
+                          description: "세금 신고 데이터가 성공적으로 저장되었습니다.",
+                        });
+                      }}
+                    >
+                      진행 상황 저장 (Save Progress)
+                    </Button>
+                  </div>
                 </form>
               </Form>
-              
-              <StepNavigation
-                prevStep="/income"
-                nextStep="/tax-credits"
-                submitText="세금공제 (Tax Credits)"
-                onNext={() => {
-                  console.log("Next 버튼 클릭됨");
-                  
-                  // 표준 공제를 선택한 경우 폼 유효성 검사를 무시하고 진행
-                  if (form.watch('useStandardDeduction')) {
-                    console.log("표준 공제 선택됨, 자동 저장 및 진행");
-                    
-                    // 현재 폼 데이터 가져오기
-                    let data = form.getValues();
-                    
-                    // 표준 공제를 선택한 경우에도 항목별 공제 값을 유지하기 위해 
-                    // taxData에서 기존 itemizedDeductions 값을 보존
-                    if (taxData.deductions?.itemizedDeductions) {
-                      data = {
-                        ...data,
-                        itemizedDeductions: taxData.deductions.itemizedDeductions
-                      };
-                    }
-                    
-                    updateTaxData({ deductions: data });
-                    return true;
-                  }
-                  
-                  // 항목별 공제를 선택한 경우 유효성 검사 실행
-                  return form.trigger().then(isValid => {
-                    console.log("폼 유효성 검사 결과:", isValid);
-                    
-                    if (isValid) {
-                      console.log("폼이 유효함, 데이터 저장 후 진행");
-                      const data = form.getValues();
-                      updateTaxData({ deductions: data });
-                      return true;
-                    } else {
-                      console.log("폼이 유효하지 않음, 오류 메시지 표시");
-                      toast({
-                        title: "폼 오류",
-                        description: "다음으로 진행하기 전에 폼의 오류를 수정해주세요.",
-                        variant: "destructive",
-                      });
-                      return false;
-                    }
-                  });
-                }}
-              />
             </CardContent>
           </Card>
         </div>
-        
       </div>
     </div>
   );

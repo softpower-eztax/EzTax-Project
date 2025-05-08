@@ -149,6 +149,8 @@ export interface TaxCredits {
   childTaxCredit: number;
   childDependentCareCredit: number;
   educationCredits: number;
+  aotcCredit: number;
+  llcCredit: number;
   retirementSavingsCredit: number;
   otherCredits: number;
   totalCredits: number;
@@ -270,6 +272,8 @@ export const taxCreditsSchema = z.object({
   childTaxCredit: z.number().min(0),
   childDependentCareCredit: z.number().min(0),
   educationCredits: z.number().min(0),
+  aotcCredit: z.number().min(0),
+  llcCredit: z.number().min(0),
   retirementSavingsCredit: z.number().min(0),
   otherCredits: z.number().min(0),
   totalCredits: z.number().min(0),

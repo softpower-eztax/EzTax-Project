@@ -20,6 +20,8 @@ interface TaxCredits {
   childTaxCredit: number;
   childDependentCareCredit: number;
   educationCredits: number;
+  aotcCredit: number;
+  llcCredit: number;
   retirementSavingsCredit: number;
   otherCredits: number;
   totalCredits: number;
@@ -34,6 +36,8 @@ const TaxCredits3Page: React.FC = () => {
     childTaxCredit: taxData.taxCredits?.childTaxCredit || 0,
     childDependentCareCredit: taxData.taxCredits?.childDependentCareCredit || 0,
     educationCredits: taxData.taxCredits?.educationCredits || 0,
+    aotcCredit: taxData.taxCredits?.aotcCredit || 0,
+    llcCredit: taxData.taxCredits?.llcCredit || 0,
     retirementSavingsCredit: taxData.taxCredits?.retirementSavingsCredit || 0,
     otherCredits: taxData.taxCredits?.otherCredits || 0,
     totalCredits: taxData.taxCredits?.totalCredits || 0
@@ -47,6 +51,8 @@ const TaxCredits3Page: React.FC = () => {
     childTaxCredit: z.coerce.number().min(0).default(0),
     childDependentCareCredit: z.coerce.number().min(0).default(0),
     educationCredits: z.coerce.number().min(0).default(0),
+    aotcCredit: z.coerce.number().min(0).default(0),
+    llcCredit: z.coerce.number().min(0).default(0),
     retirementSavingsCredit: z.coerce.number().min(0).default(0),
     otherCredits: z.coerce.number().min(0).default(0),
     totalCredits: z.coerce.number().min(0).default(0)
@@ -62,6 +68,15 @@ const TaxCredits3Page: React.FC = () => {
   // 총 공제액 계산을 위한 개별 필드 감시
   const childTaxCredit = form.watch('childTaxCredit') || 0;
   const childDependentCareCredit = form.watch('childDependentCareCredit') || 0;
+  const aotcCredit = form.watch('aotcCredit') || 0;
+  const llcCredit = form.watch('llcCredit') || 0;
+  // AOTC와 LLC는 합산하여 educationCredits 필드를 업데이트
+  const educationCreditsSum = Number(aotcCredit) + Number(llcCredit);
+  // 새로 계산된 educationCredits 값으로 필드 업데이트
+  useEffect(() => {
+    form.setValue('educationCredits', educationCreditsSum);
+  }, [educationCreditsSum, form]);
+  
   const educationCredits = form.watch('educationCredits') || 0;
   const retirementSavingsCredit = form.watch('retirementSavingsCredit') || 0;
   const otherCredits = form.watch('otherCredits') || 0;
@@ -103,6 +118,8 @@ const TaxCredits3Page: React.FC = () => {
         childTaxCredit: taxData.taxCredits.childTaxCredit || 0,
         childDependentCareCredit: taxData.taxCredits.childDependentCareCredit || 0,
         educationCredits: taxData.taxCredits.educationCredits || 0,
+        aotcCredit: taxData.taxCredits.aotcCredit || 0,
+        llcCredit: taxData.taxCredits.llcCredit || 0,
         retirementSavingsCredit: taxData.taxCredits.retirementSavingsCredit || 0,
         otherCredits: taxData.taxCredits.otherCredits || 0,
         totalCredits: taxData.taxCredits.totalCredits || 0
@@ -117,6 +134,8 @@ const TaxCredits3Page: React.FC = () => {
         childTaxCredit: 0,
         childDependentCareCredit: 0,
         educationCredits: 0,
+        aotcCredit: 0,
+        llcCredit: 0,
         retirementSavingsCredit: 0,
         otherCredits: 0,
         totalCredits: 0
@@ -198,6 +217,8 @@ const TaxCredits3Page: React.FC = () => {
       childTaxCredit: 0,
       childDependentCareCredit: 0,
       educationCredits: 0,
+      aotcCredit: 0,
+      llcCredit: 0,
       retirementSavingsCredit: 0,
       otherCredits: 0,
       totalCredits: 0
@@ -609,25 +630,111 @@ const TaxCredits3Page: React.FC = () => {
                         </Tooltip>
                       </TooltipProvider>
                     </div>
+
+                    {/* AOTC 설명 부분 */}
+                    <div className="mb-4 bg-gray-50 p-3 rounded-md text-sm border border-gray-200">
+                      <p className="font-medium mb-1">미국학력장려세액공제 (AOTC, American Opportunity Tax Credit)</p>
+                      <p className="text-xs text-gray-600">
+                        학부 과정의 처음 4년간 적격 학생당 최대 $2,500까지 공제 가능합니다. 
+                        적격 교육비와 교재비가 포함됩니다. 최대 $1,000까지 환급 가능합니다.
+                      </p>
+                      <p className="text-xs text-gray-600 mt-1">
+                        (Provides up to $2,500 per eligible student for the first 4 years of undergraduate education.
+                        Includes tuition, fees, and course materials. Up to $1,000 is refundable.)
+                      </p>
+                    </div>
+
+                    {/* LLC 설명 부분 */}
+                    <div className="mb-4 bg-gray-50 p-3 rounded-md text-sm border border-gray-200">
+                      <p className="font-medium mb-1">평생교육세액공제 (LLC, Lifetime Learning Credit)</p>
+                      <p className="text-xs text-gray-600">
+                        적격 교육비의 20%까지, 신고서당 최대 $2,000까지 공제 가능합니다. 학위 과정 뿐 아니라
+                        직업 기술 향상을 위한 교육도 포함됩니다. 환급 불가능합니다.
+                      </p>
+                      <p className="text-xs text-gray-600 mt-1">
+                        (Provides up to 20% of qualifying expenses, maximum $2,000 per return.
+                        Available for undergraduate, graduate, and professional degree courses, as well as courses to improve job skills.
+                        Non-refundable.)
+                      </p>
+                    </div>
                     
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 gap-4">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <FormField
+                          control={form.control}
+                          name="aotcCredit"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>미국학력장려세액공제액 (AOTC Amount)</FormLabel>
+                              <FormControl>
+                                <div className="relative">
+                                  <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-dark">$</span>
+                                  <Input 
+                                    placeholder="0.00"
+                                    className="pl-8"
+                                    value={field.value || ''}
+                                    onChange={(e) => {
+                                      const formatted = formatNumberInput(e.target.value);
+                                      const value = formatted ? Number(formatted) : 0;
+                                      field.onChange(value);
+                                      
+                                      // Update total education credits
+                                      const llcValue = form.getValues('llcCredit') || 0;
+                                      form.setValue('educationCredits', value + llcValue);
+                                    }}
+                                  />
+                                </div>
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+
+                        <FormField
+                          control={form.control}
+                          name="llcCredit"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>평생교육세액공제액 (LLC Amount)</FormLabel>
+                              <FormControl>
+                                <div className="relative">
+                                  <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-dark">$</span>
+                                  <Input 
+                                    placeholder="0.00"
+                                    className="pl-8"
+                                    value={field.value || ''}
+                                    onChange={(e) => {
+                                      const formatted = formatNumberInput(e.target.value);
+                                      const value = formatted ? Number(formatted) : 0;
+                                      field.onChange(value);
+                                      
+                                      // Update total education credits
+                                      const aotcValue = form.getValues('aotcCredit') || 0;
+                                      form.setValue('educationCredits', aotcValue + value);
+                                    }}
+                                  />
+                                </div>
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+                      
                       <FormField
                         control={form.control}
                         name="educationCredits"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>교육비공제액 (Education Credit Amount)</FormLabel>
+                            <FormLabel>총 교육비공제액 (Total Education Credit Amount)</FormLabel>
                             <FormControl>
                               <div className="relative">
                                 <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-dark">$</span>
                                 <Input 
                                   placeholder="0.00"
-                                  className="pl-8"
+                                  className="pl-8 bg-gray-50"
                                   value={field.value || ''}
-                                  onChange={(e) => {
-                                    const formatted = formatNumberInput(e.target.value);
-                                    field.onChange(formatted ? Number(formatted) : 0);
-                                  }}
+                                  disabled
                                 />
                               </div>
                             </FormControl>

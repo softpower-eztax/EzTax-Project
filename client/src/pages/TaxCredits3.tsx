@@ -354,10 +354,6 @@ const TaxCredits3Page: React.FC = () => {
                                 />
                               </div>
                             </FormControl>
-                            <FormDescription>
-                              자녀세액공제액을 수동으로 입력하거나 자동 계산된 값을 사용하세요.
-                              (Enter your estimated child tax credit amount.)
-                            </FormDescription>
                             <FormMessage />
                           </FormItem>
                         )}

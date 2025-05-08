@@ -903,7 +903,7 @@ const TaxCredits3Page: React.FC = () => {
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <FormField
                           control={form.control}
-                          name="taxCredits.retirementContributions.traditionalIRA"
+                          name="retirementContributions.traditionalIRA"
                           render={({ field }) => (
                             <FormItem>
                               <FormLabel>전통적 IRA (Traditional IRA)</FormLabel>
@@ -920,12 +920,12 @@ const TaxCredits3Page: React.FC = () => {
                                       field.onChange(value);
                                       
                                       // Update total contributions
-                                      const currentContributions = form.getValues('taxCredits.retirementContributions');
+                                      const currentContributions = form.getValues('retirementContributions');
                                       const total = Object.entries(currentContributions)
                                         .filter(([key]) => key !== 'totalContributions')
                                         .reduce((sum, [_, val]) => sum + (Number(val) || 0), 0);
                                       
-                                      form.setValue('taxCredits.retirementContributions.totalContributions', total);
+                                      form.setValue('retirementContributions.totalContributions', total);
                                       calculateRetirementCredit();
                                     }}
                                   />
@@ -938,7 +938,7 @@ const TaxCredits3Page: React.FC = () => {
                         
                         <FormField
                           control={form.control}
-                          name="taxCredits.retirementContributions.rothIRA"
+                          name="retirementContributions.rothIRA"
                           render={({ field }) => (
                             <FormItem>
                               <FormLabel>로스 IRA (Roth IRA)</FormLabel>
@@ -955,12 +955,12 @@ const TaxCredits3Page: React.FC = () => {
                                       field.onChange(value);
                                       
                                       // Update total contributions
-                                      const currentContributions = form.getValues('taxCredits.retirementContributions');
+                                      const currentContributions = form.getValues('retirementContributions');
                                       const total = Object.entries(currentContributions)
                                         .filter(([key]) => key !== 'totalContributions')
                                         .reduce((sum, [_, val]) => sum + (Number(val) || 0), 0);
                                       
-                                      form.setValue('taxCredits.retirementContributions.totalContributions', total);
+                                      form.setValue('retirementContributions.totalContributions', total);
                                       calculateRetirementCredit();
                                     }}
                                   />
@@ -973,7 +973,7 @@ const TaxCredits3Page: React.FC = () => {
                         
                         <FormField
                           control={form.control}
-                          name="taxCredits.retirementContributions.plan401k"
+                          name="retirementContributions.plan401k"
                           render={({ field }) => (
                             <FormItem>
                               <FormLabel>401(k) 플랜</FormLabel>
@@ -990,12 +990,12 @@ const TaxCredits3Page: React.FC = () => {
                                       field.onChange(value);
                                       
                                       // Update total contributions
-                                      const currentContributions = form.getValues('taxCredits.retirementContributions');
+                                      const currentContributions = form.getValues('retirementContributions');
                                       const total = Object.entries(currentContributions)
                                         .filter(([key]) => key !== 'totalContributions')
                                         .reduce((sum, [_, val]) => sum + (Number(val) || 0), 0);
                                       
-                                      form.setValue('taxCredits.retirementContributions.totalContributions', total);
+                                      form.setValue('retirementContributions.totalContributions', total);
                                       calculateRetirementCredit();
                                     }}
                                   />
@@ -1008,7 +1008,7 @@ const TaxCredits3Page: React.FC = () => {
                         
                         <FormField
                           control={form.control}
-                          name="taxCredits.retirementContributions.plan403b"
+                          name="retirementContributions.plan403b"
                           render={({ field }) => (
                             <FormItem>
                               <FormLabel>403(b) 플랜</FormLabel>
@@ -1025,12 +1025,12 @@ const TaxCredits3Page: React.FC = () => {
                                       field.onChange(value);
                                       
                                       // Update total contributions
-                                      const currentContributions = form.getValues('taxCredits.retirementContributions');
+                                      const currentContributions = form.getValues('retirementContributions');
                                       const total = Object.entries(currentContributions)
                                         .filter(([key]) => key !== 'totalContributions')
                                         .reduce((sum, [_, val]) => sum + (Number(val) || 0), 0);
                                       
-                                      form.setValue('taxCredits.retirementContributions.totalContributions', total);
+                                      form.setValue('retirementContributions.totalContributions', total);
                                       calculateRetirementCredit();
                                     }}
                                   />
@@ -1043,7 +1043,7 @@ const TaxCredits3Page: React.FC = () => {
                         
                         <FormField
                           control={form.control}
-                          name="taxCredits.retirementContributions.plan457"
+                          name="retirementContributions.plan457"
                           render={({ field }) => (
                             <FormItem>
                               <FormLabel>457 플랜</FormLabel>

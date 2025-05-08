@@ -484,10 +484,6 @@ const TaxCredits3Page: React.FC = () => {
                                 />
                               </div>
                             </FormControl>
-                            <FormDescription>
-                              자녀및부양가족돌봄공제액을 수동으로 입력하거나 자동 계산된 값을 사용하세요.
-                              (Enter your estimated child and dependent care credit amount.)
-                            </FormDescription>
                             <FormMessage />
                           </FormItem>
                         )}
@@ -588,10 +584,6 @@ const TaxCredits3Page: React.FC = () => {
                                 />
                               </div>
                             </FormControl>
-                            <FormDescription>
-                              기타 부양가족 세액공제액을 입력하세요.
-                              (Enter the credit amount for other dependents you may be eligible for.)
-                            </FormDescription>
                             <FormMessage />
                           </FormItem>
                         )}
@@ -639,10 +631,6 @@ const TaxCredits3Page: React.FC = () => {
                                 />
                               </div>
                             </FormControl>
-                            <FormDescription>
-                              교육비공제액을 입력하세요.
-                              (Enter your education credit amount.)
-                            </FormDescription>
                             <FormMessage />
                           </FormItem>
                         )}
@@ -755,10 +743,6 @@ const TaxCredits3Page: React.FC = () => {
                                 />
                               </div>
                             </FormControl>
-                            <FormDescription>
-                              은퇴저축공제액을 수동으로 입력하거나 자동 계산된 값을 사용하세요.
-                              (Enter your retirement savings credit amount.)
-                            </FormDescription>
                             <FormMessage />
                           </FormItem>
                         )}

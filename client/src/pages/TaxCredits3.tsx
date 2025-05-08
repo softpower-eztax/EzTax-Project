@@ -502,40 +502,6 @@ const TaxCredits3Page: React.FC = () => {
                       </div>
                     )}
                     
-                    {hasDependents && (
-                      <div className="bg-blue-50 p-3 rounded-md mb-3 border border-blue-200">
-                        <p className="text-sm flex items-center">
-                          <span className="font-medium">자동 계산된 자녀세액공제액 (Auto-calculated Child Tax Credit):</span>
-                          <span className="ml-2 font-bold">${calculateChildTaxCredit(
-                            taxData.personalInfo?.dependents || [],
-                            taxData.income?.adjustedGrossIncome || 0,
-                            taxData.personalInfo?.filingStatus || 'single'
-                          ).toFixed(2)}</span>
-                          <Button 
-                            type="button" 
-                            size="sm" 
-                            variant="ghost" 
-                            className="ml-2 h-6 px-2 text-xs"
-                            onClick={() => {
-                              const calculatedAmount = calculateChildTaxCredit(
-                                taxData.personalInfo?.dependents || [],
-                                taxData.income?.adjustedGrossIncome || 0,
-                                taxData.personalInfo?.filingStatus || 'single'
-                              );
-                              form.setValue('childTaxCredit', calculatedAmount);
-                            }}
-                          >
-                            <RefreshCw className="h-3 w-3 mr-1" />
-                            적용 (Apply)
-                          </Button>
-                        </p>
-                        <p className="text-xs mt-1 text-gray-600">
-                          부양가족 정보와 조정된 총소득을 기준으로 계산되었습니다. 위의 버튼을 클릭하여 자동 계산된 값을 적용할 수 있습니다.
-                          (Calculated based on your dependent information and adjusted gross income. Click the button above to apply the calculated value.)
-                        </p>
-                      </div>
-                    )}
-                    
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <FormField
                         control={form.control}
@@ -1497,7 +1463,7 @@ const TaxCredits3Page: React.FC = () => {
               prevStep="/deductions" 
               nextStep="/additional-tax"
               onNext={handleNext}
-              submitText="추가 세금 (Add. Taxes)"
+              submitText="다음 단계 (Next Step)"
             />
           </div>
         </div>

@@ -458,7 +458,19 @@ const TaxCredits3Page: React.FC = () => {
         <div className="flex-grow">
           <Card className="mb-6">
             <CardContent className="pt-6">
-              <h2 className="text-2xl font-heading font-semibold text-primary-dark mb-6">세금공제 (Tax Credits)</h2>
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-2xl font-heading font-semibold text-primary-dark">세금공제 (Tax Credits)</h2>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  className="text-red-500 border-red-200 hover:bg-red-50 hover:text-red-600"
+                  onClick={handleReset}
+                >
+                  <RefreshCw className="h-4 w-4 mr-1" />
+                  값 초기화
+                </Button>
+              </div>
               
               <Form {...form}>
                 <form onSubmit={(e) => e.preventDefault()}>
@@ -1464,14 +1476,7 @@ const TaxCredits3Page: React.FC = () => {
                     </div>
                   </div>
                   
-                  <div className="flex justify-between mt-8">
-                    <Button 
-                      type="button" 
-                      variant="destructive" 
-                      onClick={handleReset}
-                    >
-                      값 초기화 (Reset Values)
-                    </Button>
+                  <div className="flex justify-end mt-8">
                     <Button 
                       type="button" 
                       variant="secondary" 

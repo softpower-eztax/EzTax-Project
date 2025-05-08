@@ -1283,7 +1283,7 @@ const TaxCredits3Page: React.FC = () => {
                         <span className="font-medium">자동 계산된 은퇴저축공제액 (Auto-calculated Retirement Savings Credit):</span>
                         {(() => {
                           // Get total contributions from the form
-                          const totalContributions = form.getValues('taxCredits.retirementContributions.totalContributions') || 0;
+                          const totalContributions = form.getValues('retirementContributions.totalContributions') || 0;
                           const agi = taxData.income?.adjustedGrossIncome || 0;
                           const filingStatus = taxData.personalInfo?.filingStatus || 'single';
                           
@@ -1337,7 +1337,7 @@ const TaxCredits3Page: React.FC = () => {
                         (Calculated based on your retirement contributions and income. Click the button above to apply the calculated value.)
                       </p>
                       <p className="text-xs mt-1 text-gray-600">
-                        총 은퇴 저축 기여금: ${form.getValues('taxCredits.retirementContributions.totalContributions') || 0} | 조정된 총소득: ${taxData.income?.adjustedGrossIncome || 0} | 공제율:  
+                        총 은퇴 저축 기여금: ${form.getValues('retirementContributions.totalContributions') || 0} | 조정된 총소득: ${taxData.income?.adjustedGrossIncome || 0} | 공제율:  
                         {(() => {
                           const agi = taxData.income?.adjustedGrossIncome || 0;
                           const filingStatus = taxData.personalInfo?.filingStatus || 'single';

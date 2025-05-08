@@ -13,7 +13,7 @@ import StepNavigation from '@/components/StepNavigation';
 import { useTaxContext } from '@/context/TaxContext';
 import { Info, RefreshCw } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { calculateChildTaxCredit, calculateRetirementSavingsCredit, calculateChildDependentCareCredit } from '@/lib/taxCalculations';
+import { calculateChildTaxCredit, calculateRetirementSavingsCredit, calculateChildDependentCareCredit, formatNumberInput } from '@/lib/taxCalculations';
 
 // Tax Credits 인터페이스 정의
 interface TaxCredits {
@@ -254,11 +254,7 @@ const TaxCredits3Page: React.FC = () => {
     return true;
   };
   
-  // 숫자 입력 포맷 도우미 함수
-  const formatNumberInput = (value: string): string => {
-    // 숫자와 소수점만 허용
-    return value.replace(/[^\d.]/g, '');
-  };
+  // Using formatNumberInput from taxCalculations.ts
   
   return (
     <div className="max-w-5xl mx-auto">

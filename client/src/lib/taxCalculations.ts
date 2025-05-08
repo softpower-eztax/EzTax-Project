@@ -540,3 +540,9 @@ export function formatCurrency(amount: number): string {
     maximumFractionDigits: 2
   }).format(amount);
 }
+
+// Format string input to only allow numbers and decimal point
+export function formatNumberInput(value: string): string {
+  // Allow only digits and decimal point
+  return value.replace(/[^\d.]/g, '');
+}

@@ -336,28 +336,37 @@ const TaxCredits3Page: React.FC = () => {
   
   // 값 초기화 처리
   const handleReset = () => {
-    const resetValues = {
+    // 세금 공제 항목 초기화
+    const resetTaxCredits = {
       childTaxCredit: 0,
       childDependentCareCredit: 0,
       educationCredits: 0,
       aotcCredit: 0,
       llcCredit: 0,
       retirementSavingsCredit: 0,
-      retirementContributions: {
-        traditionalIRA: 0,
-        rothIRA: 0,
-        plan401k: 0,
-        plan403b: 0,
-        plan457: 0,
-        simpleIRA: 0,
-        sepIRA: 0,
-        able: 0,
-        tsp: 0,
-        otherRetirementPlans: 0,
-        totalContributions: 0
-      },
       otherCredits: 0,
       totalCredits: 0
+    };
+    
+    // 은퇴 기여금 초기화
+    const resetRetirementContributions = {
+      traditionalIRA: 0,
+      rothIRA: 0,
+      plan401k: 0,
+      plan403b: 0,
+      plan457: 0,
+      simpleIRA: 0,
+      sepIRA: 0,
+      able: 0,
+      tsp: 0,
+      otherRetirementPlans: 0,
+      totalContributions: 0
+    };
+    
+    // 합친 resetValues는 폼과 로컬 스토리지를 위한 용도로만 사용
+    const resetValues = {
+      ...resetTaxCredits,
+      retirementContributions: resetRetirementContributions
     };
     
     console.log("값 초기화 실행:", resetValues);
@@ -371,8 +380,11 @@ const TaxCredits3Page: React.FC = () => {
     // 로컬 스토리지에서도 초기화된 값 저장
     localStorage.setItem('taxCredits', JSON.stringify(resetValues));
     
-    // 컨텍스트 업데이트
-    updateTaxData({ taxCredits: resetValues });
+    // 컨텍스트 업데이트 - 세금 공제와 은퇴 기여금 분리
+    updateTaxData({ 
+      taxCredits: resetTaxCredits,
+      retirementContributions: resetRetirementContributions
+    });
     
     // 서버에도 저장
     saveTaxReturn().then(() => {

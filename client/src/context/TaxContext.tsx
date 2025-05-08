@@ -149,21 +149,21 @@ export const TaxProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       aotcCredit: 1000,
       llcCredit: 500,
       retirementSavingsCredit: 500,
-      retirementContributions: {
-        traditionalIRA: 0,
-        rothIRA: 0,
-        plan401k: 0,
-        plan403b: 0,
-        plan457: 0,
-        simpleIRA: 0,
-        sepIRA: 0,
-        able: 0,
-        tsp: 0,
-        otherRetirementPlans: 0,
-        totalContributions: 0
-      },
       otherCredits: 200,
       totalCredits: 5200
+    },
+    retirementContributions: {
+      traditionalIRA: 0,
+      rothIRA: 0,
+      plan401k: 0,
+      plan403b: 0,
+      plan457: 0,
+      simpleIRA: 0,
+      sepIRA: 0,
+      able: 0,
+      tsp: 0,
+      otherRetirementPlans: 0,
+      totalContributions: 0
     },
     additionalTax: {
       selfEmploymentIncome: 15000,
@@ -293,6 +293,14 @@ export const TaxProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         newData.taxCredits = {
           ...prevData.taxCredits,
           ...newData.taxCredits
+        };
+      }
+      
+      // 은퇴 기여금 정보 깊은 병합
+      if (prevData.retirementContributions && newData.retirementContributions) {
+        newData.retirementContributions = {
+          ...prevData.retirementContributions,
+          ...newData.retirementContributions
         };
       }
       
@@ -484,21 +492,22 @@ export const TaxProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         aotcCredit: 0,
         llcCredit: 0,
         retirementSavingsCredit: 0,
-        retirementContributions: {
-          traditionalIRA: 0,
-          rothIRA: 0,
-          plan401k: 0,
-          plan403b: 0,
-          plan457: 0,
-          simpleIRA: 0,
-          sepIRA: 0,
-          able: 0,
-          tsp: 0,
-          otherRetirementPlans: 0,
-          totalContributions: 0
-        },
         otherCredits: 0,
         totalCredits: 0
+      };
+      
+      const emptyRetirementContributions = {
+        traditionalIRA: 0,
+        rothIRA: 0,
+        plan401k: 0,
+        plan403b: 0,
+        plan457: 0,
+        simpleIRA: 0,
+        sepIRA: 0,
+        able: 0,
+        tsp: 0,
+        otherRetirementPlans: 0,
+        totalContributions: 0
       };
 
       const emptyAdditionalTax = {
@@ -514,6 +523,7 @@ export const TaxProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         income: emptyIncome,
         deductions: emptyDeductions,
         taxCredits: emptyTaxCredits,
+        retirementContributions: emptyRetirementContributions,
         additionalTax: emptyAdditionalTax,
         updatedAt: new Date().toISOString()
       };

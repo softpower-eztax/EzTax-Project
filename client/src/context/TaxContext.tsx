@@ -7,7 +7,8 @@ import {
   AdditionalTax,
   CalculatedResults,
   TaxReturn,
-  FilingStatus
+  FilingStatus,
+  RetirementContributions
 } from '@shared/schema';
 import { apiRequest } from '@/lib/queryClient';
 import { useToast } from '@/hooks/use-toast';
@@ -25,6 +26,7 @@ interface TaxData {
   income?: Income;
   deductions?: Deductions;
   taxCredits?: TaxCredits;
+  retirementContributions?: RetirementContributions;
   additionalTax?: AdditionalTax;
   calculatedResults?: CalculatedResults;
 }

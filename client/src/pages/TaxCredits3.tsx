@@ -214,7 +214,7 @@ const TaxCredits3Page: React.FC = () => {
         aotcCredit: taxData.taxCredits.aotcCredit || 0,
         llcCredit: taxData.taxCredits.llcCredit || 0,
         retirementSavingsCredit: taxData.taxCredits.retirementSavingsCredit || 0,
-        retirementContributions: taxData.taxCredits.retirementContributions || {
+        retirementContributions: taxData.retirementContributions || {
           traditionalIRA: 0,
           rothIRA: 0,
           plan401k: 0,
@@ -290,8 +290,12 @@ const TaxCredits3Page: React.FC = () => {
       // 브라우저 스토리지에 저장 (세션 간에도 유지됨)
       localStorage.setItem('taxCredits', JSON.stringify(updatedValues));
       
-      // 컨텍스트 업데이트
-      updateTaxData({ taxCredits: updatedValues });
+      // 컨텍스트 업데이트 - 세금 공제 및 은퇴 기여금 분리 저장
+      const { retirementContributions, ...otherTaxCredits } = updatedValues;
+      updateTaxData({ 
+        taxCredits: otherTaxCredits,
+        retirementContributions: retirementContributions
+      });
       
       // 서버 저장
       await saveTaxReturn();

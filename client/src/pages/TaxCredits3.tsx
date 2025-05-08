@@ -38,9 +38,13 @@ interface TaxCredits {
   aotcCredit: number;
   llcCredit: number;
   retirementSavingsCredit: number;
-  retirementContributions: RetirementContributions;
   otherCredits: number;
   totalCredits: number;
+}
+
+// Extended TaxCredits interface for the form
+interface TaxCreditsFormData extends TaxCredits {
+  retirementContributions: RetirementContributions;
 }
 
 const TaxCredits3Page: React.FC = () => {
@@ -48,7 +52,7 @@ const TaxCredits3Page: React.FC = () => {
   const { toast } = useToast();
   
   // 컴포넌트 내부 상태 관리
-  const [savedValues, setSavedValues] = useState<TaxCredits>({
+  const [savedValues, setSavedValues] = useState<TaxCreditsFormData>({
     childTaxCredit: taxData.taxCredits?.childTaxCredit || 0,
     childDependentCareCredit: taxData.taxCredits?.childDependentCareCredit || 0,
     educationCredits: taxData.taxCredits?.educationCredits || 0,
@@ -101,9 +105,15 @@ const TaxCredits3Page: React.FC = () => {
     totalCredits: z.coerce.number().min(0).default(0)
   });
   
+  // Create full schema for form validation
+  const taxCreditsFormSchema = z.object({
+    ...taxCreditsSchema.shape,
+    retirementContributions: retirementContributionsSchema
+  });
+
   // useForm 설정
-  const form = useForm<TaxCredits>({
-    resolver: zodResolver(taxCreditsSchema),
+  const form = useForm<TaxCreditsFormData>({
+    resolver: zodResolver(taxCreditsFormSchema),
     defaultValues: savedValues,
     mode: 'onChange'
   });
@@ -139,7 +149,9 @@ const TaxCredits3Page: React.FC = () => {
   
   // 은퇴 저축 공제액 계산 함수
   const calculateRetirementCredit = () => {
-    const totalContributions = form.getValues('retirementContributions.totalContributions') || 0;
+    // 은퇴 기여금 총액 계산
+    const values = form.getValues();
+    const totalContributions = values.retirementContributions?.totalContributions || 0;
     const agi = taxData.income?.adjustedGrossIncome || 0;
     const filingStatus = taxData.personalInfo?.filingStatus || 'single';
     

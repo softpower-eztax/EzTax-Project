@@ -375,24 +375,39 @@ export function calculateTaxes(taxData: TaxData): CalculatedResults {
     );
   }
   
+  // Auto-calculate Retirement Savings Credit if applicable
+  let calculatedRetirementSavingsCredit = 0;
+  
+  // Only auto-calculate if there are retirement contributions
+  if (income.adjustments && income.adjustments.retirementContributions > 0) {
+    const isMarriedJointFiling = filingStatus === 'married_joint' || filingStatus === 'qualifying_widow';
+    calculatedRetirementSavingsCredit = calculateRetirementSavingsCredit(
+      income.adjustments.retirementContributions,
+      result.adjustedGrossIncome,
+      filingStatus,
+      isMarriedJointFiling
+    );
+  }
+  
   // If there are tax credits in the data, use those values, otherwise use calculated ones
   const taxCredits = taxData.taxCredits || {
     childTaxCredit: calculatedChildTaxCredit,
     childDependentCareCredit: 0,
     educationCredits: 0,
-    retirementSavingsCredit: 0,
+    retirementSavingsCredit: calculatedRetirementSavingsCredit,
     otherCredits: 0,
-    totalCredits: calculatedChildTaxCredit
+    totalCredits: calculatedChildTaxCredit + calculatedRetirementSavingsCredit
   };
   
-  // If the user hasn't explicitly set a child tax credit value, use the calculated one
-  if (!taxData.taxCredits || taxData.taxCredits.childTaxCredit === 0) {
-    // Update the total credits with our calculated child tax credit
+  // If the user hasn't explicitly set tax credit values, use the calculated ones
+  if (!taxData.taxCredits || 
+      (taxData.taxCredits.childTaxCredit === 0 && taxData.taxCredits.retirementSavingsCredit === 0)) {
+    // Update the total credits with our calculated credits
     result.credits = (
       calculatedChildTaxCredit + 
+      calculatedRetirementSavingsCredit +
       (taxCredits.childDependentCareCredit || 0) + 
       (taxCredits.educationCredits || 0) + 
-      (taxCredits.retirementSavingsCredit || 0) + 
       (taxCredits.otherCredits || 0)
     );
   } else {

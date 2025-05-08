@@ -488,6 +488,60 @@ const TaxCredits3Page: React.FC = () => {
                       </TooltipProvider>
                     </div>
                     
+                    {/* Automatic calculation for Retirement Savings Credit */}
+                    <div className="bg-blue-50 p-3 rounded-md mb-3 border border-blue-200">
+                      <p className="text-sm flex items-center">
+                        <span className="font-medium">자동 계산된 은퇴저축공제액 (Auto-calculated Retirement Savings Credit):</span>
+                        <span className="ml-2 font-bold">${calculateRetirementSavingsCredit(
+                          taxData.income?.adjustments?.retirementContributions || 0,
+                          taxData.income?.adjustedGrossIncome || 0,
+                          taxData.personalInfo?.filingStatus || 'single',
+                          taxData.personalInfo?.filingStatus === 'married_joint' || taxData.personalInfo?.filingStatus === 'qualifying_widow'
+                        ).toFixed(2)}</span>
+                        <Button 
+                          type="button" 
+                          size="sm" 
+                          variant="ghost" 
+                          className="ml-2 h-6 px-2 text-xs"
+                          onClick={() => {
+                            const calculatedAmount = calculateRetirementSavingsCredit(
+                              taxData.income?.adjustments?.retirementContributions || 0,
+                              taxData.income?.adjustedGrossIncome || 0,
+                              taxData.personalInfo?.filingStatus || 'single',
+                              taxData.personalInfo?.filingStatus === 'married_joint' || taxData.personalInfo?.filingStatus === 'qualifying_widow'
+                            );
+                            form.setValue('retirementSavingsCredit', calculatedAmount);
+                          }}
+                        >
+                          <RefreshCw className="h-3 w-3 mr-1" />
+                          적용 (Apply)
+                        </Button>
+                      </p>
+                      <p className="text-xs mt-1 text-gray-600">
+                        소득과 은퇴 계좌 기여금을 기준으로 계산됩니다. 위의 버튼을 클릭하여 자동 계산된 값을 적용할 수 있습니다.
+                        (Calculated based on your income and retirement contributions. Click the button above to apply the calculated value.)
+                      </p>
+                      <p className="text-xs mt-1 text-gray-600">
+                        적격 기여금: ${taxData.income?.adjustments?.retirementContributions || 0} | 소득 기준 세액공제율: 
+                        {(() => {
+                          const agi = taxData.income?.adjustedGrossIncome || 0;
+                          const filingStatus = taxData.personalInfo?.filingStatus || 'single';
+                          const thresholds = {
+                            single: [21750, 23750, 36500],
+                            head_of_household: [32625, 35625, 54750],
+                            married_joint: [43500, 47500, 73000],
+                            married_separate: [21750, 23750, 36500],
+                            qualifying_widow: [43500, 47500, 73000]
+                          };
+                          
+                          if (agi <= thresholds[filingStatus][0]) return " 50%";
+                          if (agi <= thresholds[filingStatus][1]) return " 20%";
+                          if (agi <= thresholds[filingStatus][2]) return " 10%";
+                          return " 0%";
+                        })()}
+                      </p>
+                    </div>
+                    
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <FormField
                         control={form.control}
@@ -509,6 +563,10 @@ const TaxCredits3Page: React.FC = () => {
                                 />
                               </div>
                             </FormControl>
+                            <FormDescription>
+                              소득 수준에 따라 최대 50%의 세액공제를 받을 수 있습니다.
+                              (You may qualify for up to 50% credit rate depending on your income level.)
+                            </FormDescription>
                             <FormMessage />
                           </FormItem>
                         )}

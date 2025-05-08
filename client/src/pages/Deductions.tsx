@@ -28,6 +28,45 @@ const Deductions: React.FC = () => {
   // Calculate standard deduction based on filing status
   const standardDeductionAmount = calculateStandardDeduction(taxData.personalInfo?.filingStatus || 'single');
   
+  // Reset function to clear form values
+  const handleReset = () => {
+    form.reset({
+      useStandardDeduction: true,
+      standardDeductionAmount: standardDeductionAmount,
+      totalDeductions: standardDeductionAmount,
+      itemizedDeductions: {
+        medicalExpenses: 0,
+        stateLocalIncomeTax: 0,
+        realEstateTaxes: 0,
+        mortgageInterest: 0,
+        charitableCash: 0,
+        charitableNonCash: 0
+      }
+    });
+    
+    // Update tax data with the reset values
+    updateTaxData({
+      deductions: {
+        useStandardDeduction: true,
+        standardDeductionAmount: standardDeductionAmount,
+        totalDeductions: standardDeductionAmount,
+        itemizedDeductions: {
+          medicalExpenses: 0,
+          stateLocalIncomeTax: 0,
+          realEstateTaxes: 0,
+          mortgageInterest: 0,
+          charitableCash: 0,
+          charitableNonCash: 0
+        }
+      }
+    });
+    
+    toast({
+      title: "값 초기화 완료",
+      description: "모든 공제 항목이 초기화되었습니다.",
+    });
+  };
+  
   // 모든 필드 값을 0으로 시작하는 기본값 설정
   const defaultValues: Deductions = {
     useStandardDeduction: true, // 기본적으로 표준공제 선택
@@ -218,7 +257,18 @@ const Deductions: React.FC = () => {
         <div className="flex-grow">
           <Card className="mb-6">
             <CardContent className="pt-6">
-              <h2 className="text-2xl font-heading font-semibold text-primary-dark mb-6">공제 (Deductions)</h2>
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-2xl font-heading font-semibold text-primary-dark">공제 (Deductions)</h2>
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={handleReset}
+                  className="text-destructive border-destructive hover:bg-destructive hover:text-white"
+                >
+                  <span className="mr-2">값 초기화</span>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18"></path><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path><path d="M10 11v6"></path><path d="M14 11v6"></path></svg>
+                </Button>
+              </div>
               
               <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)}>

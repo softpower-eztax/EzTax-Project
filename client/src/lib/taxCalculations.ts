@@ -113,6 +113,23 @@ const RETIREMENT_SAVINGS_CREDIT = {
   MAX_CONTRIBUTION_PER_PERSON: 2000
 };
 
+// Child and Dependent Care Credit constants (2023 tax year)
+const CHILD_DEPENDENT_CARE_CREDIT = {
+  // Maximum eligible expenses
+  MAX_EXPENSES: {
+    ONE_DEPENDENT: 3000,
+    MULTIPLE_DEPENDENTS: 6000
+  },
+  // Credit rate starts at 35% for AGI <= $15,000
+  BASE_CREDIT_RATE: 0.35,
+  // Credit rate decreases by 1% for each $2,000 AGI increment above $15,000
+  AGI_BASE_THRESHOLD: 15000,
+  AGI_PHASE_OUT_INCREMENT: 2000,
+  RATE_DECREMENT: 0.01,
+  // Minimum credit rate is 20%
+  MIN_CREDIT_RATE: 0.20
+};
+
 // Check if a dependent is eligible for the Child Tax Credit
 function isEligibleForChildTaxCredit(dependent: Dependent): boolean {
   // Must be under 17 at the end of the tax year
@@ -201,6 +218,49 @@ export function calculateRetirementSavingsCredit(
   
   // Calculate credit amount
   const creditAmount = eligibleContribution * creditRate;
+  
+  // Round to nearest cent
+  return Math.round(creditAmount * 100) / 100;
+}
+
+// Calculate the Child and Dependent Care Credit based on expenses and income
+export function calculateChildDependentCareCredit(
+  careExpenses: number,
+  adjustedGrossIncome: number,
+  numberOfQualifyingDependents: number
+): number {
+  // If no care expenses or no qualifying dependents, return 0 credit
+  if (!careExpenses || careExpenses <= 0 || numberOfQualifyingDependents <= 0) return 0;
+  
+  // Determine maximum eligible expenses based on number of qualifying dependents
+  const maxEligibleExpenses = numberOfQualifyingDependents > 1 
+    ? CHILD_DEPENDENT_CARE_CREDIT.MAX_EXPENSES.MULTIPLE_DEPENDENTS 
+    : CHILD_DEPENDENT_CARE_CREDIT.MAX_EXPENSES.ONE_DEPENDENT;
+    
+  // Cap expenses at the maximum eligible amount
+  const eligibleExpenses = Math.min(careExpenses, maxEligibleExpenses);
+  
+  // Determine credit rate based on AGI
+  // Start with base rate (35% for AGI <= $15,000)
+  let creditRate = CHILD_DEPENDENT_CARE_CREDIT.BASE_CREDIT_RATE;
+  
+  // If AGI is above threshold, reduce credit rate by 1% for each $2,000 increment
+  if (adjustedGrossIncome > CHILD_DEPENDENT_CARE_CREDIT.AGI_BASE_THRESHOLD) {
+    // Calculate how many $2,000 increments above threshold
+    const excessAGIIncrements = Math.floor(
+      (adjustedGrossIncome - CHILD_DEPENDENT_CARE_CREDIT.AGI_BASE_THRESHOLD) / 
+      CHILD_DEPENDENT_CARE_CREDIT.AGI_PHASE_OUT_INCREMENT
+    );
+    
+    // Reduce credit rate by 1% for each increment (but not below minimum rate of 20%)
+    creditRate = Math.max(
+      CHILD_DEPENDENT_CARE_CREDIT.MIN_CREDIT_RATE,
+      creditRate - (excessAGIIncrements * CHILD_DEPENDENT_CARE_CREDIT.RATE_DECREMENT)
+    );
+  }
+  
+  // Calculate credit amount
+  const creditAmount = eligibleExpenses * creditRate;
   
   // Round to nearest cent
   return Math.round(creditAmount * 100) / 100;
@@ -389,24 +449,54 @@ export function calculateTaxes(taxData: TaxData): CalculatedResults {
     );
   }
   
+  // Auto-calculate Child and Dependent Care Credit if applicable
+  let calculatedChildDependentCareCredit = 0;
+  
+  // Only auto-calculate if there are dependents
+  // This is a simplified check - in a real system, we'd verify dependent age and qualifying expenses
+  if (taxData.personalInfo?.dependents && taxData.personalInfo.dependents.length > 0) {
+    // For this prototype, we're assuming all dependents under 13 qualify
+    // In a real system, more detailed checks would be needed
+    const qualifyingDependents = taxData.personalInfo.dependents.filter(dependent => {
+      const birthDate = new Date(dependent.dateOfBirth);
+      const taxYearEnd = new Date('2025-12-31');
+      const age = taxYearEnd.getFullYear() - birthDate.getFullYear();
+      return age < 13;
+    });
+    
+    if (qualifyingDependents.length > 0) {
+      // For prototype, we're assuming average care expenses of $2,000 per qualifying dependent
+      // In a real system, this would be user-entered data
+      const estimatedCareExpenses = qualifyingDependents.length * 2000;
+      
+      calculatedChildDependentCareCredit = calculateChildDependentCareCredit(
+        estimatedCareExpenses,
+        result.adjustedGrossIncome,
+        qualifyingDependents.length
+      );
+    }
+  }
+  
   // If there are tax credits in the data, use those values, otherwise use calculated ones
   const taxCredits = taxData.taxCredits || {
     childTaxCredit: calculatedChildTaxCredit,
-    childDependentCareCredit: 0,
+    childDependentCareCredit: calculatedChildDependentCareCredit,
     educationCredits: 0,
     retirementSavingsCredit: calculatedRetirementSavingsCredit,
     otherCredits: 0,
-    totalCredits: calculatedChildTaxCredit + calculatedRetirementSavingsCredit
+    totalCredits: calculatedChildTaxCredit + calculatedRetirementSavingsCredit + calculatedChildDependentCareCredit
   };
   
   // If the user hasn't explicitly set tax credit values, use the calculated ones
   if (!taxData.taxCredits || 
-      (taxData.taxCredits.childTaxCredit === 0 && taxData.taxCredits.retirementSavingsCredit === 0)) {
+      (taxData.taxCredits.childTaxCredit === 0 && 
+       taxData.taxCredits.retirementSavingsCredit === 0 &&
+       taxData.taxCredits.childDependentCareCredit === 0)) {
     // Update the total credits with our calculated credits
     result.credits = (
       calculatedChildTaxCredit + 
       calculatedRetirementSavingsCredit +
-      (taxCredits.childDependentCareCredit || 0) + 
+      calculatedChildDependentCareCredit +
       (taxCredits.educationCredits || 0) + 
       (taxCredits.otherCredits || 0)
     );

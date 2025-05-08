@@ -47,13 +47,66 @@ import {
 
 const IncomePage: React.FC = () => {
   const [, navigate] = useLocation();
-  const { taxData, updateTaxData, saveTaxReturn } = useTaxContext();
+  const { taxData, updateTaxData, saveTaxReturn, resetToZero } = useTaxContext();
   const { toast } = useToast();
   const [showAdditionalIncomeDialog, setShowAdditionalIncomeDialog] = useState(false);
   const [selectedIncomeType, setSelectedIncomeType] = useState<string>("");
   const [additionalIncomeAmount, setAdditionalIncomeAmount] = useState<number>(0);
   const [additionalIncomeDescription, setAdditionalIncomeDescription] = useState<string>("");
   const [isUploading, setIsUploading] = useState<boolean>(false);
+  
+  // Reset function to clear income values
+  const handleReset = () => {
+    form.reset({
+      wages: 0,
+      otherEarnedIncome: 0,
+      interestIncome: 0,
+      dividends: 0,
+      businessIncome: 0,
+      capitalGains: 0,
+      rentalIncome: 0,
+      retirementIncome: 0,
+      unemploymentIncome: 0,
+      otherIncome: 0,
+      totalIncome: 0,
+      adjustments: {
+        studentLoanInterest: 0,
+        retirementContributions: 0,
+        otherAdjustments: 0
+      },
+      adjustedGrossIncome: 0,
+      additionalIncomeItems: []
+    });
+    
+    // Update tax data with reset values
+    updateTaxData({
+      income: {
+        wages: 0,
+        otherEarnedIncome: 0,
+        interestIncome: 0,
+        dividends: 0,
+        businessIncome: 0,
+        capitalGains: 0,
+        rentalIncome: 0,
+        retirementIncome: 0,
+        unemploymentIncome: 0,
+        otherIncome: 0,
+        totalIncome: 0,
+        adjustments: {
+          studentLoanInterest: 0,
+          retirementContributions: 0,
+          otherAdjustments: 0
+        },
+        adjustedGrossIncome: 0,
+        additionalIncomeItems: []
+      }
+    });
+    
+    toast({
+      title: "값 초기화 완료",
+      description: "모든 소득 항목이 초기화되었습니다.",
+    });
+  };
 
   // 테스트용 하드코딩된 데이터로 시작
   const defaultValues: Income = {
@@ -302,7 +355,18 @@ const IncomePage: React.FC = () => {
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
               <Card>
                 <CardHeader>
-                  <CardTitle className="text-xl font-heading text-primary-dark">소득 정보 (Income Information)</CardTitle>
+                  <div className="flex justify-between items-center">
+                    <CardTitle className="text-xl font-heading text-primary-dark">소득 정보 (Income Information)</CardTitle>
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      onClick={handleReset}
+                      className="text-destructive border-destructive hover:bg-destructive hover:text-white"
+                    >
+                      <span className="mr-2">값 초기화</span>
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18"></path><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path><path d="M10 11v6"></path><path d="M14 11v6"></path></svg>
+                    </Button>
+                  </div>
                 </CardHeader>
                 <CardContent className="space-y-6">
                   <div>

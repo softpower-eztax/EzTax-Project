@@ -64,14 +64,14 @@ const StepNavigation: React.FC<StepNavigationProps> = ({
         className="px-6 py-2 border border-primary text-primary font-semibold rounded hover:bg-primary-light hover:text-white transition duration-200"
         onClick={handlePrev}
       >
-        Previous
+        이전 단계
       </Button>
       
       <Button
         className="px-6 py-2 bg-primary text-white font-semibold rounded hover:bg-primary-dark transition duration-200"
         onClick={handleNext}
       >
-        {isLastStep ? 'Submit Tax Return' : `Next: ${submitText}`}
+        {isLastStep ? '세금 신고서 제출' : `저장 & 다음 단계`}
       </Button>
     </div>
   );

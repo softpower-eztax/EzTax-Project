@@ -1034,15 +1034,33 @@ const IncomePage: React.FC = () => {
                         <span className="font-bold">{formatCurrency(form.watch('adjustedGrossIncome'))}</span>
                       </div>
                     </div>
+                    
+                    <div className="flex justify-between mt-8">
+                      <div>
+                        <StepNavigation 
+                          prevStep="/personal-info" 
+                          nextStep="/deductions"
+                          onNext={handleNext}
+                          submitText="다음 단계 (Next Step)"
+                        />
+                      </div>
+                      <Button 
+                        type="button" 
+                        variant="secondary" 
+                        onClick={async () => {
+                          await saveTaxReturn();
+                          toast({
+                            title: "진행 상황 저장됨",
+                            description: "세금 신고 데이터가 성공적으로 저장되었습니다.",
+                          });
+                        }}
+                      >
+                        진행 상황 저장 (Save Progress)
+                      </Button>
+                    </div>
                   </div>
                 </CardContent>
               </Card>
-              
-              <StepNavigation 
-                prevStep="/personal-info" 
-                nextStep="/deductions"
-                onNext={handleNext}
-              />
             </form>
           </Form>
         </div>

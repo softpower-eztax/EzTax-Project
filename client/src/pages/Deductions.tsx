@@ -325,105 +325,57 @@ const Deductions: React.FC = () => {
 
                   {/* More fields would be here */}
                   
-                  <div className="flex justify-between mt-8">
-                    <Button
-                      type="button"
-                      variant="outline"
-                      className="text-destructive border-destructive hover:bg-destructive hover:text-white"
-                      onClick={async () => {
-                        try {
-                          // 현재 데이터 가져오기
-                          const currentData = form.getValues();
-                          
-                          // 세금 데이터 업데이트
-                          updateTaxData({ deductions: currentData });
-                          
-                          // 세금 신고서 저장
-                          await saveTaxReturn();
-                          
-                          toast({
-                            title: "저장 완료",
-                            description: "세금 신고서가 저장되었습니다.",
-                          });
-                        } catch (error) {
-                          console.error("저장 오류:", error);
-                          toast({
-                            title: "저장 오류",
-                            description: "세금 신고서 저장 중 오류가 발생했습니다.",
-                            variant: "destructive",
-                          });
-                        }
-                      }}
-                    >
-                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-2 h-5 w-5"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
-                      <span className="text-lg">진행 상황 저장</span>
-                    </Button>
-                  </div>
+
                   
                   <div className="flex justify-between mt-8">
-                    <div>
-                      <StepNavigation
-                        prevStep="/income"
-                        nextStep="/tax-credits"
-                        submitText="다음 단계 (Next Step)"
-                        onNext={() => {
-                          console.log("Next 버튼 클릭됨");
+                    <StepNavigation
+                      prevStep="/income"
+                      nextStep="/tax-credits"
+                      submitText="다음 단계 (Next Step)"
+                      onNext={() => {
+                        console.log("Next 버튼 클릭됨");
+                        
+                        // 표준 공제를 선택한 경우 폼 유효성 검사를 무시하고 진행
+                        if (form.watch('useStandardDeduction')) {
+                          console.log("표준 공제 선택됨, 자동 저장 및 진행");
                           
-                          // 표준 공제를 선택한 경우 폼 유효성 검사를 무시하고 진행
-                          if (form.watch('useStandardDeduction')) {
-                            console.log("표준 공제 선택됨, 자동 저장 및 진행");
-                            
-                            // 현재 폼 데이터 가져오기
-                            let data = form.getValues();
-                            
-                            // 표준 공제를 선택한 경우에도 항목별 공제 값을 유지하기 위해 
-                            // taxData에서 기존 itemizedDeductions 값을 보존
-                            if (taxData.deductions?.itemizedDeductions) {
-                              data = {
-                                ...data,
-                                itemizedDeductions: taxData.deductions.itemizedDeductions
-                              };
-                            }
-                            
-                            updateTaxData({ deductions: data });
-                            return true;
+                          // 현재 폼 데이터 가져오기
+                          let data = form.getValues();
+                          
+                          // 표준 공제를 선택한 경우에도 항목별 공제 값을 유지하기 위해 
+                          // taxData에서 기존 itemizedDeductions 값을 보존
+                          if (taxData.deductions?.itemizedDeductions) {
+                            data = {
+                              ...data,
+                              itemizedDeductions: taxData.deductions.itemizedDeductions
+                            };
                           }
                           
-                          // 항목별 공제를 선택한 경우 유효성 검사 실행
-                          return form.trigger().then(isValid => {
-                            console.log("폼 유효성 검사 결과:", isValid);
-                            
-                            if (isValid) {
-                              console.log("폼이 유효함, 데이터 저장 후 진행");
-                              const data = form.getValues();
-                              updateTaxData({ deductions: data });
-                              return true;
-                            } else {
-                              console.log("폼이 유효하지 않음, 오류 메시지 표시");
-                              toast({
-                                title: "폼 오류",
-                                description: "다음으로 진행하기 전에 폼의 오류를 수정해주세요.",
-                                variant: "destructive",
-                              });
-                              return false;
-                            }
-                          });
-                        }}
-                      />
-                    </div>
-                    <Button 
-                      type="button" 
-                      variant="secondary" 
-                      onClick={async () => {
-                        await saveTaxReturn();
-                        toast({
-                          title: "진행 상황 저장됨",
-                          description: "세금 신고 데이터가 성공적으로 저장되었습니다.",
+                          updateTaxData({ deductions: data });
+                          return true;
+                        }
+                        
+                        // 항목별 공제를 선택한 경우 유효성 검사 실행
+                        return form.trigger().then(isValid => {
+                          console.log("폼 유효성 검사 결과:", isValid);
+                          
+                          if (isValid) {
+                            console.log("폼이 유효함, 데이터 저장 후 진행");
+                            const data = form.getValues();
+                            updateTaxData({ deductions: data });
+                            return true;
+                          } else {
+                            console.log("폼이 유효하지 않음, 오류 메시지 표시");
+                            toast({
+                              title: "폼 오류",
+                              description: "다음으로 진행하기 전에 폼의 오류를 수정해주세요.",
+                              variant: "destructive",
+                            });
+                            return false;
+                          }
                         });
                       }}
-                    >
-                      진행 상황 저장 (Save Progress)
-                    </Button>
+                    />
                   </div>
                 </form>
               </Form>

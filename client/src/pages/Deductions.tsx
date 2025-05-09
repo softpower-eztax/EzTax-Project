@@ -318,7 +318,7 @@ const Deductions: React.FC = () => {
                   
 
                   
-                  <div className="flex justify-between mt-8">
+                  <div className="flex justify-end mt-8">
                     <StepNavigation
                       prevStep="/income"
                       nextStep="/tax-credits"

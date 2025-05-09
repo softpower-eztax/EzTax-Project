@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { Separator } from '@/components/ui/separator';
-import { PlusCircle, Trash2, RotateCcw, Save } from 'lucide-react';
+import { PlusCircle, Trash2 } from 'lucide-react';
 import ProgressTracker from '@/components/ProgressTracker';
 import StepNavigation from '@/components/StepNavigation';
 import { useTaxContext } from '@/context/TaxContext';
@@ -256,19 +256,7 @@ const PersonalInfo: React.FC = () => {
         <div className="w-full">
           <Card className="mb-6">
             <CardContent className="pt-6">
-              <div className="flex justify-between items-center mb-6">
-                <h2 className="text-2xl font-heading font-semibold text-primary-dark">개인 정보 (Personal Information)</h2>
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  className="text-red-500 border-red-200 hover:bg-red-50 hover:text-red-600"
-                  onClick={handleReset}
-                >
-                  <RotateCcw className="h-4 w-4 mr-1" />
-                  값 초기화
-                </Button>
-              </div>
+              <h2 className="text-2xl font-heading font-semibold text-primary-dark mb-6">개인 정보 (Personal Information)</h2>
               
               <Form {...form}>
                 <form onSubmit={(e) => { e.preventDefault(); }}>
@@ -930,27 +918,7 @@ const PersonalInfo: React.FC = () => {
                 </form>
               </Form>
               
-              {/* 버튼 컨트롤러 */}
-              <div className="flex flex-col sm:flex-row gap-4 my-6">
-                <Button 
-                  variant="destructive" 
-                  className="w-full sm:w-auto" 
-                  type="button" 
-                  onClick={handleReset}
-                >
-                  <RotateCcw className="mr-2 h-4 w-4" /> 값 초기화
-                </Button>
-                
-                <Button 
-                  variant="secondary" 
-                  className="w-full sm:w-auto" 
-                  type="button"
-                  onClick={handleSaveProgress}
-                >
-                  <Save className="mr-2 h-4 w-4" /> 진행 상황 저장
-                </Button>
-              </div>
-              
+
               <StepNavigation
                 prevStep="/"
                 nextStep="/income"

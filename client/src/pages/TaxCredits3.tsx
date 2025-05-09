@@ -473,10 +473,10 @@ const TaxCredits3Page: React.FC = () => {
               
               <Form {...form}>
                 <form onSubmit={(e) => e.preventDefault()}>
-                  {/* Child Tax Credit */}
+                  {/* 부양가족 관련 세액공제 */}
                   <div className="mb-6 border-b border-gray-light pb-6">
                     <div className="flex items-center mb-3">
-                      <h4 className="font-semibold">자녀세액공제 (Child Tax Credit)</h4>
+                      <h4 className="font-semibold">부양가족 관련 세액공제 (Dependent-Related Credits)</h4>
                       <TooltipProvider>
                         <Tooltip>
                           <TooltipTrigger asChild>
@@ -484,8 +484,8 @@ const TaxCredits3Page: React.FC = () => {
                           </TooltipTrigger>
                           <TooltipContent>
                             <p className="w-64">
-                              17세 미만의 적격 부양가족 각각에 대해 최대 $2,000까지의 자녀세액공제를 받을 수 있습니다.
-                              (You may be eligible for a Child Tax Credit of up to $2,000 for each qualifying dependent under age 17.)
+                              자녀 및 부양가족과 관련된 다양한 세액공제를 신청할 수 있습니다.
+                              (Various tax credits related to your children and dependents.)
                             </p>
                           </TooltipContent>
                         </Tooltip>
@@ -495,11 +495,44 @@ const TaxCredits3Page: React.FC = () => {
                     {!hasDependents && (
                       <div className="bg-gray-bg p-3 rounded-md mb-3 text-sm">
                         <p>개인정보 섹션에 부양가족을 추가하지 않았습니다. 
-                        자격을 갖춘 자녀가 있다면, 뒤로 돌아가 추가해주세요.</p>
+                        부양가족이 있다면, 뒤로 돌아가 추가해주세요.</p>
                         <p className="text-xs mt-1">(You have not added any dependents in the Personal Information section. 
-                        If you have qualifying children, please go back and add them.)</p>
+                        If you have dependents, please go back and add them.)</p>
                       </div>
                     )}
+                    
+                    {/* 자녀세액공제 설명 부분 */}
+                    <div className="mb-4 bg-gray-50 p-3 rounded-md text-sm border border-gray-200">
+                      <p className="font-medium mb-1">자녀세액공제 (Child Tax Credit)</p>
+                      <p className="text-xs text-gray-600">
+                        17세 미만의 적격 부양가족 각각에 대해 최대 $2,000까지의 자녀세액공제를 받을 수 있습니다.
+                      </p>
+                      <p className="text-xs text-gray-600 mt-1">
+                        (You may be eligible for a Child Tax Credit of up to $2,000 for each qualifying dependent under age 17.)
+                      </p>
+                    </div>
+
+                    {/* 자녀 및 부양가족 돌봄 공제 설명 부분 */}
+                    <div className="mb-4 bg-gray-50 p-3 rounded-md text-sm border border-gray-200">
+                      <p className="font-medium mb-1">자녀및부양가족돌봄공제 (Child and Dependent Care Credit)</p>
+                      <p className="text-xs text-gray-600">
+                        이 공제는 13세 미만의 적격 자녀 또는 장애가 있는 배우자나 부양가족을 돌보는 데 지출한 비용에 대한 것입니다.
+                      </p>
+                      <p className="text-xs text-gray-600 mt-1">
+                        (This credit is for expenses paid for the care of your qualifying children under age 13, or for a disabled spouse or dependent.)
+                      </p>
+                    </div>
+
+                    {/* 기타 부양가족 세액공제 설명 부분 */}
+                    <div className="mb-4 bg-gray-50 p-3 rounded-md text-sm border border-gray-200">
+                      <p className="font-medium mb-1">기타 부양가족 세액공제 (Credit for Other Dependents)</p>
+                      <p className="text-xs text-gray-600">
+                        자녀세액공제 대상이 아닌 부양가족 각각에 대해 최대 $500까지의 세액공제를 받을 수 있습니다.
+                      </p>
+                      <p className="text-xs text-gray-600 mt-1">
+                        (You may be eligible for a Credit for Other Dependents of up to $500 for each qualifying dependent who doesn't qualify for the Child Tax Credit.)
+                      </p>
+                    </div>
                     
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <FormField
@@ -526,45 +559,13 @@ const TaxCredits3Page: React.FC = () => {
                           </FormItem>
                         )}
                       />
-                    </div>
-                  </div>
-                  {/* Child and Dependent Care Credit */}
-                  <div className="mb-6 border-b border-gray-light pb-6">
-                    <div className="flex items-center mb-3">
-                      <h4 className="font-semibold">자녀및부양가족돌봄공제 (Child and Dependent Care Credit)</h4>
-                      <TooltipProvider>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <Info className="h-4 w-4 text-gray-dark ml-2 cursor-help" />
-                          </TooltipTrigger>
-                          <TooltipContent>
-                            <p className="w-64">
-                              이 공제는 13세 미만의 적격 자녀 또는 장애가 있는 배우자나 부양가족을 돌보는 데 지출한 비용에 대한 것입니다.
-                              (This credit is for expenses paid for the care of your qualifying children under age 13, or for a disabled spouse or dependent.)
-                            </p>
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
-                    </div>
-                    
 
-                    
-                    {!hasDependents && (
-                      <div className="bg-gray-bg p-3 rounded-md mb-3 text-sm">
-                        <p>개인정보 섹션에 부양가족을 추가하지 않았습니다. 
-                        자격을 갖춘 부양가족이 있다면, 뒤로 돌아가 추가해주세요.</p>
-                        <p className="text-xs mt-1">(You have not added any dependents in the Personal Information section. 
-                        If you have qualifying dependents, please go back and add them.)</p>
-                      </div>
-                    )}
-                    
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <FormField
                         control={form.control}
                         name="childDependentCareCredit"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>자녀및부양가족돌봄공제액 (Child and Dependent Care Credit Amount)</FormLabel>
+                            <FormLabel>자녀및부양가족돌봄공제액 (Child Care Credit Amount)</FormLabel>
                             <FormControl>
                               <div className="relative">
                                 <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-dark">$</span>
@@ -584,45 +585,14 @@ const TaxCredits3Page: React.FC = () => {
                         )}
                       />
                     </div>
-                  </div>
-                  
-                  {/* Credit for Other Dependents */}
-                  <div className="mb-6 border-b border-gray-light pb-6">
-                    <div className="flex items-center mb-3">
-                      <h4 className="font-semibold">기타 부양가족 세액공제 (Credit for Other Dependents)</h4>
-                      <TooltipProvider>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <Info className="h-4 w-4 text-gray-dark ml-2 cursor-help" />
-                          </TooltipTrigger>
-                          <TooltipContent>
-                            <p className="w-64">
-                              자녀세액공제 대상이 아닌 부양가족 각각에 대해 최대 $500까지의 세액공제를 받을 수 있습니다.
-                              (You may be eligible for a Credit for Other Dependents of up to $500 for each qualifying dependent who doesn't qualify for the Child Tax Credit.)
-                            </p>
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
-                    </div>
-                    
-                    {!hasDependents && (
-                      <div className="bg-gray-bg p-3 rounded-md mb-3 text-sm">
-                        <p>개인정보 섹션에 부양가족을 추가하지 않았습니다. 
-                        부양가족이 있다면, 뒤로 돌아가 추가해주세요.</p>
-                        <p className="text-xs mt-1">(You have not added any dependents in the Personal Information section. 
-                        If you have dependents, please go back and add them.)</p>
-                      </div>
-                    )}
-                    
 
-                    
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
                       <FormField
                         control={form.control}
                         name="otherCredits"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>기타 부양가족 세액공제액 (Credit for Other Dependents Amount)</FormLabel>
+                            <FormLabel>기타 부양가족 세액공제액 (Other Dependents Credit Amount)</FormLabel>
                             <FormControl>
                               <div className="relative">
                                 <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-dark">$</span>

@@ -131,6 +131,12 @@ export interface Income {
   adjustedGrossIncome: number;
 }
 
+export interface OtherDeductionItem {
+  type: string;
+  amount: number;
+  description?: string;
+}
+
 export interface Deductions {
   useStandardDeduction: boolean;
   standardDeductionAmount: number;
@@ -142,6 +148,7 @@ export interface Deductions {
     charitableCash: number;
     charitableNonCash: number;
   };
+  otherDeductionItems?: OtherDeductionItem[];
   totalDeductions: number;
 }
 
@@ -268,6 +275,12 @@ export const incomeSchema = z.object({
   adjustedGrossIncome: z.number().min(0),
 });
 
+export const otherDeductionItemSchema = z.object({
+  type: z.string(),
+  amount: z.number().min(0),
+  description: z.string().optional(),
+});
+
 export const deductionsSchema = z.object({
   useStandardDeduction: z.boolean(),
   standardDeductionAmount: z.number(),
@@ -279,6 +292,7 @@ export const deductionsSchema = z.object({
     charitableCash: z.number().min(0),
     charitableNonCash: z.number().min(0),
   }).optional(),
+  otherDeductionItems: z.array(otherDeductionItemSchema).optional(),
   totalDeductions: z.number().min(0),
 });
 

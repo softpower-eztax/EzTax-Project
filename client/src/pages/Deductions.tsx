@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, useFieldArray } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { deductionsSchema, type Deductions } from '@shared/schema';
+import { deductionsSchema, type Deductions, type OtherDeductionItem } from '@shared/schema';
 import { Card, CardContent } from '@/components/ui/card';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Separator } from '@/components/ui/separator';
-import { Info } from 'lucide-react';
+import { Info, Plus, X } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import ProgressTracker from '@/components/ProgressTracker';
 
@@ -79,6 +79,7 @@ const Deductions: React.FC = () => {
       charitableCash: 0,
       charitableNonCash: 0
     },
+    otherDeductionItems: taxData.deductions?.otherDeductionItems || [],
     totalDeductions: standardDeductionAmount,
     ...taxData.deductions
   };
@@ -87,6 +88,12 @@ const Deductions: React.FC = () => {
     resolver: zodResolver(deductionsSchema),
     defaultValues,
     mode: 'onChange'
+  });
+  
+  // 기타 공제 항목을 위한 필드 배열 설정
+  const { fields, append, remove } = useFieldArray({
+    control: form.control,
+    name: "otherDeductionItems"
   });
 
   const watchDeductionType = form.watch('useStandardDeduction');
@@ -100,6 +107,9 @@ const Deductions: React.FC = () => {
     form.watch('itemizedDeductions.charitableCash'),
     form.watch('itemizedDeductions.charitableNonCash'),
   ];
+  
+  // Watch changes to otherDeductionItems
+  const watchOtherDeductionItems = form.watch('otherDeductionItems');
 
   // When useStandardDeduction changes, update form field status
   useEffect(() => {
@@ -117,14 +127,22 @@ const Deductions: React.FC = () => {
     } else {
       // 항목별 공제를 선택한 경우, 현재 입력된 항목별 공제 값들의 합계를 계산
       const itemized = form.getValues('itemizedDeductions');
+      const otherItems = form.getValues('otherDeductionItems') || [];
+      
+      // 기타 공제 항목의 총합 계산
+      const otherItemsTotal = otherItems.reduce((sum, item) => sum + Number(item.amount || 0), 0);
+      
       if (itemized) {
-        const total = 
+        const itemizedTotal = 
           Number(itemized.medicalExpenses || 0) +
           Number(itemized.stateLocalIncomeTax || 0) +
           Number(itemized.realEstateTaxes || 0) +
           Number(itemized.mortgageInterest || 0) +
           Number(itemized.charitableCash || 0) +
           Number(itemized.charitableNonCash || 0);
+        
+        // 항목별 공제와 기타 공제 항목의 합계
+        const total = itemizedTotal + otherItemsTotal;
         
         form.setValue('totalDeductions', total);
       }
@@ -136,8 +154,13 @@ const Deductions: React.FC = () => {
     if (!watchDeductionType) {
       // 항목별 공제를 선택한 경우에만 합계 다시 계산
       const itemized = form.getValues('itemizedDeductions');
+      const otherItems = form.getValues('otherDeductionItems') || [];
+      
+      // 기타 공제 항목의 총합 계산
+      const otherItemsTotal = otherItems.reduce((sum, item) => sum + Number(item.amount || 0), 0);
+      
       if (itemized) {
-        const total = 
+        const itemizedTotal = 
           Number(itemized.medicalExpenses || 0) +
           Number(itemized.stateLocalIncomeTax || 0) +
           Number(itemized.realEstateTaxes || 0) +
@@ -145,10 +168,13 @@ const Deductions: React.FC = () => {
           Number(itemized.charitableCash || 0) +
           Number(itemized.charitableNonCash || 0);
         
+        // 항목별 공제와 기타 공제 항목의 합계
+        const total = itemizedTotal + otherItemsTotal;
+        
         form.setValue('totalDeductions', total);
       }
     }
-  }, [watchItemizedFields, watchDeductionType, form]);
+  }, [watchItemizedFields, watchOtherDeductionItems, watchDeductionType, form]);
 
   // Recalculate total itemized deductions when any value changes
   // Watch itemized fields individually to calculate total
@@ -162,14 +188,22 @@ const Deductions: React.FC = () => {
   useEffect(() => {
     if (!watchDeductionType) {
       const itemized = form.getValues('itemizedDeductions');
+      const otherItems = form.getValues('otherDeductionItems') || [];
+      
+      // 기타 공제 항목의 총합 계산
+      const otherItemsTotal = otherItems.reduce((sum, item) => sum + Number(item.amount || 0), 0);
+      
       if (itemized) {
-        const total = 
+        const itemizedTotal = 
           Number(itemized.medicalExpenses || 0) +
           Number(itemized.stateLocalIncomeTax || 0) +
           Number(itemized.realEstateTaxes || 0) +
           Number(itemized.mortgageInterest || 0) +
           Number(itemized.charitableCash || 0) +
           Number(itemized.charitableNonCash || 0);
+        
+        // 항목별 공제와 기타 공제 항목의 합계
+        const total = itemizedTotal + otherItemsTotal;
         
         form.setValue('totalDeductions', total);
       }
@@ -181,6 +215,7 @@ const Deductions: React.FC = () => {
     watchMortgageInterest, 
     watchCharitableCash, 
     watchCharitableNonCash, 
+    watchOtherDeductionItems,
     watchDeductionType,
     form
   ]);
@@ -495,6 +530,100 @@ const Deductions: React.FC = () => {
                         />
                       </div>
                       
+                      {/* 기타 공제 항목 섹션 */}
+                      <div className="mt-8">
+                        <div className="flex justify-between items-center mb-4">
+                          <h3 className="text-lg font-heading font-semibold">기타 공제 (Other Deductions)</h3>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            className="flex items-center gap-1"
+                            onClick={() => append({ type: '', amount: 0 })}
+                            disabled={isItemizedDisabled}
+                          >
+                            <Plus className="h-4 w-4" /> 항목 추가
+                          </Button>
+                        </div>
+                        
+                        {fields.length === 0 && (
+                          <div className="text-center p-4 border border-dashed border-gray-medium rounded-md bg-gray-bg">
+                            <p className="text-gray-dark">항목별 공제에 추가하려는 다른 공제 항목이 있으시면 추가하세요.</p>
+                          </div>
+                        )}
+                        
+                        {fields.map((field, index) => (
+                          <div key={field.id} className="mb-4 p-4 border border-gray-medium rounded-md bg-gray-bg">
+                            <div className="flex justify-between mb-2">
+                              <h4 className="font-semibold">기타 공제 항목 #{index + 1}</h4>
+                              <Button
+                                type="button"
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => remove(index)}
+                                className="h-8 w-8 p-0 text-gray-dark"
+                                disabled={isItemizedDisabled}
+                              >
+                                <X className="h-4 w-4" />
+                              </Button>
+                            </div>
+                            
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                              <FormField
+                                control={form.control}
+                                name={`otherDeductionItems.${index}.type`}
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormLabel>공제 유형 (Deduction Type)</FormLabel>
+                                    <FormControl>
+                                      <Input {...field} disabled={isItemizedDisabled} placeholder="예: 교육비, 이사비용 등" />
+                                    </FormControl>
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+                              
+                              <FormField
+                                control={form.control}
+                                name={`otherDeductionItems.${index}.amount`}
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormLabel>금액 (Amount)</FormLabel>
+                                    <FormControl>
+                                      <Input
+                                        type="number"
+                                        step="0.01"
+                                        min="0"
+                                        {...field}
+                                        onChange={(e) => {
+                                          field.onChange(parseFloat(e.target.value) || 0);
+                                        }}
+                                        disabled={isItemizedDisabled}
+                                      />
+                                    </FormControl>
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+                            </div>
+                            
+                            <FormField
+                              control={form.control}
+                              name={`otherDeductionItems.${index}.description`}
+                              render={({ field }) => (
+                                <FormItem className="mt-2">
+                                  <FormLabel>설명 (Description)</FormLabel>
+                                  <FormControl>
+                                    <Input {...field} disabled={isItemizedDisabled} placeholder="추가 설명 (선택사항)" />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                          </div>
+                        ))}
+                      </div>
+
                       <div className="mt-6">
                         <div className="p-4 bg-gray-bg border border-gray-medium rounded-md">
                           <div className="flex justify-between items-center">

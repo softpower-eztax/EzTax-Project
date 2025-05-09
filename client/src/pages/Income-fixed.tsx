@@ -368,44 +368,7 @@ export default function IncomePage() {
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
               <Card className="mb-8">
                 <CardHeader>
-                  <div className="flex justify-between items-center">
-                    <CardTitle className="text-xl font-heading text-primary-dark">소득정보 (Income Information)</CardTitle>
-                    <Button 
-                      type="button" 
-                      size="sm" 
-                      variant="outline"
-                      className="bg-red-50 hover:bg-red-100 border-red-200"
-                      onClick={() => {
-                        resetToZero();
-                        // 폼 값도 리셋
-                        form.reset({
-                          wages: 0,
-                          otherEarnedIncome: 0,
-                          interestIncome: 0,
-                          dividends: 0,
-                          businessIncome: 0,
-                          capitalGains: 0,
-                          rentalIncome: 0,
-                          retirementIncome: 0,
-                          unemploymentIncome: 0,
-                          otherIncome: 0,
-                          additionalIncomeItems: [],
-                          totalIncome: 0,
-                          adjustments: {
-                            studentLoanInterest: 0,
-                            retirementContributions: 0,
-                            otherAdjustments: 0,
-                          },
-                          adjustedGrossIncome: 0,
-                          additionalAdjustmentItems: []
-                        });
-                        setAdditionalIncomeItems([]);
-                        setAdditionalAdjustmentItems([]);
-                      }}
-                    >
-                      <Calculator className="h-4 w-4 mr-1" /> 값 초기화
-                    </Button>
-                  </div>
+                  <CardTitle className="text-xl font-heading text-primary-dark">소득정보 (Income Information)</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-6">
                   <div>
@@ -809,83 +772,6 @@ export default function IncomePage() {
                   </div>
                 </CardContent>
               </Card>
-              
-              {/* 초기화 및 저장 버튼 */}
-              <div className="flex gap-4 mt-6 mb-6">
-                <Button
-                  type="button"
-                  variant="outline"
-                  className="bg-rose-50 text-rose-800 border-rose-200 hover:bg-rose-100 hover:text-rose-900 flex-1"
-                  onClick={() => {
-                    // 모든 값 초기화
-                    resetToZero();
-                    // 폼 리셋
-                    form.reset({
-                      wages: 0,
-                      otherEarnedIncome: 0,
-                      interestIncome: 0,
-                      dividends: 0,
-                      businessIncome: 0,
-                      capitalGains: 0,
-                      rentalIncome: 0,
-                      retirementIncome: 0,
-                      unemploymentIncome: 0,
-                      otherIncome: 0,
-                      additionalIncomeItems: [],
-                      totalIncome: 0,
-                      adjustments: {
-                        studentLoanInterest: 0,
-                        retirementContributions: 0,
-                        otherAdjustments: 0
-                      },
-                      adjustedGrossIncome: 0
-                    });
-                    
-                    // 추가 소득 항목과 조정 항목 초기화
-                    setAdditionalIncomeItems([]);
-                    setAdditionalAdjustmentItems([]);
-                    
-                    toast({
-                      title: "값 초기화 완료",
-                      description: "모든 소득 항목 값이 초기화되었습니다.",
-                    });
-                  }}
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-2 h-5 w-5"><path d="M3 2v6h6"></path><path d="M3 13a9 9 0 1 0 3-7.7L3 8"></path></svg>
-                  <span className="text-lg">값 초기화</span>
-                </Button>
-                
-                <Button
-                  type="button"
-                  variant="outline"
-                  className="bg-blue-50 text-blue-800 border-blue-200 hover:bg-blue-100 hover:text-blue-900 flex-1"
-                  onClick={async () => {
-                    try {
-                      // 현재 폼 데이터 저장
-                      const currentData = form.getValues();
-                      updateTaxData({ income: currentData });
-                      
-                      // 세금 신고서 저장
-                      await saveTaxReturn();
-                      
-                      toast({
-                        title: "저장 완료",
-                        description: "세금 신고서가 저장되었습니다.",
-                      });
-                    } catch (error) {
-                      console.error("저장 오류:", error);
-                      toast({
-                        title: "저장 오류",
-                        description: "세금 신고서 저장 중 오류가 발생했습니다.",
-                        variant: "destructive",
-                      });
-                    }
-                  }}
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-2 h-5 w-5"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
-                  <span className="text-lg">진행 상황 저장</span>
-                </Button>
-              </div>
               
               <StepNavigation 
                 prevStep="/personal-info" 

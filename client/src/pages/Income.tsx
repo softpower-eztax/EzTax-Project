@@ -892,7 +892,7 @@ const IncomePage: React.FC = () => {
                         </div>
                       </div>
                       
-                      {form.watch('additionalIncomeItems')?.length > 0 && (
+                      {form.watch('additionalIncomeItems') && form.watch('additionalIncomeItems').length > 0 && (
                         <div className="mb-4 p-4 bg-gray-50 rounded-md border">
                           <h4 className="font-medium mb-2">추가 소득 항목 (Additional Income Items)</h4>
                           <ul className="space-y-2">
@@ -1024,28 +1024,13 @@ const IncomePage: React.FC = () => {
                       </div>
                     </div>
                     
-                    <div className="flex justify-between mt-8">
-                      <div>
-                        <StepNavigation 
-                          prevStep="/personal-info" 
-                          nextStep="/deductions"
-                          onNext={handleNext}
-                          submitText="다음 단계 (Next Step)"
-                        />
-                      </div>
-                      <Button 
-                        type="button" 
-                        variant="secondary" 
-                        onClick={async () => {
-                          await saveTaxReturn();
-                          toast({
-                            title: "진행 상황 저장됨",
-                            description: "세금 신고 데이터가 성공적으로 저장되었습니다.",
-                          });
-                        }}
-                      >
-                        진행 상황 저장 (Save Progress)
-                      </Button>
+                    <div className="mt-8">
+                      <StepNavigation 
+                        prevStep="/personal-info" 
+                        nextStep="/deductions"
+                        onNext={handleNext}
+                        submitText="다음 단계 (Next Step)"
+                      />
                     </div>
                   </div>
                 </CardContent>

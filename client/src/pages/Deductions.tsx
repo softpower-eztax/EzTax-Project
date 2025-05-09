@@ -318,12 +318,18 @@ const Deductions: React.FC = () => {
                   
 
                   
-                  <div className="flex justify-end mt-8">
-                    <StepNavigation
-                      prevStep="/income"
-                      nextStep="/tax-credits"
-                      submitText="다음 단계 (Next Step)"
-                      onNext={() => {
+                  <div className="flex justify-between mt-8">
+                    <Button
+                      variant="outline"
+                      className="px-6 py-2 border border-primary text-primary font-semibold rounded hover:bg-primary-light hover:text-white transition duration-200"
+                      onClick={() => navigate('/income')}
+                    >
+                      이전 단계
+                    </Button>
+                    
+                    <Button
+                      className="px-6 py-2 bg-primary text-white font-semibold rounded hover:bg-primary-dark transition duration-200"
+                      onClick={async () => {
                         console.log("Next 버튼 클릭됨");
                         
                         // 표준 공제를 선택한 경우 폼 유효성 검사를 무시하고 진행
@@ -343,30 +349,31 @@ const Deductions: React.FC = () => {
                           }
                           
                           updateTaxData({ deductions: data });
-                          return true;
+                          navigate('/tax-credits');
+                          return;
                         }
                         
                         // 항목별 공제를 선택한 경우 유효성 검사 실행
-                        return form.trigger().then(isValid => {
-                          console.log("폼 유효성 검사 결과:", isValid);
-                          
-                          if (isValid) {
-                            console.log("폼이 유효함, 데이터 저장 후 진행");
-                            const data = form.getValues();
-                            updateTaxData({ deductions: data });
-                            return true;
-                          } else {
-                            console.log("폼이 유효하지 않음, 오류 메시지 표시");
-                            toast({
-                              title: "폼 오류",
-                              description: "다음으로 진행하기 전에 폼의 오류를 수정해주세요.",
-                              variant: "destructive",
-                            });
-                            return false;
-                          }
-                        });
+                        const isValid = await form.trigger();
+                        console.log("폼 유효성 검사 결과:", isValid);
+                        
+                        if (isValid) {
+                          console.log("폼이 유효함, 데이터 저장 후 진행");
+                          const data = form.getValues();
+                          updateTaxData({ deductions: data });
+                          navigate('/tax-credits');
+                        } else {
+                          console.log("폼이 유효하지 않음, 오류 메시지 표시");
+                          toast({
+                            title: "폼 오류",
+                            description: "다음으로 진행하기 전에 폼의 오류를 수정해주세요.",
+                            variant: "destructive",
+                          });
+                        }
                       }}
-                    />
+                    >
+                      저장 & 다음 단계
+                    </Button>
                   </div>
                 </form>
               </Form>

@@ -314,7 +314,202 @@ const Deductions: React.FC = () => {
                     />
                   </div>
 
-                  {/* More fields would be here */}
+                  {/* 항목별 공제 필드들 */}
+                  {!watchDeductionType && (
+                    <div className="mt-8">
+                      <h3 className="text-lg font-heading font-semibold mb-4">항목별 공제 정보 (Itemized Deductions)</h3>
+                      
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <FormField
+                          control={form.control}
+                          name="itemizedDeductions.medicalExpenses"
+                          render={({ field }) => (
+                            <FormItem className="flex flex-col justify-center h-full">
+                              <div className="flex justify-between">
+                                <FormLabel>의료비 공제 (Medical Expenses)</FormLabel>
+                                <div className="tooltip">
+                                  <Info className="h-4 w-4 text-gray-dark" />
+                                  <span className="tooltip-text">당해 연도 의료 및 치과 비용</span>
+                                </div>
+                              </div>
+                              <FormControl>
+                                <Input
+                                  type="number"
+                                  step="0.01"
+                                  min="0"
+                                  {...field}
+                                  onChange={(e) => {
+                                    field.onChange(parseFloat(e.target.value) || 0);
+                                  }}
+                                  disabled={isItemizedDisabled}
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        
+                        <FormField
+                          control={form.control}
+                          name="itemizedDeductions.stateLocalIncomeTax"
+                          render={({ field }) => (
+                            <FormItem className="flex flex-col justify-center h-full">
+                              <div className="flex justify-between">
+                                <FormLabel>주/지방세 공제 (State/Local Tax)</FormLabel>
+                                <div className="tooltip">
+                                  <Info className="h-4 w-4 text-gray-dark" />
+                                  <span className="tooltip-text">주 및 지방 소득세 또는 판매세</span>
+                                </div>
+                              </div>
+                              <FormControl>
+                                <Input
+                                  type="number"
+                                  step="0.01"
+                                  min="0"
+                                  {...field}
+                                  onChange={(e) => {
+                                    field.onChange(parseFloat(e.target.value) || 0);
+                                  }}
+                                  disabled={isItemizedDisabled}
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        
+                        <FormField
+                          control={form.control}
+                          name="itemizedDeductions.realEstateTaxes"
+                          render={({ field }) => (
+                            <FormItem className="flex flex-col justify-center h-full">
+                              <div className="flex justify-between">
+                                <FormLabel>부동산세 공제 (Real Estate Taxes)</FormLabel>
+                                <div className="tooltip">
+                                  <Info className="h-4 w-4 text-gray-dark" />
+                                  <span className="tooltip-text">집, 토지 등에 대한 부동산세</span>
+                                </div>
+                              </div>
+                              <FormControl>
+                                <Input
+                                  type="number"
+                                  step="0.01"
+                                  min="0"
+                                  {...field}
+                                  onChange={(e) => {
+                                    field.onChange(parseFloat(e.target.value) || 0);
+                                  }}
+                                  disabled={isItemizedDisabled}
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        
+                        <FormField
+                          control={form.control}
+                          name="itemizedDeductions.mortgageInterest"
+                          render={({ field }) => (
+                            <FormItem className="flex flex-col justify-center h-full">
+                              <div className="flex justify-between">
+                                <FormLabel>주택담보대출 이자 (Mortgage Interest)</FormLabel>
+                                <div className="tooltip">
+                                  <Info className="h-4 w-4 text-gray-dark" />
+                                  <span className="tooltip-text">주택 담보 대출에 대한 이자 비용</span>
+                                </div>
+                              </div>
+                              <FormControl>
+                                <Input
+                                  type="number"
+                                  step="0.01"
+                                  min="0"
+                                  {...field}
+                                  onChange={(e) => {
+                                    field.onChange(parseFloat(e.target.value) || 0);
+                                  }}
+                                  disabled={isItemizedDisabled}
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        
+                        <FormField
+                          control={form.control}
+                          name="itemizedDeductions.charitableCash"
+                          render={({ field }) => (
+                            <FormItem className="flex flex-col justify-center h-full">
+                              <div className="flex justify-between">
+                                <FormLabel>기부금 (현금) (Charitable Donations Cash)</FormLabel>
+                                <div className="tooltip">
+                                  <Info className="h-4 w-4 text-gray-dark" />
+                                  <span className="tooltip-text">현금 또는 수표로 기부한 금액</span>
+                                </div>
+                              </div>
+                              <FormControl>
+                                <Input
+                                  type="number"
+                                  step="0.01"
+                                  min="0"
+                                  {...field}
+                                  onChange={(e) => {
+                                    field.onChange(parseFloat(e.target.value) || 0);
+                                  }}
+                                  disabled={isItemizedDisabled}
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        
+                        <FormField
+                          control={form.control}
+                          name="itemizedDeductions.charitableNonCash"
+                          render={({ field }) => (
+                            <FormItem className="flex flex-col justify-center h-full">
+                              <div className="flex justify-between">
+                                <FormLabel>기부금 (비현금) (Charitable Donations Non-Cash)</FormLabel>
+                                <div className="tooltip">
+                                  <Info className="h-4 w-4 text-gray-dark" />
+                                  <span className="tooltip-text">물품이나 자산 형태로 기부한 가치</span>
+                                </div>
+                              </div>
+                              <FormControl>
+                                <Input
+                                  type="number"
+                                  step="0.01"
+                                  min="0"
+                                  {...field}
+                                  onChange={(e) => {
+                                    field.onChange(parseFloat(e.target.value) || 0);
+                                  }}
+                                  disabled={isItemizedDisabled}
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+                      
+                      <div className="mt-6">
+                        <div className="p-4 bg-gray-bg border border-gray-medium rounded-md">
+                          <div className="flex justify-between items-center">
+                            <div>
+                              <h4 className="font-semibold">항목별 공제 합계 (Itemized Total)</h4>
+                              <p className="text-sm text-gray-dark">모든 항목별 공제의 합계</p>
+                            </div>
+                            <div className="text-xl font-semibold text-primary-dark">
+                              ${form.watch("totalDeductions").toLocaleString()}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
                   
 
                   

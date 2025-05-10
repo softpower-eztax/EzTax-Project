@@ -185,6 +185,17 @@ const TaxCredits3Page: React.FC = () => {
   const educationCredits = educationCreditsSum;
   const retirementSavingsCredit = form.watch('retirementSavingsCredit') || 0;
   const otherCredits = form.watch('otherCredits') || 0;
+  const otherCreditItems = form.watch('otherCreditItems') || [];
+  
+  // 기타 세액공제 항목의 총액 계산
+  const otherCreditItemsTotal = otherCreditItems.reduce((sum, item) => sum + (Number(item.amount) || 0), 0);
+  
+  // otherCreditItems의 합계가 있으면 otherCredits에 업데이트
+  useEffect(() => {
+    if (otherCreditItemsTotal > 0) {
+      form.setValue('otherCredits', otherCreditItemsTotal);
+    }
+  }, [otherCreditItemsTotal, form]);
   
   // 총 세액 공제 계산
   const calculatedTotal = 
@@ -279,6 +290,7 @@ const TaxCredits3Page: React.FC = () => {
           totalContributions: 0
         },
         otherCredits: taxData.taxCredits.otherCredits || 0,
+        otherCreditItems: taxData.taxCredits.otherCreditItems || [], // 기타 세액공제 항목 배열
         totalCredits: taxData.taxCredits.totalCredits || 0,
         careExpenses: 0, // 돌봄 비용 초기값
         careProviders: [] // 돌봄 제공자 정보 초기값
@@ -474,6 +486,7 @@ const TaxCredits3Page: React.FC = () => {
       llcCredit: currentValues.llcCredit || 0,
       retirementSavingsCredit: currentValues.retirementSavingsCredit || 0,
       otherCredits: currentValues.otherCredits || 0,
+      otherCreditItems: currentValues.otherCreditItems || [], // 기타 세액공제 항목 배열 추가
       totalCredits: calculatedTotal
     };
     
@@ -1361,10 +1374,105 @@ const TaxCredits3Page: React.FC = () => {
                   
                   {/* 기타 세액공제 */}
                   <div className="mb-6 border-b border-gray-light pb-6">
-                    <div className="mb-3">
+                    <div className="flex items-center justify-between mb-3">
                       <h4 className="font-semibold">기타 세액공제 (Other Credits)</h4>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => appendOtherCreditItem({ type: '', amount: 0 })}
+                        className="flex items-center gap-1"
+                      >
+                        <PlusCircle className="h-4 w-4" />
+                        세액공제 추가
+                      </Button>
                     </div>
                     
+                    {/* 기타 세액공제 항목 목록 */}
+                    {otherCreditItemFields.length > 0 && (
+                      <div className="space-y-4 mb-4">
+                        {otherCreditItemFields.map((item, index) => (
+                          <div key={item.id} className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 border border-gray-light rounded-md">
+                            {/* 공제 유형 */}
+                            <FormField
+                              control={form.control}
+                              name={`otherCreditItems.${index}.type`}
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>공제 유형 (Credit Type)</FormLabel>
+                                  <FormControl>
+                                    <Input 
+                                      placeholder="예: 에너지 효율 공제"
+                                      {...field}
+                                    />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                            
+                            {/* 공제 금액 */}
+                            <FormField
+                              control={form.control}
+                              name={`otherCreditItems.${index}.amount`}
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>금액 (Amount)</FormLabel>
+                                  <FormControl>
+                                    <div className="relative">
+                                      <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-dark">$</span>
+                                      <Input 
+                                        placeholder="0.00"
+                                        className="pl-8"
+                                        value={field.value || ''}
+                                        onChange={(e) => {
+                                          const formatted = formatNumberInput(e.target.value);
+                                          field.onChange(formatted ? Number(formatted) : 0);
+                                        }}
+                                      />
+                                    </div>
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                            
+                            {/* 설명 */}
+                            <div className="flex items-start space-x-2">
+                              <FormField
+                                control={form.control}
+                                name={`otherCreditItems.${index}.description`}
+                                render={({ field }) => (
+                                  <FormItem className="flex-grow">
+                                    <FormLabel>설명 (Description)</FormLabel>
+                                    <FormControl>
+                                      <Input 
+                                        placeholder="부가 설명"
+                                        {...field}
+                                        value={field.value || ''}
+                                      />
+                                    </FormControl>
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+                              
+                              <Button
+                                type="button"
+                                variant="ghost"
+                                size="icon"
+                                className="mt-8"
+                                onClick={() => removeOtherCreditItem(index)}
+                              >
+                                <Trash2 className="h-4 w-4 text-destructive" />
+                              </Button>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                    
+                    {/* 기타 세액공제 합계 */}
                     <FormField
                       control={form.control}
                       name="otherCredits"
@@ -1386,6 +1494,9 @@ const TaxCredits3Page: React.FC = () => {
                             </div>
                           </FormControl>
                           <FormMessage />
+                          <FormDescription className="text-xs mt-1">
+                            개별 항목이 있는 경우 합계가 자동으로 계산됩니다. 
+                          </FormDescription>
                         </FormItem>
                       )}
                     />

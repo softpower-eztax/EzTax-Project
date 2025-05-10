@@ -437,7 +437,8 @@ const TaxCredits3Page: React.FC = () => {
     // 로컬 상태와 로컬 스토리지에 저장할 통합 데이터
     const combinedValues = {
       ...taxCreditsValues,
-      retirementContributions
+      retirementContributions,
+      careExpenses: form.getValues('careExpenses') || 0 // 돌봄 비용 값 추가
     };
     
     // 로컬 상태 업데이트 (form 값 보존을 위해)

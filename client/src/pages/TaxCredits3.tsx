@@ -706,7 +706,7 @@ const TaxCredits3Page: React.FC = () => {
                                             <FormItem>
                                               <FormLabel className="text-xs">이름 (Name)</FormLabel>
                                               <FormControl>
-                                                <Input {...field} placeholder="홍길동 보육원" />
+                                                <Input {...field} placeholder="ABC Child Care Center" />
                                               </FormControl>
                                             </FormItem>
                                           )}

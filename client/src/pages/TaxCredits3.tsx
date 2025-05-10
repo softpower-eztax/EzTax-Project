@@ -30,6 +30,13 @@ interface RetirementContributions {
   totalContributions: number;
 }
 
+// 기타 세액공제 항목 인터페이스 정의
+interface OtherCreditItem {
+  type: string;
+  amount: number;
+  description?: string;
+}
+
 // Tax Credits 인터페이스 정의
 interface TaxCredits {
   childTaxCredit: number;
@@ -39,6 +46,7 @@ interface TaxCredits {
   llcCredit: number;
   retirementSavingsCredit: number;
   otherCredits: number;
+  otherCreditItems?: OtherCreditItem[];
   totalCredits: number;
 }
 
@@ -87,6 +95,7 @@ const TaxCredits3Page: React.FC = () => {
       totalContributions: 0
     },
     otherCredits: taxData.taxCredits?.otherCredits || 0,
+    otherCreditItems: taxData.taxCredits?.otherCreditItems || [], // 기타 세액공제 항목 초기값
     totalCredits: taxData.taxCredits?.totalCredits || 0,
     careExpenses: 0, // 돌봄 비용 초기값
     careProviders: [] // 돌봄 제공자 정보 초기값
@@ -110,6 +119,13 @@ const TaxCredits3Page: React.FC = () => {
     totalContributions: z.coerce.number().min(0).default(0)
   });
   
+  // 기타 세액공제 항목 스키마
+  const otherCreditItemSchema = z.object({
+    type: z.string().min(1, "항목 유형은 필수입니다"),
+    amount: z.coerce.number().min(0).default(0),
+    description: z.string().optional()
+  });
+
   const taxCreditsSchema = z.object({
     childTaxCredit: z.coerce.number().min(0).default(0),
     childDependentCareCredit: z.coerce.number().min(0).default(0),
@@ -118,6 +134,7 @@ const TaxCredits3Page: React.FC = () => {
     llcCredit: z.coerce.number().min(0).default(0),
     retirementSavingsCredit: z.coerce.number().min(0).default(0),
     otherCredits: z.coerce.number().min(0).default(0),
+    otherCreditItems: z.array(otherCreditItemSchema).default([]),
     totalCredits: z.coerce.number().min(0).default(0)
   });
   
@@ -148,6 +165,12 @@ const TaxCredits3Page: React.FC = () => {
   const { fields: careProviderFields, append: appendCareProvider, remove: removeCareProvider } = useFieldArray({
     control: form.control,
     name: "careProviders"
+  });
+  
+  // 기타 세액공제 항목 필드 배열 관리
+  const { fields: otherCreditItemFields, append: appendOtherCreditItem, remove: removeOtherCreditItem } = useFieldArray({
+    control: form.control,
+    name: "otherCreditItems"
   });
   
   // 총 공제액 계산을 위한 개별 필드 감시

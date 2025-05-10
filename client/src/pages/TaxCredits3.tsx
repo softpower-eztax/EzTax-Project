@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, useFieldArray } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Card, CardContent } from '@/components/ui/card';
@@ -11,7 +11,7 @@ import ProgressTracker from '@/components/ProgressTracker';
 
 import StepNavigation from '@/components/StepNavigation';
 import { useTaxContext } from '@/context/TaxContext';
-import { Info, RefreshCw } from 'lucide-react';
+import { Info, RefreshCw, PlusCircle, Trash2 } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { calculateChildTaxCredit, calculateRetirementSavingsCredit, calculateChildDependentCareCredit, calculateCreditForOtherDependents, formatNumberInput } from '@/lib/taxCalculations';
 
@@ -142,6 +142,12 @@ const TaxCredits3Page: React.FC = () => {
     resolver: zodResolver(taxCreditsFormSchema),
     defaultValues: savedValues,
     mode: 'onChange'
+  });
+  
+  // 돌봄 제공자 필드 배열 관리
+  const { fields: careProviderFields, append: appendCareProvider, remove: removeCareProvider } = useFieldArray({
+    control: form.control,
+    name: "careProviders"
   });
   
   // 총 공제액 계산을 위한 개별 필드 감시

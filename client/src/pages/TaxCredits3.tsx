@@ -299,10 +299,11 @@ const TaxCredits3Page: React.FC = () => {
       localStorage.setItem('taxCredits', JSON.stringify(updatedValues));
       
       // 컨텍스트 업데이트 - 세금 공제 및 은퇴 기여금 분리 저장
-      const { retirementContributions, ...otherTaxCredits } = updatedValues;
+      const { retirementContributions, careExpenses, ...otherTaxCredits } = updatedValues;
       updateTaxData({ 
         taxCredits: otherTaxCredits,
         retirementContributions: retirementContributions
+        // careExpenses는 폼 입력용이므로 컨텍스트에 저장하지 않음
       });
       
       // 서버 저장
@@ -374,7 +375,8 @@ const TaxCredits3Page: React.FC = () => {
     // 합친 resetValues는 폼과 로컬 스토리지를 위한 용도로만 사용
     const resetValues = {
       ...resetTaxCredits,
-      retirementContributions: resetRetirementContributions
+      retirementContributions: resetRetirementContributions,
+      careExpenses: 0
     };
     
     console.log("값 초기화 실행:", resetValues);
@@ -659,7 +661,7 @@ const TaxCredits3Page: React.FC = () => {
                     <div className="mt-4">
                       <FormField
                         control={form.control}
-                        name="childDependentCareCredit"
+                        name="otherCredits"
                         render={({ field }) => (
                           <FormItem>
                             <FormLabel>기타 부양가족 공제 (Credit for Other Dependents, ODC)</FormLabel>

@@ -348,25 +348,25 @@ const Review: React.FC = () => {
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <Field label="Total Income" value={formatCurrency(calculatedResults.totalIncome)} />
-                    <Field label="Adjustments" value={formatCurrency(calculatedResults.adjustments)} />
-                    <Field label="Adjusted Gross Income" value={formatCurrency(calculatedResults.adjustedGrossIncome)} />
-                    <Field label="Deductions" value={formatCurrency(calculatedResults.deductions)} />
-                    <Field label="Taxable Income" value={formatCurrency(calculatedResults.taxableIncome)} />
+                    <Field label="총 소득(Total Income)" value={formatCurrency(calculatedResults.totalIncome)} />
+                    <Field label="소득 조정(Adjustments)" value={formatCurrency(calculatedResults.adjustments)} />
+                    <Field label="조정 총소득(Adjusted Gross Income)" value={formatCurrency(calculatedResults.adjustedGrossIncome)} />
+                    <Field label="공제액(Deductions)" value={formatCurrency(calculatedResults.deductions)} />
+                    <Field label="과세 소득(Taxable Income)" value={formatCurrency(calculatedResults.taxableIncome)} />
                   </div>
                   <div>
-                    <Field label="Federal Tax" value={formatCurrency(calculatedResults.federalTax)} />
-                    <Field label="Tax Credits" value={formatCurrency(calculatedResults.credits)} />
-                    <Field label="Tax Due" value={formatCurrency(calculatedResults.taxDue)} />
-                    <Field label="Payments & Withholding" value={formatCurrency(calculatedResults.payments)} />
+                    <Field label="연방세(Federal Tax)" value={formatCurrency(calculatedResults.federalTax)} />
+                    <Field label="세액공제(Tax Credits)" value={formatCurrency(calculatedResults.credits)} />
+                    <Field label="납부할 세금(Tax Due)" value={formatCurrency(calculatedResults.taxDue)} />
+                    <Field label="기납부 세금 및 원천징수(Payments & Withholding)" value={formatCurrency(calculatedResults.payments)} />
                     {calculatedResults.refundAmount > 0 ? (
                       <div className="flex justify-between py-2 font-bold bg-success/10 rounded px-2 text-success">
-                        <span>Refund Amount:</span>
+                        <span>환급 금액(Refund Amount):</span>
                         <span>{formatCurrency(calculatedResults.refundAmount)}</span>
                       </div>
                     ) : (
                       <div className="flex justify-between py-2 font-bold bg-destructive/10 rounded px-2 text-destructive">
-                        <span>Amount You Owe:</span>
+                        <span>납부할 금액(Amount You Owe):</span>
                         <span>{formatCurrency(calculatedResults.amountOwed)}</span>
                       </div>
                     )}

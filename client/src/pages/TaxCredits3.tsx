@@ -550,7 +550,7 @@ const TaxCredits3Page: React.FC = () => {
                         name="childDependentCareCredit"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>자녀및부양가족돌봄공제액 (Child Care Credit Amount)</FormLabel>
+                            <FormLabel>기타 부양가족 공제 (Credit for Other Dependents, ODC)</FormLabel>
                             <FormControl>
                               <div className="flex items-center gap-2">
                                 <div className="relative flex-grow">
@@ -571,26 +571,25 @@ const TaxCredits3Page: React.FC = () => {
                                   size="sm"
                                   className="whitespace-nowrap"
                                   onClick={() => {
-                                    // 추정 돌봄 비용 (실제로는 사용자로부터 입력받아야 함)
-                                    const estimatedCareExpenses = 5000;
-                                    
-                                    // 부양가족 수
+                                    // 부양가족 정보
                                     const dependents = taxData.personalInfo?.dependents || [];
-                                    const numberOfQualifyingDependents = dependents.length;
                                     
                                     // 조정된 총소득
                                     const adjustedGrossIncome = taxData.income?.adjustedGrossIncome || 0;
                                     
-                                    // 자동 계산
-                                    const creditAmount = calculateChildDependentCareCredit(
-                                      estimatedCareExpenses,
+                                    // 신고 상태
+                                    const filingStatus = taxData.personalInfo?.filingStatus || 'single';
+                                    
+                                    // 자동 계산 - 기타 부양가족 공제
+                                    const creditAmount = calculateCreditForOtherDependents(
+                                      dependents,
                                       adjustedGrossIncome,
-                                      numberOfQualifyingDependents
+                                      filingStatus
                                     );
                                     
                                     // 계산된 값 설정
                                     field.onChange(creditAmount);
-                                    console.log('자동 계산된 자녀 및 부양가족 돌봄 세액 공제액:', creditAmount);
+                                    console.log('자동 계산된 기타 부양가족 공제액:', creditAmount);
                                   }}
                                 >
                                   자동계산
@@ -598,6 +597,9 @@ const TaxCredits3Page: React.FC = () => {
                               </div>
                             </FormControl>
                             <FormMessage />
+                            <FormDescription className="text-xs mt-1">
+                              17세 이상 부양가족에 대해 최대 $500의 세액공제를 받을 수 있습니다.
+                            </FormDescription>
                           </FormItem>
                         )}
                       />

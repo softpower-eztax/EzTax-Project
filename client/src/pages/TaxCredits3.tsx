@@ -322,6 +322,7 @@ const TaxCredits3Page: React.FC = () => {
           totalContributions: 0
         },
         otherCredits: 0,
+        otherCreditItems: [], // 기타 세액공제 항목 배열 추가
         totalCredits: 0,
         careExpenses: 0,
         careProviders: []
@@ -413,6 +414,7 @@ const TaxCredits3Page: React.FC = () => {
       llcCredit: 0,
       retirementSavingsCredit: 0,
       otherCredits: 0,
+      otherCreditItems: [], // 기타 세액공제 항목 초기화
       totalCredits: 0
     };
     

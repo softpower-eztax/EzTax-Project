@@ -155,14 +155,11 @@ const TaxCredits3Page: React.FC = () => {
   const childDependentCareCredit = form.watch('childDependentCareCredit') || 0;
   const aotcCredit = form.watch('aotcCredit') || 0;
   const llcCredit = form.watch('llcCredit') || 0;
-  // AOTC와 LLC는 합산하여 educationCredits 필드를 업데이트
+  // AOTC와 LLC는 내부적으로 합산하여 총액 계산에 사용
   const educationCreditsSum = Number(aotcCredit) + Number(llcCredit);
-  // 새로 계산된 educationCredits 값으로 필드 업데이트
-  useEffect(() => {
-    form.setValue('educationCredits', educationCreditsSum);
-  }, [educationCreditsSum, form]);
   
-  const educationCredits = form.watch('educationCredits') || 0;
+  // educationCredits 필드가 없어도 내부적으로 계산을 위해 사용
+  const educationCredits = educationCreditsSum;
   const retirementSavingsCredit = form.watch('retirementSavingsCredit') || 0;
   const otherCredits = form.watch('otherCredits') || 0;
   
@@ -965,27 +962,7 @@ const TaxCredits3Page: React.FC = () => {
                       />
                     </div>
                     
-                    <FormField
-                      control={form.control}
-                      name="educationCredits"
-                      render={({ field }) => (
-                        <FormItem className="mt-4">
-                          <FormLabel>교육 세액공제 총합 (Total Education Credits)</FormLabel>
-                          <FormControl>
-                            <div className="relative">
-                              <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-dark">$</span>
-                              <Input 
-                                placeholder="0.00"
-                                className="pl-8"
-                                disabled 
-                                value={field.value || ''}
-                              />
-                            </div>
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+                    {/* 교육 세액공제 총합 필드 제거됨 */}
                   </div>
                   
                   {/* 은퇴 저축 세액공제 */}

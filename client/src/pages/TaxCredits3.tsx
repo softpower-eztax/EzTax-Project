@@ -644,11 +644,7 @@ const TaxCredits3Page: React.FC = () => {
                         적격 교육비의 20%까지, 신고서당 최대 $2,000까지 공제 가능합니다. 학위 과정 뿐 아니라
                         직업 기술 향상을 위한 교육도 포함됩니다. 환급 불가능합니다.
                       </p>
-                      <p className="text-xs text-gray-600 mt-1">
-                        (Provides up to 20% of qualifying expenses, maximum $2,000 per return.
-                        Available for undergraduate, graduate, and professional degree courses, as well as courses to improve job skills.
-                        Non-refundable.)
-                      </p>
+
                     </div>
                     
                     <div className="grid grid-cols-1 gap-4">

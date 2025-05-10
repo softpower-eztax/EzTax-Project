@@ -492,40 +492,11 @@ const TaxCredits3Page: React.FC = () => {
                     </div>
                     
                     {!hasDependents && (
-                      <div className="bg-gray-bg p-3 rounded-md mb-3 text-sm">
-                        <p>개인정보 섹션에 부양가족을 추가하지 않았습니다. 
-                        부양가족이 있다면, 뒤로 돌아가 추가해주세요.</p>
-                        <p className="text-xs mt-1">(You have not added any dependents in the Personal Information section. 
-                        If you have dependents, please go back and add them.)</p>
+                      <div className="p-4 bg-gray-50 rounded-md mb-4 text-gray-600">
+                        <p>부양가족 정보가 없습니다. 부양가족 정보를 입력하면 관련 세액공제를 받을 수 있습니다.</p>
+                        <p>(No dependents information found. Adding dependents may qualify you for tax credits.)</p>
                       </div>
                     )}
-                    
-                    {/* 자녀세액공제 설명 부분 */}
-                    <div className="mb-4 bg-gray-50 p-3 rounded-md text-sm border border-gray-200">
-                      <p className="font-medium mb-1">자녀세액공제 (Child Tax Credit)</p>
-                      <p className="text-xs text-gray-600">
-                        17세 미만의 적격 부양가족 각각에 대해 최대 $2,000까지의 자녀세액공제를 받을 수 있습니다.
-                      </p>
-
-                    </div>
-
-                    {/* 자녀 및 부양가족 돌봄 공제 설명 부분 */}
-                    <div className="mb-4 bg-gray-50 p-3 rounded-md text-sm border border-gray-200">
-                      <p className="font-medium mb-1">자녀및부양가족돌봄공제 (Child and Dependent Care Credit)</p>
-                      <p className="text-xs text-gray-600">
-                        이 공제는 13세 미만의 적격 자녀 또는 장애가 있는 배우자나 부양가족을 돌보는 데 지출한 비용에 대한 것입니다.
-                      </p>
-
-                    </div>
-
-                    {/* 기타 부양가족 세액공제 설명 부분 */}
-                    <div className="mb-4 bg-gray-50 p-3 rounded-md text-sm border border-gray-200">
-                      <p className="font-medium mb-1">기타 부양가족 세액공제 (Credit for Other Dependents)</p>
-                      <p className="text-xs text-gray-600">
-                        자녀세액공제 대상이 아닌 부양가족 각각에 대해 최대 $500까지의 세액공제를 받을 수 있습니다.
-                      </p>
-
-                    </div>
                     
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <FormField
@@ -535,17 +506,38 @@ const TaxCredits3Page: React.FC = () => {
                           <FormItem>
                             <FormLabel>자녀세액공제액 (Child Tax Credit Amount)</FormLabel>
                             <FormControl>
-                              <div className="relative">
-                                <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-dark">$</span>
-                                <Input 
-                                  placeholder="0.00"
-                                  className="pl-8"
-                                  value={field.value || ''}
-                                  onChange={(e) => {
-                                    const formatted = formatNumberInput(e.target.value);
-                                    field.onChange(formatted ? Number(formatted) : 0);
+                              <div className="flex items-center gap-2">
+                                <div className="relative flex-grow">
+                                  <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-dark">$</span>
+                                  <Input 
+                                    placeholder="0.00"
+                                    className="pl-8"
+                                    value={field.value || ''}
+                                    onChange={(e) => {
+                                      const formatted = formatNumberInput(e.target.value);
+                                      field.onChange(formatted ? Number(formatted) : 0);
+                                    }}
+                                  />
+                                </div>
+                                <Button 
+                                  type="button" 
+                                  variant="outline" 
+                                  size="sm"
+                                  className="whitespace-nowrap"
+                                  onClick={() => {
+                                    // 자녀 세액 공제 자동 계산
+                                    const dependents = taxData.personalInfo?.dependents || [];
+                                    const filingStatus = taxData.personalInfo?.filingStatus || 'single';
+                                    const adjustedGrossIncome = taxData.income?.adjustedGrossIncome || 0;
+                                    const creditAmount = calculateChildTaxCredit(dependents, adjustedGrossIncome, filingStatus);
+                                    
+                                    // 계산된 값 설정
+                                    field.onChange(creditAmount);
+                                    console.log('자동 계산된 자녀 세액 공제액:', creditAmount);
                                   }}
-                                />
+                                >
+                                  자동계산
+                                </Button>
                               </div>
                             </FormControl>
                             <FormMessage />
@@ -560,17 +552,49 @@ const TaxCredits3Page: React.FC = () => {
                           <FormItem>
                             <FormLabel>자녀및부양가족돌봄공제액 (Child Care Credit Amount)</FormLabel>
                             <FormControl>
-                              <div className="relative">
-                                <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-dark">$</span>
-                                <Input 
-                                  placeholder="0.00"
-                                  className="pl-8"
-                                  value={field.value || ''}
-                                  onChange={(e) => {
-                                    const formatted = formatNumberInput(e.target.value);
-                                    field.onChange(formatted ? Number(formatted) : 0);
+                              <div className="flex items-center gap-2">
+                                <div className="relative flex-grow">
+                                  <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-dark">$</span>
+                                  <Input 
+                                    placeholder="0.00"
+                                    className="pl-8"
+                                    value={field.value || ''}
+                                    onChange={(e) => {
+                                      const formatted = formatNumberInput(e.target.value);
+                                      field.onChange(formatted ? Number(formatted) : 0);
+                                    }}
+                                  />
+                                </div>
+                                <Button 
+                                  type="button" 
+                                  variant="outline" 
+                                  size="sm"
+                                  className="whitespace-nowrap"
+                                  onClick={() => {
+                                    // 추정 돌봄 비용 (실제로는 사용자로부터 입력받아야 함)
+                                    const estimatedCareExpenses = 5000;
+                                    
+                                    // 부양가족 수
+                                    const dependents = taxData.personalInfo?.dependents || [];
+                                    const numberOfQualifyingDependents = dependents.length;
+                                    
+                                    // 조정된 총소득
+                                    const adjustedGrossIncome = taxData.income?.adjustedGrossIncome || 0;
+                                    
+                                    // 자동 계산
+                                    const creditAmount = calculateChildDependentCareCredit(
+                                      estimatedCareExpenses,
+                                      adjustedGrossIncome,
+                                      numberOfQualifyingDependents
+                                    );
+                                    
+                                    // 계산된 값 설정
+                                    field.onChange(creditAmount);
+                                    console.log('자동 계산된 자녀 및 부양가족 돌봄 세액 공제액:', creditAmount);
                                   }}
-                                />
+                                >
+                                  자동계산
+                                </Button>
                               </div>
                             </FormControl>
                             <FormMessage />
@@ -578,39 +602,18 @@ const TaxCredits3Page: React.FC = () => {
                         )}
                       />
                     </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-                      <FormField
-                        control={form.control}
-                        name="otherCredits"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>기타 부양가족 세액공제액 (Other Dependents Credit Amount)</FormLabel>
-                            <FormControl>
-                              <div className="relative">
-                                <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-dark">$</span>
-                                <Input 
-                                  placeholder="0.00"
-                                  className="pl-8"
-                                  value={field.value || ''}
-                                  onChange={(e) => {
-                                    const formatted = formatNumberInput(e.target.value);
-                                    field.onChange(formatted ? Number(formatted) : 0);
-                                  }}
-                                />
-                              </div>
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
+                    
+                    <div className="mt-3 pl-4 border-l-4 border-blue-100 bg-blue-50 p-3">
+                      <p className="text-sm text-blue-700">
+                        자녀 세액공제는 17세 미만의 적격 부양가족 자녀에 대해 최대 $2,000까지의 자녀세액공제를 받을 수 있습니다.
+                      </p>
                     </div>
                   </div>
                   
-                  {/* Education Credits */}
+                  {/* 교육 관련 세액공제 */}
                   <div className="mb-6 border-b border-gray-light pb-6">
                     <div className="flex items-center mb-3">
-                      <h4 className="font-semibold">교육비공제 (Education Credits)</h4>
+                      <h4 className="font-semibold">교육 관련 세액공제 (Education Credits)</h4>
                       <TooltipProvider>
                         <Tooltip>
                           <TooltipTrigger asChild>
@@ -618,111 +621,56 @@ const TaxCredits3Page: React.FC = () => {
                           </TooltipTrigger>
                           <TooltipContent>
                             <p className="w-64">
-                              적격 학생의 교육 비용에 대한 공제입니다. 미국학력장려세액공제(American Opportunity Credit)와 평생교육세액공제(Lifetime Learning Credit)가 포함됩니다.
-
+                              교육비에 대한 세액공제로 미국 세금 제도에서는 두 가지 주요 교육 세액공제인 미국 기회 세액공제(AOTC)와 평생 학습 세액공제(LLC)를 제공합니다.
                             </p>
                           </TooltipContent>
                         </Tooltip>
                       </TooltipProvider>
                     </div>
-
-                    {/* AOTC 설명 부분 */}
-                    <div className="mb-4 bg-gray-50 p-3 rounded-md text-sm border border-gray-200">
-                      <p className="font-medium mb-1">미국학력장려세액공제 (AOTC, American Opportunity Tax Credit)</p>
-                      <p className="text-xs text-gray-600">
-                        학부 과정의 처음 4년간 적격 학생당 최대 $2,500까지 공제 가능합니다. 
-                        적격 교육비와 교재비가 포함됩니다. 최대 $1,000까지 환급 가능합니다.
-                      </p>
-
-                    </div>
-
-                    {/* LLC 설명 부분 */}
-                    <div className="mb-4 bg-gray-50 p-3 rounded-md text-sm border border-gray-200">
-                      <p className="font-medium mb-1">평생교육세액공제 (LLC, Lifetime Learning Credit)</p>
-                      <p className="text-xs text-gray-600">
-                        적격 교육비의 20%까지, 신고서당 최대 $2,000까지 공제 가능합니다. 학위 과정 뿐 아니라
-                        직업 기술 향상을 위한 교육도 포함됩니다. 환급 불가능합니다.
-                      </p>
-
-                    </div>
                     
-                    <div className="grid grid-cols-1 gap-4">
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <FormField
-                          control={form.control}
-                          name="aotcCredit"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>미국학력장려세액공제액 (AOTC Amount)</FormLabel>
-                              <FormControl>
-                                <div className="relative">
-                                  <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-dark">$</span>
-                                  <Input 
-                                    placeholder="0.00"
-                                    className="pl-8"
-                                    value={field.value || ''}
-                                    onChange={(e) => {
-                                      const formatted = formatNumberInput(e.target.value);
-                                      const value = formatted ? Number(formatted) : 0;
-                                      field.onChange(value);
-                                      
-                                      // Update total education credits
-                                      const llcValue = form.getValues('llcCredit') || 0;
-                                      form.setValue('educationCredits', value + llcValue);
-                                    }}
-                                  />
-                                </div>
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-
-                        <FormField
-                          control={form.control}
-                          name="llcCredit"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>평생교육세액공제액 (LLC Amount)</FormLabel>
-                              <FormControl>
-                                <div className="relative">
-                                  <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-dark">$</span>
-                                  <Input 
-                                    placeholder="0.00"
-                                    className="pl-8"
-                                    value={field.value || ''}
-                                    onChange={(e) => {
-                                      const formatted = formatNumberInput(e.target.value);
-                                      const value = formatted ? Number(formatted) : 0;
-                                      field.onChange(value);
-                                      
-                                      // Update total education credits
-                                      const aotcValue = form.getValues('aotcCredit') || 0;
-                                      form.setValue('educationCredits', aotcValue + value);
-                                    }}
-                                  />
-                                </div>
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                      </div>
-                      
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <FormField
                         control={form.control}
-                        name="educationCredits"
+                        name="aotcCredit"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>총 교육비공제액 (Total Education Credit Amount)</FormLabel>
+                            <FormLabel>미국기회세액공제 (American Opportunity Tax Credit, AOTC)</FormLabel>
                             <FormControl>
                               <div className="relative">
                                 <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-dark">$</span>
                                 <Input 
                                   placeholder="0.00"
-                                  className="pl-8 bg-gray-50"
+                                  className="pl-8"
                                   value={field.value || ''}
-                                  disabled
+                                  onChange={(e) => {
+                                    const formatted = formatNumberInput(e.target.value);
+                                    field.onChange(formatted ? Number(formatted) : 0);
+                                  }}
+                                />
+                              </div>
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      
+                      <FormField
+                        control={form.control}
+                        name="llcCredit"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>평생학습공제 (Lifetime Learning Credit, LLC)</FormLabel>
+                            <FormControl>
+                              <div className="relative">
+                                <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-dark">$</span>
+                                <Input 
+                                  placeholder="0.00"
+                                  className="pl-8"
+                                  value={field.value || ''}
+                                  onChange={(e) => {
+                                    const formatted = formatNumberInput(e.target.value);
+                                    field.onChange(formatted ? Number(formatted) : 0);
+                                  }}
                                 />
                               </div>
                             </FormControl>
@@ -731,9 +679,31 @@ const TaxCredits3Page: React.FC = () => {
                         )}
                       />
                     </div>
+                    
+                    <FormField
+                      control={form.control}
+                      name="educationCredits"
+                      render={({ field }) => (
+                        <FormItem className="mt-4">
+                          <FormLabel>교육 세액공제 총합 (Total Education Credits)</FormLabel>
+                          <FormControl>
+                            <div className="relative">
+                              <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-dark">$</span>
+                              <Input 
+                                placeholder="0.00"
+                                className="pl-8"
+                                disabled 
+                                value={field.value || ''}
+                              />
+                            </div>
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
                   </div>
                   
-                  {/* Retirement Savings Credit */}
+                  {/* 은퇴 저축 세액공제 */}
                   <div className="mb-6 border-b border-gray-light pb-6">
                     <div className="flex items-center mb-3">
                       <h4 className="font-semibold">은퇴저축공제 (Retirement Savings Credit)</h4>
@@ -744,18 +714,15 @@ const TaxCredits3Page: React.FC = () => {
                           </TooltipTrigger>
                           <TooltipContent>
                             <p className="w-64">
-                              적격 은퇴 계좌에 대한 기여금에 대해 소득에 따라 최대 50%까지 공제 받을 수 있습니다.
-                              (You may be eligible for a credit of up to 50% of your contributions to eligible retirement accounts, depending on your income.)
+                              은퇴 계좌에 저축한 금액에 대한 세액공제입니다. 소득 수준에 따라 적격 은퇴 저축액의 10%, 20%, 50%까지 공제받을 수 있습니다.
                             </p>
                           </TooltipContent>
                         </Tooltip>
                       </TooltipProvider>
                     </div>
                     
-                    {/* Retirement Account Contributions Form */}
-                    <div className="bg-gray-50 p-4 rounded-md mb-4">
-                      <h5 className="font-medium mb-3">은퇴 계좌 납입금 (Retirement Account Contributions)</h5>
-                      
+                    {/* 은퇴 기여금 입력 필드들 */}
+                    <div className="mb-4">
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <FormField
                           control={form.control}
@@ -772,17 +739,7 @@ const TaxCredits3Page: React.FC = () => {
                                     value={field.value || ''}
                                     onChange={(e) => {
                                       const formatted = formatNumberInput(e.target.value);
-                                      const value = formatted ? Number(formatted) : 0;
-                                      field.onChange(value);
-                                      
-                                      // Update total contributions
-                                      const currentContributions = form.getValues('retirementContributions');
-                                      const total = Object.entries(currentContributions)
-                                        .filter(([key]) => key !== 'totalContributions')
-                                        .reduce((sum, [_, val]) => sum + (Number(val) || 0), 0);
-                                      
-                                      form.setValue('retirementContributions.totalContributions', total);
-                                      calculateRetirementCredit();
+                                      field.onChange(formatted ? Number(formatted) : 0);
                                     }}
                                   />
                                 </div>
@@ -807,322 +764,8 @@ const TaxCredits3Page: React.FC = () => {
                                     value={field.value || ''}
                                     onChange={(e) => {
                                       const formatted = formatNumberInput(e.target.value);
-                                      const value = formatted ? Number(formatted) : 0;
-                                      field.onChange(value);
-                                      
-                                      // Update total contributions
-                                      const currentContributions = form.getValues('retirementContributions');
-                                      const total = Object.entries(currentContributions)
-                                        .filter(([key]) => key !== 'totalContributions')
-                                        .reduce((sum, [_, val]) => sum + (Number(val) || 0), 0);
-                                      
-                                      form.setValue('retirementContributions.totalContributions', total);
-                                      calculateRetirementCredit();
+                                      field.onChange(formatted ? Number(formatted) : 0);
                                     }}
-                                  />
-                                </div>
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                        
-                        <FormField
-                          control={form.control}
-                          name="retirementContributions.plan401k"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>401(k) 플랜</FormLabel>
-                              <FormControl>
-                                <div className="relative">
-                                  <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-dark">$</span>
-                                  <Input 
-                                    placeholder="0.00"
-                                    className="pl-8"
-                                    value={field.value || ''}
-                                    onChange={(e) => {
-                                      const formatted = formatNumberInput(e.target.value);
-                                      const value = formatted ? Number(formatted) : 0;
-                                      field.onChange(value);
-                                      
-                                      // Update total contributions
-                                      const currentContributions = form.getValues('retirementContributions');
-                                      const total = Object.entries(currentContributions)
-                                        .filter(([key]) => key !== 'totalContributions')
-                                        .reduce((sum, [_, val]) => sum + (Number(val) || 0), 0);
-                                      
-                                      form.setValue('retirementContributions.totalContributions', total);
-                                      calculateRetirementCredit();
-                                    }}
-                                  />
-                                </div>
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                        
-                        <FormField
-                          control={form.control}
-                          name="retirementContributions.plan403b"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>403(b) 플랜</FormLabel>
-                              <FormControl>
-                                <div className="relative">
-                                  <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-dark">$</span>
-                                  <Input 
-                                    placeholder="0.00"
-                                    className="pl-8"
-                                    value={field.value || ''}
-                                    onChange={(e) => {
-                                      const formatted = formatNumberInput(e.target.value);
-                                      const value = formatted ? Number(formatted) : 0;
-                                      field.onChange(value);
-                                      
-                                      // Update total contributions
-                                      const currentContributions = form.getValues('retirementContributions');
-                                      const total = Object.entries(currentContributions)
-                                        .filter(([key]) => key !== 'totalContributions')
-                                        .reduce((sum, [_, val]) => sum + (Number(val) || 0), 0);
-                                      
-                                      form.setValue('retirementContributions.totalContributions', total);
-                                      calculateRetirementCredit();
-                                    }}
-                                  />
-                                </div>
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                        
-                        <FormField
-                          control={form.control}
-                          name="retirementContributions.plan457"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>457 플랜</FormLabel>
-                              <FormControl>
-                                <div className="relative">
-                                  <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-dark">$</span>
-                                  <Input 
-                                    placeholder="0.00"
-                                    className="pl-8"
-                                    value={field.value || ''}
-                                    onChange={(e) => {
-                                      const formatted = formatNumberInput(e.target.value);
-                                      const value = formatted ? Number(formatted) : 0;
-                                      field.onChange(value);
-                                      
-                                      // Update total contributions
-                                      const currentContributions = form.getValues('retirementContributions');
-                                      const total = Object.entries(currentContributions)
-                                        .filter(([key]) => key !== 'totalContributions')
-                                        .reduce((sum, [_, val]) => sum + (Number(val) || 0), 0);
-                                      
-                                      form.setValue('retirementContributions.totalContributions', total);
-                                      calculateRetirementCredit();
-                                    }}
-                                  />
-                                </div>
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                        
-                        <FormField
-                          control={form.control}
-                          name="retirementContributions.simpleIRA"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>SIMPLE IRA</FormLabel>
-                              <FormControl>
-                                <div className="relative">
-                                  <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-dark">$</span>
-                                  <Input 
-                                    placeholder="0.00"
-                                    className="pl-8"
-                                    value={field.value || ''}
-                                    onChange={(e) => {
-                                      const formatted = formatNumberInput(e.target.value);
-                                      const value = formatted ? Number(formatted) : 0;
-                                      field.onChange(value);
-                                      
-                                      // Update total contributions
-                                      const currentContributions = form.getValues('retirementContributions');
-                                      const total = Object.entries(currentContributions)
-                                        .filter(([key]) => key !== 'totalContributions')
-                                        .reduce((sum, [_, val]) => sum + (Number(val) || 0), 0);
-                                      
-                                      form.setValue('retirementContributions.totalContributions', total);
-                                      calculateRetirementCredit();
-                                    }}
-                                  />
-                                </div>
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                        
-                        <FormField
-                          control={form.control}
-                          name="retirementContributions.sepIRA"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>SEP IRA</FormLabel>
-                              <FormControl>
-                                <div className="relative">
-                                  <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-dark">$</span>
-                                  <Input 
-                                    placeholder="0.00"
-                                    className="pl-8"
-                                    value={field.value || ''}
-                                    onChange={(e) => {
-                                      const formatted = formatNumberInput(e.target.value);
-                                      const value = formatted ? Number(formatted) : 0;
-                                      field.onChange(value);
-                                      
-                                      // Update total contributions
-                                      const currentContributions = form.getValues('retirementContributions');
-                                      const total = Object.entries(currentContributions)
-                                        .filter(([key]) => key !== 'totalContributions')
-                                        .reduce((sum, [_, val]) => sum + (Number(val) || 0), 0);
-                                      
-                                      form.setValue('retirementContributions.totalContributions', total);
-                                      calculateRetirementCredit();
-                                    }}
-                                  />
-                                </div>
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                        
-                        <FormField
-                          control={form.control}
-                          name="retirementContributions.able"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>ABLE 계좌 (ABLE Account)</FormLabel>
-                              <FormControl>
-                                <div className="relative">
-                                  <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-dark">$</span>
-                                  <Input 
-                                    placeholder="0.00"
-                                    className="pl-8"
-                                    value={field.value || ''}
-                                    onChange={(e) => {
-                                      const formatted = formatNumberInput(e.target.value);
-                                      const value = formatted ? Number(formatted) : 0;
-                                      field.onChange(value);
-                                      
-                                      // Update total contributions
-                                      const currentContributions = form.getValues('retirementContributions');
-                                      const total = Object.entries(currentContributions)
-                                        .filter(([key]) => key !== 'totalContributions')
-                                        .reduce((sum, [_, val]) => sum + (Number(val) || 0), 0);
-                                      
-                                      form.setValue('retirementContributions.totalContributions', total);
-                                      calculateRetirementCredit();
-                                    }}
-                                  />
-                                </div>
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                        
-                        <FormField
-                          control={form.control}
-                          name="retirementContributions.tsp"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>TSP (Thrift Savings Plan)</FormLabel>
-                              <FormControl>
-                                <div className="relative">
-                                  <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-dark">$</span>
-                                  <Input 
-                                    placeholder="0.00"
-                                    className="pl-8"
-                                    value={field.value || ''}
-                                    onChange={(e) => {
-                                      const formatted = formatNumberInput(e.target.value);
-                                      const value = formatted ? Number(formatted) : 0;
-                                      field.onChange(value);
-                                      
-                                      // Update total contributions
-                                      const currentContributions = form.getValues('retirementContributions');
-                                      const total = Object.entries(currentContributions)
-                                        .filter(([key]) => key !== 'totalContributions')
-                                        .reduce((sum, [_, val]) => sum + (Number(val) || 0), 0);
-                                      
-                                      form.setValue('retirementContributions.totalContributions', total);
-                                      calculateRetirementCredit();
-                                    }}
-                                  />
-                                </div>
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                        
-                        <FormField
-                          control={form.control}
-                          name="retirementContributions.otherRetirementPlans"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>기타 은퇴 계좌 (Other Retirement Plans)</FormLabel>
-                              <FormControl>
-                                <div className="relative">
-                                  <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-dark">$</span>
-                                  <Input 
-                                    placeholder="0.00"
-                                    className="pl-8"
-                                    value={field.value || ''}
-                                    onChange={(e) => {
-                                      const formatted = formatNumberInput(e.target.value);
-                                      const value = formatted ? Number(formatted) : 0;
-                                      field.onChange(value);
-                                      
-                                      // Update total contributions
-                                      const currentContributions = form.getValues('retirementContributions');
-                                      const total = Object.entries(currentContributions)
-                                        .filter(([key]) => key !== 'totalContributions')
-                                        .reduce((sum, [_, val]) => sum + (Number(val) || 0), 0);
-                                      
-                                      form.setValue('retirementContributions.totalContributions', total);
-                                      calculateRetirementCredit();
-                                    }}
-                                  />
-                                </div>
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                      </div>
-                      
-                      <div className="mt-4">
-                        <FormField
-                          control={form.control}
-                          name="retirementContributions.totalContributions"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>총 은퇴 계좌 납입금 (Total Retirement Contributions)</FormLabel>
-                              <FormControl>
-                                <div className="relative">
-                                  <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-dark">$</span>
-                                  <Input 
-                                    placeholder="0.00"
-                                    className="pl-8 bg-gray-100"
-                                    value={field.value || ''}
-                                    disabled
                                   />
                                 </div>
                               </FormControl>
@@ -1133,13 +776,38 @@ const TaxCredits3Page: React.FC = () => {
                       </div>
                     </div>
                     
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                       <FormField
                         control={form.control}
-                        name="retirementSavingsCredit"
+                        name="retirementContributions.plan401k"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>은퇴저축공제액 (Retirement Savings Credit Amount)</FormLabel>
+                            <FormLabel>401(k) 플랜</FormLabel>
+                            <FormControl>
+                              <div className="relative">
+                                <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-dark">$</span>
+                                <Input 
+                                  placeholder="0.00"
+                                  className="pl-8"
+                                  value={field.value || ''}
+                                  onChange={(e) => {
+                                    const formatted = formatNumberInput(e.target.value);
+                                    field.onChange(formatted ? Number(formatted) : 0);
+                                  }}
+                                />
+                              </div>
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      
+                      <FormField
+                        control={form.control}
+                        name="retirementContributions.plan403b"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>403(b) 플랜</FormLabel>
                             <FormControl>
                               <div className="relative">
                                 <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-dark">$</span>
@@ -1159,36 +827,246 @@ const TaxCredits3Page: React.FC = () => {
                         )}
                       />
                     </div>
-                  </div>
-                  
-                  {/* Total Credits */}
-                  <div className="mb-6">
-                    <div className="flex items-center mb-3">
-                      <h4 className="font-semibold">총 세액공제 (Total Credits)</h4>
-                    </div>
                     
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                       <FormField
                         control={form.control}
-                        name="totalCredits"
+                        name="retirementContributions.plan457"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>총 세액공제액 (Total Credit Amount)</FormLabel>
+                            <FormLabel>457 플랜</FormLabel>
                             <FormControl>
                               <div className="relative">
                                 <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-dark">$</span>
                                 <Input 
                                   placeholder="0.00"
-                                  className="pl-8 bg-gray-50"
+                                  className="pl-8"
                                   value={field.value || ''}
-                                  disabled
+                                  onChange={(e) => {
+                                    const formatted = formatNumberInput(e.target.value);
+                                    field.onChange(formatted ? Number(formatted) : 0);
+                                  }}
                                 />
                               </div>
                             </FormControl>
-                            <FormDescription>
-                              자동으로 계산된 총 세액공제액입니다.
-                              (This is your automatically calculated total tax credits.)
-                            </FormDescription>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      
+                      <FormField
+                        control={form.control}
+                        name="retirementContributions.simpleIRA"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>SIMPLE IRA</FormLabel>
+                            <FormControl>
+                              <div className="relative">
+                                <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-dark">$</span>
+                                <Input 
+                                  placeholder="0.00"
+                                  className="pl-8"
+                                  value={field.value || ''}
+                                  onChange={(e) => {
+                                    const formatted = formatNumberInput(e.target.value);
+                                    field.onChange(formatted ? Number(formatted) : 0);
+                                  }}
+                                />
+                              </div>
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                      <FormField
+                        control={form.control}
+                        name="retirementContributions.sepIRA"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>SEP IRA</FormLabel>
+                            <FormControl>
+                              <div className="relative">
+                                <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-dark">$</span>
+                                <Input 
+                                  placeholder="0.00"
+                                  className="pl-8"
+                                  value={field.value || ''}
+                                  onChange={(e) => {
+                                    const formatted = formatNumberInput(e.target.value);
+                                    field.onChange(formatted ? Number(formatted) : 0);
+                                  }}
+                                />
+                              </div>
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      
+                      <FormField
+                        control={form.control}
+                        name="retirementContributions.able"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>ABLE 계좌</FormLabel>
+                            <FormControl>
+                              <div className="relative">
+                                <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-dark">$</span>
+                                <Input 
+                                  placeholder="0.00"
+                                  className="pl-8"
+                                  value={field.value || ''}
+                                  onChange={(e) => {
+                                    const formatted = formatNumberInput(e.target.value);
+                                    field.onChange(formatted ? Number(formatted) : 0);
+                                  }}
+                                />
+                              </div>
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                      <FormField
+                        control={form.control}
+                        name="retirementContributions.tsp"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Thrift Savings Plan (TSP)</FormLabel>
+                            <FormControl>
+                              <div className="relative">
+                                <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-dark">$</span>
+                                <Input 
+                                  placeholder="0.00"
+                                  className="pl-8"
+                                  value={field.value || ''}
+                                  onChange={(e) => {
+                                    const formatted = formatNumberInput(e.target.value);
+                                    field.onChange(formatted ? Number(formatted) : 0);
+                                  }}
+                                />
+                              </div>
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      
+                      <FormField
+                        control={form.control}
+                        name="retirementContributions.otherRetirementPlans"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>기타 은퇴 계획 (Other Retirement Plans)</FormLabel>
+                            <FormControl>
+                              <div className="relative">
+                                <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-dark">$</span>
+                                <Input 
+                                  placeholder="0.00"
+                                  className="pl-8"
+                                  value={field.value || ''}
+                                  onChange={(e) => {
+                                    const formatted = formatNumberInput(e.target.value);
+                                    field.onChange(formatted ? Number(formatted) : 0);
+                                  }}
+                                />
+                              </div>
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                      <FormField
+                        control={form.control}
+                        name="retirementContributions.totalContributions"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>총 기여금 (Total Contributions)</FormLabel>
+                            <FormControl>
+                              <div className="flex items-center gap-2">
+                                <div className="relative flex-grow">
+                                  <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-dark">$</span>
+                                  <Input 
+                                    placeholder="0.00"
+                                    className="pl-8"
+                                    value={field.value || ''}
+                                    onChange={(e) => {
+                                      const formatted = formatNumberInput(e.target.value);
+                                      field.onChange(formatted ? Number(formatted) : 0);
+                                    }}
+                                  />
+                                </div>
+                                <Button 
+                                  type="button" 
+                                  variant="outline" 
+                                  size="sm"
+                                  onClick={() => {
+                                    // 모든 은퇴 기여금 필드 합산
+                                    const values = form.getValues().retirementContributions;
+                                    const total = 
+                                      (values.traditionalIRA || 0) +
+                                      (values.rothIRA || 0) +
+                                      (values.plan401k || 0) +
+                                      (values.plan403b || 0) +
+                                      (values.plan457 || 0) +
+                                      (values.simpleIRA || 0) +
+                                      (values.sepIRA || 0) +
+                                      (values.able || 0) +
+                                      (values.tsp || 0) +
+                                      (values.otherRetirementPlans || 0);
+                                    
+                                    // 총액 업데이트
+                                    form.setValue('retirementContributions.totalContributions', total);
+                                  }}
+                                >
+                                  합계계산
+                                </Button>
+                              </div>
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      
+                      <FormField
+                        control={form.control}
+                        name="retirementSavingsCredit"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>저축공제액 (Retirement Savings Credit)</FormLabel>
+                            <FormControl>
+                              <div className="flex items-center gap-2">
+                                <div className="relative flex-grow">
+                                  <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-dark">$</span>
+                                  <Input 
+                                    placeholder="0.00"
+                                    className="pl-8"
+                                    value={field.value || ''}
+                                    onChange={(e) => {
+                                      const formatted = formatNumberInput(e.target.value);
+                                      field.onChange(formatted ? Number(formatted) : 0);
+                                    }}
+                                  />
+                                </div>
+                                <Button 
+                                  type="button" 
+                                  variant="outline" 
+                                  size="sm"
+                                  onClick={calculateRetirementCredit}
+                                >
+                                  자동계산
+                                </Button>
+                              </div>
+                            </FormControl>
                             <FormMessage />
                           </FormItem>
                         )}
@@ -1196,18 +1074,72 @@ const TaxCredits3Page: React.FC = () => {
                     </div>
                   </div>
                   
-                  <div className="mt-8">
-                    <StepNavigation 
-                      prevStep="/deductions" 
-                      nextStep="/additional-tax"
-                      onNext={handleNext}
-                      submitText="다음 단계 (Next Step)"
+                  {/* 기타 세액공제 */}
+                  <div className="mb-6 border-b border-gray-light pb-6">
+                    <div className="mb-3">
+                      <h4 className="font-semibold">기타 세액공제 (Other Credits)</h4>
+                    </div>
+                    
+                    <FormField
+                      control={form.control}
+                      name="otherCredits"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>기타 세액공제 합계 (Total Other Credits)</FormLabel>
+                          <FormControl>
+                            <div className="relative">
+                              <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-dark">$</span>
+                              <Input 
+                                placeholder="0.00"
+                                className="pl-8"
+                                value={field.value || ''}
+                                onChange={(e) => {
+                                  const formatted = formatNumberInput(e.target.value);
+                                  field.onChange(formatted ? Number(formatted) : 0);
+                                }}
+                              />
+                            </div>
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                  
+                  {/* 총 세액공제 */}
+                  <div>
+                    <FormField
+                      control={form.control}
+                      name="totalCredits"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-lg font-semibold">총 세액공제 (Total Tax Credits)</FormLabel>
+                          <FormControl>
+                            <div className="relative">
+                              <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-dark">$</span>
+                              <Input 
+                                placeholder="0.00"
+                                className="pl-8 text-lg font-bold"
+                                disabled
+                                value={field.value || ''}
+                              />
+                            </div>
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
                     />
                   </div>
                 </form>
               </Form>
             </CardContent>
           </Card>
+          
+          <StepNavigation
+            prevStep="/deductions"
+            nextStep="/additional-tax"
+            onNext={handleNext}
+          />
         </div>
       </div>
     </div>

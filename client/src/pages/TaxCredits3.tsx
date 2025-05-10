@@ -218,6 +218,9 @@ const TaxCredits3Page: React.FC = () => {
     const agi = taxData.income?.adjustedGrossIncome || 0;
     const filingStatus = taxData.personalInfo?.filingStatus || 'single';
     
+    // 계산 로직 디버그 로깅
+    console.log("은퇴저축공제 계산 - 총기여금:", totalContributions, "조정총소득(AGI):", agi, "신고유형:", filingStatus);
+    
     let creditRate = 0;
     
     // 소득 구간에 따른 공제율 결정
@@ -235,6 +238,8 @@ const TaxCredits3Page: React.FC = () => {
       else if (agi <= 34000) creditRate = 0.1;
     }
     
+    console.log("적용 공제율:", creditRate);
+    
     // 최대 적격 금액 제한 (개인당 $2,000)
     const eligibleContribution = Math.min(totalContributions, filingStatus === 'married_joint' ? 4000 : 2000);
     
@@ -245,8 +250,12 @@ const TaxCredits3Page: React.FC = () => {
     const maxCredit = filingStatus === 'married_joint' ? 2000 : 1000;
     const finalCredit = Math.min(creditAmount, maxCredit);
     
+    console.log("계산된 은퇴저축공제액:", finalCredit);
+    
     // 폼에 계산된 공제액 설정
     form.setValue('retirementSavingsCredit', finalCredit);
+    
+    return finalCredit;
   };
   
   // 최초 로드 시 폼 초기값 설정

@@ -1,5 +1,30 @@
-import { TaxData } from '@/context/TaxContext';
+import {
+  PersonalInformation,
+  Income,
+  Deductions,
+  TaxCredits,
+  AdditionalTax,
+  CalculatedResults,
+  RetirementContributions
+} from '@shared/schema';
 import { formatCurrency } from './taxCalculations';
+
+// Define the structure matching our tax data in TaxContext
+interface TaxData {
+  id?: number;
+  userId?: number;
+  taxYear: number;
+  status: string;
+  createdAt: string;
+  updatedAt: string;
+  personalInfo?: PersonalInformation;
+  income?: Income;
+  deductions?: Deductions;
+  taxCredits?: TaxCredits;
+  retirementContributions?: RetirementContributions;
+  additionalTax?: AdditionalTax;
+  calculatedResults?: CalculatedResults;
+}
 
 // Define the structure for tax-saving suggestions
 export interface TaxSavingSuggestion {
@@ -39,24 +64,26 @@ export function generateTaxSavingSuggestions(taxData: TaxData): TaxSavingSuggest
     }
   }
   
-  // Check health savings account (HSA) contributions
-  const hsaContribution = taxData.income.adjustments.healthSavingsAccount || 0;
+  // HSA contributions might exist in the real application but not in the schema
+  // We'll skip this for now, but in a real application we would implement this
+  /*
+  const hsaContribution = 0; // Not supported in current schema
   const hsaMaxIndividual = 3850;
   const hsaMaxFamily = 7750;
   const isFamily = taxData.personalInfo.filingStatus === 'married_joint' || 
                   (taxData.personalInfo.dependents && taxData.personalInfo.dependents.length > 0);
   const hsaMax = isFamily ? hsaMaxFamily : hsaMaxIndividual;
   
-  if (hsaContribution < hsaMax) {
-    const additionalHsaContribution = hsaMax - hsaContribution;
+  if (hsaMax > 0) {
     suggestions.push({
       id: 'hsa-contribution',
       title: '건강 저축 계좌(HSA) 기여금 최대화 (Maximize HSA Contributions)',
-      description: `현재 HSA 기여금은 ${formatCurrency(hsaContribution)}입니다. 추가로 ${formatCurrency(additionalHsaContribution)}을 기여하면 연간 한도인 ${formatCurrency(hsaMax)}까지 채울 수 있습니다. HSA 기여금은 세전 금액이며, 건강 관련 비용에 사용될 때 세금이 면제됩니다.`,
-      potentialSavings: Math.round(additionalHsaContribution * 0.22), // Assuming 22% tax bracket
-      priority: additionalHsaContribution > 1000 ? 'high' : 'medium'
+      description: `HSA 계좌에 기여하면 세전 금액으로 최대 ${formatCurrency(hsaMax)}까지 의료비 저축이 가능합니다. HSA 기여금은 세전 금액이며, 건강 관련 비용에 사용될 때 세금이 면제됩니다.`,
+      potentialSavings: Math.round(hsaMax * 0.22), // Assuming 22% tax bracket
+      priority: 'medium'
     });
   }
+  */
   
   // Check student loan interest deduction
   const studentLoanInterest = taxData.income.adjustments.studentLoanInterest || 0;
@@ -76,21 +103,25 @@ export function generateTaxSavingSuggestions(taxData: TaxData): TaxSavingSuggest
     const standardDeduction = taxData.deductions.standardDeductionAmount;
     const itemizedDeductions = taxData.deductions.itemizedDeductions || {};
     
-    // Calculate potential itemized deduction amount
-    const potentialItemizedAmount = (itemizedDeductions.medicalExpenses || 0) +
-                                   (itemizedDeductions.stateLocalIncomeTax || 0) +
-                                   (itemizedDeductions.realEstateTaxes || 0) +
-                                   (itemizedDeductions.mortgageInterest || 0) +
-                                   (itemizedDeductions.charitableCash || 0) +
-                                   (itemizedDeductions.charitableNonCash || 0);
+    // Calculate potential itemized deduction amount using optional chaining and nullish coalescing
+    const potentialItemizedAmount = (itemizedDeductions?.medicalExpenses ?? 0) +
+                                   (itemizedDeductions?.stateLocalIncomeTax ?? 0) +
+                                   (itemizedDeductions?.realEstateTaxes ?? 0) +
+                                   (itemizedDeductions?.mortgageInterest ?? 0) +
+                                   (itemizedDeductions?.charitableCash ?? 0) +
+                                   (itemizedDeductions?.charitableNonCash ?? 0);
     
     // If potential itemized amount is close to standard deduction
     const itemizedGap = standardDeduction - potentialItemizedAmount;
     if (itemizedGap > 0 && itemizedGap < 5000) {
+      const standardDeductionStr = formatCurrency(standardDeduction);
+      const potentialItemizedStr = formatCurrency(Math.round(potentialItemizedAmount));
+      const itemizedGapStr = formatCurrency(Math.round(itemizedGap));
+      
       suggestions.push({
         id: 'itemized-deduction',
         title: '항목별 공제 고려 (Consider Itemized Deductions)',
-        description: `현재 표준 공제($${standardDeduction})를 선택하셨습니다. 하지만 항목별 공제 총액이 $${Math.round(potentialItemizedAmount)}로, 표준 공제액보다 $${Math.round(itemizedGap)} 적습니다. 추가 자선 기부, 의료비, 주택 이자 등을 통해 항목별 공제를 늘려 표준 공제액을 초과하면 세금 절약이 가능합니다.`,
+        description: "현재 표준 공제(" + standardDeductionStr + ")를 선택하셨습니다. 하지만 항목별 공제 총액이 " + potentialItemizedStr + "로, 표준 공제액보다 " + itemizedGapStr + " 적습니다. 추가 자선 기부, 의료비, 주택 이자 등을 통해 항목별 공제를 늘려 표준 공제액을 초과하면 세금 절약이 가능합니다.",
         potentialSavings: Math.round(itemizedGap * 0.22), // Assuming 22% tax bracket
         priority: itemizedGap < 2000 ? 'high' : 'medium'
       });
@@ -102,7 +133,7 @@ export function generateTaxSavingSuggestions(taxData: TaxData): TaxSavingSuggest
     const childDependentCareCredit = taxData.taxCredits.childDependentCareCredit || 0;
     
     // Check if there are qualifying children under 13
-    const hasQualifyingChildren = taxData.personalInfo.dependents.some(dependent => {
+    const hasQualifyingChildren = taxData.personalInfo.dependents.some((dependent: { dateOfBirth?: string }) => {
       if (!dependent.dateOfBirth) return false;
       const birthYear = new Date(dependent.dateOfBirth).getFullYear();
       return (2025 - birthYear) < 13; // Assuming tax year 2025
@@ -159,10 +190,11 @@ export function generateTaxSavingSuggestions(taxData: TaxData): TaxSavingSuggest
     // If charitable contributions are less than 2% of AGI, suggest increasing
     if (totalCharitable < income * 0.02) {
       const suggestedIncrease = Math.round(income * 0.02) - totalCharitable;
+      const percentageString = (totalCharitable/income*100).toFixed(1);
       suggestions.push({
         id: 'charitable-contributions',
         title: '자선 기부금 증액 고려 (Consider Increasing Charitable Contributions)',
-        description: `현재 자선 기부금은 ${formatCurrency(totalCharitable)}로, 조정총소득(AGI)의 ${(totalCharitable/income*100).toFixed(1)}%입니다. 기부금을 ${formatCurrency(suggestedIncrease)} 증액하면 세금 공제 혜택을 더 받을 수 있습니다. 현금 기부 외에도 의류, 가구, 전자제품 등의 물품 기부도 공제 가능합니다.`,
+        description: "현재 자선 기부금은 " + formatCurrency(totalCharitable) + "로, 조정총소득(AGI)의 " + percentageString + "%입니다. 기부금을 " + formatCurrency(suggestedIncrease) + " 증액하면 세금 공제 혜택을 더 받을 수 있습니다. 현금 기부 외에도 의류, 가구, 전자제품 등의 물품 기부도 공제 가능합니다.",
         potentialSavings: Math.round(suggestedIncrease * 0.22), // Assuming 22% tax bracket
         priority: 'low'
       });
@@ -171,4 +203,3 @@ export function generateTaxSavingSuggestions(taxData: TaxData): TaxSavingSuggest
   
   return suggestions;
 }
-`

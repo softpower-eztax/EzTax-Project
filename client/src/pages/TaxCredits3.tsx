@@ -1210,22 +1210,13 @@ const TaxCredits3Page: React.FC = () => {
                     </div>
                   </div>
                   
-                  <div className="flex justify-between mt-8">
-                    <div>
-                      <StepNavigation 
-                        prevStep="/deductions" 
-                        nextStep="/additional-tax"
-                        onNext={handleNext}
-                        submitText="다음 단계 (Next Step)"
-                      />
-                    </div>
-                    <Button 
-                      type="button" 
-                      variant="secondary" 
-                      onClick={handleSave}
-                    >
-                      진행 상황 저장 (Save Progress)
-                    </Button>
+                  <div className="mt-8">
+                    <StepNavigation 
+                      prevStep="/deductions" 
+                      nextStep="/additional-tax"
+                      onNext={handleNext}
+                      submitText="다음 단계 (Next Step)"
+                    />
                   </div>
                 </form>
               </Form>

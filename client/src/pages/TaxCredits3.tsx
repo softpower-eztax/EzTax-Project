@@ -624,7 +624,7 @@ const TaxCredits3Page: React.FC = () => {
                                   control={form.control}
                                   name="careExpenses"
                                   render={({ field: expenseField }) => (
-                                    <FormItem className="mb-2">
+                                    <FormItem className="mb-4">
                                       <FormLabel>돌봄 비용 총액 (Total Care Expenses)</FormLabel>
                                       <FormControl>
                                         <div className="relative">
@@ -643,6 +643,128 @@ const TaxCredits3Page: React.FC = () => {
                                     </FormItem>
                                   )}
                                 />
+
+                                {/* 돌봄 제공자 정보 */}
+                                <div className="mb-3">
+                                  <div className="flex items-center justify-between mb-2">
+                                    <h5 className="font-medium text-sm">돌봄 제공자 정보 (Care Provider Information)</h5>
+                                    <Button 
+                                      type="button" 
+                                      variant="outline" 
+                                      size="sm"
+                                      onClick={() => appendCareProvider({ name: '', address: '', taxId: '', amount: 0 })}
+                                      className="flex items-center text-xs"
+                                    >
+                                      <PlusCircle className="h-3.5 w-3.5 mr-1" />
+                                      제공자 추가
+                                    </Button>
+                                  </div>
+                                  
+                                  <div className="bg-yellow-50 border border-yellow-100 rounded-md p-3 mb-3 text-sm text-yellow-800">
+                                    <p className="flex items-center mb-1">
+                                      <Info className="h-4 w-4 mr-1 flex-shrink-0" />
+                                      <strong>영수증 준비: </strong> 모든 돌봄 비용에 대한 영수증과 증빙 서류를 보관하세요.
+                                    </p>
+                                    <p className="text-xs ml-5">
+                                      세금 신고 시 실제 지출을 증명할 수 있는 영수증이나 결제 내역이 필요합니다.
+                                    </p>
+                                    <p className="text-xs ml-5 text-gray-600 italic">
+                                      (Keep all receipts and documentation for child and dependent care expenses. You may need to provide proof of payment during tax filing.)
+                                    </p>
+                                  </div>
+                                  
+                                  {careProviderFields.length === 0 && (
+                                    <div className="p-3 bg-gray-100 rounded-md text-gray-500 text-sm my-2">
+                                      보육 기관 또는 돌봄 제공자 정보가 필요합니다. '제공자 추가' 버튼을 눌러 정보를 입력하세요.
+                                      <br />
+                                      (Care provider information is required. Click 'Add Provider' to enter details.)
+                                    </div>
+                                  )}
+                                  
+                                  {careProviderFields.map((providerField, index) => (
+                                    <div key={providerField.id} className="mb-3 p-3 border border-gray-200 rounded-md bg-white">
+                                      <div className="flex justify-between items-center mb-2">
+                                        <h6 className="font-medium text-xs">
+                                          제공자 {index + 1} (Provider {index + 1})
+                                        </h6>
+                                        <Button 
+                                          type="button" 
+                                          variant="ghost" 
+                                          size="sm" 
+                                          onClick={() => removeCareProvider(index)}
+                                          className="h-7 w-7 p-0"
+                                        >
+                                          <Trash2 className="h-4 w-4 text-red-500" />
+                                        </Button>
+                                      </div>
+                                      
+                                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                        <FormField
+                                          control={form.control}
+                                          name={`careProviders.${index}.name`}
+                                          render={({ field }) => (
+                                            <FormItem>
+                                              <FormLabel className="text-xs">이름 (Name)</FormLabel>
+                                              <FormControl>
+                                                <Input {...field} placeholder="홍길동 보육원" />
+                                              </FormControl>
+                                            </FormItem>
+                                          )}
+                                        />
+                                        
+                                        <FormField
+                                          control={form.control}
+                                          name={`careProviders.${index}.taxId`}
+                                          render={({ field }) => (
+                                            <FormItem>
+                                              <FormLabel className="text-xs">SSN 또는 EIN (Tax ID)</FormLabel>
+                                              <FormControl>
+                                                <Input {...field} placeholder="123-45-6789" />
+                                              </FormControl>
+                                            </FormItem>
+                                          )}
+                                        />
+                                        
+                                        <FormField
+                                          control={form.control}
+                                          name={`careProviders.${index}.address`}
+                                          render={({ field }) => (
+                                            <FormItem className="md:col-span-2">
+                                              <FormLabel className="text-xs">주소 (Address)</FormLabel>
+                                              <FormControl>
+                                                <Input {...field} placeholder="서울시 강남구 테헤란로 123" />
+                                              </FormControl>
+                                            </FormItem>
+                                          )}
+                                        />
+                                        
+                                        <FormField
+                                          control={form.control}
+                                          name={`careProviders.${index}.amount`}
+                                          render={({ field }) => (
+                                            <FormItem>
+                                              <FormLabel className="text-xs">지불 금액 (Amount Paid)</FormLabel>
+                                              <FormControl>
+                                                <div className="relative">
+                                                  <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-dark">$</span>
+                                                  <Input 
+                                                    placeholder="0.00"
+                                                    className="pl-8"
+                                                    value={field.value || ''}
+                                                    onChange={(e) => {
+                                                      const formatted = formatNumberInput(e.target.value);
+                                                      field.onChange(formatted ? Number(formatted) : 0);
+                                                    }}
+                                                  />
+                                                </div>
+                                              </FormControl>
+                                            </FormItem>
+                                          )}
+                                        />
+                                      </div>
+                                    </div>
+                                  ))}
+                                </div>
                                 
                                 <div className="flex justify-end mt-3">
                                   <Button 
@@ -653,6 +775,27 @@ const TaxCredits3Page: React.FC = () => {
                                       // 돌봄 비용 값 가져오기
                                       const careExpenses = form.getValues('careExpenses') || 0;
                                       
+                                      // 돌봄 제공자 정보에서 금액 추출
+                                      const careProviders = form.getValues('careProviders') || [];
+                                      const providersTotalAmount = careProviders.reduce((total, provider) => 
+                                        total + (provider.amount || 0), 0);
+                                      
+                                      // 총 돌봄 비용 (사용자 입력값과 제공자별 금액 중 큰 값 사용)
+                                      const totalCareExpenses = Math.max(careExpenses, providersTotalAmount);
+                                      
+                                      // 제공자 정보 검증
+                                      const hasValidProviders = careProviders.length > 0 && 
+                                        careProviders.some(p => p.name && p.taxId);
+                                      
+                                      if (!hasValidProviders) {
+                                        toast({
+                                          title: "제공자 정보 필요",
+                                          description: "돌봄 공제를 받으려면 최소 한 명의 돌봄 제공자 정보가 필요합니다.",
+                                          variant: "destructive"
+                                        });
+                                        return;
+                                      }
+                                      
                                       // 부양가족 수
                                       const dependents = taxData.personalInfo?.dependents || [];
                                       const numberOfQualifyingDependents = dependents.length;
@@ -662,7 +805,7 @@ const TaxCredits3Page: React.FC = () => {
                                       
                                       // 공제액 계산
                                       const creditAmount = calculateChildDependentCareCredit(
-                                        careExpenses,
+                                        totalCareExpenses,
                                         adjustedGrossIncome,
                                         numberOfQualifyingDependents
                                       );

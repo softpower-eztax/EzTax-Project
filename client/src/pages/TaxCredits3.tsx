@@ -45,11 +45,16 @@ interface TaxCredits {
 // Extended TaxCredits interface for the form
 interface TaxCreditsFormData extends TaxCredits {
   retirementContributions: RetirementContributions;
+  // 추가 필드
+  careExpenses: number; // 돌봄 비용
 }
 
 const TaxCredits3Page: React.FC = () => {
   const { taxData, updateTaxData, saveTaxReturn } = useTaxContext();
   const { toast } = useToast();
+  
+  // 돌봄 비용 입력 필드 표시 여부를 위한 상태
+  const [showCareExpenseFields, setShowCareExpenseFields] = useState<boolean>(false);
   
   // 컴포넌트 내부 상태 관리
   const [savedValues, setSavedValues] = useState<TaxCreditsFormData>({
@@ -73,7 +78,8 @@ const TaxCredits3Page: React.FC = () => {
       totalContributions: 0
     },
     otherCredits: taxData.taxCredits?.otherCredits || 0,
-    totalCredits: taxData.taxCredits?.totalCredits || 0
+    totalCredits: taxData.taxCredits?.totalCredits || 0,
+    careExpenses: 0 // 돌봄 비용 초기값
   });
   
   // 부양가족이 있는지 확인
@@ -108,7 +114,8 @@ const TaxCredits3Page: React.FC = () => {
   // Create full schema for form validation
   const taxCreditsFormSchema = z.object({
     ...taxCreditsSchema.shape,
-    retirementContributions: retirementContributionsSchema
+    retirementContributions: retirementContributionsSchema,
+    careExpenses: z.coerce.number().min(0).default(0)
   });
 
   // useForm 설정

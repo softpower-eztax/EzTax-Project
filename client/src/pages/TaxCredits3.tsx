@@ -43,10 +43,19 @@ interface TaxCredits {
 }
 
 // Extended TaxCredits interface for the form
+// 돌봄 제공자 정보 인터페이스
+interface CareProvider {
+  name: string;
+  address: string;
+  taxId: string; // SSN 또는 EIN
+  amount: number; // 해당 제공자에게 지불한 금액
+}
+
 interface TaxCreditsFormData extends TaxCredits {
   retirementContributions: RetirementContributions;
   // 추가 필드
   careExpenses: number; // 돌봄 비용
+  careProviders: CareProvider[]; // 돌봄 제공자 정보
 }
 
 const TaxCredits3Page: React.FC = () => {
@@ -79,7 +88,8 @@ const TaxCredits3Page: React.FC = () => {
     },
     otherCredits: taxData.taxCredits?.otherCredits || 0,
     totalCredits: taxData.taxCredits?.totalCredits || 0,
-    careExpenses: 0 // 돌봄 비용 초기값
+    careExpenses: 0, // 돌봄 비용 초기값
+    careProviders: [] // 돌봄 제공자 정보 초기값
   });
   
   // 부양가족이 있는지 확인
@@ -111,11 +121,20 @@ const TaxCredits3Page: React.FC = () => {
     totalCredits: z.coerce.number().min(0).default(0)
   });
   
+  // 돌봄 제공자 스키마
+  const careProviderSchema = z.object({
+    name: z.string().optional(),
+    address: z.string().optional(),
+    taxId: z.string().optional(),
+    amount: z.coerce.number().min(0).default(0)
+  });
+
   // Create full schema for form validation
   const taxCreditsFormSchema = z.object({
     ...taxCreditsSchema.shape,
     retirementContributions: retirementContributionsSchema,
-    careExpenses: z.coerce.number().min(0).default(0)
+    careExpenses: z.coerce.number().min(0).default(0),
+    careProviders: z.array(careProviderSchema).default([])
   });
 
   // useForm 설정
@@ -235,7 +254,8 @@ const TaxCredits3Page: React.FC = () => {
         },
         otherCredits: taxData.taxCredits.otherCredits || 0,
         totalCredits: taxData.taxCredits.totalCredits || 0,
-        careExpenses: 0 // 돌봄 비용 초기값
+        careExpenses: 0, // 돌봄 비용 초기값
+        careProviders: [] // 돌봄 제공자 정보 초기값
       };
       
       console.log("TaxCredits3 - 컨텍스트에서 초기값 설정:", contextValues);
@@ -265,7 +285,8 @@ const TaxCredits3Page: React.FC = () => {
         },
         otherCredits: 0,
         totalCredits: 0,
-        careExpenses: 0
+        careExpenses: 0,
+        careProviders: []
       };
       
       console.log("TaxCredits3 - 기본값 설정:", defaultValues);
@@ -376,7 +397,8 @@ const TaxCredits3Page: React.FC = () => {
     const resetValues = {
       ...resetTaxCredits,
       retirementContributions: resetRetirementContributions,
-      careExpenses: 0
+      careExpenses: 0,
+      careProviders: []
     };
     
     console.log("값 초기화 실행:", resetValues);
@@ -438,7 +460,8 @@ const TaxCredits3Page: React.FC = () => {
     const combinedValues = {
       ...taxCreditsValues,
       retirementContributions,
-      careExpenses: form.getValues('careExpenses') || 0 // 돌봄 비용 값 추가
+      careExpenses: form.getValues('careExpenses') || 0, // 돌봄 비용 값 추가
+      careProviders: form.getValues('careProviders') || [] // 돌봄 제공자 정보 추가
     };
     
     // 로컬 상태 업데이트 (form 값 보존을 위해)

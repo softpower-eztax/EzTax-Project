@@ -15,7 +15,7 @@ import { useToast } from '@/hooks/use-toast';
 import { calculateTaxes } from '@/lib/taxCalculations';
 
 // Define the structure of our tax data
-interface TaxData {
+export interface TaxData {
   id?: number;
   userId?: number;
   taxYear: number;

@@ -18,6 +18,7 @@ import TaxSavingAdvice from "@/pages/TaxSavingAdvice";
 import PricingPage from "@/pages/PricingPage";
 import NotFound from "@/pages/not-found";
 import AuthPage from "@/pages/auth-page";
+import DataTester from "@/pages/DataTester";
 import { AuthProvider } from "@/hooks/use-auth";
 import { ProtectedRoute } from "@/lib/protected-route";
 import { TaxProvider } from "@/context/TaxContext";
@@ -37,6 +38,7 @@ function Router() {
       <ProtectedRoute path="/review" component={Review} />
       <ProtectedRoute path="/tax-saving-advice" component={TaxSavingAdvice} />
       <ProtectedRoute path="/pricing" component={PricingPage} />
+      <ProtectedRoute path="/test-data" component={DataTester} />
       <Route component={NotFound} />
     </Switch>
   );

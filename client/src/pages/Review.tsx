@@ -5,6 +5,7 @@ import { Separator } from '@/components/ui/separator';
 import { useTaxContext } from '@/context/TaxContext';
 import { useToast } from '@/hooks/use-toast';
 import ProgressTracker from '@/components/ProgressTracker';
+import TaxSavingSuggestions from '@/components/TaxSavingSuggestions';
 
 import StepNavigation from '@/components/StepNavigation';
 import { File, Check, FileEdit, Loader2 } from 'lucide-react';

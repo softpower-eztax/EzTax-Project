@@ -5,7 +5,6 @@ import { Separator } from '@/components/ui/separator';
 import { useTaxContext } from '@/context/TaxContext';
 import { useToast } from '@/hooks/use-toast';
 import ProgressTracker from '@/components/ProgressTracker';
-import TaxSavingSuggestions from '@/components/TaxSavingSuggestions';
 
 import StepNavigation from '@/components/StepNavigation';
 import { File, Check, FileEdit, Loader2 } from 'lucide-react';
@@ -375,8 +374,22 @@ const Review: React.FC = () => {
                 </div>
               </div>
               
-              {/* Tax Saving Suggestions */}
-              <TaxSavingSuggestions />
+              {/* Tax Saving Advice Button */}
+              <div className="border border-primary-light rounded-lg p-6 bg-primary/5 mb-6">
+                <div className="flex flex-col md:flex-row md:items-center justify-between">
+                  <div className="mb-4 md:mb-0">
+                    <h3 className="text-lg font-heading font-semibold text-primary-dark mb-2">세금 절세 제안을 해드릴까요?</h3>
+                    <p className="text-gray-600">
+                      입력하신 정보를 분석하여 추가 공제 가능성과 세금 절약 방안을 알려드립니다.
+                    </p>
+                  </div>
+                  <Link href="/tax-saving-advice">
+                    <Button className="bg-primary text-white font-semibold rounded hover:bg-primary-dark transition duration-200 w-full md:w-auto">
+                      절세 제안 보기(View Tax Saving Advice)
+                    </Button>
+                  </Link>
+                </div>
+              </div>
               
               <div className="flex flex-col sm:flex-row justify-between mt-10 gap-4">
                 <Button

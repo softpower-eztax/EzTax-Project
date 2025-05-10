@@ -166,6 +166,12 @@ export interface RetirementContributions {
   totalContributions: number;
 }
 
+export interface OtherCreditItem {
+  type: string;
+  amount: number;
+  description?: string;
+}
+
 export interface TaxCredits {
   childTaxCredit: number;
   childDependentCareCredit: number;
@@ -174,6 +180,7 @@ export interface TaxCredits {
   llcCredit: number;
   retirementSavingsCredit: number;
   otherCredits: number;
+  otherCreditItems?: OtherCreditItem[];
   totalCredits: number;
 }
 
@@ -310,6 +317,12 @@ export const retirementContributionsSchema = z.object({
   totalContributions: z.number().min(0),
 });
 
+export const otherCreditItemSchema = z.object({
+  type: z.string(),
+  amount: z.number().min(0),
+  description: z.string().optional(),
+});
+
 export const taxCreditsSchema = z.object({
   childTaxCredit: z.number().min(0),
   childDependentCareCredit: z.number().min(0),
@@ -318,6 +331,7 @@ export const taxCreditsSchema = z.object({
   llcCredit: z.number().min(0),
   retirementSavingsCredit: z.number().min(0),
   otherCredits: z.number().min(0),
+  otherCreditItems: z.array(otherCreditItemSchema).optional(),
   totalCredits: z.number().min(0),
 });
 

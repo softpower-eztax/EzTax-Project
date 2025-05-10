@@ -605,11 +605,7 @@ const TaxCredits3Page: React.FC = () => {
                       />
                     </div>
                     
-                    <div className="mt-3 pl-4 border-l-4 border-blue-100 bg-blue-50 p-3">
-                      <p className="text-sm text-blue-700">
-                        자녀 세액공제는 17세 미만의 적격 부양가족 자녀에 대해 최대 $2,000까지의 자녀세액공제를 받을 수 있습니다.
-                      </p>
-                    </div>
+
                   </div>
                   
                   {/* 교육 관련 세액공제 */}

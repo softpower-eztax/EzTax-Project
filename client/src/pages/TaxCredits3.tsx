@@ -732,7 +732,7 @@ const TaxCredits3Page: React.FC = () => {
                                             <FormItem className="md:col-span-2">
                                               <FormLabel className="text-xs">주소 (Address)</FormLabel>
                                               <FormControl>
-                                                <Input {...field} placeholder="서울시 강남구 테헤란로 123" />
+                                                <Input {...field} placeholder="123 Main St, Springfield, IL 62704" />
                                               </FormControl>
                                             </FormItem>
                                           )}
@@ -791,7 +791,7 @@ const TaxCredits3Page: React.FC = () => {
                                         toast({
                                           title: "제공자 정보 필요",
                                           description: "돌봄 공제를 받으려면 최소 한 명의 돌봄 제공자 정보가 필요합니다.",
-                                          variant: "destructive"
+                                          variant: "default"
                                         });
                                         return;
                                       }

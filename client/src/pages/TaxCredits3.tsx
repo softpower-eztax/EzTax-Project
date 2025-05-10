@@ -507,9 +507,7 @@ const TaxCredits3Page: React.FC = () => {
                       <p className="text-xs text-gray-600">
                         17세 미만의 적격 부양가족 각각에 대해 최대 $2,000까지의 자녀세액공제를 받을 수 있습니다.
                       </p>
-                      <p className="text-xs text-gray-600 mt-1">
-                        (You may be eligible for a Child Tax Credit of up to $2,000 for each qualifying dependent under age 17.)
-                      </p>
+
                     </div>
 
                     {/* 자녀 및 부양가족 돌봄 공제 설명 부분 */}
@@ -518,9 +516,7 @@ const TaxCredits3Page: React.FC = () => {
                       <p className="text-xs text-gray-600">
                         이 공제는 13세 미만의 적격 자녀 또는 장애가 있는 배우자나 부양가족을 돌보는 데 지출한 비용에 대한 것입니다.
                       </p>
-                      <p className="text-xs text-gray-600 mt-1">
-                        (This credit is for expenses paid for the care of your qualifying children under age 13, or for a disabled spouse or dependent.)
-                      </p>
+
                     </div>
 
                     {/* 기타 부양가족 세액공제 설명 부분 */}
@@ -529,9 +525,7 @@ const TaxCredits3Page: React.FC = () => {
                       <p className="text-xs text-gray-600">
                         자녀세액공제 대상이 아닌 부양가족 각각에 대해 최대 $500까지의 세액공제를 받을 수 있습니다.
                       </p>
-                      <p className="text-xs text-gray-600 mt-1">
-                        (You may be eligible for a Credit for Other Dependents of up to $500 for each qualifying dependent who doesn't qualify for the Child Tax Credit.)
-                      </p>
+
                     </div>
                     
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -626,7 +620,7 @@ const TaxCredits3Page: React.FC = () => {
                           <TooltipContent>
                             <p className="w-64">
                               적격 학생의 교육 비용에 대한 공제입니다. 미국학력장려세액공제(American Opportunity Credit)와 평생교육세액공제(Lifetime Learning Credit)가 포함됩니다.
-                              (Credits for education expenses for eligible students. Includes the American Opportunity Credit and Lifetime Learning Credit.)
+
                             </p>
                           </TooltipContent>
                         </Tooltip>
@@ -640,10 +634,7 @@ const TaxCredits3Page: React.FC = () => {
                         학부 과정의 처음 4년간 적격 학생당 최대 $2,500까지 공제 가능합니다. 
                         적격 교육비와 교재비가 포함됩니다. 최대 $1,000까지 환급 가능합니다.
                       </p>
-                      <p className="text-xs text-gray-600 mt-1">
-                        (Provides up to $2,500 per eligible student for the first 4 years of undergraduate education.
-                        Includes tuition, fees, and course materials. Up to $1,000 is refundable.)
-                      </p>
+
                     </div>
 
                     {/* LLC 설명 부분 */}

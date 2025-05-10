@@ -275,7 +275,7 @@ const Review: React.FC = () => {
                     <Field label="Unemployment Income" value={formatCurrency(income.unemploymentIncome)} />
                     <Field label="Other Income" value={formatCurrency(income.otherIncome)} />
                     <Field label="Total Income" value={formatCurrency(income.totalIncome)} />
-                    <Field label="Adjustments" value={formatCurrency(income.adjustments.studentLoanInterest + income.adjustments.retirementContributions + income.adjustments.healthSavingsAccount + income.adjustments.otherAdjustments)} />
+                    <Field label="Adjustments" value={formatCurrency(income.adjustments.studentLoanInterest + income.adjustments.retirementContributions + income.adjustments.otherAdjustments)} />
                     <Field label="Adjusted Gross Income" value={formatCurrency(income.adjustedGrossIncome)} className="font-semibold" />
                   </div>
                 </div>
@@ -374,6 +374,9 @@ const Review: React.FC = () => {
                   </div>
                 </div>
               </div>
+              
+              {/* Tax Saving Suggestions */}
+              <TaxSavingSuggestions />
               
               <div className="flex flex-col sm:flex-row justify-between mt-10 gap-4">
                 <Button

@@ -234,7 +234,8 @@ const TaxCredits3Page: React.FC = () => {
           totalContributions: 0
         },
         otherCredits: taxData.taxCredits.otherCredits || 0,
-        totalCredits: taxData.taxCredits.totalCredits || 0
+        totalCredits: taxData.taxCredits.totalCredits || 0,
+        careExpenses: 0 // 돌봄 비용 초기값
       };
       
       console.log("TaxCredits3 - 컨텍스트에서 초기값 설정:", contextValues);
@@ -263,7 +264,8 @@ const TaxCredits3Page: React.FC = () => {
           totalContributions: 0
         },
         otherCredits: 0,
-        totalCredits: 0
+        totalCredits: 0,
+        careExpenses: 0
       };
       
       console.log("TaxCredits3 - 기본값 설정:", defaultValues);
@@ -552,6 +554,109 @@ const TaxCredits3Page: React.FC = () => {
                         )}
                       />
 
+                      <FormField
+                        control={form.control}
+                        name="childDependentCareCredit"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>자녀 및 부양가족 돌봄 비용 공제 (Child and Dependent Care Credit)</FormLabel>
+                            <FormControl>
+                              <div className="flex items-center gap-2">
+                                <div className="relative flex-grow">
+                                  <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-dark">$</span>
+                                  <Input 
+                                    placeholder="0.00"
+                                    className="pl-8"
+                                    value={field.value || ''}
+                                    onChange={(e) => {
+                                      const formatted = formatNumberInput(e.target.value);
+                                      field.onChange(formatted ? Number(formatted) : 0);
+                                    }}
+                                  />
+                                </div>
+                                <Button 
+                                  type="button" 
+                                  variant="outline" 
+                                  size="sm"
+                                  className="whitespace-nowrap"
+                                  onClick={() => setShowCareExpenseFields(!showCareExpenseFields)}
+                                >
+                                  추가 정보 입력
+                                </Button>
+                              </div>
+                            </FormControl>
+                            
+                            {showCareExpenseFields && (
+                              <div className="mt-2 p-3 border rounded-md bg-gray-50">
+                                <FormField
+                                  control={form.control}
+                                  name="careExpenses"
+                                  render={({ field: expenseField }) => (
+                                    <FormItem className="mb-2">
+                                      <FormLabel>돌봄 비용 총액 (Total Care Expenses)</FormLabel>
+                                      <FormControl>
+                                        <div className="relative">
+                                          <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-dark">$</span>
+                                          <Input 
+                                            placeholder="0.00"
+                                            className="pl-8"
+                                            value={expenseField.value || ''}
+                                            onChange={(e) => {
+                                              const formatted = formatNumberInput(e.target.value);
+                                              expenseField.onChange(formatted ? Number(formatted) : 0);
+                                            }}
+                                          />
+                                        </div>
+                                      </FormControl>
+                                    </FormItem>
+                                  )}
+                                />
+                                
+                                <div className="flex justify-end mt-3">
+                                  <Button 
+                                    type="button" 
+                                    variant="outline" 
+                                    size="sm"
+                                    onClick={() => {
+                                      // 돌봄 비용 값 가져오기
+                                      const careExpenses = form.getValues('careExpenses') || 0;
+                                      
+                                      // 부양가족 수
+                                      const dependents = taxData.personalInfo?.dependents || [];
+                                      const numberOfQualifyingDependents = dependents.length;
+                                      
+                                      // 조정된 총소득
+                                      const adjustedGrossIncome = taxData.income?.adjustedGrossIncome || 0;
+                                      
+                                      // 공제액 계산
+                                      const creditAmount = calculateChildDependentCareCredit(
+                                        careExpenses,
+                                        adjustedGrossIncome,
+                                        numberOfQualifyingDependents
+                                      );
+                                      
+                                      // 결과 업데이트
+                                      field.onChange(creditAmount);
+                                      setShowCareExpenseFields(false);
+                                      console.log('자동 계산된 돌봄 비용 공제액:', creditAmount);
+                                    }}
+                                  >
+                                    자동계산
+                                  </Button>
+                                </div>
+                              </div>
+                            )}
+                            
+                            <FormMessage />
+                            <FormDescription className="text-xs mt-1">
+                              13세 미만 자녀 또는 장애가 있는 부양가족을 돌보는 비용에 대한 세액공제입니다.
+                            </FormDescription>
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                    
+                    <div className="mt-4">
                       <FormField
                         control={form.control}
                         name="childDependentCareCredit"

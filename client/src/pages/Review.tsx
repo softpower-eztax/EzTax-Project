@@ -232,27 +232,27 @@ const Review: React.FC = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <Field 
-                      label="Name" 
+                      label="이름(Name)" 
                       value={`${personalInfo.firstName || ''} ${personalInfo.middleInitial || ''} ${personalInfo.lastName || ''}`.trim()} 
                     />
                     <Field label="SSN" value={personalInfo.ssn} />
-                    <Field label="Date of Birth" value={personalInfo.dateOfBirth} />
-                    <Field label="Filing Status" value={formatFilingStatus(personalInfo.filingStatus)} />
+                    <Field label="생년월일(Date of Birth)" value={personalInfo.dateOfBirth} />
+                    <Field label="납세자 구분(Filing Status)" value={formatFilingStatus(personalInfo.filingStatus)} />
                   </div>
                   <div>
-                    <Field label="Email" value={personalInfo.email} />
-                    <Field label="Phone" value={personalInfo.phone} />
+                    <Field label="이메일(Email)" value={personalInfo.email} />
+                    <Field label="전화번호(Phone)" value={personalInfo.phone} />
                     <Field 
-                      label="Address" 
+                      label="주소(Address)" 
                       value={`${personalInfo.address1 || ''} ${personalInfo.address2 || ''}`.trim()} 
                     />
                     <Field 
-                      label="City, State ZIP" 
+                      label="도시, 주, 우편번호(City, State ZIP)" 
                       value={`${personalInfo.city || ''}, ${personalInfo.state || ''} ${personalInfo.zipCode || ''}`.trim()} 
                     />
                     <Field 
-                      label="Dependents" 
-                      value={personalInfo.dependents?.length ? `${personalInfo.dependents.length} dependent(s)` : 'None'} 
+                      label="부양가족(Dependents)" 
+                      value={personalInfo.dependents?.length ? `${personalInfo.dependents.length}명의 부양가족` : '없음'} 
                     />
                   </div>
                 </div>
@@ -262,20 +262,20 @@ const Review: React.FC = () => {
               <SectionSummary title="소득(Income)" editLink="/income">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <Field label="Wages" value={formatCurrency(income.wages)} />
-                    <Field label="Interest Income" value={formatCurrency(income.interestIncome)} />
-                    <Field label="Dividend Income" value={formatCurrency(income.dividends)} />
-                    <Field label="Business Income" value={formatCurrency(income.businessIncome)} />
-                    <Field label="Capital Gains" value={formatCurrency(income.capitalGains)} />
-                    <Field label="Rental Income" value={formatCurrency(income.rentalIncome)} />
+                    <Field label="급여(Wages)" value={formatCurrency(income.wages)} />
+                    <Field label="이자 소득(Interest Income)" value={formatCurrency(income.interestIncome)} />
+                    <Field label="배당 소득(Dividend Income)" value={formatCurrency(income.dividends)} />
+                    <Field label="사업 소득(Business Income)" value={formatCurrency(income.businessIncome)} />
+                    <Field label="자본 이득(Capital Gains)" value={formatCurrency(income.capitalGains)} />
+                    <Field label="임대 소득(Rental Income)" value={formatCurrency(income.rentalIncome)} />
                   </div>
                   <div>
-                    <Field label="Retirement Income" value={formatCurrency(income.retirementIncome)} />
-                    <Field label="Unemployment Income" value={formatCurrency(income.unemploymentIncome)} />
-                    <Field label="Other Income" value={formatCurrency(income.otherIncome)} />
-                    <Field label="Total Income" value={formatCurrency(income.totalIncome)} />
-                    <Field label="Adjustments" value={formatCurrency(income.adjustments.studentLoanInterest + income.adjustments.retirementContributions + income.adjustments.otherAdjustments)} />
-                    <Field label="Adjusted Gross Income" value={formatCurrency(income.adjustedGrossIncome)} className="font-semibold" />
+                    <Field label="은퇴 소득(Retirement Income)" value={formatCurrency(income.retirementIncome)} />
+                    <Field label="실업 소득(Unemployment Income)" value={formatCurrency(income.unemploymentIncome)} />
+                    <Field label="기타 소득(Other Income)" value={formatCurrency(income.otherIncome)} />
+                    <Field label="총 소득(Total Income)" value={formatCurrency(income.totalIncome)} />
+                    <Field label="소득 조정(Adjustments)" value={formatCurrency(income.adjustments.studentLoanInterest + income.adjustments.retirementContributions + income.adjustments.otherAdjustments)} />
+                    <Field label="조정 총소득(Adjusted Gross Income)" value={formatCurrency(income.adjustedGrossIncome)} className="font-semibold" />
                   </div>
                 </div>
               </SectionSummary>
@@ -285,28 +285,28 @@ const Review: React.FC = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <Field 
-                      label="Deduction Type" 
-                      value={deductions.useStandardDeduction ? 'Standard Deduction' : 'Itemized Deductions'} 
+                      label="공제 유형(Deduction Type)" 
+                      value={deductions.useStandardDeduction ? '표준 공제(Standard Deduction)' : '항목별 공제(Itemized Deductions)'} 
                     />
                     {deductions.useStandardDeduction ? (
-                      <Field label="Standard Deduction Amount" value={formatCurrency(deductions.standardDeductionAmount)} />
+                      <Field label="표준 공제액(Standard Deduction Amount)" value={formatCurrency(deductions.standardDeductionAmount)} />
                     ) : (
                       <>
-                        <Field label="Medical Expenses" value={formatCurrency(deductions.itemizedDeductions?.medicalExpenses || 0)} />
-                        <Field label="State & Local Income Tax" value={formatCurrency(deductions.itemizedDeductions?.stateLocalIncomeTax || 0)} />
-                        <Field label="Real Estate Taxes" value={formatCurrency(deductions.itemizedDeductions?.realEstateTaxes || 0)} />
+                        <Field label="의료비(Medical Expenses)" value={formatCurrency(deductions.itemizedDeductions?.medicalExpenses || 0)} />
+                        <Field label="주 및 지방세(State & Local Income Tax)" value={formatCurrency(deductions.itemizedDeductions?.stateLocalIncomeTax || 0)} />
+                        <Field label="부동산세(Real Estate Taxes)" value={formatCurrency(deductions.itemizedDeductions?.realEstateTaxes || 0)} />
                       </>
                     )}
                   </div>
                   <div>
                     {!deductions.useStandardDeduction && (
                       <>
-                        <Field label="Mortgage Interest" value={formatCurrency(deductions.itemizedDeductions?.mortgageInterest || 0)} />
-                        <Field label="Charitable Contributions (Cash)" value={formatCurrency(deductions.itemizedDeductions?.charitableCash || 0)} />
-                        <Field label="Charitable Contributions (Non-Cash)" value={formatCurrency(deductions.itemizedDeductions?.charitableNonCash || 0)} />
+                        <Field label="주택담보대출 이자(Mortgage Interest)" value={formatCurrency(deductions.itemizedDeductions?.mortgageInterest || 0)} />
+                        <Field label="현금 기부금(Charitable Contributions Cash)" value={formatCurrency(deductions.itemizedDeductions?.charitableCash || 0)} />
+                        <Field label="비현금 기부금(Charitable Contributions Non-Cash)" value={formatCurrency(deductions.itemizedDeductions?.charitableNonCash || 0)} />
                       </>
                     )}
-                    <Field label="Total Deductions" value={formatCurrency(deductions.totalDeductions)} />
+                    <Field label="총 공제액(Total Deductions)" value={formatCurrency(deductions.totalDeductions)} />
                   </div>
                 </div>
               </SectionSummary>
@@ -315,14 +315,14 @@ const Review: React.FC = () => {
               <SectionSummary title="세액공제(Tax Credits)" editLink="/tax-credits">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <Field label="Child Tax Credit" value={formatCurrency(taxCredits.childTaxCredit)} />
-                    <Field label="Child & Dependent Care Credit" value={formatCurrency(taxCredits.childDependentCareCredit)} />
-                    <Field label="Education Credits" value={formatCurrency(taxCredits.educationCredits)} />
+                    <Field label="자녀 세액공제(Child Tax Credit)" value={formatCurrency(taxCredits.childTaxCredit)} />
+                    <Field label="자녀 및 부양가족 돌봄 공제(Child & Dependent Care Credit)" value={formatCurrency(taxCredits.childDependentCareCredit)} />
+                    <Field label="교육비 공제(Education Credits)" value={formatCurrency(taxCredits.educationCredits)} />
                   </div>
                   <div>
-                    <Field label="Retirement Savings Credit" value={formatCurrency(taxCredits.retirementSavingsCredit)} />
-                    <Field label="Other Credits" value={formatCurrency(taxCredits.otherCredits)} />
-                    <Field label="Total Credits" value={formatCurrency(taxCredits.totalCredits)} />
+                    <Field label="은퇴 저축 공제(Retirement Savings Credit)" value={formatCurrency(taxCredits.retirementSavingsCredit)} />
+                    <Field label="기타 세액공제(Other Credits)" value={formatCurrency(taxCredits.otherCredits)} />
+                    <Field label="총 세액공제(Total Credits)" value={formatCurrency(taxCredits.totalCredits)} />
                   </div>
                 </div>
               </SectionSummary>
@@ -331,13 +331,13 @@ const Review: React.FC = () => {
               <SectionSummary title="추가 세금(Additional Tax)" editLink="/additional-tax">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <Field label="Self-Employment Income" value={formatCurrency(additionalTax.selfEmploymentIncome)} />
-                    <Field label="Self-Employment Tax" value={formatCurrency(additionalTax.selfEmploymentTax)} />
-                    <Field label="Other Income" value={formatCurrency(additionalTax.otherIncome)} />
+                    <Field label="자영업 소득(Self-Employment Income)" value={formatCurrency(additionalTax.selfEmploymentIncome)} />
+                    <Field label="자영업 세금(Self-Employment Tax)" value={formatCurrency(additionalTax.selfEmploymentTax)} />
+                    <Field label="기타 소득(Other Income)" value={formatCurrency(additionalTax.otherIncome)} />
                   </div>
                   <div>
-                    <Field label="Other Taxes" value={formatCurrency(additionalTax.otherTaxes)} />
-                    <Field label="Estimated Tax Payments" value={formatCurrency(additionalTax.estimatedTaxPayments)} />
+                    <Field label="기타 세금(Other Taxes)" value={formatCurrency(additionalTax.otherTaxes)} />
+                    <Field label="예상 세금 납부(Estimated Tax Payments)" value={formatCurrency(additionalTax.estimatedTaxPayments)} />
                   </div>
                 </div>
               </SectionSummary>

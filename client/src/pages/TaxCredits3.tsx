@@ -210,6 +210,24 @@ const TaxCredits3Page: React.FC = () => {
     form.setValue('totalCredits', calculatedTotal);
   }, [calculatedTotal, form]);
   
+  // 은퇴 기여금 변경 감지 및 자동 계산
+  const retirementContributionsTotal = form.watch('retirementContributions.totalContributions') || 0;
+  
+  // 기여금 변경시 자동으로 저축공제액 계산
+  useEffect(() => {
+    if (retirementContributionsTotal > 0) {
+      console.log("은퇴 기여금 변경 감지:", retirementContributionsTotal);
+      console.log("현재 조정총소득(AGI):", taxData.income?.adjustedGrossIncome);
+      console.log("현재 신고유형:", taxData.personalInfo?.filingStatus);
+      
+      // 1초 후에 계산 실행 (데이터 로딩을 위한 지연)
+      setTimeout(() => {
+        const result = calculateRetirementCredit();
+        console.log("자동 계산된 은퇴저축공제액:", result);
+      }, 1000);
+    }
+  }, [retirementContributionsTotal, taxData.income?.adjustedGrossIncome, taxData.personalInfo?.filingStatus]);
+  
   // 은퇴 저축 공제액 계산 함수
   const calculateRetirementCredit = () => {
     // 은퇴 기여금 총액 계산
@@ -270,6 +288,13 @@ const TaxCredits3Page: React.FC = () => {
         console.log("TaxCredits3 - 로컬스토리지에서 복원:", parsedValues);
         setSavedValues(parsedValues);
         form.reset(parsedValues);
+        
+        // 페이지 로드 시 은퇴 기여금이 있다면 저축공제액 자동 계산
+        if (parsedValues.retirementContributions?.totalContributions > 0) {
+          console.log("페이지 로드 시 은퇴저축공제 자동 계산 실행");
+          setTimeout(() => calculateRetirementCredit(), 1500);
+        }
+        
         return; // 로컬스토리지에서 값 찾았으면 여기서 종료
       } catch (e) {
         console.error("로컬스토리지 데이터 파싱 실패:", e);

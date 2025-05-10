@@ -484,8 +484,7 @@ const TaxCredits3Page: React.FC = () => {
                           </TooltipTrigger>
                           <TooltipContent>
                             <p className="w-64">
-                              자녀 및 부양가족과 관련된 다양한 세액공제를 신청할 수 있습니다.
-                              (Various tax credits related to your children and dependents.)
+                              자녀 및 부양가족과 관련된 다양한 세액공제를 신청할 수 있습니다. (Various tax credits related to your children and dependents.)
                             </p>
                           </TooltipContent>
                         </Tooltip>

@@ -91,32 +91,7 @@ const Header: React.FC = () => {
                 진행 상황 저장
               </Button>
               
-              {/* 리셋 버튼 및 확인 대화상자 */}
-              <AlertDialog>
-                <AlertDialogTrigger asChild>
-                  <Button 
-                    variant="outline" 
-                    size="sm"
-                    className="text-red-500 hover:text-red-600 hover:bg-red-50 flex items-center text-sm"
-                    disabled={isResetting}
-                  >
-                    <RefreshCcw className="h-4 w-4 mr-1" />
-                    {isResetting ? '초기화 중...' : '모든 필드 초기화'}
-                  </Button>
-                </AlertDialogTrigger>
-                <AlertDialogContent>
-                  <AlertDialogHeader>
-                    <AlertDialogTitle>정말 모든 데이터를 초기화하시겠습니까?</AlertDialogTitle>
-                    <AlertDialogDescription>
-                      이 작업은 취소할 수 없으며 모든 개인정보 및 입력 데이터가 지워집니다.
-                    </AlertDialogDescription>
-                  </AlertDialogHeader>
-                  <AlertDialogFooter>
-                    <AlertDialogCancel>취소</AlertDialogCancel>
-                    <AlertDialogAction onClick={handleReset}>확인</AlertDialogAction>
-                  </AlertDialogFooter>
-                </AlertDialogContent>
-              </AlertDialog>
+
               
               <Button 
                 variant="outline" 

@@ -310,8 +310,8 @@ const TaxCredits3Page: React.FC = () => {
           ...defaultRetirementContributions,
           ...(taxData.retirementContributions || {})
         },
-        careProviders: taxData.taxCredits?.careProviders || [defaultCareProvider],
-        careExpenses: taxData.taxCredits?.careExpenses || 0
+        careProviders: (taxData.taxCredits as any)?.careProviders || [defaultCareProvider],
+        careExpenses: (taxData.taxCredits as any)?.careExpenses || 0
       };
       
       form.reset(parsedValues);

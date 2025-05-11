@@ -368,7 +368,7 @@ export const TaxProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
       const emptyDeductions = {
         useStandardDeduction: true,
-        standardDeductionAmount: 12950, // Basic standard deduction
+        standardDeductionAmount: 0, // 초기값 0으로 설정
         itemizedDeductions: {
           medicalExpenses: 0,
           stateLocalIncomeTax: 0,
@@ -377,7 +377,7 @@ export const TaxProvider: React.FC<{ children: React.ReactNode }> = ({ children 
           charitableCash: 0,
           charitableNonCash: 0
         },
-        totalDeductions: 12950
+        totalDeductions: 0
       };
 
       const emptyTaxCredits = {
@@ -412,9 +412,29 @@ export const TaxProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         otherIncome: 0,
         otherTaxes: 0
       };
+      
+      // 빈 개인정보
+      const emptyPersonalInfo = {
+        firstName: "",
+        lastName: "",
+        ssn: "",
+        dateOfBirth: "",
+        email: "",
+        phone: "",
+        address1: "",
+        address2: "",
+        city: "",
+        state: "",
+        zipCode: "",
+        filingStatus: "single" as const,
+        isDisabled: false,
+        isNonresidentAlien: false,
+        dependents: []
+      };
 
       const updatedData = {
         ...prevData,
+        personalInfo: emptyPersonalInfo,
         income: emptyIncome,
         deductions: emptyDeductions,
         taxCredits: emptyTaxCredits,
@@ -427,9 +447,16 @@ export const TaxProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       const calculatedResults = calculateTaxes(updatedData);
       updatedData.calculatedResults = calculatedResults;
       
+      // 로컬 스토리지 초기화
+      localStorage.removeItem('personalInfo');
+      localStorage.removeItem('income');
+      localStorage.removeItem('deductions');
+      localStorage.removeItem('taxCredits');
+      localStorage.removeItem('additionalTax');
+      
       toast({
-        title: "모든 값을 0으로 초기화했습니다",
-        description: "테스트 데이터를 추가하기 전 모든 숫자 필드가 0으로 설정되었습니다.",
+        title: "모든 정보를 초기화했습니다",
+        description: "모든 개인정보와 숫자 필드가 초기화되었습니다.",
       });
       
       return updatedData;

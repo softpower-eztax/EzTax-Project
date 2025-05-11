@@ -1346,15 +1346,7 @@ const TaxCredits3Page: React.FC = () => {
                     />
                   </div>
                   
-                  <div className="flex justify-end">
-                    <Button 
-                      type="submit" 
-                      className="px-6"
-                      disabled={!pendingChanges}
-                    >
-                      저장
-                    </Button>
-                  </div>
+                  {/* 저장 버튼 제거됨 */}
                 </div>
               </CardContent>
             </Card>

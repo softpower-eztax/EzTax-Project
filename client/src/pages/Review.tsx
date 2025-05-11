@@ -181,7 +181,11 @@ const Review: React.FC = () => {
                     <Field label="실업 소득(Unemployment Income)" value={formatCurrency(income.unemploymentIncome)} />
                     <Field label="기타 소득(Other Income)" value={formatCurrency(income.otherIncome)} />
                     <Field label="총 소득(Total Income)" value={formatCurrency(income.totalIncome)} />
-                    <Field label="소득 조정(Adjustments)" value={formatCurrency(income.adjustments.studentLoanInterest + income.adjustments.retirementContributions + income.adjustments.otherAdjustments)} />
+                    <Field label="소득 조정(Adjustments)" value={formatCurrency(
+                      (income.adjustments?.studentLoanInterest || 0) + 
+                      (income.adjustments?.retirementContributions || 0) + 
+                      (income.adjustments?.otherAdjustments || 0)
+                    )} />
                     <Field label="조정 총소득(Adjusted Gross Income)" value={formatCurrency(income.adjustedGrossIncome)} className="font-semibold" />
                   </div>
                 </div>

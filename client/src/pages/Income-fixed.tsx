@@ -51,7 +51,6 @@ export default function IncomePage() {
     adjustments: {
       studentLoanInterest: taxData.income?.adjustments?.studentLoanInterest || 0,
       retirementContributions: taxData.income?.adjustments?.retirementContributions || 0,
-      healthSavingsAccount: taxData.income?.adjustments?.healthSavingsAccount || 0,
       otherAdjustments: taxData.income?.adjustments?.otherAdjustments || 0,
     },
     adjustedGrossIncome: taxData.income?.adjustedGrossIncome || 0

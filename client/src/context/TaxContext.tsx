@@ -64,115 +64,12 @@ export const TaxProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
   
-  // Initialize tax data with test values for demonstration
+  // 기본 세금 데이터로 초기화
   const [taxData, setTaxData] = useState<TaxData>({
     taxYear: 2025, // Default to 2025
     status: 'in_progress',
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
-    personalInfo: {
-      firstName: 'John',
-      middleInitial: 'A',
-      lastName: 'Smith',
-      ssn: '123-45-6789',
-      dateOfBirth: '1980-01-15',
-      email: 'john.smith@example.com',
-      phone: '123-456-7890',
-      address1: '123 Main Street',
-      address2: 'Apt 4B',
-      city: 'Springfield',
-      state: 'IL',
-      zipCode: '62704',
-      filingStatus: 'married_joint',
-      isDisabled: false,
-      isNonresidentAlien: false,
-      spouseInfo: {
-        firstName: 'Jane',
-        middleInitial: 'B',
-        lastName: 'Smith',
-        ssn: '987-65-4321',
-        dateOfBirth: '1982-05-20',
-        isDisabled: false,
-        isNonresidentAlien: false
-      },
-      dependents: [
-        {
-          firstName: 'Tommy',
-          lastName: 'Smith',
-          ssn: '111-22-3333',
-          relationship: 'Son',
-          dateOfBirth: '2010-03-12',
-          isDisabled: false,
-          isNonresidentAlien: false,
-          isQualifyingChild: true
-        }
-      ]
-    },
-    income: {
-      wages: 75000,
-      otherEarnedIncome: 0,
-      interestIncome: 1200,
-      dividends: 3500,
-      businessIncome: 15000,
-      capitalGains: 5000,
-      rentalIncome: 12000,
-      retirementIncome: 0,
-      unemploymentIncome: 0,
-      otherIncome: 1500,
-      totalIncome: 113200,
-      adjustments: {
-        studentLoanInterest: 2500,
-        retirementContributions: 6000,
-        otherAdjustments: 4500 // HSA 값 3500을 otherAdjustments에 추가
-      },
-      adjustedGrossIncome: 100200,
-      additionalIncomeItems: [],
-      additionalAdjustmentItems: []
-    },
-    deductions: {
-      useStandardDeduction: true,
-      standardDeductionAmount: 12950, // 기본 표준공제액, filingStatus에 따라 계산됨
-      itemizedDeductions: {
-        medicalExpenses: 0,
-        stateLocalIncomeTax: 0,
-        realEstateTaxes: 0,
-        mortgageInterest: 0,
-        charitableCash: 0,
-        charitableNonCash: 0
-      },
-      totalDeductions: 12950
-    },
-    taxCredits: {
-      childTaxCredit: 2000,
-      childDependentCareCredit: 1000,
-      educationCredits: 1500,
-      aotcCredit: 1000,
-      llcCredit: 500,
-      retirementSavingsCredit: 500,
-      otherCredits: 200,
-      totalCredits: 5200
-    },
-    retirementContributions: {
-      traditionalIRA: 0,
-      rothIRA: 0,
-      plan401k: 0,
-      plan403b: 0,
-      plan457: 0,
-      simpleIRA: 0,
-      sepIRA: 0,
-      able: 0,
-      tsp: 0,
-      otherRetirementPlans: 0,
-      totalContributions: 0
-    },
-    additionalTax: {
-      selfEmploymentIncome: 15000,
-      selfEmploymentTax: 2120,
-      estimatedTaxPayments: 5000,
-      otherIncome: 1500,
-      otherTaxes: 800
-    },
-    // Initialize with empty calculated results that will be updated
     calculatedResults: {
       totalIncome: 0,
       adjustments: 0,
@@ -198,38 +95,36 @@ export const TaxProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         if (response.ok) {
           const data = await response.json();
           if (data) {
-            // Apply test data but preserve the ID if it exists
-            const testData = { ...taxData, id: data.id, userId: data.userId };
+            // 서버에서 가져온 데이터 사용
+            let serverData = { ...data };
             
             // 데이터 마이그레이션 및 수정
             console.log("마이그레이션: 데이터 수정");
             
             // 1. HSA 필드 제거
-            if (data.income?.adjustments?.healthSavingsAccount) {
-              if (data.income && data.income.adjustments) {
-                const hsaValue = data.income.adjustments.healthSavingsAccount || 0;
-                const currentOtherAdjustments = data.income.adjustments.otherAdjustments || 0;
+            if (serverData.income?.adjustments?.healthSavingsAccount) {
+              if (serverData.income && serverData.income.adjustments) {
+                const hsaValue = serverData.income.adjustments.healthSavingsAccount || 0;
+                const currentOtherAdjustments = serverData.income.adjustments.otherAdjustments || 0;
                 
                 // otherAdjustments에 HSA 값을 추가
-                testData.income = {
-                  ...data.income,
+                serverData.income = {
+                  ...serverData.income,
                   adjustments: {
-                    studentLoanInterest: data.income.adjustments.studentLoanInterest || 0,
-                    retirementContributions: data.income.adjustments.retirementContributions || 0,
+                    studentLoanInterest: serverData.income.adjustments.studentLoanInterest || 0,
+                    retirementContributions: serverData.income.adjustments.retirementContributions || 0,
                     otherAdjustments: currentOtherAdjustments + hsaValue
                   }
                 };
               }
-            } else if (data.income) {
-              testData.income = data.income;
             }
             
             // 2. 부양가족 isQualifyingChild 필드 확인
-            if (data.personalInfo?.dependents) {
+            if (serverData.personalInfo?.dependents) {
               // 기존 부양가족 데이터에 isQualifyingChild 프로퍼티가 없으면 기본값 설정
-              testData.personalInfo = {
-                ...data.personalInfo,
-                dependents: data.personalInfo.dependents.map(dependent => {
+              serverData.personalInfo = {
+                ...serverData.personalInfo,
+                dependents: serverData.personalInfo.dependents.map((dependent: any) => {
                   if (dependent.isQualifyingChild === undefined) {
                     return {
                       ...dependent,
@@ -242,11 +137,11 @@ export const TaxProvider: React.FC<{ children: React.ReactNode }> = ({ children 
             }
             
             // 3. SpouseInfo에 필수 필드 없으면 추가
-            if (data.personalInfo?.spouseInfo) {
-              const spouseInfo = data.personalInfo.spouseInfo;
+            if (serverData.personalInfo?.spouseInfo) {
+              const spouseInfo = serverData.personalInfo.spouseInfo;
               if (spouseInfo.isDisabled === undefined || spouseInfo.isNonresidentAlien === undefined) {
-                testData.personalInfo = {
-                  ...testData.personalInfo,
+                serverData.personalInfo = {
+                  ...serverData.personalInfo,
                   spouseInfo: {
                     ...spouseInfo,
                     isDisabled: spouseInfo.isDisabled !== undefined ? spouseInfo.isDisabled : false,
@@ -257,9 +152,9 @@ export const TaxProvider: React.FC<{ children: React.ReactNode }> = ({ children 
             }
             
             // Immediately recalculate taxes
-            const calculatedResults = calculateTaxes(testData);
+            const calculatedResults = calculateTaxes(serverData);
             setTaxData({
-              ...testData,
+              ...serverData,
               calculatedResults,
               updatedAt: new Date().toISOString()
             });

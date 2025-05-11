@@ -70,106 +70,13 @@ const Review: React.FC = () => {
     return statusMap[status] || status;
   };
   
-  // 테스트용 하드코딩된 데이터 만약 API에서 데이터가 불러와지지 않을 경우를 대비
-  const personalInfo = taxData.personalInfo || {
-    firstName: 'John',
-    middleInitial: 'A',
-    lastName: 'Smith',
-    ssn: '123-45-6789',
-    dateOfBirth: '1980-01-15',
-    email: 'john.smith@example.com',
-    phone: '123-456-7890',
-    address1: '123 Main Street',
-    address2: 'Apt 4B',
-    city: 'Springfield',
-    state: 'IL',
-    zipCode: '62704',
-    filingStatus: 'married_joint',
-    spouseInfo: {
-      firstName: 'Jane',
-      middleInitial: 'B',
-      lastName: 'Smith',
-      ssn: '987-65-4321',
-      dateOfBirth: '1982-05-20'
-    },
-    dependents: [
-      {
-        firstName: 'Tommy',
-        lastName: 'Smith',
-        ssn: '111-22-3333',
-        relationship: 'Son',
-        dateOfBirth: '2010-03-12'
-      }
-    ]
-  } as PersonalInformation;
-  
-  const income = taxData.income || {
-    wages: 75000,
-    otherEarnedIncome: 0,
-    interestIncome: 1200,
-    dividends: 3500,
-    businessIncome: 15000,
-    capitalGains: 5000,
-    rentalIncome: 12000,
-    retirementIncome: 0,
-    unemploymentIncome: 0,
-    otherIncome: 1500,
-    totalIncome: 113200,
-    adjustments: {
-      studentLoanInterest: 2500,
-      retirementContributions: 6000,
-      healthSavingsAccount: 3500,
-      otherAdjustments: 1000
-    },
-    adjustedGrossIncome: 100200,
-    additionalIncomeItems: [],
-    additionalAdjustmentItems: []
-  } as Income;
-  
-  const deductions = taxData.deductions || {
-    useStandardDeduction: false,
-    standardDeductionAmount: 27700,
-    itemizedDeductions: {
-      medicalExpenses: 5000,
-      stateLocalIncomeTax: 7500,
-      realEstateTaxes: 8000,
-      mortgageInterest: 9500,
-      charitableCash: 3000,
-      charitableNonCash: 2000
-    },
-    totalDeductions: 35000
-  } as Deductions;
-  
-  const taxCredits = taxData.taxCredits || {
-    childTaxCredit: 2000,
-    childDependentCareCredit: 1000,
-    educationCredits: 1500,
-    retirementSavingsCredit: 500,
-    otherCredits: 200,
-    totalCredits: 5200
-  } as TaxCredits;
-  
-  const additionalTax = taxData.additionalTax || {
-    selfEmploymentIncome: 15000,
-    selfEmploymentTax: 2120,
-    estimatedTaxPayments: 5000,
-    otherIncome: 1500,
-    otherTaxes: 800
-  } as AdditionalTax;
-  
-  const calculatedResults = taxData.calculatedResults || {
-    totalIncome: 129700,
-    adjustments: 14060,
-    adjustedGrossIncome: 115640,
-    deductions: 35000,
-    taxableIncome: 80640,
-    federalTax: 9082.8,
-    credits: 5200,
-    taxDue: 6802.8,
-    payments: 24455,
-    refundAmount: 17652.2,
-    amountOwed: 0
-  } as CalculatedResults;
+  // taxData에서 각 섹션 데이터 추출
+  const personalInfo = taxData.personalInfo || {} as PersonalInformation;
+  const income = taxData.income || {} as Income;
+  const deductions = taxData.deductions || {} as Deductions;
+  const taxCredits = taxData.taxCredits || {} as TaxCredits;
+  const additionalTax = taxData.additionalTax || {} as AdditionalTax;
+  const calculatedResults = taxData.calculatedResults || {} as CalculatedResults;
   
   const handleGeneratePdf = () => {
     try {

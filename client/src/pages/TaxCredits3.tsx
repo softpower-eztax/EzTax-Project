@@ -376,8 +376,8 @@ const TaxCredits3Page: React.FC = () => {
         otherCredits: formattedTaxCredits.otherCredits,
         otherCreditItems: formattedTaxCredits.otherCreditItems,
         totalCredits: formattedTaxCredits.totalCredits,
-        careExpenses: formattedTaxCredits.careExpenses,
-        careProviders: formattedTaxCredits.careProviders
+        // 확장된 속성은 스프레드 연산자로 추가
+        ...(formattedTaxCredits as any) // 추가 속성을 포함
       },
       retirementContributions: formattedTaxCredits.retirementContributions
     });

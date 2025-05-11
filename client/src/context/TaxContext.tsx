@@ -342,125 +342,143 @@ export const TaxProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [formErrors, setFormErrors] = useState<Record<string, string[]>>({});
 
   // 모든 숫자 필드를 0으로 초기화하는 함수
-  const resetToZero = () => {
-    setTaxData(prevData => {
-      const emptyIncome = {
-        wages: 0,
-        otherEarnedIncome: 0,
-        interestIncome: 0,
-        dividends: 0,
-        businessIncome: 0,
-        capitalGains: 0,
-        rentalIncome: 0,
-        retirementIncome: 0,
-        unemploymentIncome: 0,
-        otherIncome: 0,
-        totalIncome: 0,
-        additionalIncomeItems: [],
-        adjustments: {
-          studentLoanInterest: 0,
-          retirementContributions: 0,
-          otherAdjustments: 0
-        },
-        adjustedGrossIncome: 0,
-        additionalAdjustmentItems: []
-      };
+  const resetToZero = async () => {
+    // 먼저 로컬 스토리지 초기화
+    localStorage.removeItem('personalInfo');
+    localStorage.removeItem('income');
+    localStorage.removeItem('deductions');
+    localStorage.removeItem('taxCredits');
+    localStorage.removeItem('additionalTax');
+    
+    // 데이터 초기화
+    const emptyIncome = {
+      wages: 0,
+      otherEarnedIncome: 0,
+      interestIncome: 0,
+      dividends: 0,
+      businessIncome: 0,
+      capitalGains: 0,
+      rentalIncome: 0,
+      retirementIncome: 0,
+      unemploymentIncome: 0,
+      otherIncome: 0,
+      totalIncome: 0,
+      additionalIncomeItems: [],
+      adjustments: {
+        studentLoanInterest: 0,
+        retirementContributions: 0,
+        otherAdjustments: 0
+      },
+      adjustedGrossIncome: 0,
+      additionalAdjustmentItems: []
+    };
 
-      const emptyDeductions = {
-        useStandardDeduction: true,
-        standardDeductionAmount: 0, // 초기값 0으로 설정
-        itemizedDeductions: {
-          medicalExpenses: 0,
-          stateLocalIncomeTax: 0,
-          realEstateTaxes: 0,
-          mortgageInterest: 0,
-          charitableCash: 0,
-          charitableNonCash: 0
-        },
-        totalDeductions: 0
-      };
+    const emptyDeductions = {
+      useStandardDeduction: true,
+      standardDeductionAmount: 0, // 초기값 0으로 설정
+      itemizedDeductions: {
+        medicalExpenses: 0,
+        stateLocalIncomeTax: 0,
+        realEstateTaxes: 0,
+        mortgageInterest: 0,
+        charitableCash: 0,
+        charitableNonCash: 0
+      },
+      totalDeductions: 0
+    };
 
-      const emptyTaxCredits = {
-        childTaxCredit: 0,
-        childDependentCareCredit: 0,
-        educationCredits: 0,
-        aotcCredit: 0,
-        llcCredit: 0,
-        retirementSavingsCredit: 0,
-        otherCredits: 0,
-        totalCredits: 0
-      };
-      
-      const emptyRetirementContributions = {
-        traditionalIRA: 0,
-        rothIRA: 0,
-        plan401k: 0,
-        plan403b: 0,
-        plan457: 0,
-        simpleIRA: 0,
-        sepIRA: 0,
-        able: 0,
-        tsp: 0,
-        otherRetirementPlans: 0,
-        totalContributions: 0
-      };
+    const emptyTaxCredits = {
+      childTaxCredit: 0,
+      childDependentCareCredit: 0,
+      educationCredits: 0,
+      aotcCredit: 0,
+      llcCredit: 0,
+      retirementSavingsCredit: 0,
+      otherCredits: 0,
+      totalCredits: 0
+    };
+    
+    const emptyRetirementContributions = {
+      traditionalIRA: 0,
+      rothIRA: 0,
+      plan401k: 0,
+      plan403b: 0,
+      plan457: 0,
+      simpleIRA: 0,
+      sepIRA: 0,
+      able: 0,
+      tsp: 0,
+      otherRetirementPlans: 0,
+      totalContributions: 0
+    };
 
-      const emptyAdditionalTax = {
-        selfEmploymentIncome: 0,
-        selfEmploymentTax: 0,
-        estimatedTaxPayments: 0,
-        otherIncome: 0,
-        otherTaxes: 0
-      };
-      
-      // 빈 개인정보
-      const emptyPersonalInfo = {
-        firstName: "",
-        lastName: "",
-        ssn: "",
-        dateOfBirth: "",
-        email: "",
-        phone: "",
-        address1: "",
-        address2: "",
-        city: "",
-        state: "",
-        zipCode: "",
-        filingStatus: "single" as const,
-        isDisabled: false,
-        isNonresidentAlien: false,
-        dependents: []
-      };
+    const emptyAdditionalTax = {
+      selfEmploymentIncome: 0,
+      selfEmploymentTax: 0,
+      estimatedTaxPayments: 0,
+      otherIncome: 0,
+      otherTaxes: 0
+    };
+    
+    // 빈 개인정보
+    const emptyPersonalInfo = {
+      firstName: "",
+      lastName: "",
+      ssn: "",
+      dateOfBirth: "",
+      email: "",
+      phone: "",
+      address1: "",
+      address2: "",
+      city: "",
+      state: "",
+      zipCode: "",
+      filingStatus: "single" as const,
+      isDisabled: false,
+      isNonresidentAlien: false,
+      dependents: []
+    };
 
-      const updatedData = {
-        ...prevData,
-        personalInfo: emptyPersonalInfo,
-        income: emptyIncome,
-        deductions: emptyDeductions,
-        taxCredits: emptyTaxCredits,
-        retirementContributions: emptyRetirementContributions,
-        additionalTax: emptyAdditionalTax,
-        updatedAt: new Date().toISOString()
-      };
+    try {
+      setIsLoading(true);
       
-      // 세금 재계산
-      const calculatedResults = calculateTaxes(updatedData);
-      updatedData.calculatedResults = calculatedResults;
+      // 먼저 상태 업데이트
+      setTaxData(prevData => {
+        const updatedData = {
+          ...prevData,
+          personalInfo: emptyPersonalInfo,
+          income: emptyIncome,
+          deductions: emptyDeductions,
+          taxCredits: emptyTaxCredits,
+          retirementContributions: emptyRetirementContributions,
+          additionalTax: emptyAdditionalTax,
+          updatedAt: new Date().toISOString()
+        };
+        
+        // 세금 재계산
+        const calculatedResults = calculateTaxes(updatedData);
+        updatedData.calculatedResults = calculatedResults;
+        
+        return updatedData;
+      });
       
-      // 로컬 스토리지 초기화
-      localStorage.removeItem('personalInfo');
-      localStorage.removeItem('income');
-      localStorage.removeItem('deductions');
-      localStorage.removeItem('taxCredits');
-      localStorage.removeItem('additionalTax');
+      // 서버에 저장
+      await saveTaxReturn();
       
       toast({
         title: "모든 정보를 초기화했습니다",
-        description: "모든 개인정보와 숫자 필드가 초기화되었습니다.",
+        description: "모든 개인정보와 숫자 필드가 초기화되고 서버에 저장되었습니다.",
       });
-      
-      return updatedData;
-    });
+    } catch (error) {
+      console.error("데이터 초기화 실패:", error);
+      toast({
+        title: "초기화 실패",
+        description: "데이터 초기화 중 오류가 발생했습니다.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (

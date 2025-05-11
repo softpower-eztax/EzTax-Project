@@ -224,7 +224,7 @@ const TaxCredits3Page: React.FC = () => {
     const dependents = taxData.personalInfo?.dependents || [];
     
     // 자녀 세액공제 계산
-    console.log("은퇴저축공제 계산 - 총기여금:", totalContributions, "조정총소득(AGI):", agi, "신고유형:", filingStatus);
+    console.log("자녀 세액공제 계산 - 조정총소득(AGI):", agi, "신고유형:", filingStatus);
     
     if (!dependents || dependents.length === 0) {
       toast({
@@ -255,7 +255,7 @@ const TaxCredits3Page: React.FC = () => {
     // 총 세액공제 업데이트
     setTimeout(() => calculateTotalCredits(), 100);
     
-    console.log("계산된 은퇴저축공제액:", finalCredit);
+    console.log("계산된 자녀 세액공제액:", credit);
     return credit;
   };
   

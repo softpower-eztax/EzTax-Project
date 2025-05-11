@@ -248,7 +248,8 @@ const TaxCredits3Page: React.FC = () => {
       return;
     }
     
-    const credit = calculateChildTaxCredit(qualifyingChildren.length, agi, filingStatus);
+    // 적격 자녀에 기반한 세액공제 계산
+    const credit = calculateChildTaxCredit(qualifyingChildren, agi, filingStatus);
     form.setValue('childTaxCredit', credit);
     setPendingChanges(true);
     
@@ -288,7 +289,8 @@ const TaxCredits3Page: React.FC = () => {
       return;
     }
     
-    const credit = calculateCreditForOtherDependents(otherDependents.length, agi, filingStatus);
+    // 적격 자녀가 아닌 부양가족에 기반한 세액공제 계산
+    const credit = calculateCreditForOtherDependents(otherDependents, agi, filingStatus);
     form.setValue('otherCredits', credit);
     setPendingChanges(true);
     

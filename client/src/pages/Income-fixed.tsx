@@ -811,7 +811,6 @@ export default function IncomePage() {
                         {new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", minimumFractionDigits: 2 }).format(
                           parseFloat((form.watch('adjustments')?.studentLoanInterest || 0).toString()) +
                           parseFloat((form.watch('adjustments')?.retirementContributions || 0).toString()) +
-                          parseFloat((form.watch('adjustments')?.healthSavingsAccount || 0).toString()) +
                           parseFloat((form.watch('adjustments')?.otherAdjustments || 0).toString())
                         )}
                       </span>

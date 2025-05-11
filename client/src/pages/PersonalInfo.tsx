@@ -78,10 +78,20 @@ const PersonalInfo: React.FC = () => {
 
   // 로컬 스토리지에서 데이터 불러오기 (페이지 로드 시)
   useEffect(() => {
-    const storedData = localStorage.getItem('personalInfo');
     console.log("PersonalInfo - 최초 로드 시 taxData:", taxData);
     
-    // 로컬 스토리지에서 데이터 복원
+    // 1. 서버 데이터가 있는 경우 우선 사용
+    if (taxData.personalInfo) {
+      console.log("PersonalInfo - 서버 데이터 사용:", taxData.personalInfo);
+      form.reset(taxData.personalInfo);
+      setSavedValues(taxData.personalInfo);
+      // 로컬 스토리지 업데이트
+      localStorage.setItem('personalInfo', JSON.stringify(taxData.personalInfo));
+      return;
+    }
+    
+    // 2. 서버 데이터가 없는 경우에만 로컬 스토리지 데이터 사용
+    const storedData = localStorage.getItem('personalInfo');
     if (storedData) {
       try {
         const parsedData = JSON.parse(storedData);
@@ -92,7 +102,7 @@ const PersonalInfo: React.FC = () => {
         console.error("로컬 스토리지 데이터 파싱 오류:", e);
       }
     }
-  }, []);
+  }, [taxData]);
 
   // Disable zod validation to avoid form validation errors
   const form = useForm<PersonalInformation>({

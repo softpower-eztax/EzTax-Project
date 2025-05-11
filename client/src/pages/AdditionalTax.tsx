@@ -167,57 +167,7 @@ const AdditionalTaxPage: React.FC = () => {
                     </div>
                   </div>
 
-                  {/* Other Income */}
-                  <div className="mb-6 border-b border-gray-light pb-6">
-                    <div className="flex items-center mb-3">
-                      <h4 className="font-semibold">기타 소득 (Other Income)</h4>
-                      <TooltipProvider>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <Info className="h-4 w-4 text-gray-dark ml-2 cursor-help" />
-                          </TooltipTrigger>
-                          <TooltipContent>
-                            <p className="w-64">
-                              기타 소득에는 실업 급여, 도박 수익, 임대 소득 등이 포함됩니다.
-                              (Other income includes unemployment benefits, gambling winnings, rental income, etc.)
-                            </p>
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
-                    </div>
-                    
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <FormField
-                        control={form.control}
-                        name="otherIncome"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>추가 소득 (Additional Income)</FormLabel>
-                            <FormControl>
-                              <div className="relative">
-                                <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-dark">$</span>
-                                <Input 
-                                  {...field} 
-                                  placeholder="0.00"
-                                  className="pl-8"
-                                  value={field.value || ''}
-                                  onChange={(e) => {
-                                    const formatted = formatCurrency(e.target.value);
-                                    field.onChange(Number(formatted));
-                                  }}
-                                />
-                              </div>
-                            </FormControl>
-                            <FormDescription>
-                              다른 곳에 보고되지 않은 소득 (실업급여, 도박, 등)
-                              (Income not reported elsewhere (unemployment, gambling, etc.))
-                            </FormDescription>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-                  </div>
+
 
                   {/* Other Taxes */}
                   <div className="mb-6 border-b border-gray-light pb-6">

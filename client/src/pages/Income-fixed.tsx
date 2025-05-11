@@ -590,6 +590,58 @@ export default function IncomePage() {
                     </div>
                   </div>
                   
+                  {/* 기타 소득 (Other Income) */}
+                  <div className="mt-6 mb-6 border-t border-gray-light pt-6">
+                    <div className="flex items-center mb-3">
+                      <h3 className="text-lg font-semibold">기타 소득 (Other Income)</h3>
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <InfoIcon className="h-4 w-4 text-gray-dark ml-2 cursor-help" />
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p className="w-64">
+                              기타 소득에는 실업 급여, 도박 수익, 임대 소득 등이 포함됩니다.
+                              (Other income includes unemployment benefits, gambling winnings, rental income, etc.)
+                            </p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    </div>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <FormField
+                        control={form.control}
+                        name="otherIncome"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>추가 소득 (Additional Income)</FormLabel>
+                            <FormControl>
+                              <div className="relative">
+                                <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-dark">$</span>
+                                <Input 
+                                  {...field} 
+                                  placeholder="0.00"
+                                  className="pl-8"
+                                  value={field.value || ''}
+                                  onChange={(e) => {
+                                    const value = e.target.value.replace(/[^0-9.]/g, '');
+                                    field.onChange(Number(value) || 0);
+                                  }}
+                                />
+                              </div>
+                            </FormControl>
+                            <FormMessage />
+                            <div className="text-xs text-gray-500 mt-1">
+                              다른 곳에 보고되지 않은 소득 (실업급여, 도박, 등)
+                              (Income not reported elsewhere (unemployment, gambling, etc.))
+                            </div>
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                  </div>
+                  
                   <div className="mt-6 mb-4">
                     <div className="flex justify-between items-center mb-4">
                       <Button

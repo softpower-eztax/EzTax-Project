@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useLocation } from 'wouter';
 import { useTaxContext } from '@/context/TaxContext';
+import { Income } from '@shared/schema';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -142,28 +143,31 @@ export default function CapitalGainsCalculator() {
   
   // 자본 이득 저장 및 수입 페이지로 이동
   const saveAndReturn = () => {
-    // 현재 소득 데이터 복사
-    const updatedIncome = {...taxData.income};
+    // 기존 소득 데이터가 없으면 실행하지 않음
+    if (!taxData.income) return;
     
-    // 자본 이득 업데이트
-    updatedIncome.capitalGains = totalCapitalGains;
-    
-    // 총소득 재계산
-    updatedIncome.totalIncome = (
-      Number(updatedIncome.wages || 0) +
-      Number(updatedIncome.otherEarnedIncome || 0) +
-      Number(updatedIncome.interestIncome || 0) +
-      Number(updatedIncome.dividends || 0) +
-      Number(updatedIncome.businessIncome || 0) +
-      Number(totalCapitalGains || 0) +
-      Number(updatedIncome.rentalIncome || 0) +
-      Number(updatedIncome.retirementIncome || 0) +
-      Number(updatedIncome.unemploymentIncome || 0) +
-      Number(updatedIncome.otherIncome || 0)
-    );
+    // 기존 소득 데이터를 기반으로 새 소득 객체 생성
+    const newIncome: Income = {
+      ...taxData.income,
+      // 자본 이득 업데이트
+      capitalGains: totalCapitalGains,
+      // 총소득 재계산
+      totalIncome: (
+        Number(taxData.income.wages) +
+        Number(taxData.income.otherEarnedIncome) +
+        Number(taxData.income.interestIncome) +
+        Number(taxData.income.dividends) +
+        Number(taxData.income.businessIncome) +
+        totalCapitalGains +
+        Number(taxData.income.rentalIncome) +
+        Number(taxData.income.retirementIncome) +
+        Number(taxData.income.unemploymentIncome) +
+        Number(taxData.income.otherIncome)
+      )
+    };
     
     // 세금 데이터 업데이트
-    updateTaxData({ income: updatedIncome });
+    updateTaxData({ income: newIncome });
     
     // 성공 메시지
     toast({

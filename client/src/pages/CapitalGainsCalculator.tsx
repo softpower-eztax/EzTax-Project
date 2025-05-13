@@ -29,6 +29,9 @@ interface Transaction {
   sellPrice: number;
   quantity: number;
   profit: number;
+  purchaseDate: string; // 구매 날짜
+  saleDate: string;     // 판매 날짜
+  isLongTerm: boolean;  // 장기투자 여부
 }
 
 export default function CapitalGainsCalculator() {
@@ -38,17 +41,49 @@ export default function CapitalGainsCalculator() {
   
   // 초기 상태: 일부 예시 거래 데이터
   const [transactions, setTransactions] = useState<Transaction[]>([
-    { id: 1, description: '테슬라 주식', buyPrice: 180, sellPrice: 220, quantity: 10, profit: 400 },
-    { id: 2, description: '애플 주식', buyPrice: 140, sellPrice: 170, quantity: 15, profit: 450 },
-    { id: 3, description: '마이크로소프트 주식', buyPrice: 280, sellPrice: 310, quantity: 8, profit: 240 },
+    { 
+      id: 1, 
+      description: '테슬라 주식', 
+      buyPrice: 180, 
+      sellPrice: 220, 
+      quantity: 10, 
+      profit: 400,
+      purchaseDate: '2023-01-15',
+      saleDate: '2024-03-20',
+      isLongTerm: true  // 1년 이상 보유
+    },
+    { 
+      id: 2, 
+      description: '애플 주식', 
+      buyPrice: 140, 
+      sellPrice: 170, 
+      quantity: 15, 
+      profit: 450,
+      purchaseDate: '2024-01-10',
+      saleDate: '2024-04-15',
+      isLongTerm: false // 1년 미만 보유
+    },
+    { 
+      id: 3, 
+      description: '마이크로소프트 주식', 
+      buyPrice: 280, 
+      sellPrice: 310, 
+      quantity: 8, 
+      profit: 240,
+      purchaseDate: '2022-06-22',
+      saleDate: '2024-02-18',
+      isLongTerm: true  // 1년 이상 보유
+    },
   ]);
   
   // 새로운 거래 입력을 위한 상태
-  const [newTransaction, setNewTransaction] = useState<Omit<Transaction, 'id' | 'profit'>>({
+  const [newTransaction, setNewTransaction] = useState<Omit<Transaction, 'id' | 'profit' | 'isLongTerm'>>({
     description: '',
     buyPrice: 0,
     sellPrice: 0,
-    quantity: 0
+    quantity: 0,
+    purchaseDate: '',
+    saleDate: ''
   });
   
   // 업로드 상태 관리
@@ -67,9 +102,39 @@ export default function CapitalGainsCalculator() {
     }));
   };
   
+  // 날짜 문자열을 Date 객체로 변환하는 헬퍼 함수
+  const parseDate = (dateStr: string): Date => {
+    return new Date(dateStr);
+  };
+  
+  // 두 날짜 사이의 차이가 1년 이상인지 확인하는 함수
+  const isLongTermInvestment = (purchaseDate: string, saleDate: string): boolean => {
+    if (!purchaseDate || !saleDate) return false;
+    
+    const purchase = parseDate(purchaseDate);
+    const sale = parseDate(saleDate);
+    
+    // 유효한 날짜인지 확인
+    if (isNaN(purchase.getTime()) || isNaN(sale.getTime())) return false;
+    
+    // 구매일이 판매일보다 미래인 경우
+    if (purchase > sale) return false;
+    
+    // 1년(365일)을 밀리초로 변환
+    const oneYearInMs = 365 * 24 * 60 * 60 * 1000;
+    
+    // 구매일과 판매일의 차이가 1년 이상인지 확인
+    return (sale.getTime() - purchase.getTime()) >= oneYearInMs;
+  };
+  
   // 새 거래 추가
   const addTransaction = () => {
-    if (!newTransaction.description || newTransaction.buyPrice <= 0 || newTransaction.sellPrice <= 0 || newTransaction.quantity <= 0) {
+    if (!newTransaction.description || 
+        newTransaction.buyPrice <= 0 || 
+        newTransaction.sellPrice <= 0 || 
+        newTransaction.quantity <= 0 ||
+        !newTransaction.purchaseDate || 
+        !newTransaction.saleDate) {
       toast({
         title: "입력 오류",
         description: "모든 필드를 올바르게 입력해주세요.",
@@ -81,16 +146,26 @@ export default function CapitalGainsCalculator() {
     // 이익 계산
     const profit = (newTransaction.sellPrice - newTransaction.buyPrice) * newTransaction.quantity;
     
+    // 장기/단기 투자 여부 판단
+    const isLongTerm = isLongTermInvestment(newTransaction.purchaseDate, newTransaction.saleDate);
+    
     // 새 거래 추가
     const newId = transactions.length > 0 ? Math.max(...transactions.map(t => t.id)) + 1 : 1;
-    setTransactions([...transactions, { ...newTransaction, id: newId, profit }]);
+    setTransactions([...transactions, { 
+      ...newTransaction, 
+      id: newId, 
+      profit,
+      isLongTerm 
+    }]);
     
     // 입력 필드 초기화
     setNewTransaction({
       description: '',
       buyPrice: 0,
       sellPrice: 0,
-      quantity: 0
+      quantity: 0,
+      purchaseDate: '',
+      saleDate: ''
     });
     
     toast({
@@ -123,9 +198,39 @@ export default function CapitalGainsCalculator() {
           
           // 업로드 완료 후 예시 데이터 추가
           const sampleTransactions: Transaction[] = [
-            { id: transactions.length + 1, description: '아마존 주식', buyPrice: 130, sellPrice: 145, quantity: 20, profit: 300 },
-            { id: transactions.length + 2, description: '구글 주식', buyPrice: 2200, sellPrice: 2350, quantity: 5, profit: 750 },
-            { id: transactions.length + 3, description: '페이스북 주식', buyPrice: 320, sellPrice: 340, quantity: 15, profit: 300 }
+            { 
+              id: transactions.length + 1, 
+              description: '아마존 주식', 
+              buyPrice: 130, 
+              sellPrice: 145, 
+              quantity: 20, 
+              profit: 300,
+              purchaseDate: '2023-08-12',
+              saleDate: '2024-03-25',
+              isLongTerm: false
+            },
+            { 
+              id: transactions.length + 2, 
+              description: '구글 주식', 
+              buyPrice: 2200, 
+              sellPrice: 2350, 
+              quantity: 5, 
+              profit: 750,
+              purchaseDate: '2022-05-18',
+              saleDate: '2024-02-10',
+              isLongTerm: true
+            },
+            { 
+              id: transactions.length + 3, 
+              description: '페이스북 주식', 
+              buyPrice: 320, 
+              sellPrice: 340, 
+              quantity: 15, 
+              profit: 300,
+              purchaseDate: '2023-04-01',
+              saleDate: '2024-05-01',
+              isLongTerm: true
+            }
           ];
           
           setTransactions(prev => [...prev, ...sampleTransactions]);
@@ -238,12 +343,15 @@ export default function CapitalGainsCalculator() {
               <TableCaption>자본 이득 거래 내역</TableCaption>
               <TableHeader>
                 <TableRow>
-                  <TableHead className="w-[250px]">종목/자산 설명</TableHead>
+                  <TableHead className="w-[200px]">종목/자산 설명</TableHead>
                   <TableHead className="text-right">매수가 ($)</TableHead>
                   <TableHead className="text-right">매도가 ($)</TableHead>
                   <TableHead className="text-right">수량</TableHead>
+                  <TableHead className="text-center">구매일</TableHead>
+                  <TableHead className="text-center">판매일</TableHead>
+                  <TableHead className="text-center">유형</TableHead>
                   <TableHead className="text-right">이익/손실 ($)</TableHead>
-                  <TableHead className="w-[100px]">작업</TableHead>
+                  <TableHead className="w-[80px]">작업</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -253,6 +361,18 @@ export default function CapitalGainsCalculator() {
                     <TableCell className="text-right">${transaction.buyPrice.toLocaleString()}</TableCell>
                     <TableCell className="text-right">${transaction.sellPrice.toLocaleString()}</TableCell>
                     <TableCell className="text-right">{transaction.quantity}</TableCell>
+                    <TableCell className="text-center">{transaction.purchaseDate}</TableCell>
+                    <TableCell className="text-center">{transaction.saleDate}</TableCell>
+                    <TableCell className="text-center">
+                      <span className={cn(
+                        "px-2 py-1 rounded-full text-xs font-medium",
+                        transaction.isLongTerm 
+                          ? "bg-green-100 text-green-800" 
+                          : "bg-amber-100 text-amber-800"
+                      )}>
+                        {transaction.isLongTerm ? '장기' : '단기'}
+                      </span>
+                    </TableCell>
                     <TableCell className={cn(
                       "text-right font-medium",
                       transaction.profit > 0 ? "text-green-600" : "text-red-600"

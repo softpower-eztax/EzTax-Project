@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
-import { useNavigate } from "wouter";
+import { useLocation } from "wouter";
 import { ArrowLeft, CreditCard, Loader2 } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
@@ -13,13 +13,13 @@ import { Label } from "@/components/ui/label";
 // 실제 구현에서는 Stripe와 PayPal 결제를 구현해야 합니다.
 export default function Payment() {
   const { toast } = useToast();
-  const [, navigate] = useNavigate();
+  const [, setLocation] = useLocation();
   const [isProcessing, setIsProcessing] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState<"monthly" | "yearly">("monthly");
   const [paymentTab, setPaymentTab] = useState<"card" | "paypal">("card");
 
   const goBack = () => {
-    navigate("/premium-features");
+    setLocation("/premium-features");
   };
 
   const handlePayment = async () => {
@@ -36,7 +36,7 @@ export default function Payment() {
     });
 
     setIsProcessing(false);
-    navigate("/capital-gains");
+    setLocation("/capital-gains");
   };
 
   return (

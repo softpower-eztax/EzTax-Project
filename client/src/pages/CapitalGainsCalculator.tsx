@@ -44,7 +44,7 @@ interface Transaction {
 }
 
 export default function CapitalGainsCalculator() {
-  const [, navigate] = useLocation();
+  const [, setLocation] = useLocation();
   const { taxData, updateTaxData } = useTaxContext();
   const { toast } = useToast();
   
@@ -98,6 +98,12 @@ export default function CapitalGainsCalculator() {
   // 업로드 상태 관리
   const [isUploading, setIsUploading] = useState<boolean>(false);
   const [uploadProgress, setUploadProgress] = useState<number>(0);
+  
+  // 프리미엄 상태 관리 (실제로는 사용자 구독 정보에서 가져와야 함)
+  const [isPremium, setIsPremium] = useState<boolean>(false);
+  
+  // 프리미엄 기능 안내 다이얼로그 관리
+  const [premiumDialogOpen, setPremiumDialogOpen] = useState<boolean>(false);
   
   // 장기/단기 자본 이득 및 세금 계산
   const longTermGains = transactions
@@ -214,8 +220,28 @@ export default function CapitalGainsCalculator() {
     });
   };
   
+  // 프리미엄 기능 페이지로 이동
+  const goToPremiumPage = () => {
+    setLocation('/premium-features');
+  };
+  
+  // 프리미엄 기능 접근 체크
+  const checkPremiumAccess = (featureName: string) => {
+    if (isPremium) {
+      return true;
+    } else {
+      setPremiumDialogOpen(true);
+      return false;
+    }
+  };
+
   // 1099-B 파일 업로드 시뮬레이션
   const simulateFileUpload = () => {
+    // 프리미엄 기능 체크
+    if (!checkPremiumAccess('file-upload')) {
+      return;
+    }
+    
     setIsUploading(true);
     setUploadProgress(0);
     
@@ -606,6 +632,51 @@ export default function CapitalGainsCalculator() {
           </div>
         </CardContent>
       </Card>
+      
+      {/* 프리미엄 기능 안내 다이얼로그 */}
+      <Dialog open={premiumDialogOpen} onOpenChange={setPremiumDialogOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Crown className="h-5 w-5 text-amber-500" />
+              <span>프리미엄 기능 안내</span>
+            </DialogTitle>
+            <DialogDescription>
+              이 기능은 프리미엄 사용자에게만 제공됩니다. 
+              프리미엄으로 업그레이드하고 고급 세금 계산 기능을 활용하세요.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="p-4 bg-amber-50 rounded-lg mb-4">
+            <h3 className="font-medium mb-2 text-amber-800">프리미엄 기능 혜택</h3>
+            <ul className="space-y-2">
+              <li className="flex items-start gap-2">
+                <Check className="h-4 w-4 text-amber-600 shrink-0 mt-0.5" />
+                <span className="text-sm">1099-B 파일 자동 업로드 및 파싱</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <Check className="h-4 w-4 text-amber-600 shrink-0 mt-0.5" />
+                <span className="text-sm">세금 최적화 추천</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <Check className="h-4 w-4 text-amber-600 shrink-0 mt-0.5" />
+                <span className="text-sm">여러 거래소/브로커 통합</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <Check className="h-4 w-4 text-amber-600 shrink-0 mt-0.5" />
+                <span className="text-sm">PDF/Excel 보고서 내보내기</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <Check className="h-4 w-4 text-amber-600 shrink-0 mt-0.5" />
+                <span className="text-sm">무제한 거래 내역 저장</span>
+              </li>
+            </ul>
+          </div>
+          <DialogFooter className="flex flex-col sm:flex-row gap-2">
+            <Button variant="outline" onClick={() => setPremiumDialogOpen(false)} className="sm:w-auto w-full">나중에 하기</Button>
+            <Button onClick={goToPremiumPage} className="sm:w-auto w-full">프리미엄으로 업그레이드</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

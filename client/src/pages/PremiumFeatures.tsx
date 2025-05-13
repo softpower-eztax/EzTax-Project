@@ -8,18 +8,18 @@ import { Separator } from "@/components/ui/separator";
 
 export default function PremiumFeatures() {
   const { toast } = useToast();
-  const [, navigate] = useLocation();
+  const [, setLocation] = useLocation();
 
   const goToSubscription = () => {
     toast({
       title: "결제 페이지로 이동합니다",
       description: "프리미엄 기능을 이용하려면 구독이 필요합니다.",
     });
-    navigate("/payment");
+    setLocation("/payment");
   };
 
   const goBack = () => {
-    navigate("/capital-gains");
+    setLocation("/capital-gains");
   };
 
   return (

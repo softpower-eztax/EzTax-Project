@@ -194,7 +194,7 @@ export default function IncomePage() {
       Number(form.watch('capitalGains') || 0) +
       Number(form.watch('rentalIncome') || 0);
       
-    // 사용하지 않는 필드들은 0으로 설정
+    // 사용하지 않는 필드들은 0으로 설정 (capitalGains 제외 - 업로드 기능을 위해)
     form.setValue('businessIncome', 0);
     form.setValue('retirementIncome', 0);
     form.setValue('unemploymentIncome', 0);
@@ -559,87 +559,43 @@ export default function IncomePage() {
                         )}
                       />
                       
-                      {/* 1099-B Upload Section */}
+                      {/* 1099-B 간편 입력 섹션 */}
                       <div className="col-span-1 md:col-span-2 mb-4">
                         <div className="border rounded-md p-3 bg-gray-50/50">
                           <div className="flex items-center gap-2">
                             <div className="flex-1">
                               <h4 className="text-base font-medium mb-1">
-                                1099-B 폼 업로드 (Upload 1099-B Form)
+                                1099-B 정보 입력 (Enter 1099-B Information)
                               </h4>
                               <p className="text-sm text-gray-500 mb-2">
-                                1099-B 파일을 업로드하여 자본 이득 정보를 자동으로 추출합니다.
+                                1099-B 데이터를 자동으로 입력합니다.
                               </p>
                             </div>
                             <div>
-                              <TooltipProvider>
-                                <Tooltip>
-                                  <TooltipTrigger asChild>
-                                    <label className="cursor-pointer">
-                                      <div className="flex items-center gap-2 rounded-md border bg-white px-4 py-2 text-sm shadow-sm">
-                                        <Upload className="h-4 w-4" />
-                                        <span>파일 업로드</span>
-                                      </div>
-                                      <input 
-                                        type="file" 
-                                        id="file1099B"
-                                        accept=".pdf,.jpg,.jpeg,.png" 
-                                        className="hidden" 
-                                        onChange={(e) => {
-                                          const file = e.target.files?.[0];
-                                          if (file) {
-                                            // 사용자에게 처리 중임을 알림
-                                            toast({
-                                              title: "1099-B 처리 중",
-                                              description: "잠시만 기다려주세요...",
-                                              duration: 3000,
-                                            });
-                                            
-                                            // 파일 정보 로깅 (디버깅용)
-                                            console.log("파일 업로드됨:", file.name, file.type, file.size);
-                                            
-                                            // 시뮬레이션: 파일 처리 후 데이터 추출 (실제로는 서버 API 호출)
-                                            setTimeout(() => {
-                                              try {
-                                                // 1099-B에서 추출한 자본 이득 데이터 (시뮬레이션)
-                                                const extractedCapitalGains = 7850;
-                                                
-                                                // 폼 값 업데이트 - 명시적으로 타입 변환하여 숫자 값 설정
-                                                form.setValue('capitalGains', extractedCapitalGains, { 
-                                                  shouldValidate: true,
-                                                  shouldDirty: true,
-                                                  shouldTouch: true
-                                                });
-                                                
-                                                // 로깅 (디버깅용)
-                                                console.log("자본 이득 설정됨:", extractedCapitalGains);
-                                                console.log("현재 폼 값:", form.getValues());
-                                                
-                                                // 알림 표시
-                                                toast({
-                                                  title: "1099-B 데이터 추출 완료",
-                                                  description: "자본 이득 정보가 자동으로 입력되었습니다.",
-                                                  duration: 5000,
-                                                });
-                                              } catch (error) {
-                                                console.error("파일 처리 오류:", error);
-                                                toast({
-                                                  title: "오류 발생",
-                                                  description: "파일 처리 중 오류가 발생했습니다.",
-                                                  variant: "destructive",
-                                                });
-                                              }
-                                            }, 1500);
-                                          }
-                                        }}
-                                      />
-                                    </label>
-                                  </TooltipTrigger>
-                                  <TooltipContent>
-                                    <p>1099-B 폼에서 자본 이득 정보를 추출합니다</p>
-                                  </TooltipContent>
-                                </Tooltip>
-                              </TooltipProvider>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => {
+                                  // 샘플 자본 이득 데이터
+                                  const sampleCapitalGains = 7850;
+                                  
+                                  // 폼에 자본 이득 값 설정
+                                  form.setValue('capitalGains', sampleCapitalGains);
+                                  
+                                  // 디버깅용 로그
+                                  console.log("자본 이득 데이터 샘플이 입력되었습니다:", sampleCapitalGains);
+                                  
+                                  // 알림 메시지 표시
+                                  toast({
+                                    title: "1099-B 데이터 입력 완료",
+                                    description: `자본 이득 정보가 자동으로 입력되었습니다: $${sampleCapitalGains}`,
+                                  });
+                                }}
+                                className="flex items-center gap-1"
+                              >
+                                <FileText className="h-4 w-4" />
+                                <span>샘플 데이터 입력</span>
+                              </Button>
                             </div>
                           </div>
                         </div>

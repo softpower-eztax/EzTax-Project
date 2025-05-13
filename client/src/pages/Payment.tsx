@@ -1,214 +1,261 @@
-import React, { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useToast } from "@/hooks/use-toast";
-import { useLocation } from "wouter";
-import { ArrowLeft, CreditCard, Loader2 } from "lucide-react";
-import { Separator } from "@/components/ui/separator";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Label } from "@/components/ui/label";
+import { useEffect, useState } from 'react';
+import { useLocation } from 'wouter';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Label } from '@/components/ui/label';
+import { ArrowLeft, Check, CreditCard, Lock } from 'lucide-react';
+import { Separator } from '@/components/ui/separator';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { useToast } from '@/hooks/use-toast';
 
-// 이 컴포넌트는 실제 결제 프로세스를 처리하지 않습니다.
-// 실제 구현에서는 Stripe와 PayPal 결제를 구현해야 합니다.
+// 결제 수단 타입
+type PaymentMethod = 'card' | 'paypal';
+
 export default function Payment() {
+  const [location, setLocation] = useLocation();
   const { toast } = useToast();
-  const [, setLocation] = useLocation();
+  
+  // URL에서 선택한 플랜 정보 가져오기
+  const [plan, setPlan] = useState('');
+  const [planDetails, setPlanDetails] = useState({
+    name: '',
+    price: '',
+    period: '',
+    isAnnual: false
+  });
+  
+  // 결제 수단 상태
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('card');
+  
+  // 신용카드 입력 상태
+  const [cardDetails, setCardDetails] = useState({
+    number: '',
+    name: '',
+    expiry: '',
+    cvc: ''
+  });
+  
+  // 결제 처리 상태
   const [isProcessing, setIsProcessing] = useState(false);
-  const [paymentMethod, setPaymentMethod] = useState<"monthly" | "yearly">("monthly");
-  const [paymentTab, setPaymentTab] = useState<"card" | "paypal">("card");
-
-  const goBack = () => {
-    setLocation("/premium-features");
-  };
-
-  const handlePayment = async () => {
-    // 실제 구현에서는 여기서 결제 처리를 해야 합니다.
-    // 지금은 시뮬레이션만 합니다.
-    setIsProcessing(true);
-
-    // API 호출 시뮬레이션
-    await new Promise(resolve => setTimeout(resolve, 2000));
-
-    toast({
-      title: "결제가 성공적으로 처리되었습니다",
-      description: "이제 프리미엄 기능을 사용하실 수 있습니다.",
+  
+  // URL에서 플랜 파라미터 파싱
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const planParam = params.get('plan') || '';
+    setPlan(planParam);
+    
+    // 플랜 정보 설정
+    const isStandard = planParam.includes('standard');
+    const isAnnual = planParam.includes('annual');
+    
+    setPlanDetails({
+      name: isStandard ? '스탠다드 플랜' : '프로 플랜',
+      price: isStandard 
+        ? (isAnnual ? '$95.88' : '$9.99') 
+        : (isAnnual ? '$191.88' : '$19.99'),
+      period: isAnnual ? '년' : '월',
+      isAnnual
     });
-
-    setIsProcessing(false);
-    setLocation("/capital-gains");
+  }, [location]);
+  
+  // 카드 정보 입력 핸들러
+  const handleCardInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setCardDetails({
+      ...cardDetails,
+      [name]: value
+    });
   };
-
+  
+  // 결제 처리 핸들러
+  const handlePayment = () => {
+    // 결제 처리 시작
+    setIsProcessing(true);
+    
+    // 실제로는 여기서 Stripe 또는 PayPal SDK를 통해 결제 처리를 해야함
+    // 현재는 시뮬레이션만 진행
+    setTimeout(() => {
+      setIsProcessing(false);
+      
+      // 결제 성공 토스트
+      toast({
+        title: "결제 성공",
+        description: "프리미엄 기능이 활성화되었습니다.",
+        duration: 5000
+      });
+      
+      // 자본 이득 계산기 페이지로 이동
+      setTimeout(() => {
+        setLocation('/capital-gains');
+      }, 1500);
+    }, 2000);
+  };
+  
   return (
-    <div className="container mx-auto py-8 max-w-3xl">
-      <Button 
-        variant="ghost" 
-        className="mb-6 flex items-center gap-2"
-        onClick={goBack}
-      >
-        <ArrowLeft className="h-4 w-4" />
-        뒤로 가기
-      </Button>
+    <div className="container max-w-3xl mx-auto py-10">
+      <div className="flex items-center justify-between mb-8">
+        <h1 className="text-2xl font-bold">결제 (Payment)</h1>
+        <Button 
+          variant="ghost" 
+          onClick={() => setLocation('/premium-features')}
+          className="flex items-center gap-2"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          <span>프리미엄 기능으로 돌아가기</span>
+        </Button>
+      </div>
       
-      <h1 className="text-3xl font-bold mb-2">결제 정보</h1>
-      <p className="text-gray-500 mb-8">안전한 결제 프로세스를 통해 프리미엄 기능을 이용하세요</p>
-      
+      {/* 선택한 플랜 정보 */}
       <Card className="mb-8">
         <CardHeader>
-          <CardTitle>구독 플랜 선택</CardTitle>
-          <CardDescription>원하는 결제 주기를 선택하세요</CardDescription>
+          <CardTitle>선택한 구독 플랜</CardTitle>
+          <CardDescription>결제를 완료하면 즉시 프리미엄 기능이 활성화됩니다.</CardDescription>
         </CardHeader>
         <CardContent>
-          <RadioGroup 
-            value={paymentMethod} 
-            onValueChange={(v) => setPaymentMethod(v as "monthly" | "yearly")}
-            className="grid grid-cols-1 md:grid-cols-2 gap-4"
-          >
-            <div className={`border rounded-lg p-4 ${paymentMethod === "monthly" ? "border-primary" : "border-gray-200"}`}>
-              <RadioGroupItem value="monthly" id="monthly" className="sr-only" />
-              <Label htmlFor="monthly" className="flex justify-between items-center cursor-pointer">
-                <div>
-                  <div className="font-medium">월간 구독</div>
-                  <div className="text-sm text-gray-500">매월 자동 결제</div>
-                </div>
-                <div className="text-xl font-bold">$9.99<span className="text-sm font-normal">/월</span></div>
-              </Label>
+          <div className="flex justify-between items-center">
+            <div>
+              <h3 className="text-lg font-medium">{planDetails.name}</h3>
+              <p className="text-gray-500">
+                {planDetails.isAnnual ? '연간 구독' : '월간 구독'} 
+                {planDetails.isAnnual && ' (20% 할인 적용)'}
+              </p>
             </div>
-            
-            <div className={`border rounded-lg p-4 ${paymentMethod === "yearly" ? "border-primary" : "border-gray-200"}`}>
-              <RadioGroupItem value="yearly" id="yearly" className="sr-only" />
-              <Label htmlFor="yearly" className="flex justify-between items-center cursor-pointer">
-                <div>
-                  <div className="font-medium">연간 구독</div>
-                  <div className="text-sm text-gray-500">
-                    매년 자동 결제
-                    <span className="ml-1 px-1.5 py-0.5 bg-green-100 text-green-800 rounded-md text-xs font-medium">
-                      20% 할인
-                    </span>
-                  </div>
-                </div>
-                <div className="text-xl font-bold">$95.90<span className="text-sm font-normal">/년</span></div>
-              </Label>
+            <div className="text-right">
+              <p className="text-2xl font-bold">{planDetails.price}</p>
+              <p className="text-gray-500">/{planDetails.period}</p>
             </div>
-          </RadioGroup>
+          </div>
         </CardContent>
       </Card>
       
-      <Card>
-        <CardHeader>
-          <CardTitle>결제 방법</CardTitle>
-          <CardDescription>안전한 결제를 위해 결제 방법을 선택하세요</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Tabs value={paymentTab} onValueChange={(v) => setPaymentTab(v as "card" | "paypal")}>
-            <TabsList className="grid w-full grid-cols-2 mb-6">
-              <TabsTrigger value="card">신용카드</TabsTrigger>
-              <TabsTrigger value="paypal">PayPal</TabsTrigger>
-            </TabsList>
-            
-            <TabsContent value="card" className="space-y-4 p-1">
+      {/* 결제 수단 선택 */}
+      <Tabs defaultValue="card" onValueChange={(value) => setPaymentMethod(value as PaymentMethod)}>
+        <TabsList className="grid w-full grid-cols-2">
+          <TabsTrigger value="card">신용카드</TabsTrigger>
+          <TabsTrigger value="paypal">PayPal</TabsTrigger>
+        </TabsList>
+        
+        {/* 신용카드 결제 */}
+        <TabsContent value="card">
+          <Card>
+            <CardHeader>
+              <CardTitle>신용카드 정보</CardTitle>
+              <CardDescription>안전한 결제를 위해 SSL 암호화를 사용합니다.</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div>
+                <Label htmlFor="cardNumber">카드 번호</Label>
+                <div className="relative">
+                  <input
+                    id="cardNumber"
+                    name="number"
+                    value={cardDetails.number}
+                    onChange={handleCardInputChange}
+                    placeholder="1234 5678 9012 3456"
+                    className="w-full p-2 border rounded pl-10 mt-1"
+                  />
+                  <CreditCard className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                </div>
+              </div>
+              
+              <div>
+                <Label htmlFor="cardName">카드 소유자 이름</Label>
+                <input
+                  id="cardName"
+                  name="name"
+                  value={cardDetails.name}
+                  onChange={handleCardInputChange}
+                  placeholder="홍길동"
+                  className="w-full p-2 border rounded mt-1"
+                />
+              </div>
+              
               <div className="grid grid-cols-2 gap-4">
-                <div className="col-span-2">
-                  <Label htmlFor="cardNumber">카드 번호</Label>
-                  <div className="mt-1 relative">
-                    <input 
-                      id="cardNumber"
-                      className="w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary"
-                      placeholder="0000 0000 0000 0000"
-                    />
-                    <CreditCard className="absolute right-3 top-2.5 h-5 w-5 text-gray-400" />
-                  </div>
-                </div>
-                
                 <div>
-                  <Label htmlFor="expiryDate">만료일</Label>
-                  <input 
+                  <Label htmlFor="expiryDate">만료일 (MM/YY)</Label>
+                  <input
                     id="expiryDate"
-                    className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary"
+                    name="expiry"
+                    value={cardDetails.expiry}
+                    onChange={handleCardInputChange}
                     placeholder="MM/YY"
+                    className="w-full p-2 border rounded mt-1"
                   />
                 </div>
-                
                 <div>
-                  <Label htmlFor="cvc">보안 코드 (CVC)</Label>
-                  <input 
-                    id="cvc"
-                    className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary"
-                    placeholder="000"
-                  />
-                </div>
-                
-                <div className="col-span-2">
-                  <Label htmlFor="nameOnCard">카드 소유자 이름</Label>
-                  <input 
-                    id="nameOnCard"
-                    className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary"
-                    placeholder="이름을 입력하세요"
-                  />
-                </div>
-              </div>
-            </TabsContent>
-            
-            <TabsContent value="paypal">
-              <div className="text-center py-6">
-                <div className="bg-blue-50 rounded-lg p-6 mb-4">
-                  <p className="text-gray-600 mb-4">
-                    PayPal로 결제하시면 안전하고 빠르게 결제가 처리됩니다.
-                  </p>
-                  <div className="flex justify-center">
-                    <svg className="h-10" viewBox="0 0 101 32" preserveAspectRatio="xMinYMin meet">
-                      <path fill="#003087" d="M 12.237 2.8 L 4.437 2.8 C 3.937 2.8 3.437 3.2 3.337 3.7 L 0.237 23.7 C 0.137 24.1 0.437 24.4 0.837 24.4 L 4.537 24.4 C 5.037 24.4 5.537 24 5.637 23.5 L 6.437 18.1 C 6.537 17.6 6.937 17.2 7.537 17.2 L 10.037 17.2 C 15.137 17.2 18.137 14.7 18.937 9.8 C 19.237 7.7 18.937 6 17.937 4.8 C 16.837 3.5 14.837 2.8 12.237 2.8 Z M 13.137 10.1 C 12.737 12.9 10.537 12.9 8.537 12.9 L 7.337 12.9 L 8.137 7.7 C 8.137 7.4 8.437 7.2 8.737 7.2 L 9.237 7.2 C 10.637 7.2 11.937 7.2 12.637 8 C 13.137 8.4 13.337 9.1 13.137 10.1 Z"></path>
-                      <path fill="#003087" d="M 35.437 10 L 31.737 10 C 31.437 10 31.137 10.2 31.137 10.5 L 30.937 11.5 L 30.637 11.1 C 29.837 9.9 28.037 9.5 26.237 9.5 C 22.137 9.5 18.637 12.6 17.937 17 C 17.537 19.2 18.037 21.3 19.337 22.7 C 20.437 24 22.137 24.6 24.037 24.6 C 27.337 24.6 29.237 22.5 29.237 22.5 L 29.037 23.5 C 28.937 23.9 29.237 24.3 29.637 24.3 L 33.037 24.3 C 33.537 24.3 34.037 23.9 34.137 23.4 L 36.137 10.6 C 36.237 10.4 35.837 10 35.437 10 Z M 30.337 17.2 C 29.937 19.3 28.337 20.8 26.137 20.8 C 25.037 20.8 24.237 20.5 23.637 19.8 C 23.037 19.1 22.837 18.2 23.037 17.2 C 23.337 15.1 25.137 13.6 27.237 13.6 C 28.337 13.6 29.137 14 29.737 14.6 C 30.237 15.3 30.437 16.2 30.337 17.2 Z"></path>
-                      <path fill="#003087" d="M 55.337 10 L 51.637 10 C 51.237 10 50.937 10.2 50.737 10.5 L 45.537 18.1 L 43.337 10.8 C 43.237 10.3 42.737 10 42.337 10 L 38.637 10 C 38.237 10 37.837 10.4 38.037 10.9 L 42.137 23 L 38.237 28.4 C 37.937 28.8 38.237 29.4 38.737 29.4 L 42.437 29.4 C 42.837 29.4 43.137 29.2 43.337 28.9 L 55.837 10.9 C 56.137 10.6 55.837 10 55.337 10 Z"></path>
-                      <path fill="#009cde" d="M 67.737 2.8 L 59.937 2.8 C 59.437 2.8 58.937 3.2 58.837 3.7 L 55.737 23.6 C 55.637 24 55.937 24.3 56.337 24.3 L 60.337 24.3 C 60.737 24.3 61.037 24 61.037 23.7 L 61.937 18 C 62.037 17.5 62.437 17.1 63.037 17.1 L 65.537 17.1 C 70.637 17.1 73.637 14.6 74.437 9.7 C 74.737 7.6 74.437 5.9 73.437 4.7 C 72.237 3.5 70.337 2.8 67.737 2.8 Z M 68.637 10.1 C 68.237 12.9 66.037 12.9 64.037 12.9 L 62.837 12.9 L 63.637 7.7 C 63.637 7.4 63.937 7.2 64.237 7.2 L 64.737 7.2 C 66.137 7.2 67.437 7.2 68.137 8 C 68.637 8.4 68.837 9.1 68.637 10.1 Z"></path>
-                      <path fill="#009cde" d="M 90.937 10 L 87.237 10 C 86.937 10 86.637 10.2 86.637 10.5 L 86.437 11.5 L 86.137 11.1 C 85.337 9.9 83.537 9.5 81.737 9.5 C 77.637 9.5 74.137 12.6 73.437 17 C 73.037 19.2 73.537 21.3 74.837 22.7 C 75.937 24 77.637 24.6 79.537 24.6 C 82.837 24.6 84.737 22.5 84.737 22.5 L 84.537 23.5 C 84.437 23.9 84.737 24.3 85.137 24.3 L 88.537 24.3 C 89.037 24.3 89.537 23.9 89.637 23.4 L 91.637 10.6 C 91.637 10.4 91.337 10 90.937 10 Z M 85.737 17.2 C 85.337 19.3 83.737 20.8 81.537 20.8 C 80.437 20.8 79.637 20.5 79.037 19.8 C 78.437 19.1 78.237 18.2 78.437 17.2 C 78.737 15.1 80.537 13.6 82.637 13.6 C 83.737 13.6 84.537 14 85.137 14.6 C 85.737 15.3 85.937 16.2 85.737 17.2 Z"></path>
-                      <path fill="#009cde" d="M 95.337 3.3 L 92.137 23.6 C 92.037 24 92.337 24.3 92.737 24.3 L 95.937 24.3 C 96.437 24.3 96.937 23.9 97.037 23.4 L 100.237 3.5 C 100.337 3.1 100.037 2.8 99.637 2.8 L 96.037 2.8 C 95.637 2.8 95.437 3 95.337 3.3 Z"></path>
-                    </svg>
+                  <Label htmlFor="cvc">CVC/CVV</Label>
+                  <div className="relative">
+                    <input
+                      id="cvc"
+                      name="cvc"
+                      value={cardDetails.cvc}
+                      onChange={handleCardInputChange}
+                      placeholder="123"
+                      className="w-full p-2 border rounded pl-10 mt-1"
+                    />
+                    <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
                   </div>
                 </div>
-                <Button 
-                  variant="outline" 
-                  className="mx-auto"
-                  onClick={() => handlePayment()}
-                >
-                  PayPal로 진행하기
-                </Button>
               </div>
-            </TabsContent>
-          </Tabs>
-        </CardContent>
-        <CardFooter className="flex flex-col space-y-4">
-          <Separator />
-          <div className="flex justify-between w-full">
-            <div>
-              <div className="text-sm text-gray-500">
-                결제 금액 ({paymentMethod === "monthly" ? "월간" : "연간"})
+            </CardContent>
+            <CardFooter>
+              <Button 
+                onClick={handlePayment} 
+                className="w-full" 
+                disabled={isProcessing}
+              >
+                {isProcessing ? '처리중...' : `${planDetails.price} 결제하기`}
+              </Button>
+            </CardFooter>
+          </Card>
+        </TabsContent>
+        
+        {/* PayPal 결제 */}
+        <TabsContent value="paypal">
+          <Card>
+            <CardHeader>
+              <CardTitle>PayPal로 결제</CardTitle>
+              <CardDescription>
+                PayPal로 안전하게 결제하세요. 계정이 없으셔도 게스트 결제가 가능합니다.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="flex justify-center p-8">
+              {/* PayPal 버튼은 실제로는 PayPal SDK를 통해 렌더링해야 함 */}
+              <div className="p-6 border-2 border-blue-500 rounded-md bg-blue-50 text-blue-700 w-full text-center cursor-pointer">
+                <div className="text-xl font-bold mb-2">PayPal</div>
+                <div className="text-sm">PayPal 버튼을 클릭하여 결제를 진행하세요</div>
               </div>
-              <div className="text-xl font-bold">
-                {paymentMethod === "monthly" ? "$9.99" : "$95.90"}
-              </div>
-            </div>
-            <Button 
-              size="lg" 
-              className="min-w-[140px]"
-              onClick={handlePayment}
-              disabled={isProcessing}
-            >
-              {isProcessing ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  처리 중...
-                </>
-              ) : (
-                "지금 결제하기"
-              )}
-            </Button>
-          </div>
-          <div className="text-xs text-gray-500 text-center mt-4">
-            결제를 진행하시면 당사의 이용약관과 개인정보 처리방침에 동의하게 됩니다.
-          </div>
-        </CardFooter>
-      </Card>
+            </CardContent>
+            <CardFooter>
+              <Button 
+                onClick={handlePayment} 
+                className="w-full" 
+                disabled={isProcessing}
+              >
+                {isProcessing ? '처리중...' : 'PayPal로 결제하기'}
+              </Button>
+            </CardFooter>
+          </Card>
+        </TabsContent>
+      </Tabs>
+      
+      {/* 보안 및 환불 정책 */}
+      <div className="mt-8 p-4 bg-gray-50 rounded border text-sm text-gray-600">
+        <div className="flex items-start gap-2 mb-2">
+          <Lock className="h-4 w-4 mt-0.5 text-gray-500" />
+          <p>
+            <strong>보안 결제:</strong> 모든 결제 정보는 SSL 암호화되어 안전하게 처리됩니다.
+          </p>
+        </div>
+        <div className="flex items-start gap-2">
+          <Check className="h-4 w-4 mt-0.5 text-gray-500" />
+          <p>
+            <strong>환불 정책:</strong> 구독 후 30일 이내에 환불 요청 시 전액 환불이 가능합니다.
+            프리미엄 기능에 만족하지 못하신 경우 고객센터로 문의해주세요.
+          </p>
+        </div>
+      </div>
     </div>
   );
 }

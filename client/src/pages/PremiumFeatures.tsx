@@ -1,190 +1,232 @@
-import React from "react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { useToast } from "@/hooks/use-toast";
-import { useLocation } from "wouter";
-import { Check, ChevronRight, CreditCard, FileSpreadsheet, Lock, Upload, Zap } from "lucide-react";
-import { Separator } from "@/components/ui/separator";
+import { useState } from 'react';
+import { useLocation } from 'wouter';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { ArrowLeft, Check, Crown, Zap } from 'lucide-react';
+import { Separator } from '@/components/ui/separator';
 
 export default function PremiumFeatures() {
-  const { toast } = useToast();
   const [, setLocation] = useLocation();
-
-  const goToSubscription = () => {
-    toast({
-      title: "결제 페이지로 이동합니다",
-      description: "프리미엄 기능을 이용하려면 구독이 필요합니다.",
-    });
-    setLocation("/payment");
+  
+  // 요금제 상태
+  const [selectedPlan, setSelectedPlan] = useState<'monthly' | 'annual'>('annual');
+  
+  // 결제 페이지로 이동
+  const goToPayment = (planType: string) => {
+    setLocation('/payment?plan=' + planType);
   };
-
-  const goBack = () => {
-    setLocation("/capital-gains");
-  };
-
+  
   return (
-    <div className="container mx-auto py-8 max-w-5xl">
-      <h1 className="text-3xl font-bold mb-2">자본 이득 계산기 프리미엄</h1>
-      <p className="text-gray-500 mb-8">고급 세금 계산 및 최적화 기능으로 더 많은 세금을 절약하세요</p>
+    <div className="container max-w-5xl mx-auto py-10">
+      <div className="flex items-center justify-between mb-8">
+        <h1 className="text-3xl font-bold">프리미엄 기능 (Premium Features)</h1>
+        <Button 
+          variant="ghost" 
+          onClick={() => setLocation('/capital-gains')}
+          className="flex items-center gap-2"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          <span>자본 이득 계산기로 돌아가기</span>
+        </Button>
+      </div>
       
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-        <Card className="border-2 border-gray-200">
+      <div className="mb-10">
+        <h2 className="text-2xl font-semibold mb-3">자본 이득 계산기 프리미엄</h2>
+        <p className="text-gray-600 max-w-3xl mb-4">
+          프리미엄 기능으로 더 정확하고 효율적인 세금 계산과 최적화를 경험하세요. 
+          자동 파일 파싱, 세금 최적화 추천, 여러 브로커 통합 등 다양한 기능을 활용하여 
+          세금 신고를 간편하게 처리하고 세금 부담을 최소화할 수 있습니다.
+        </p>
+      </div>
+      
+      {/* 요금제 선택 토글 */}
+      <div className="flex justify-center mb-10">
+        <div className="inline-flex items-center bg-gray-100 p-1 rounded-lg">
+          <Button 
+            variant={selectedPlan === 'monthly' ? "default" : "ghost"}
+            size="sm"
+            onClick={() => setSelectedPlan('monthly')}
+            className="rounded-md"
+          >
+            월간 구독
+          </Button>
+          <Button 
+            variant={selectedPlan === 'annual' ? "default" : "ghost"}
+            size="sm"
+            onClick={() => setSelectedPlan('annual')}
+            className="rounded-md"
+          >
+            연간 구독
+            <Badge variant="outline" className="ml-2 bg-primary/20 text-primary border-0">
+              20% 할인
+            </Badge>
+          </Button>
+        </div>
+      </div>
+      
+      {/* 요금제 카드 */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        {/* 스탠다드 플랜 */}
+        <Card className="relative overflow-hidden border-primary/20">
+          <div className="absolute top-0 right-0 bg-primary/10 px-3 py-1 text-xs font-medium text-primary">
+            인기
+          </div>
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <span className="text-xl">기본 계산기</span>
-              <span className="bg-gray-100 text-gray-600 text-xs font-medium px-2 py-1 rounded-full">무료</span>
+            <CardTitle className="text-xl flex items-center gap-2">
+              <Crown className="h-5 w-5 text-amber-500" />
+              <span>스탠다드 플랜</span>
             </CardTitle>
-            <CardDescription>기본적인 자본 이득 계산 기능</CardDescription>
+            <CardDescription>자본 이득 계산을 위한 필수 고급 기능</CardDescription>
+            <div className="mt-3">
+              <span className="text-3xl font-bold">
+                {selectedPlan === 'monthly' ? '$9.99' : '$95.88'}
+              </span>
+              <span className="text-gray-500 ml-1">
+                /{selectedPlan === 'monthly' ? '월' : '년'}
+              </span>
+              {selectedPlan === 'annual' && (
+                <span className="block text-sm text-green-600 mt-1">연간 $23.97 절약</span>
+              )}
+            </div>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <ul className="space-y-2">
+          <CardContent>
+            <ul className="space-y-3">
               <li className="flex items-start gap-2">
                 <Check className="h-5 w-5 text-green-500 shrink-0 mt-0.5" />
-                <span>기본 자본 이득 계산</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <Check className="h-5 w-5 text-green-500 shrink-0 mt-0.5" />
-                <span>개별 거래 입력 (최대 10개)</span>
+                <span>1099-B 데이터 자동 가져오기</span>
               </li>
               <li className="flex items-start gap-2">
                 <Check className="h-5 w-5 text-green-500 shrink-0 mt-0.5" />
-                <span>장/단기 투자 구분 및 기본 통계</span>
+                <span>장기/단기 자본 이득 자동 분류</span>
               </li>
-              <li className="flex items-start gap-2 text-gray-400">
-                <Lock className="h-5 w-5 shrink-0 mt-0.5" />
-                <span>1099-B 파일 자동 업로드 및 파싱</span>
-              </li>
-              <li className="flex items-start gap-2 text-gray-400">
-                <Lock className="h-5 w-5 shrink-0 mt-0.5" />
+              <li className="flex items-start gap-2">
+                <Check className="h-5 w-5 text-green-500 shrink-0 mt-0.5" />
                 <span>세금 최적화 추천</span>
               </li>
-              <li className="flex items-start gap-2 text-gray-400">
-                <Lock className="h-5 w-5 shrink-0 mt-0.5" />
-                <span>여러 거래소/브로커 통합</span>
+              <li className="flex items-start gap-2">
+                <Check className="h-5 w-5 text-green-500 shrink-0 mt-0.5" />
+                <span>PDF 보고서 내보내기</span>
               </li>
-              <li className="flex items-start gap-2 text-gray-400">
-                <Lock className="h-5 w-5 shrink-0 mt-0.5" />
-                <span>PDF/Excel 보고서 내보내기</span>
-              </li>
-              <li className="flex items-start gap-2 text-gray-400">
-                <Lock className="h-5 w-5 shrink-0 mt-0.5" />
-                <span>무제한 거래 내역 저장</span>
+              <li className="flex items-start gap-2">
+                <Check className="h-5 w-5 text-green-500 shrink-0 mt-0.5" />
+                <span>최대 100개 거래 저장</span>
               </li>
             </ul>
           </CardContent>
           <CardFooter>
-            <Button variant="outline" className="w-full" onClick={goBack}>
-              기본 버전으로 돌아가기
+            <Button 
+              onClick={() => goToPayment('standard-' + selectedPlan)}
+              size="lg" 
+              className="w-full"
+            >
+              구독하기
             </Button>
           </CardFooter>
         </Card>
-
-        <Card className="border-2 border-primary shadow-lg">
-          <CardHeader className="bg-primary/5">
-            <div className="flex justify-between items-center">
-              <CardTitle className="flex items-center gap-2">
-                <span className="text-xl">프리미엄 계산기</span>
-                <span className="bg-primary/20 text-primary text-xs font-medium px-2 py-1 rounded-full">추천</span>
-              </CardTitle>
-              <span className="text-2xl font-bold">$9.99<span className="text-sm font-normal">/월</span></span>
-            </div>
-            <CardDescription>고급 세금 계산 및 최적화 기능</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <ul className="space-y-2">
-              <li className="flex items-start gap-2">
-                <Check className="h-5 w-5 text-green-500 shrink-0 mt-0.5" />
-                <span>모든 기본 기능 포함</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <Check className="h-5 w-5 text-green-500 shrink-0 mt-0.5" />
-                <span className="font-medium">1099-B 파일 자동 업로드 및 파싱</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <Check className="h-5 w-5 text-green-500 shrink-0 mt-0.5" />
-                <span className="font-medium">세금 최적화 추천</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <Check className="h-5 w-5 text-green-500 shrink-0 mt-0.5" />
-                <span className="font-medium">여러 거래소/브로커 통합</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <Check className="h-5 w-5 text-green-500 shrink-0 mt-0.5" />
-                <span className="font-medium">PDF/Excel 보고서 내보내기</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <Check className="h-5 w-5 text-green-500 shrink-0 mt-0.5" />
-                <span className="font-medium">무제한 거래 내역 저장</span>
-              </li>
-            </ul>
-          </CardContent>
-          <CardFooter>
-            <Button className="w-full" size="lg" onClick={goToSubscription}>
-              지금 업그레이드하기
-            </Button>
-          </CardFooter>
-        </Card>
-      </div>
-
-      <h2 className="text-2xl font-bold mb-6">프리미엄 기능 살펴보기</h2>
-      
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">
-        <div className="space-y-4">
-          <div className="flex gap-3">
-            <div className="bg-primary/10 p-3 rounded-lg">
-              <Upload className="h-6 w-6 text-primary" />
-            </div>
-            <div>
-              <h3 className="font-bold text-lg">1099-B 파일 자동 업로드</h3>
-              <p className="text-gray-500">브로커로부터 받은 1099-B 파일을 자동으로 파싱하여 모든 거래를 즉시 가져옵니다.</p>
-            </div>
-          </div>
-          
-          <div className="flex gap-3">
-            <div className="bg-primary/10 p-3 rounded-lg">
-              <Zap className="h-6 w-6 text-primary" />
-            </div>
-            <div>
-              <h3 className="font-bold text-lg">세금 최적화 추천</h3>
-              <p className="text-gray-500">세금 부담을 최소화하는 방법을 자동으로 추천해드립니다.</p>
-            </div>
-          </div>
-        </div>
         
-        <div className="space-y-4">
-          <div className="flex gap-3">
-            <div className="bg-primary/10 p-3 rounded-lg">
-              <FileSpreadsheet className="h-6 w-6 text-primary" />
+        {/* 프로 플랜 */}
+        <Card className="border-primary/10">
+          <CardHeader>
+            <CardTitle className="text-xl flex items-center gap-2">
+              <Zap className="h-5 w-5 text-blue-500" />
+              <span>프로 플랜</span>
+            </CardTitle>
+            <CardDescription>세금 전문가를 위한 고급 기능</CardDescription>
+            <div className="mt-3">
+              <span className="text-3xl font-bold">
+                {selectedPlan === 'monthly' ? '$19.99' : '$191.88'}
+              </span>
+              <span className="text-gray-500 ml-1">
+                /{selectedPlan === 'monthly' ? '월' : '년'}
+              </span>
+              {selectedPlan === 'annual' && (
+                <span className="block text-sm text-green-600 mt-1">연간 $47.97 절약</span>
+              )}
             </div>
-            <div>
-              <h3 className="font-bold text-lg">고급 보고서 생성</h3>
-              <p className="text-gray-500">PDF 또는 Excel 형식의 상세한 세금 보고서를 쉽게 생성하고 다운로드 할 수 있습니다.</p>
-            </div>
-          </div>
-          
-          <div className="flex gap-3">
-            <div className="bg-primary/10 p-3 rounded-lg">
-              <CreditCard className="h-6 w-6 text-primary" />
-            </div>
-            <div>
-              <h3 className="font-bold text-lg">여러 거래소/브로커 통합</h3>
-              <p className="text-gray-500">여러 거래소나 브로커의 자료를 한 곳에서 통합하고 관리할 수 있습니다.</p>
-            </div>
-          </div>
-        </div>
+          </CardHeader>
+          <CardContent>
+            <ul className="space-y-3">
+              <li className="flex items-start gap-2">
+                <Check className="h-5 w-5 text-green-500 shrink-0 mt-0.5" />
+                <span>스탠다드 플랜의 모든 기능</span>
+              </li>
+              <Separator className="my-2" />
+              <li className="flex items-start gap-2">
+                <Check className="h-5 w-5 text-green-500 shrink-0 mt-0.5" />
+                <span>여러 브로커 계정 통합</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <Check className="h-5 w-5 text-green-500 shrink-0 mt-0.5" />
+                <span>손실 하베스팅 전략 추천</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <Check className="h-5 w-5 text-green-500 shrink-0 mt-0.5" />
+                <span>Excel/CSV 내보내기</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <Check className="h-5 w-5 text-green-500 shrink-0 mt-0.5" />
+                <span>무제한 거래 저장</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <Check className="h-5 w-5 text-green-500 shrink-0 mt-0.5" />
+                <span>우선 기술 지원</span>
+              </li>
+            </ul>
+          </CardContent>
+          <CardFooter>
+            <Button 
+              onClick={() => goToPayment('pro-' + selectedPlan)}
+              size="lg" 
+              variant="outline"
+              className="w-full"
+            >
+              구독하기
+            </Button>
+          </CardFooter>
+        </Card>
       </div>
       
-      <Separator className="my-8" />
-      
-      <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-        <div>
-          <h2 className="text-2xl font-bold">더 많은 세금을 절약할 준비가 되셨나요?</h2>
-          <p className="text-gray-500">지금 업그레이드하고 고급 세금 계산 기능을 활용하세요.</p>
+      {/* 특징 및 비교 */}
+      <div className="mt-16">
+        <h3 className="text-xl font-semibold mb-6">자본 이득 계산기 프리미엄으로 무엇을 할 수 있나요?</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg">1099-B 파일 자동 가져오기</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-gray-600">
+                브로커로부터 받은 1099-B 파일을 업로드하면 모든 거래 내역이 자동으로 추출되어
+                장기/단기 이득으로 분류됩니다.
+              </p>
+            </CardContent>
+          </Card>
+          
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg">세금 최적화 추천</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-gray-600">
+                다양한 세금 최적화 전략을 추천받아 자본 이득 세금을 최소화할 수 있습니다.
+                손실 상계, 손실 이월, 세금 브래킷 최적화 등을 포함합니다.
+              </p>
+            </CardContent>
+          </Card>
+          
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg">보고서 내보내기</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-gray-600">
+                계산된 자본 이득과 세금 정보를 PDF, Excel 또는 CSV 형식으로 내보내 
+                세무사와 쉽게 공유하거나 세금 신고에 활용할 수 있습니다.
+              </p>
+            </CardContent>
+          </Card>
         </div>
-        <Button size="lg" className="px-8 flex items-center gap-2" onClick={goToSubscription}>
-          <span>프리미엄으로 업그레이드</span>
-          <ChevronRight className="h-4 w-4" />
-        </Button>
       </div>
     </div>
   );

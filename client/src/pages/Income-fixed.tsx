@@ -586,84 +586,119 @@ export default function IncomePage() {
                         )}
                       />
                       
-                      {/* 1099-B 파일 업로드 섹션 */}
+                      {/* 1099-B 자본 이득 입력 섹션 */}
                       <div className="col-span-1 md:col-span-2 mb-4">
                         <div className="border rounded-md p-3 bg-gray-50/50">
-                          <div className="flex items-center gap-2">
+                          <div className="flex flex-col gap-2">
                             <div className="flex-1">
                               <h4 className="text-base font-medium mb-1">
-                                1099-B 폼 업로드 (Upload 1099-B Form)
+                                1099-B 자본 이득 입력 (Enter 1099-B Capital Gains)
                               </h4>
                               <p className="text-sm text-gray-500 mb-2">
-                                1099-B 파일을 업로드하여 자본 이득(Capital Gains) 정보를 자동으로 추출합니다.
+                                1099-B 자본 이득(Capital Gains) 정보를 입력하세요.
                               </p>
                             </div>
-                            <div>
-                              <label 
-                                htmlFor="file1099B" 
-                                className="cursor-pointer"
+                            <div className="flex flex-wrap gap-2">
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => {
+                                  // 1. 사전 정의된 자본 이득 금액 설정
+                                  const capitalGains = 7850;
+                                  
+                                  // 2. 자본 이득 값을 폼에 설정
+                                  form.setValue('capitalGains', capitalGains);
+                                  
+                                  // 3. 총소득 수동 계산
+                                  const currentValues = form.getValues();
+                                  const totalIncome = 
+                                    Number(currentValues.wages || 0) +
+                                    Number(currentValues.otherEarnedIncome || 0) +
+                                    Number(currentValues.interestIncome || 0) +
+                                    Number(currentValues.dividends || 0) +
+                                    Number(currentValues.businessIncome || 0) +
+                                    Number(capitalGains || 0) +
+                                    Number(currentValues.rentalIncome || 0) +
+                                    Number(currentValues.retirementIncome || 0) +
+                                    Number(currentValues.unemploymentIncome || 0) +
+                                    Number(currentValues.otherIncome || 0);
+                                  
+                                  // 4. 총소득 값을 폼에 설정
+                                  form.setValue('totalIncome', totalIncome);
+                                  
+                                  // 로깅
+                                  console.log('자본 이득 설정됨:', capitalGains);
+                                  console.log('총소득 계산됨:', totalIncome);
+                                  
+                                  // 사용자에게 알림
+                                  toast({
+                                    title: "1099-B 데이터 입력 완료",
+                                    description: `자본 이득 $${capitalGains.toLocaleString()}이(가) 입력되었습니다.`,
+                                    duration: 3000,
+                                  });
+                                }}
+                                className="flex items-center gap-2"
                               >
-                                <div className="flex items-center gap-2 rounded-md border bg-white px-4 py-2 text-sm shadow-sm hover:bg-gray-50">
-                                  <Upload className="h-4 w-4" />
-                                  <span>파일 업로드</span>
-                                </div>
-                                <input 
-                                  type="file" 
-                                  id="file1099B"
-                                  accept=".pdf,.jpg,.jpeg,.png" 
-                                  className="hidden" 
-                                  onChange={(e) => {
-                                    const file = e.target.files?.[0];
-                                    if (file) {
-                                      // 1. 사용자에게 처리 중임을 알림
+                                <Calculator className="h-4 w-4" />
+                                <span>1099-B 샘플 데이터 입력</span>
+                              </Button>
+                              
+                              <div className="flex items-center gap-2">
+                                <Input 
+                                  type="number" 
+                                  id="manualCapitalGains"
+                                  placeholder="직접 금액 입력" 
+                                  className="w-40 text-sm"
+                                />
+                                <Button
+                                  variant="secondary"
+                                  size="sm"
+                                  onClick={() => {
+                                    // 직접 입력한 금액 가져오기
+                                    const inputElement = document.getElementById('manualCapitalGains') as HTMLInputElement;
+                                    const manualAmount = Number(inputElement.value || 0);
+                                    
+                                    if (manualAmount > 0) {
+                                      // 폼에 자본 이득 설정
+                                      form.setValue('capitalGains', manualAmount);
+                                      
+                                      // 총소득 수동 계산
+                                      const currentValues = form.getValues();
+                                      const totalIncome = 
+                                        Number(currentValues.wages || 0) +
+                                        Number(currentValues.otherEarnedIncome || 0) +
+                                        Number(currentValues.interestIncome || 0) +
+                                        Number(currentValues.dividends || 0) +
+                                        Number(currentValues.businessIncome || 0) +
+                                        Number(manualAmount || 0) +
+                                        Number(currentValues.rentalIncome || 0) +
+                                        Number(currentValues.retirementIncome || 0) +
+                                        Number(currentValues.unemploymentIncome || 0) +
+                                        Number(currentValues.otherIncome || 0);
+                                      
+                                      // 총소득 설정
+                                      form.setValue('totalIncome', totalIncome);
+                                      
+                                      // 입력 필드 초기화
+                                      inputElement.value = '';
+                                      
+                                      // 사용자에게 알림
                                       toast({
-                                        title: "1099-B 데이터 처리 중",
-                                        description: "파일에서 자본 이득을 계산하는 중입니다...",
-                                        duration: 3000,
+                                        title: "자본 이득 입력 완료",
+                                        description: `자본 이득 $${manualAmount.toLocaleString()}이(가) 입력되었습니다.`,
                                       });
-                                      
-                                      // 파일 정보 로깅 (디버깅용)
-                                      console.log("1099-B 파일 업로드됨:", file.name, file.type, file.size);
-                                      
-                                      // 2. 파일에서 자본 이득(Capital Gains) 계산 (여기서는 시뮬레이션)
-                                      setTimeout(() => {
-                                        try {
-                                          // 계산된 자본 이득 데이터 (시뮬레이션)
-                                          const extractedCapitalGains = 7850;
-                                          
-                                          // 3. 자본 이득 값을 폼에 자동 입력
-                                          form.setValue('capitalGains', extractedCapitalGains, { 
-                                            shouldValidate: true,
-                                            shouldDirty: true,
-                                            shouldTouch: true
-                                          });
-                                          
-                                          // 4. 총소득 재계산 (이 함수는 자동으로 호출됨)
-                                          // calculateTotals는 useEffect에서 다양한 값들의 변경을 감지하여 자동 호출됩니다
-                                          
-                                          // 로깅 (디버깅용)
-                                          console.log("자본 이득(Capital Gains) 설정됨:", extractedCapitalGains);
-                                          console.log("현재 폼 값:", form.getValues());
-                                          
-                                          // 성공 알림 표시
-                                          toast({
-                                            title: "1099-B 데이터 추출 완료",
-                                            description: `자본 이득 정보가 자동으로 입력되었습니다: $${extractedCapitalGains.toLocaleString()}`,
-                                            duration: 5000,
-                                          });
-                                        } catch (error) {
-                                          console.error("파일 처리 오류:", error);
-                                          toast({
-                                            title: "1099-B 처리 오류",
-                                            description: "파일에서 데이터를 추출하는 중 오류가 발생했습니다.",
-                                            variant: "destructive",
-                                          });
-                                        }
-                                      }, 1500);
+                                    } else {
+                                      toast({
+                                        title: "입력 오류",
+                                        description: "유효한 금액을 입력해주세요.",
+                                        variant: "destructive",
+                                      });
                                     }
                                   }}
-                                />
-                              </label>
+                                >
+                                  적용
+                                </Button>
+                              </div>
                             </div>
                           </div>
                         </div>

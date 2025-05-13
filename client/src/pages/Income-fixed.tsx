@@ -582,34 +582,54 @@ export default function IncomePage() {
                                       </div>
                                       <input 
                                         type="file" 
+                                        id="file1099B"
                                         accept=".pdf,.jpg,.jpeg,.png" 
                                         className="hidden" 
                                         onChange={(e) => {
                                           const file = e.target.files?.[0];
                                           if (file) {
-                                            // 실제 환경에서는 파일을 서버에 업로드하고 데이터를 추출하는 API를 호출합니다.
-                                            // 여기서는 시뮬레이션을 위해 타이머를 사용하여 1초 후에 임의의 데이터를 설정합니다.
+                                            // 사용자에게 처리 중임을 알림
                                             toast({
                                               title: "1099-B 처리 중",
                                               description: "잠시만 기다려주세요...",
+                                              duration: 3000,
                                             });
                                             
+                                            // 파일 정보 로깅 (디버깅용)
+                                            console.log("파일 업로드됨:", file.name, file.type, file.size);
+                                            
+                                            // 시뮬레이션: 파일 처리 후 데이터 추출 (실제로는 서버 API 호출)
                                             setTimeout(() => {
-                                              // 1099-B에서 추출한 자본 이득 데이터 (시뮬레이션)
-                                              const extractedCapitalGains = 7850;
-                                              
-                                              // 폼 값 업데이트
-                                              form.setValue('capitalGains', extractedCapitalGains);
-                                              
-                                              // 총소득 재계산
-                                              calculateTotals();
-                                              
-                                              // 알림 표시
-                                              toast({
-                                                title: "1099-B 데이터 추출 완료",
-                                                description: "자본 이득 정보가 자동으로 입력되었습니다.",
-                                              });
-                                            }, 1000);
+                                              try {
+                                                // 1099-B에서 추출한 자본 이득 데이터 (시뮬레이션)
+                                                const extractedCapitalGains = 7850;
+                                                
+                                                // 폼 값 업데이트 - 명시적으로 타입 변환하여 숫자 값 설정
+                                                form.setValue('capitalGains', extractedCapitalGains, { 
+                                                  shouldValidate: true,
+                                                  shouldDirty: true,
+                                                  shouldTouch: true
+                                                });
+                                                
+                                                // 로깅 (디버깅용)
+                                                console.log("자본 이득 설정됨:", extractedCapitalGains);
+                                                console.log("현재 폼 값:", form.getValues());
+                                                
+                                                // 알림 표시
+                                                toast({
+                                                  title: "1099-B 데이터 추출 완료",
+                                                  description: "자본 이득 정보가 자동으로 입력되었습니다.",
+                                                  duration: 5000,
+                                                });
+                                              } catch (error) {
+                                                console.error("파일 처리 오류:", error);
+                                                toast({
+                                                  title: "오류 발생",
+                                                  description: "파일 처리 중 오류가 발생했습니다.",
+                                                  variant: "destructive",
+                                                });
+                                              }
+                                            }, 1500);
                                           }
                                         }}
                                       />

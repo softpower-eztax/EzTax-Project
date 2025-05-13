@@ -19,6 +19,7 @@ import PricingPage from "@/pages/PricingPage";
 import NotFound from "@/pages/not-found";
 import AuthPage from "@/pages/auth-page";
 import DataTester from "@/pages/DataTester";
+import CapitalGainsCalculator from "@/pages/CapitalGainsCalculator";
 import { AuthProvider } from "@/hooks/use-auth";
 import { ProtectedRoute } from "@/lib/protected-route";
 import { TaxProvider } from "@/context/TaxContext";
@@ -30,6 +31,7 @@ function Router() {
       <Route path="/auth" component={AuthPage} />
       <ProtectedRoute path="/personal-info" component={PersonalInfo} />
       <ProtectedRoute path="/income" component={IncomePage} />
+      <ProtectedRoute path="/capital-gains-calculator" component={CapitalGainsCalculator} />
       <ProtectedRoute path="/additional-income" component={AdditionalIncomePage} />
       <ProtectedRoute path="/additional-adjustments" component={AdditionalAdjustmentsPage} />
       <ProtectedRoute path="/deductions" component={Deductions} />

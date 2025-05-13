@@ -593,12 +593,24 @@ export default function IncomePage() {
                         name="capitalGains"
                         render={({ field }) => (
                           <FormItem className="flex flex-col justify-center h-full">
-                            <div className="flex justify-between">
-                              <FormLabel>자본 이득 (Capital Gains)</FormLabel>
-                              <div className="tooltip">
-                                <InfoIcon className="h-4 w-4 text-gray-dark" />
-                                <span className="tooltip-text">Income from sale of investments</span>
+                            <div className="flex justify-between items-center mb-1">
+                              <div className="flex items-center gap-1">
+                                <FormLabel>자본 이득 (Capital Gains)</FormLabel>
+                                <div className="tooltip">
+                                  <InfoIcon className="h-4 w-4 text-gray-dark" />
+                                  <span className="tooltip-text">Income from sale of investments</span>
+                                </div>
                               </div>
+                              <Button
+                                type="button"
+                                variant="outline"
+                                size="sm"
+                                onClick={() => navigate('/capital-gains-calculator')}
+                                className="text-xs flex items-center gap-1"
+                              >
+                                <Calculator className="h-3 w-3" />
+                                <span>계산기 열기</span>
+                              </Button>
                             </div>
                             <FormControl>
                               <Input

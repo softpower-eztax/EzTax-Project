@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/componen
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
-import { FileText, Calculator, ArrowLeft, Save, Lock, Download, Crown } from 'lucide-react';
+import { FileText, Calculator, ArrowLeft, Save, Lock, Download, Crown, Check } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -339,7 +339,7 @@ export default function CapitalGainsCalculator() {
     });
     
     // 소득 페이지로 이동
-    navigate('/income');
+    setLocation('/income');
   };
   
   return (
@@ -351,7 +351,7 @@ export default function CapitalGainsCalculator() {
             <Button 
               variant="ghost" 
               size="sm" 
-              onClick={() => navigate('/income')}
+              onClick={() => setLocation('/income')}
               className="flex items-center gap-2"
             >
               <ArrowLeft className="h-4 w-4" />
@@ -617,6 +617,88 @@ export default function CapitalGainsCalculator() {
                   ${totalEstimatedTax.toLocaleString()}
                 </div>
               </div>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+              {/* 세금 최적화 추천 */}
+              <Card className="relative">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-base flex gap-2 items-center">
+                    <Calculator className="h-4 w-4 text-blue-500" />
+                    세금 최적화 추천
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="text-sm text-gray-500">
+                  세금 부담을 줄일 수 있는 맞춤 최적화 제안을 받아보세요.
+                </CardContent>
+                <CardFooter>
+                  <Button 
+                    onClick={() => checkPremiumAccess('tax-optimization')}
+                    variant="outline" 
+                    className="w-full"
+                  >
+                    최적화 분석 시작
+                  </Button>
+                </CardFooter>
+                {!isPremium && (
+                  <div className="absolute inset-0 flex items-center justify-center bg-white/80 backdrop-blur-[1px] rounded-lg">
+                    <div className="bg-primary/10 p-2 rounded-full">
+                      <Lock className="h-5 w-5 text-primary" />
+                    </div>
+                  </div>
+                )}
+              </Card>
+              
+              {/* 보고서 내보내기 */}
+              <Card className="relative">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-base flex gap-2 items-center">
+                    <Download className="h-4 w-4 text-blue-500" />
+                    보고서 내보내기
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="text-sm text-gray-500">
+                  거래 내역 및 세금 계산 결과를 PDF 또는 Excel로 내보내기
+                </CardContent>
+                <CardFooter>
+                  <Button 
+                    onClick={() => checkPremiumAccess('export-report')}
+                    variant="outline" 
+                    className="w-full"
+                  >
+                    보고서 생성
+                  </Button>
+                </CardFooter>
+                {!isPremium && (
+                  <div className="absolute inset-0 flex items-center justify-center bg-white/80 backdrop-blur-[1px] rounded-lg">
+                    <div className="bg-primary/10 p-2 rounded-full">
+                      <Lock className="h-5 w-5 text-primary" />
+                    </div>
+                  </div>
+                )}
+              </Card>
+              
+              {/* 업그레이드 버튼 */}
+              <Card className="bg-primary/5 border-primary/20">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-base flex gap-2 items-center text-primary">
+                    <Crown className="h-4 w-4" />
+                    프리미엄으로 업그레이드
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="text-sm text-gray-500">
+                  모든 고급 기능을 이용하고 더 많은 세금을 절약하세요.
+                </CardContent>
+                <CardFooter>
+                  <Button 
+                    onClick={goToPremiumPage}
+                    className="w-full"
+                    variant="default"
+                  >
+                    지금 업그레이드
+                  </Button>
+                </CardFooter>
+              </Card>
             </div>
             
             <div className="flex justify-end">

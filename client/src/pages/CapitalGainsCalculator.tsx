@@ -6,7 +6,16 @@ import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/componen
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
-import { FileText, Calculator, ArrowLeft, Save } from 'lucide-react';
+import { FileText, Calculator, ArrowLeft, Save, Lock, Download, Crown } from 'lucide-react';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import {
   Table,
   TableBody,

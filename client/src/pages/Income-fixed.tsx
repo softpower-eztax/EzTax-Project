@@ -30,7 +30,7 @@ import {
 } from "@/components/ui/dialog";
 
 export default function IncomePage() {
-  const [, navigate] = useLocation();
+  const [, setLocation] = useLocation();
   const { taxData, updateTaxData, resetToZero, saveTaxReturn } = useTaxContext();
   const { toast } = useToast();
   const [isUploading, setIsUploading] = useState(false);
@@ -107,7 +107,7 @@ export default function IncomePage() {
       updateTaxData({ income: data });
       
       // 다음 페이지로 이동
-      navigate('/deductions');
+      setLocation('/deductions');
     } catch (error) {
       console.error('Error submitting income data:', error);
       toast({
@@ -605,7 +605,7 @@ export default function IncomePage() {
                                 type="button"
                                 variant="outline"
                                 size="sm"
-                                onClick={() => navigate('/capital-gains-calculator')}
+                                onClick={() => setLocation('/capital-gains')}
                                 className="text-xs flex items-center gap-1"
                               >
                                 <Calculator className="h-3 w-3" />
@@ -715,7 +715,7 @@ export default function IncomePage() {
                       <Button
                         variant="outline"
                         size="sm"
-                        onClick={() => navigate('/additional-income')}
+                        onClick={() => setLocation('/additional-income')}
                         className="text-sm flex items-center"
                       >
                         <Plus className="h-4 w-4 mr-1" />

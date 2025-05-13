@@ -817,7 +817,7 @@ export default function IncomePage() {
                           type="button"
                           variant="outline"
                           size="sm"
-                          onClick={() => navigate('/additional-adjustments')}
+                          onClick={() => setLocation('/additional-adjustments')}
                           className="flex items-center"
                         >
                           <Plus className="h-4 w-4 mr-1" />

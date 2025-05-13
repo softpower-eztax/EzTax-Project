@@ -90,8 +90,30 @@ export default function CapitalGainsCalculator() {
   const [isUploading, setIsUploading] = useState<boolean>(false);
   const [uploadProgress, setUploadProgress] = useState<number>(0);
   
-  // 총 자본 이득 계산
-  const totalCapitalGains = transactions.reduce((sum, transaction) => sum + transaction.profit, 0);
+  // 장기/단기 자본 이득 및 세금 계산
+  const longTermGains = transactions
+    .filter(t => t.isLongTerm && t.profit > 0)
+    .reduce((sum, t) => sum + t.profit, 0);
+    
+  const shortTermGains = transactions
+    .filter(t => !t.isLongTerm && t.profit > 0)
+    .reduce((sum, t) => sum + t.profit, 0);
+    
+  const totalCapitalGains = longTermGains + shortTermGains;
+  
+  // 장기/단기 자본 손실 계산
+  const longTermLosses = transactions
+    .filter(t => t.isLongTerm && t.profit < 0)
+    .reduce((sum, t) => sum + Math.abs(t.profit), 0);
+    
+  const shortTermLosses = transactions
+    .filter(t => !t.isLongTerm && t.profit < 0)
+    .reduce((sum, t) => sum + Math.abs(t.profit), 0);
+    
+  // 추정 세금 계산 (예상 세율: 장기 15%, 단기 24%)
+  const estimatedLongTermTax = longTermGains * 0.15;
+  const estimatedShortTermTax = shortTermGains * 0.24;
+  const totalEstimatedTax = estimatedLongTermTax + estimatedShortTermTax;
   
   // 입력 필드 변경 처리
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -398,8 +420,8 @@ export default function CapitalGainsCalculator() {
           {/* 새 거래 추가 폼 */}
           <div className="mb-6 p-4 border rounded-md">
             <h3 className="text-lg font-medium mb-3">새 거래 추가</h3>
-            <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-              <div className="md:col-span-1">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div>
                 <Label htmlFor="description">종목/자산 설명</Label>
                 <Input
                   id="description"
@@ -433,6 +455,7 @@ export default function CapitalGainsCalculator() {
                   onChange={handleInputChange}
                 />
               </div>
+              
               <div>
                 <Label htmlFor="quantity">수량</Label>
                 <Input
@@ -445,28 +468,122 @@ export default function CapitalGainsCalculator() {
                   onChange={handleInputChange}
                 />
               </div>
-              <div className="flex items-end">
-                <Button onClick={addTransaction} className="w-full">
-                  거래 추가
-                </Button>
+              <div>
+                <Label htmlFor="purchaseDate">구매일</Label>
+                <Input
+                  id="purchaseDate"
+                  name="purchaseDate"
+                  type="date"
+                  value={newTransaction.purchaseDate}
+                  onChange={handleInputChange}
+                />
               </div>
+              <div>
+                <Label htmlFor="saleDate">판매일</Label>
+                <Input
+                  id="saleDate"
+                  name="saleDate"
+                  type="date"
+                  value={newTransaction.saleDate}
+                  onChange={handleInputChange}
+                />
+              </div>
+            </div>
+            
+            <div className="mt-4 flex justify-end">
+              <Button onClick={addTransaction} className="w-auto px-6">
+                거래 추가
+              </Button>
             </div>
           </div>
           
           {/* 요약 및 결과 */}
-          <div className="bg-gray-50 p-4 rounded-md">
-            <div className="flex flex-col md:flex-row justify-between items-center mb-4">
-              <div>
-                <h3 className="text-lg font-medium">총 자본 이득 (Total Capital Gains)</h3>
-                <p className="text-gray-600 text-sm">
-                  모든 거래의 이익과 손실을 합산한 금액입니다.
-                </p>
+          <div className="bg-gray-50 p-6 rounded-md">
+            <h3 className="text-xl font-bold mb-4">자본 이득 및 예상 세금 요약</h3>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+              {/* 장기 투자 요약 */}
+              <div className="bg-white p-4 rounded-lg border border-gray-200">
+                <h4 className="text-lg font-medium flex items-center gap-2 mb-2">
+                  <span className="px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">장기</span>
+                  장기 투자 (1년 이상)
+                </h4>
+                <div className="space-y-2">
+                  <div className="flex justify-between items-center text-sm">
+                    <span className="text-gray-600">이익 총액:</span>
+                    <span className="font-medium text-green-600">${longTermGains.toLocaleString()}</span>
+                  </div>
+                  <div className="flex justify-between items-center text-sm">
+                    <span className="text-gray-600">손실 총액:</span>
+                    <span className="font-medium text-red-600">${longTermLosses.toLocaleString()}</span>
+                  </div>
+                  <div className="flex justify-between items-center text-sm">
+                    <span className="text-gray-600">예상 세율:</span>
+                    <span className="font-medium">15%</span>
+                  </div>
+                  <div className="flex justify-between items-center pt-2 border-t">
+                    <span className="font-medium">예상 세금:</span>
+                    <span className="font-bold">${estimatedLongTermTax.toLocaleString()}</span>
+                  </div>
+                </div>
               </div>
-              <div className="text-3xl font-bold text-green-600 mt-2 md:mt-0">
-                ${totalCapitalGains.toLocaleString()}
+              
+              {/* 단기 투자 요약 */}
+              <div className="bg-white p-4 rounded-lg border border-gray-200">
+                <h4 className="text-lg font-medium flex items-center gap-2 mb-2">
+                  <span className="px-2 py-1 rounded-full text-xs font-medium bg-amber-100 text-amber-800">단기</span>
+                  단기 투자 (1년 미만)
+                </h4>
+                <div className="space-y-2">
+                  <div className="flex justify-between items-center text-sm">
+                    <span className="text-gray-600">이익 총액:</span>
+                    <span className="font-medium text-green-600">${shortTermGains.toLocaleString()}</span>
+                  </div>
+                  <div className="flex justify-between items-center text-sm">
+                    <span className="text-gray-600">손실 총액:</span>
+                    <span className="font-medium text-red-600">${shortTermLosses.toLocaleString()}</span>
+                  </div>
+                  <div className="flex justify-between items-center text-sm">
+                    <span className="text-gray-600">예상 세율:</span>
+                    <span className="font-medium">24%</span>
+                  </div>
+                  <div className="flex justify-between items-center pt-2 border-t">
+                    <span className="font-medium">예상 세금:</span>
+                    <span className="font-bold">${estimatedShortTermTax.toLocaleString()}</span>
+                  </div>
+                </div>
               </div>
             </div>
-            <Separator className="my-4" />
+            
+            {/* 총 자본 이득 및 세금 */}
+            <div className="bg-white p-4 rounded-lg border border-green-200 mb-6">
+              <div className="flex flex-col md:flex-row justify-between items-center">
+                <div>
+                  <h3 className="text-lg font-medium">총 자본 이득 (Total Capital Gains)</h3>
+                  <p className="text-gray-600 text-sm">
+                    모든 거래의 이익을 합산한 금액입니다.
+                  </p>
+                </div>
+                <div className="text-2xl font-bold text-green-600 mt-2 md:mt-0">
+                  ${totalCapitalGains.toLocaleString()}
+                </div>
+              </div>
+              
+              <Separator className="my-4" />
+              
+              <div className="flex flex-col md:flex-row justify-between items-center">
+                <div>
+                  <h3 className="text-lg font-medium">예상 총 세금 (Estimated Tax)</h3>
+                  <p className="text-gray-600 text-sm">
+                    장기 및 단기 자본 이득에 부과되는 예상 세금 합계입니다.
+                  </p>
+                </div>
+                <div className="text-2xl font-bold text-blue-600 mt-2 md:mt-0">
+                  ${totalEstimatedTax.toLocaleString()}
+                </div>
+              </div>
+            </div>
+            
             <div className="flex justify-end">
               <Button
                 onClick={saveAndReturn}

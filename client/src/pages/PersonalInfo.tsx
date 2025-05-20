@@ -376,7 +376,10 @@ const PersonalInfo: React.FC = () => {
                                 variant="outline" 
                                 size="sm" 
                                 className="text-xs"
-                                onClick={() => navigate('/filing-status-checker')}
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  window.location.href = '/filing-status-checker';
+                                }}
                               >
                                 <ClipboardCheck className="h-3 w-3 mr-1" />
                                 신고 상태 확인

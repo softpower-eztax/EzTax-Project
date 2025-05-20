@@ -22,6 +22,7 @@ import DataTester from "@/pages/DataTester";
 import CapitalGainsCalculator from "@/pages/CapitalGainsCalculator";
 import PremiumFeatures from "@/pages/PremiumFeatures";
 import Payment from "@/pages/Payment";
+import FilingStatusChecker from "@/pages/FilingStatusChecker";
 import { AuthProvider } from "@/hooks/use-auth";
 import { ProtectedRoute } from "@/lib/protected-route";
 import { TaxProvider } from "@/context/TaxContext";
@@ -36,6 +37,7 @@ function Router() {
       <ProtectedRoute path="/capital-gains" component={CapitalGainsCalculator} />
       <ProtectedRoute path="/premium-features" component={PremiumFeatures} />
       <ProtectedRoute path="/payment" component={Payment} />
+      <ProtectedRoute path="/filing-status-checker" component={FilingStatusChecker} />
       <ProtectedRoute path="/additional-income" component={AdditionalIncomePage} />
       <ProtectedRoute path="/additional-adjustments" component={AdditionalAdjustmentsPage} />
       <ProtectedRoute path="/deductions" component={Deductions} />

@@ -55,22 +55,51 @@ export default function IncomePage() {
     
     setIsUploading(true);
     
-    // 실제 환경에서는 파일을 서버에 업로드하고 데이터를 추출하는 API를 호출
-    // 지금은 시뮬레이션으로 타이머 사용
+    // 파일 이름 기반 자동 인식 (시뮬레이션)
+    let extractedWages = 0;
+    
+    if (file.name.toLowerCase().includes('sample') || file.name.toLowerCase().includes('example')) {
+      extractedWages = 82500;
+    } else {
+      // 파일 확장자에 따른 금액 시뮬레이션
+      if (isImage) {
+        extractedWages = 79800; // 이미지 파일 시뮬레이션
+      } else if (isPdf) {
+        extractedWages = 84200; // PDF 파일 시뮬레이션
+      } else {
+        extractedWages = 75000; // 기본값
+      }
+    }
+    
+    // 시뮬레이션 처리 (실제 구현에서는 OCR이나 API 처리)
     setTimeout(() => {
-      // W2에서 추출한 급여 데이터 (시뮬레이션)
-      const extractedWages = 82500;
+      console.log("W-2 파일 처리:", file.name, "추출된 급여:", extractedWages);
       
       // 폼 값 업데이트
       form.setValue('wages', extractedWages);
       
-      // 총소득 재계산
-      calculateTotals();
+      // 상태 업데이트를 위해 TaxContext에도 업데이트
+      const currentIncome = form.getValues();
+      currentIncome.wages = extractedWages;
+      
+      // 총소득 계산
+      const earnedIncomeTotal = Number(extractedWages || 0) + Number(currentIncome.otherEarnedIncome || 0);
+      const unearnedIncomeTotal = 
+        Number(currentIncome.interestIncome || 0) + 
+        Number(currentIncome.dividends || 0) + 
+        Number(currentIncome.rentalIncome || 0) + 
+        Number(currentIncome.capitalGains || 0);
+      
+      const totalIncome = earnedIncomeTotal + unearnedIncomeTotal;
+      currentIncome.totalIncome = totalIncome;
+      
+      // TaxContext 업데이트
+      updateTaxData({ income: currentIncome });
       
       // 업로드 상태 초기화
       setIsUploading(false);
       
-      // 알림 표시
+      // 추출 완료 알림 표시
       toast({
         title: "W-2 데이터 추출 완료",
         description: `${file.name} 파일에서 급여 정보(₩${extractedWages.toLocaleString()})가 자동으로 입력되었습니다.`,

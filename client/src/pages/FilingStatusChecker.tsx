@@ -76,7 +76,7 @@ const decisionTree: Record<CheckerStep, DecisionTreeNode> = {
   },
   [CheckerStep.WIDOW_HAS_DEPENDENT]: {
     question: '부양가족이 있습니까?',
-    description: '배우자 사망 후 2년 이내이고 부양가족이 있는 경우 적격 미망인(Qualifying Widow/er) 지위를 획득할 수 있습니다.',
+    description: '배우자 사망 후 2년 이내 (예: 2024년 세금 신고 기준 2022-2023년 사망)이고 부양가족이 있는 경우 적격 미망인(Qualifying Widow/er) 지위를 획득할 수 있습니다.',
     options: [
       { label: '예', value: 'yes', nextStep: CheckerStep.RESULT, result: 'qualifying_widow' },
       { label: '아니오', value: 'no', nextStep: CheckerStep.RESULT, result: 'single' }
@@ -84,7 +84,7 @@ const decisionTree: Record<CheckerStep, DecisionTreeNode> = {
   },
   [CheckerStep.WIDOW_HAS_DEPENDENT_OVER_2Y]: {
     question: '부양가족이 있습니까?',
-    description: '배우자 사망 후 2년이 지났지만 부양가족이 있는 경우 세대주(Head of Household) 지위를 획득할 수 있습니다.',
+    description: '배우자 사망 후 2년 초과 (예: 2024년 세금 신고 기준 2021년 이전 사망)이지만 부양가족이 있는 경우 세대주(Head of Household) 지위를 획득할 수 있습니다.',
     options: [
       { label: '예', value: 'yes', nextStep: CheckerStep.RESULT, result: 'head_of_household' },
       { label: '아니오', value: 'no', nextStep: CheckerStep.RESULT, result: 'single' }

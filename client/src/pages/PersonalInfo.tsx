@@ -13,6 +13,7 @@ import { PlusCircle, Trash2 } from 'lucide-react';
 import ProgressTracker from '@/components/ProgressTracker';
 import StepNavigation from '@/components/StepNavigation';
 import { useTaxContext } from '@/context/TaxContext';
+import FilingStatusWizard from '@/components/FilingStatusWizard';
 
 // 부양가족 관계 옵션
 const relationshipOptions = [
@@ -368,7 +369,13 @@ const PersonalInfo: React.FC = () => {
                         name="filingStatus"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>신고 상태(Filing Status)</FormLabel>
+                            <div className="flex items-center justify-between">
+                              <FormLabel>신고 상태(Filing Status)</FormLabel>
+                              <FilingStatusWizard 
+                                currentStatus={field.value} 
+                                onStatusChange={(newStatus) => field.onChange(newStatus)} 
+                              />
+                            </div>
                             <Select
                               onValueChange={field.onChange}
                               defaultValue={field.value}

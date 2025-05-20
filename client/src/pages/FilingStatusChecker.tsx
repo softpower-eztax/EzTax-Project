@@ -67,10 +67,10 @@ const decisionTree: Record<CheckerStep, DecisionTreeNode> = {
   },
   [CheckerStep.WIDOW_WITHOUT_DEPENDENT]: {
     question: '배우자가 세금연도 이전에 사망한 경우',
-    description: '부양가족이 있고, 배우자가 사망한 시점이 언제인지 선택해주세요.',
+    description: '부양가족이 있고, 배우자가 사망한 시점이 언제인지 선택해주세요. (예: 2024년 세금 신고 기준)',
     options: [
-      { label: '배우자 사망 후 2년 이내', value: 'within_2_years', nextStep: CheckerStep.WIDOW_HAS_DEPENDENT },
-      { label: '배우자 사망 후 2년 초과', value: 'over_2_years', nextStep: CheckerStep.WIDOW_HAS_DEPENDENT_OVER_2Y },
+      { label: '배우자 사망 후 2년 이내 (예: 2022년 또는 2023년에 사망)', value: 'within_2_years', nextStep: CheckerStep.WIDOW_HAS_DEPENDENT },
+      { label: '배우자 사망 후 2년 초과 (예: 2021년 또는 그 이전에 사망)', value: 'over_2_years', nextStep: CheckerStep.WIDOW_HAS_DEPENDENT_OVER_2Y },
       { label: '부양가족 없음', value: 'no_dependent', nextStep: CheckerStep.RESULT, result: 'single' }
     ]
   },

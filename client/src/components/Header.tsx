@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import Logo from './Logo';
 import { useToast } from "@/hooks/use-toast";
-import { HelpCircle, Save, LogIn, LogOut, User, RefreshCcw } from 'lucide-react';
+import { HelpCircle, Save, LogIn, LogOut, User, RefreshCcw, ClipboardCheck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useLocation } from 'wouter';
 import { useTaxContext } from '@/context/TaxContext';
@@ -99,7 +99,7 @@ const Header: React.FC = () => {
                 className="text-primary-dark hover:text-primary flex items-center text-sm"
                 onClick={() => navigate('/filing-status-checker')}
               >
-                <HelpCircle className="h-4 w-4 mr-1" />
+                <ClipboardCheck className="h-4 w-4 mr-1" />
                 신고 상태 확인
               </Button>
               

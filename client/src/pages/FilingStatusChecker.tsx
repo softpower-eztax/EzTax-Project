@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { FilingStatus } from '@shared/schema';
+import { FilingStatus, PersonalInformation } from '@shared/schema';
 import { useTaxContext, TaxData } from '@/context/TaxContext';
 import { Separator } from '@/components/ui/separator';
 import { HelpCircle, ArrowLeft, ArrowRight, CheckCircle } from 'lucide-react';
@@ -143,28 +143,36 @@ export default function FilingStatusChecker() {
   const handleApplyResult = () => {
     if (result) {
       // personalInfo가 있으면 filingStatus만 업데이트하고, 없으면 기본 객체 생성
-      const personalInfo = taxData.personalInfo ? { 
-        ...taxData.personalInfo,
-        filingStatus: result
-      } : {
-        firstName: "",
-        lastName: "",
-        ssn: "",
-        dateOfBirth: "",
-        email: "",
-        phone: "",
-        address1: "",
-        address2: "",
-        city: "",
-        state: "",
-        zipCode: "",
-        filingStatus: result,
-        isDisabled: false,
-        isNonresidentAlien: false,
-        dependents: []
-      };
+      if (taxData.personalInfo) {
+        // 기존 personalInfo 사용하고 filingStatus만 업데이트
+        updateTaxData({ 
+          personalInfo: {
+            ...taxData.personalInfo,
+            filingStatus: result
+          }
+        });
+      } else {
+        // 새 personalInfo 객체 생성
+        const newPersonalInfo: PersonalInformation = {
+          firstName: "",
+          lastName: "",
+          ssn: "",
+          dateOfBirth: "",
+          email: "",
+          phone: "",
+          address1: "",
+          city: "",
+          state: "",
+          zipCode: "",
+          filingStatus: result,
+          isDisabled: false,
+          isNonresidentAlien: false,
+          dependents: []
+        };
+        
+        updateTaxData({ personalInfo: newPersonalInfo });
+      }
       
-      updateTaxData({ personalInfo });
       setLocation('/personal-info');
     }
   };

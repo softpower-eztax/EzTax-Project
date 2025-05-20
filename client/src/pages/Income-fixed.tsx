@@ -429,70 +429,69 @@ export default function IncomePage() {
                         )}
                       />
                       
-                      <div className="border rounded-md p-3 bg-gray-50/50">
+                      <div className="border rounded-md p-3 bg-gray-50/50 mb-4">
                         <p className="text-sm text-gray-700 mb-2">W-2입력(없으면 직접 입력)</p>
-                        <div className="flex flex-col items-start gap-2">
-                          <div className="w-full flex items-center gap-3">
-                            <div className="flex items-center">
-                              <TooltipProvider>
-                                <Tooltip>
-                                  <TooltipTrigger asChild>
-                                    <label className="cursor-pointer mr-2">
-                                      <div className="flex items-center gap-1 rounded-md border bg-white px-3 py-1 text-xs shadow-sm">
-                                        {isUploading ? (
-                                          <>
-                                            <Loader2 className="h-3 w-3 animate-spin" />
-                                            <span>처리 중...</span>
-                                          </>
-                                        ) : (
-                                          <>
-                                            <Upload className="h-3 w-3" />
-                                            <span>업로드</span>
-                                          </>
-                                        )}
-                                      </div>
-                                      <input 
-                                        type="file" 
-                                        accept=".pdf,.jpg,.jpeg,.png" 
-                                        className="hidden" 
-                                        onChange={(e) => {
-                                          const file = e.target.files?.[0];
-                                          if (file) {
-                                            setIsUploading(true);
-                                            
-                                            // 실제 환경에서는 파일을 서버에 업로드하고 데이터를 추출하는 API를 호출합니다.
-                                            // 지금은 시뮬레이션을 위해 타이머를 사용하여 2초 후에 임의의 데이터를 설정합니다.
-                                            setTimeout(() => {
-                                              // W2에서 추출한 급여 데이터 (시뮬레이션)
-                                              const extractedWages = 82500;
-                                              
-                                              // 폼 값 업데이트
-                                              form.setValue('wages', extractedWages);
-                                              
-                                              // 총소득 재계산
-                                              calculateTotals();
-                                              
-                                              // 업로드 상태 초기화
-                                              setIsUploading(false);
-                                              
-                                              // 알림 표시
-                                              toast({
-                                                title: "W-2 데이터 추출 완료",
-                                                description: "급여 정보가 자동으로 입력되었습니다.",
-                                              });
-                                            }, 2000);
-                                          }
-                                        }}
-                                      />
-                                    </label>
-                                  </TooltipTrigger>
-                                  <TooltipContent>
-                                    <p>W-2에서 급여 정보를 자동으로 추출합니다</p>
-                                  </TooltipContent>
-                                </Tooltip>
-                              </TooltipProvider>
-                            </div>
-                          </div>
+                        <div className="flex items-center gap-3">
+                          <Button 
+                            type="button" 
+                            variant="outline" 
+                            size="sm"
+                            className="flex items-center gap-1"
+                            onClick={() => document.getElementById('w2-file-upload')?.click()}
+                            disabled={isUploading}
+                          >
+                            {isUploading ? (
+                              <>
+                                <Loader2 className="h-4 w-4 animate-spin" />
+                                <span>처리 중...</span>
+                              </>
+                            ) : (
+                              <>
+                                <Upload className="h-4 w-4" />
+                                <span>W-2 업로드</span>
+                              </>
+                            )}
+                          </Button>
+                          <input 
+                            id="w2-file-upload"
+                            type="file" 
+                            accept=".pdf,.jpg,.jpeg,.png" 
+                            className="hidden" 
+                            onChange={(e) => {
+                              const file = e.target.files?.[0];
+                              if (file) {
+                                setIsUploading(true);
+                                
+                                // 실제 환경에서는 파일을 서버에 업로드하고 데이터를 추출하는 API를 호출합니다.
+                                // 지금은 시뮬레이션을 위해 타이머를 사용하여 2초 후에 임의의 데이터를 설정합니다.
+                                setTimeout(() => {
+                                  // W2에서 추출한 급여 데이터 (시뮬레이션)
+                                  const extractedWages = 82500;
+                                  
+                                  // 폼 값 업데이트
+                                  form.setValue('wages', extractedWages);
+                                  
+                                  // 총소득 재계산
+                                  calculateTotals();
+                                  
+                                  // 업로드 상태 초기화
+                                  setIsUploading(false);
+                                  
+                                  // 알림 표시
+                                  toast({
+                                    title: "W-2 데이터 추출 완료",
+                                    description: "급여 정보가 자동으로 입력되었습니다.",
+                                  });
+                                  
+                                  // 파일 입력 초기화
+                                  e.target.value = '';
+                                }, 2000);
+                              }
+                            }}
+                          />
+                          <span className="text-xs text-gray-500">
+                            (W-2 양식을 업로드하여 급여 정보를 자동으로 추출합니다)
+                          </span>
                         </div>
                       </div>
                       

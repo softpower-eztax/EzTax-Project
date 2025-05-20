@@ -9,11 +9,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { Separator } from '@/components/ui/separator';
-import { PlusCircle, Trash2 } from 'lucide-react';
+import { PlusCircle, Trash2, ClipboardCheck } from 'lucide-react';
 import ProgressTracker from '@/components/ProgressTracker';
 import StepNavigation from '@/components/StepNavigation';
 import { useTaxContext } from '@/context/TaxContext';
-import FilingStatusWizard from '@/components/FilingStatusWizard';
+import { useLocation } from 'wouter';
 
 // 부양가족 관계 옵션
 const relationshipOptions = [
@@ -32,6 +32,7 @@ const relationshipOptions = [
 const PersonalInfo: React.FC = () => {
   const { taxData, updateTaxData, saveTaxReturn } = useTaxContext();
   const { toast } = useToast();
+  const [, navigate] = useLocation();
   
   // 로컬 상태 관리 (폼과 로컬스토리지 간 동기화)
   const [savedValues, setSavedValues] = useState<PersonalInformation | null>(null);
@@ -371,10 +372,15 @@ const PersonalInfo: React.FC = () => {
                           <FormItem>
                             <div className="flex items-center justify-between">
                               <FormLabel>신고 상태(Filing Status)</FormLabel>
-                              <FilingStatusWizard 
-                                currentStatus={field.value} 
-                                onStatusChange={(newStatus) => field.onChange(newStatus)} 
-                              />
+                              <Button 
+                                variant="outline" 
+                                size="sm" 
+                                className="text-xs"
+                                onClick={() => navigate('/filing-status-checker')}
+                              >
+                                <ClipboardCheck className="h-3 w-3 mr-1" />
+                                신고 상태 확인
+                              </Button>
                             </div>
                             <Select
                               onValueChange={field.onChange}

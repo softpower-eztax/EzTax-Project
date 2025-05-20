@@ -81,6 +81,9 @@ const PersonalInfo: React.FC = () => {
     form.reset(dummyData);
     setSavedValues(dummyData);
     
+    // TaxContext에도 예시 데이터 적용
+    updateTaxData({ personalInfo: dummyData });
+    
     toast({
       title: "예시 데이터 적용 완료",
       description: "개인 정보가 예시 데이터로 채워졌습니다.",
@@ -325,7 +328,7 @@ const PersonalInfo: React.FC = () => {
                   <div className="flex justify-between items-center mb-4">
                     <Button
                       type="button"
-                      onClick={fillWithDummyData}
+                      onClick={() => fillWithDummyData()}
                       variant="outline"
                       className="mb-4"
                     >

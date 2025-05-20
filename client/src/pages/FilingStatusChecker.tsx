@@ -16,6 +16,8 @@ enum CheckerStep {
   SINGLE = 'single',
   WIDOW_WITH_DEPENDENT = 'widow_with_dependent',
   WIDOW_WITHOUT_DEPENDENT = 'widow_without_dependent',
+  WIDOW_HAS_DEPENDENT = 'widow_has_dependent',
+  WIDOW_HAS_DEPENDENT_OVER_2Y = 'widow_has_dependent_over_2y',
   RESULT = 'result'
 }
 
@@ -64,10 +66,27 @@ const decisionTree: Record<CheckerStep, DecisionTreeNode> = {
     ]
   },
   [CheckerStep.WIDOW_WITHOUT_DEPENDENT]: {
+    question: '배우자가 세금연도 이전에 사망한 경우',
+    description: '부양가족이 있고, 배우자가 사망한 시점이 언제인지 선택해주세요.',
+    options: [
+      { label: '배우자 사망 후 2년 이내', value: 'within_2_years', nextStep: CheckerStep.WIDOW_HAS_DEPENDENT },
+      { label: '배우자 사망 후 2년 초과', value: 'over_2_years', nextStep: CheckerStep.WIDOW_HAS_DEPENDENT_OVER_2Y },
+      { label: '부양가족 없음', value: 'no_dependent', nextStep: CheckerStep.RESULT, result: 'single' }
+    ]
+  },
+  [CheckerStep.WIDOW_HAS_DEPENDENT]: {
     question: '부양가족이 있습니까?',
-    description: '배우자가 이전 연도에 사망하고 부양가족이 있는 경우, 사망 연도 이후 2년간 적격 미망인(Qualifying Widow/er) 지위를 획득할 수 있습니다.',
+    description: '배우자 사망 후 2년 이내이고 부양가족이 있는 경우 적격 미망인(Qualifying Widow/er) 지위를 획득할 수 있습니다.',
     options: [
       { label: '예', value: 'yes', nextStep: CheckerStep.RESULT, result: 'qualifying_widow' },
+      { label: '아니오', value: 'no', nextStep: CheckerStep.RESULT, result: 'single' }
+    ]
+  },
+  [CheckerStep.WIDOW_HAS_DEPENDENT_OVER_2Y]: {
+    question: '부양가족이 있습니까?',
+    description: '배우자 사망 후 2년이 지났지만 부양가족이 있는 경우 세대주(Head of Household) 지위를 획득할 수 있습니다.',
+    options: [
+      { label: '예', value: 'yes', nextStep: CheckerStep.RESULT, result: 'head_of_household' },
       { label: '아니오', value: 'no', nextStep: CheckerStep.RESULT, result: 'single' }
     ]
   },

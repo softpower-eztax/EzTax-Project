@@ -512,9 +512,9 @@ export default function IncomePage() {
                               }
                             }}
                           />
-                          <span className="text-xs text-gray-500">
-                            (W-2 양식을 업로드하여 급여 정보를 자동으로 추출합니다)
-                          </span>
+                          <p className="text-xs text-blue-600 mt-2">
+                            JPG, PNG 또는 PDF 파일을 업로드하면 급여 정보가 자동으로 추출됩니다.
+                          </p>
                         </div>
                       </div>
                       

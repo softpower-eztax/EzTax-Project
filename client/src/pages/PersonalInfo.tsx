@@ -370,24 +370,26 @@ const PersonalInfo: React.FC = () => {
                         name="filingStatus"
                         render={({ field }) => (
                           <FormItem>
-                            <div className="flex items-center justify-between">
+                            <div className="mb-2">
                               <FormLabel>신고 상태(Filing Status)</FormLabel>
+                            </div>
+                            <div className="flex items-center mb-3 bg-sky-50 p-3 rounded-md border border-sky-200">
+                              <div className="flex-1 text-sky-700">
+                                <span className="font-semibold">*신고 상태(Filing Status)를 모르시면</span> 옆의 "신고 상태 확인" 버튼을 눌러 확인하세요
+                              </div>
                               <Button 
                                 variant="outline" 
-                                size="sm" 
-                                className="text-xs"
+                                size="sm"
+                                className="ml-3 bg-white hover:bg-sky-100"
                                 onClick={(e) => {
                                   e.preventDefault();
                                   window.location.href = '/filing-status-checker';
                                 }}
                               >
-                                <ClipboardCheck className="h-3 w-3 mr-1" />
-                                신고 상태 확인
+                                <ClipboardCheck className="h-4 w-4 mr-1 text-sky-700" />
+                                <span className="font-semibold">신고 상태 확인</span>
                               </Button>
                             </div>
-                            <FormDescription className="text-sky-600 my-2">
-                              *신고 상태(Filing Status)를 모르시면 오른쪽 "신고 상태 확인" 버튼을 눌러 확인하세요
-                            </FormDescription>
                             <Select
                               onValueChange={field.onChange}
                               defaultValue={field.value}

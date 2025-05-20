@@ -161,6 +161,7 @@ export default function FilingStatusChecker() {
           email: "",
           phone: "",
           address1: "",
+          address2: "",
           city: "",
           state: "",
           zipCode: "",

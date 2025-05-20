@@ -78,7 +78,7 @@ export default function FilingStatusWizard({ currentStatus, onStatusChange }: Fi
       <DialogTrigger asChild>
         <Button variant="outline" size="sm" className="text-xs">
           <HelpCircle className="h-3 w-3 mr-1" />
-          신고 상태 확인
+          신고 상태 도우미
         </Button>
       </DialogTrigger>
       

@@ -142,7 +142,7 @@ const PersonalInfo: React.FC = () => {
       dateOfBirth: '',
       isDisabled: false,
       isNonresidentAlien: false,
-      isQualifyingChild: false // 추가된 필드
+      isQualifyingChild: true // 19세 미만 또는 24세 미만 학생 기본값으로 체크
     });
   };
 

@@ -97,6 +97,16 @@ const Header: React.FC = () => {
                 variant="outline" 
                 size="sm"
                 className="text-primary-dark hover:text-primary flex items-center text-sm"
+                onClick={() => navigate('/filing-status-checker')}
+              >
+                <HelpCircle className="h-4 w-4 mr-1" />
+                신고 상태 확인
+              </Button>
+              
+              <Button 
+                variant="outline" 
+                size="sm"
+                className="text-primary-dark hover:text-primary flex items-center text-sm"
                 onClick={() => {
                   toast({
                     title: "도움말 및 지원",

@@ -142,13 +142,29 @@ export default function FilingStatusChecker() {
 
   const handleApplyResult = () => {
     if (result) {
-      // 기존 personalInfo 데이터는 유지하면서 filingStatus만 업데이트
-      updateTaxData({ 
-        personalInfo: { 
-          ...taxData.personalInfo,
-          filingStatus: result 
-        } 
-      });
+      // personalInfo가 있으면 filingStatus만 업데이트하고, 없으면 기본 객체 생성
+      const personalInfo = taxData.personalInfo ? { 
+        ...taxData.personalInfo,
+        filingStatus: result
+      } : {
+        firstName: "",
+        lastName: "",
+        ssn: "",
+        dateOfBirth: "",
+        email: "",
+        phone: "",
+        address1: "",
+        address2: "",
+        city: "",
+        state: "",
+        zipCode: "",
+        filingStatus: result,
+        isDisabled: false,
+        isNonresidentAlien: false,
+        dependents: []
+      };
+      
+      updateTaxData({ personalInfo });
       setLocation('/personal-info');
     }
   };

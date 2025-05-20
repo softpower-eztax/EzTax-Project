@@ -57,11 +57,10 @@ const decisionTree: Record<CheckerStep, DecisionTreeNode> = {
     ]
   },
   [CheckerStep.WIDOW_WITH_DEPENDENT]: {
-    question: '부양가족이 있습니까?',
-    description: '배우자가 사망한 해에는 부부 공동 신고(Married Filing Jointly)를 할 수 있습니다. 이는 일반적으로 세금 혜택이 가장 큰 옵션입니다.',
+    question: '배우자가 세금연도에 사망한 경우',
+    description: '배우자가 사망한 해에는 부양가족 여부와 관계없이 부부 공동 신고(Married Filing Jointly)를 할 수 있습니다. 이는 일반적으로 세금 혜택이 가장 큰 옵션입니다.',
     options: [
-      { label: '예', value: 'yes', nextStep: CheckerStep.RESULT, result: 'married_joint' },
-      { label: '아니오', value: 'no', nextStep: CheckerStep.RESULT, result: 'single' }
+      { label: '부부 공동 신고하기', value: 'yes', nextStep: CheckerStep.RESULT, result: 'married_joint' }
     ]
   },
   [CheckerStep.WIDOW_WITHOUT_DEPENDENT]: {

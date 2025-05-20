@@ -385,6 +385,9 @@ const PersonalInfo: React.FC = () => {
                                 신고 상태 확인
                               </Button>
                             </div>
+                            <FormDescription className="text-sky-600 my-2">
+                              *신고 상태(Filing Status)를 모르시면 오른쪽 "신고 상태 확인" 버튼을 눌러 확인하세요
+                            </FormDescription>
                             <Select
                               onValueChange={field.onChange}
                               defaultValue={field.value}

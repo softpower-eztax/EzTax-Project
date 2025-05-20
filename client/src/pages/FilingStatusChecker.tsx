@@ -58,17 +58,17 @@ const decisionTree: Record<CheckerStep, DecisionTreeNode> = {
   },
   [CheckerStep.WIDOW_WITH_DEPENDENT]: {
     question: '부양가족이 있습니까?',
-    description: '배우자가 사망한 해와 그 다음 2년 동안 부양 자녀가 있는 미망인은 특별 세금 혜택을 받을 수 있습니다.',
+    description: '배우자가 사망한 해에는 부부 공동 신고(Married Filing Jointly)를 할 수 있습니다. 이는 일반적으로 세금 혜택이 가장 큰 옵션입니다.',
     options: [
-      { label: '예', value: 'yes', nextStep: CheckerStep.RESULT, result: 'qualifying_widow' },
+      { label: '예', value: 'yes', nextStep: CheckerStep.RESULT, result: 'married_joint' },
       { label: '아니오', value: 'no', nextStep: CheckerStep.RESULT, result: 'single' }
     ]
   },
   [CheckerStep.WIDOW_WITHOUT_DEPENDENT]: {
     question: '부양가족이 있습니까?',
-    description: '부양가족이 있다면 세대주(Head of Household) 지위를 획득할 수 있습니다.',
+    description: '배우자가 이전 연도에 사망하고 부양가족이 있는 경우, 사망 연도 이후 2년간 적격 미망인(Qualifying Widow/er) 지위를 획득할 수 있습니다.',
     options: [
-      { label: '예', value: 'yes', nextStep: CheckerStep.RESULT, result: 'head_of_household' },
+      { label: '예', value: 'yes', nextStep: CheckerStep.RESULT, result: 'qualifying_widow' },
       { label: '아니오', value: 'no', nextStep: CheckerStep.RESULT, result: 'single' }
     ]
   },

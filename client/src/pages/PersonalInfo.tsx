@@ -37,6 +37,56 @@ const PersonalInfo: React.FC = () => {
   // 로컬 상태 관리 (폼과 로컬스토리지 간 동기화)
   const [savedValues, setSavedValues] = useState<PersonalInformation | null>(null);
   
+  // 예시 데이터 채우기 함수
+  const fillWithDummyData = () => {
+    const dummyData: PersonalInformation = {
+      firstName: "홍",
+      middleInitial: "길",
+      lastName: "동",
+      ssn: "123-45-6789",
+      dateOfBirth: "1985-03-15",
+      email: "hong.gildong@example.com",
+      phone: "010-1234-5678",
+      address1: "서울특별시 강남구 테헤란로 123",
+      address2: "456동 789호",
+      city: "서울",
+      state: "서울특별시",
+      zipCode: "06123",
+      filingStatus: "married_joint",
+      isDisabled: false,
+      isNonresidentAlien: false,
+      dependents: [
+        {
+          firstName: "홍",
+          lastName: "미니",
+          ssn: "987-65-4321",
+          relationship: "child",
+          dateOfBirth: "2010-05-20",
+          isDisabled: false,
+          isNonresidentAlien: false,
+          isQualifyingChild: true
+        }
+      ],
+      spouseInfo: {
+        firstName: "김",
+        middleInitial: "",
+        lastName: "영희",
+        ssn: "234-56-7890",
+        dateOfBirth: "1987-07-25",
+        isDisabled: false,
+        isNonresidentAlien: false
+      }
+    };
+    
+    form.reset(dummyData);
+    setSavedValues(dummyData);
+    
+    toast({
+      title: "예시 데이터 적용 완료",
+      description: "개인 정보가 예시 데이터로 채워졌습니다.",
+    });
+  };
+  
   // 테스트용 하드코딩된 데이터로 시작
   const defaultValues: PersonalInformation = {
     firstName: 'John',
@@ -272,6 +322,17 @@ const PersonalInfo: React.FC = () => {
               
               <Form {...form}>
                 <form onSubmit={(e) => { e.preventDefault(); }}>
+                  <div className="flex justify-between items-center mb-4">
+                    <Button
+                      type="button"
+                      onClick={fillWithDummyData}
+                      variant="outline"
+                      className="mb-4"
+                    >
+                      예시 데이터 채우기
+                    </Button>
+                  </div>
+                  
                   {/* Basic Information */}
                   <div className="mb-6">
                     <h3 className="text-lg font-heading font-semibold mb-4">기본 정보</h3>

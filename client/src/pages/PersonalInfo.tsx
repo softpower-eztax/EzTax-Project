@@ -90,7 +90,7 @@ const PersonalInfo: React.FC = () => {
     });
   };
   
-  // 테스트용 하드코딩된 데이터로 시작
+  // 예시 데이터 (영어 이름과 주소)
   const defaultValues: PersonalInformation = {
     firstName: 'John',
     middleInitial: 'A',
@@ -98,12 +98,12 @@ const PersonalInfo: React.FC = () => {
     ssn: '123-45-6789',
     dateOfBirth: '1980-01-15',
     email: 'john.smith@example.com',
-    phone: '123-456-7890',
-    address1: '123 Main Street',
-    address2: 'Apt 4B',
-    city: 'Springfield',
-    state: 'IL',
-    zipCode: '62704',
+    phone: '555-123-4567',
+    address1: '1234 Maple Street',
+    address2: 'Suite 100',
+    city: 'New York',
+    state: 'NY',
+    zipCode: '10001',
     filingStatus: 'married_joint',
     isDisabled: false,
     isNonresidentAlien: false,
@@ -118,14 +118,14 @@ const PersonalInfo: React.FC = () => {
     },
     dependents: [
       {
-        firstName: 'Tommy',
+        firstName: 'Michael',
         lastName: 'Smith',
         ssn: '111-22-3333',
         relationship: 'Son',
         dateOfBirth: '2010-03-12',
         isDisabled: false,
         isNonresidentAlien: false,
-        isQualifyingChild: true // 추가된 필드
+        isQualifyingChild: true
       }
     ],
     ...taxData.personalInfo

@@ -256,11 +256,7 @@ export default function SALTDeductions() {
                             className="pl-8"
                             placeholder="0.00"
                             disabled={watchTaxType !== 'income'}
-                            value={field.value || ''}
-                            onChange={(e) => {
-                              const value = parseFloat(e.target.value) || 0;
-                              field.onChange(value);
-                            }}
+                            {...field}
                           />
                         </div>
                       </FormControl>
@@ -291,11 +287,7 @@ export default function SALTDeductions() {
                             className="pl-8"
                             placeholder="0.00"
                             disabled={watchTaxType !== 'sales'}
-                            value={field.value || ''}
-                            onChange={(e) => {
-                              const value = parseFloat(e.target.value) || 0;
-                              field.onChange(value);
-                            }}
+                            {...field}
                           />
                         </div>
                       </FormControl>
@@ -335,11 +327,7 @@ export default function SALTDeductions() {
                             min="0"
                             className="pl-8"
                             placeholder="0.00"
-                            value={field.value || ''}
-                            onChange={(e) => {
-                              const value = parseFloat(e.target.value) || 0;
-                              field.onChange(value);
-                            }}
+                            {...field}
                           />
                         </div>
                       </FormControl>
@@ -376,11 +364,7 @@ export default function SALTDeductions() {
                             min="0"
                             className="pl-8"
                             placeholder="0.00"
-                            value={field.value || ''}
-                            onChange={(e) => {
-                              const value = parseFloat(e.target.value) || 0;
-                              field.onChange(value);
-                            }}
+                            {...field}
                           />
                         </div>
                       </FormControl>

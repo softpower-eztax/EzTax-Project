@@ -101,12 +101,16 @@ export default function SALTDeductionsNew() {
     try {
       const selectedTaxAmount = taxType === 'income' ? stateLocalIncomeTax : stateLocalSalesTax;
       
+      // Calculate total SALT for storage
+      const totalSaltAmount = selectedTaxAmount + realEstateTax + personalPropertyTax;
+      const limitedSaltAmount = Math.min(totalSaltAmount, 10000);
+      
       const updatedDeductions = {
         ...taxData.deductions,
         useStandardDeduction: false,
         itemizedDeductions: {
           ...taxData.deductions?.itemizedDeductions,
-          stateLocalIncomeTax: selectedTaxAmount,
+          stateLocalIncomeTax: limitedSaltAmount, // Store total SALT amount here
           realEstateTaxes: realEstateTax,
           medicalExpenses: taxData.deductions?.itemizedDeductions?.medicalExpenses || 0,
           mortgageInterest: taxData.deductions?.itemizedDeductions?.mortgageInterest || 0,

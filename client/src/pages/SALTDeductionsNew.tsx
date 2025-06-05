@@ -37,7 +37,6 @@ export default function SALTDeductionsNew() {
   const calculateTotalSALT = () => {
     const selectedTaxAmount = taxType === 'income' ? stateLocalIncomeTax : stateLocalSalesTax;
     const total = selectedTaxAmount + realEstateTax + personalPropertyTax;
-    const limitedTotal = Math.min(total, 10000);
     
     console.log('SALT 계산 디버그:', {
       taxType,
@@ -45,17 +44,55 @@ export default function SALTDeductionsNew() {
       realEstate: realEstateTax,
       personalProperty: personalPropertyTax,
       total,
-      limitedTotal
+      limitedTotal: Math.min(total, 10000)
     });
     
-    setTotalSALT(limitedTotal);
-    
     if (total > 10000) {
+      // 한도 초과 시 비례적으로 각 항목 조정
+      const ratio = 10000 / total;
+      const adjustedSelectedTax = Math.floor(selectedTaxAmount * ratio);
+      const adjustedRealEstate = Math.floor(realEstateTax * ratio);
+      const adjustedPersonalProperty = Math.floor(personalPropertyTax * ratio);
+      
+      // 남은 금액을 가장 큰 항목에 추가
+      let remaining = 10000 - (adjustedSelectedTax + adjustedRealEstate + adjustedPersonalProperty);
+      
+      if (selectedTaxAmount >= realEstateTax && selectedTaxAmount >= personalPropertyTax) {
+        const finalSelectedTax = adjustedSelectedTax + remaining;
+        if (taxType === 'income') {
+          setStateLocalIncomeTax(finalSelectedTax);
+        } else {
+          setStateLocalSalesTax(finalSelectedTax);
+        }
+        setRealEstateTax(adjustedRealEstate);
+        setPersonalPropertyTax(adjustedPersonalProperty);
+      } else if (realEstateTax >= personalPropertyTax) {
+        if (taxType === 'income') {
+          setStateLocalIncomeTax(adjustedSelectedTax);
+        } else {
+          setStateLocalSalesTax(adjustedSelectedTax);
+        }
+        setRealEstateTax(adjustedRealEstate + remaining);
+        setPersonalPropertyTax(adjustedPersonalProperty);
+      } else {
+        if (taxType === 'income') {
+          setStateLocalIncomeTax(adjustedSelectedTax);
+        } else {
+          setStateLocalSalesTax(adjustedSelectedTax);
+        }
+        setRealEstateTax(adjustedRealEstate);
+        setPersonalPropertyTax(adjustedPersonalProperty + remaining);
+      }
+      
+      setTotalSALT(10000);
+      
       toast({
         title: "SALT 한도 적용",
-        description: `입력하신 금액 $${total.toLocaleString()}이 $10,000 한도를 초과하여 조정되었습니다.`,
+        description: `입력하신 금액 $${total.toLocaleString()}이 $10,000 한도를 초과하여 각 항목이 비례적으로 조정되었습니다.`,
         variant: "default",
       });
+    } else {
+      setTotalSALT(total);
     }
   };
 

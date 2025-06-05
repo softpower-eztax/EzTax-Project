@@ -11,6 +11,7 @@ import IncomePage from "@/pages/Income-fixed";
 import AdditionalIncomePage from "@/pages/AdditionalIncome-simple";
 import AdditionalAdjustmentsPage from "@/pages/AdditionalAdjustments-simple";
 import Deductions from "@/pages/Deductions";
+import SALTDeductions from "@/pages/SALTDeductions";
 import TaxCredits from "@/pages/TaxCredits3";
 import AdditionalTax from "@/pages/AdditionalTax";
 import Review from "@/pages/Review";
@@ -41,6 +42,7 @@ function Router() {
       <ProtectedRoute path="/additional-income" component={AdditionalIncomePage} />
       <ProtectedRoute path="/additional-adjustments" component={AdditionalAdjustmentsPage} />
       <ProtectedRoute path="/deductions" component={Deductions} />
+      <ProtectedRoute path="/salt-deductions" component={SALTDeductions} />
       <ProtectedRoute path="/tax-credits" component={TaxCredits} />
       <ProtectedRoute path="/additional-tax" component={AdditionalTax} />
       <ProtectedRoute path="/review" component={Review} />

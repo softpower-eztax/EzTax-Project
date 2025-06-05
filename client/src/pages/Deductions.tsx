@@ -469,23 +469,38 @@ const Deductions: React.FC = () => {
                                 </TooltipProvider>
                               </div>
                               <FormControl>
-                                <Input
-                                  type="number"
-                                  step="0.01"
-                                  min="0"
-                                  max="10000"
-                                  {...field}
-                                  onChange={(e) => {
-                                    const value = parseFloat(e.target.value) || 0;
-                                    // SALT 한도 적용
-                                    const limitedValue = Math.min(value, 10000);
-                                    field.onChange(limitedValue);
-                                  }}
-                                  disabled={isItemizedDisabled}
-                                />
+                                <div className="space-y-2">
+                                  <div className="flex gap-2">
+                                    <Input
+                                      type="number"
+                                      step="0.01"
+                                      min="0"
+                                      max="10000"
+                                      {...field}
+                                      onChange={(e) => {
+                                        const value = parseFloat(e.target.value) || 0;
+                                        // SALT 한도 적용
+                                        const limitedValue = Math.min(value, 10000);
+                                        field.onChange(limitedValue);
+                                      }}
+                                      disabled={isItemizedDisabled}
+                                      className="flex-1"
+                                    />
+                                    <Button
+                                      type="button"
+                                      variant="outline"
+                                      size="sm"
+                                      onClick={() => window.location.href = '/salt-deductions'}
+                                      disabled={isItemizedDisabled}
+                                      className="whitespace-nowrap"
+                                    >
+                                      상세 입력
+                                    </Button>
+                                  </div>
+                                </div>
                               </FormControl>
                               <FormDescription className="text-xs text-gray-600">
-                                최대 $10,000까지 공제 가능
+                                최대 $10,000까지 공제 가능 • 상세 입력 버튼으로 각 항목별 입력 가능
                               </FormDescription>
                               <FormMessage />
                             </FormItem>

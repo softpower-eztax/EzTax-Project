@@ -270,7 +270,8 @@ export default function SALTDeductions() {
                             className="pl-8"
                             placeholder="0.00"
                             disabled={watchTaxType !== 'income'}
-                            {...field}
+                            value={field.value || ''}
+                            onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
                           />
                         </div>
                       </FormControl>
@@ -301,7 +302,8 @@ export default function SALTDeductions() {
                             className="pl-8"
                             placeholder="0.00"
                             disabled={watchTaxType !== 'sales'}
-                            {...field}
+                            value={field.value || ''}
+                            onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
                           />
                         </div>
                       </FormControl>
@@ -341,7 +343,8 @@ export default function SALTDeductions() {
                             min="0"
                             className="pl-8"
                             placeholder="0.00"
-                            {...field}
+                            value={field.value || ''}
+                            onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
                           />
                         </div>
                       </FormControl>
@@ -378,7 +381,8 @@ export default function SALTDeductions() {
                             min="0"
                             className="pl-8"
                             placeholder="0.00"
-                            {...field}
+                            value={field.value || ''}
+                            onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
                           />
                         </div>
                       </FormControl>

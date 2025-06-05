@@ -425,87 +425,83 @@ const Deductions: React.FC = () => {
                           )}
                         />
                         
-                        <FormField
-                          control={form.control}
-                          name="itemizedDeductions.stateLocalIncomeTax"
-                          render={({ field }) => (
-                            <FormItem className="flex flex-col justify-center h-full">
-                              <div className="flex justify-between">
-                                <FormLabel>주소득세 + 판매세 + 부동산세 (SALT)</FormLabel>
-                                <TooltipProvider>
-                                  <Tooltip>
-                                    <TooltipTrigger asChild>
-                                      <Info className="h-4 w-4 text-gray-dark cursor-help" />
-                                    </TooltipTrigger>
-                                    <TooltipContent className="max-w-md p-4">
-                                      <div className="space-y-3">
-                                        <div>
-                                          <h4 className="font-semibold text-blue-700 mb-2">💰 SALT 공제 항목</h4>
-                                          <ul className="text-sm space-y-1">
-                                            <li>• 주 소득세 (State Income Tax)</li>
-                                            <li>• 지방 소득세 (Local Income Tax)</li>
-                                            <li>• 판매세 (Sales Tax)</li>
-                                            <li>• 부동산세 (Real Estate Taxes)</li>
-                                            <li>• 개인 재산세 (Personal Property Tax)</li>
-                                          </ul>
-                                        </div>
-                                        
-                                        <div>
-                                          <h4 className="font-semibold text-red-700 mb-2">⚠️ 중요한 제한사항</h4>
-                                          <ul className="text-sm space-y-1">
-                                            <li>• 연간 최대 $10,000 공제 한도</li>
-                                            <li>• 부부 별도 신고 시 각각 $5,000 한도</li>
-                                            <li>• 소득세와 판매세 중 하나만 선택 가능</li>
-                                          </ul>
-                                        </div>
-                                        
-                                        <div>
-                                          <h4 className="font-semibold text-green-700 mb-2">💡 팁</h4>
-                                          <p className="text-sm">일반적으로 소득세가 높은 주에서는 소득세를, 소득세가 없는 주에서는 판매세를 선택하는 것이 유리합니다.</p>
-                                        </div>
-                                      </div>
-                                    </TooltipContent>
-                                  </Tooltip>
-                                </TooltipProvider>
-                              </div>
-                              <FormControl>
-                                <div className="space-y-2">
-                                  <div className="flex gap-2">
-                                    <Input
-                                      type="number"
-                                      step="0.01"
-                                      min="0"
-                                      max="10000"
-                                      {...field}
-                                      onChange={(e) => {
-                                        const value = parseFloat(e.target.value) || 0;
-                                        // SALT 한도 적용
-                                        const limitedValue = Math.min(value, 10000);
-                                        field.onChange(limitedValue);
-                                      }}
-                                      disabled={isItemizedDisabled}
-                                      className="flex-1"
-                                    />
-                                    <Button
-                                      type="button"
-                                      variant="outline"
-                                      size="sm"
-                                      onClick={() => window.location.href = '/salt-deductions'}
-                                      disabled={isItemizedDisabled}
-                                      className="whitespace-nowrap"
-                                    >
-                                      상세 입력
-                                    </Button>
+                        <div className="flex flex-col justify-center h-full">
+                          <div className="flex justify-between">
+                            <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">주소득세 + 판매세 + 부동산세 (SALT)</label>
+                            <TooltipProvider>
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <Info className="h-4 w-4 text-gray-dark cursor-help" />
+                                </TooltipTrigger>
+                                <TooltipContent className="max-w-md p-4">
+                                  <div className="space-y-3">
+                                    <div>
+                                      <h4 className="font-semibold text-blue-700 mb-2">💰 SALT 공제 항목</h4>
+                                      <ul className="text-sm space-y-1">
+                                        <li>• 주 소득세 (State Income Tax)</li>
+                                        <li>• 지방 소득세 (Local Income Tax)</li>
+                                        <li>• 판매세 (Sales Tax)</li>
+                                        <li>• 부동산세 (Real Estate Taxes)</li>
+                                        <li>• 개인 재산세 (Personal Property Tax)</li>
+                                      </ul>
+                                    </div>
+                                    
+                                    <div>
+                                      <h4 className="font-semibold text-red-700 mb-2">⚠️ 중요한 제한사항</h4>
+                                      <ul className="text-sm space-y-1">
+                                        <li>• 연간 최대 $10,000 공제 한도</li>
+                                        <li>• 부부 별도 신고 시 각각 $5,000 한도</li>
+                                        <li>• 소득세와 판매세 중 하나만 선택 가능</li>
+                                      </ul>
+                                    </div>
+                                    
+                                    <div>
+                                      <h4 className="font-semibold text-green-700 mb-2">💡 팁</h4>
+                                      <p className="text-sm">일반적으로 소득세가 높은 주에서는 소득세를, 소득세가 없는 주에서는 판매세를 선택하는 것이 유리합니다.</p>
+                                    </div>
                                   </div>
-                                </div>
-                              </FormControl>
-                              <FormDescription className="text-xs text-gray-600">
-                                최대 $10,000까지 공제 가능 • 상세 입력 버튼으로 각 항목별 입력 하세요
-                              </FormDescription>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
+                                </TooltipContent>
+                              </Tooltip>
+                            </TooltipProvider>
+                          </div>
+                          <div className="space-y-2">
+                            <div className="flex gap-2">
+                              <Input
+                                type="number"
+                                step="0.01"
+                                min="0"
+                                max="10000"
+                                value={(() => {
+                                  const itemized = taxData?.deductions?.itemizedDeductions;
+                                  if (!itemized) return 0;
+                                  // Calculate total SALT: state/local income tax + real estate tax
+                                  const saltTotal = (itemized.stateLocalIncomeTax || 0) + (itemized.realEstateTaxes || 0);
+                                  return Math.min(saltTotal, 10000);
+                                })()}
+                                onChange={(e) => {
+                                  const value = parseFloat(e.target.value) || 0;
+                                  const limitedValue = Math.min(value, 10000);
+                                  form.setValue('itemizedDeductions.stateLocalIncomeTax', limitedValue);
+                                }}
+                                disabled={isItemizedDisabled}
+                                className="flex-1"
+                              />
+                              <Button
+                                type="button"
+                                variant="outline"
+                                size="sm"
+                                onClick={() => window.location.href = '/salt-deductions'}
+                                disabled={isItemizedDisabled}
+                                className="whitespace-nowrap"
+                              >
+                                상세 입력
+                              </Button>
+                            </div>
+                          </div>
+                          <p className="text-xs text-gray-600">
+                            최대 $10,000까지 공제 가능 • 상세 입력 버튼으로 각 항목별 입력 하세요
+                          </p>
+                        </div>
                         
                         <FormField
                           control={form.control}

@@ -100,14 +100,21 @@ export default function SALTDeductions() {
       limitedTotal
     });
     
-    // setValue와 함께 trigger를 호출하여 UI 업데이트 강제
+    // Direct DOM manipulation to ensure value displays
+    const totalInput = document.querySelector('input[readonly]') as HTMLInputElement;
+    if (totalInput) {
+      totalInput.value = limitedTotal.toLocaleString();
+    }
+    
+    // Also update React state
     form.setValue('totalSALT', limitedTotal, { shouldValidate: true, shouldDirty: true });
     setCalculatedTotal(limitedTotal);
     setForceUpdate(prev => prev + 1);
-    form.trigger('totalSALT');
     
-    // 강제 리렌더링을 위해 전체 폼 트리거
-    form.trigger();
+    // Force complete re-render
+    setTimeout(() => {
+      form.trigger();
+    }, 100);
     
     if (total > 10000) {
       toast({
@@ -436,6 +443,7 @@ export default function SALTDeductions() {
                             className="pl-8 text-lg font-semibold"
                             value={calculatedTotal?.toLocaleString() || '0'}
                             readOnly
+                            key={`total-${forceUpdate}`}
                           />
                         </div>
                       </FormControl>

@@ -362,10 +362,51 @@ const Deductions: React.FC = () => {
                             <FormItem className="flex flex-col justify-center h-full">
                               <div className="flex justify-between">
                                 <FormLabel>의료비 공제 (Medical Expenses)</FormLabel>
-                                <div className="tooltip">
-                                  <Info className="h-4 w-4 text-gray-dark" />
-                                  <span className="tooltip-text">당해 연도 의료 및 치과 비용</span>
-                                </div>
+                                <TooltipProvider>
+                                  <Tooltip>
+                                    <TooltipTrigger asChild>
+                                      <Info className="h-4 w-4 text-gray-dark cursor-help" />
+                                    </TooltipTrigger>
+                                    <TooltipContent className="max-w-md p-4">
+                                      <div className="space-y-3">
+                                        <div>
+                                          <h4 className="font-semibold text-green-700 mb-2">✅ 공제 가능한 의료비 (Qualified Medical Expenses)</h4>
+                                          <ul className="text-sm space-y-1">
+                                            <li>• 의사, 치과의사, 안과 의사의 진료비</li>
+                                            <li>• 병원비, 수술비, 진단비</li>
+                                            <li>• 처방약(Prescription drugs) 및 인슐린</li>
+                                            <li>• 안경, 콘택트렌즈, 보청기, 의족 등 보조기구</li>
+                                            <li>• 심리치료, 정신과 치료, 상담 치료비</li>
+                                            <li>• 물리치료 및 재활 치료</li>
+                                            <li>• 장거리 의료 목적의 교통비 ($0.21/mile in 2024)</li>
+                                            <li>• 입원 중 식대(병원에서 직접 제공되는 경우)</li>
+                                            <li>• 장기 요양시설 비용(치료 목적의 부분)</li>
+                                            <li>• 장애인을 위한 주택 개조 비용</li>
+                                          </ul>
+                                        </div>
+                                        
+                                        <div>
+                                          <h4 className="font-semibold text-red-700 mb-2">❌ 공제 불가능한 항목</h4>
+                                          <ul className="text-sm space-y-1">
+                                            <li>• 비처방약 (타이레놀, 멀티비타민 등)</li>
+                                            <li>• 미용 목적의 성형수술</li>
+                                            <li>• 건강 보조식품, 운동기구, 헬스장 비용</li>
+                                            <li>• 일반적인 건강 보험료</li>
+                                          </ul>
+                                        </div>
+                                        
+                                        <div>
+                                          <h4 className="font-semibold text-blue-700 mb-2">💡 중요한 조건</h4>
+                                          <ul className="text-sm space-y-1">
+                                            <li>• Schedule A (Itemized Deduction) 사용 시에만 공제 가능</li>
+                                            <li>• AGI의 7.5%를 초과한 금액만 공제 가능</li>
+                                            <li>• 예: AGI $50,000 → $3,750 초과분만 공제</li>
+                                          </ul>
+                                        </div>
+                                      </div>
+                                    </TooltipContent>
+                                  </Tooltip>
+                                </TooltipProvider>
                               </div>
                               <FormControl>
                                 <Input

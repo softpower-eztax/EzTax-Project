@@ -84,7 +84,9 @@ export default function SALTDeductions() {
     const total = selectedTaxAmount + values.realEstateTax + values.personalPropertyTax;
     const limitedTotal = Math.min(total, 10000);
     
-    form.setValue('totalSALT', limitedTotal);
+    // setValue와 함께 trigger를 호출하여 UI 업데이트 강제
+    form.setValue('totalSALT', limitedTotal, { shouldValidate: true, shouldDirty: true });
+    form.trigger('totalSALT');
     
     if (total > 10000) {
       toast({
@@ -156,6 +158,7 @@ export default function SALTDeductions() {
   };
 
   const watchTaxType = form.watch('taxType');
+  const watchTotalSALT = form.watch('totalSALT');
 
   return (
     <div className="max-w-5xl mx-auto">
@@ -414,7 +417,7 @@ export default function SALTDeductions() {
                           <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-dark font-semibold">$</span>
                           <Input
                             className="pl-8 text-lg font-semibold"
-                            value={field.value?.toLocaleString() || '0'}
+                            value={watchTotalSALT?.toLocaleString() || '0'}
                             readOnly
                           />
                         </div>

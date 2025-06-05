@@ -41,6 +41,7 @@ export default function SALTDeductions() {
   const { taxData, updateTaxData, saveTaxReturn } = useTaxContext();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
+  const [calculatedTotal, setCalculatedTotal] = useState(0);
 
   // 기본값 설정
   const defaultValues: SALTFormData = {
@@ -100,7 +101,11 @@ export default function SALTDeductions() {
     
     // setValue와 함께 trigger를 호출하여 UI 업데이트 강제
     form.setValue('totalSALT', limitedTotal, { shouldValidate: true, shouldDirty: true });
+    setCalculatedTotal(limitedTotal);
     form.trigger('totalSALT');
+    
+    // 강제 리렌더링을 위해 전체 폼 트리거
+    form.trigger();
     
     if (total > 10000) {
       toast({
@@ -419,7 +424,7 @@ export default function SALTDeductions() {
                           <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-dark font-semibold">$</span>
                           <Input
                             className="pl-8 text-lg font-semibold"
-                            value={watchTotalSALT?.toLocaleString() || '0'}
+                            value={calculatedTotal?.toLocaleString() || '0'}
                             readOnly
                           />
                         </div>

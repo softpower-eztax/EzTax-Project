@@ -100,7 +100,7 @@ export default function SALTDeductions() {
   // 세금 유형 변경 시 자동 계산
   const handleTaxTypeChange = (value: 'income' | 'sales') => {
     form.setValue('taxType', value);
-    setTimeout(() => calculateTotalSALT(), 100);
+    // 자동 계산 제거 - 사용자가 계산 버튼을 누를 때만 계산
   };
 
   // 폼 제출
@@ -251,7 +251,6 @@ export default function SALTDeductions() {
                             onChange={(e) => {
                               const value = parseFloat(e.target.value) || 0;
                               field.onChange(value);
-                              setTimeout(() => calculateTotalSALT(), 100);
                             }}
                           />
                         </div>
@@ -287,7 +286,6 @@ export default function SALTDeductions() {
                             onChange={(e) => {
                               const value = parseFloat(e.target.value) || 0;
                               field.onChange(value);
-                              setTimeout(() => calculateTotalSALT(), 100);
                             }}
                           />
                         </div>
@@ -332,7 +330,6 @@ export default function SALTDeductions() {
                             onChange={(e) => {
                               const value = parseFloat(e.target.value) || 0;
                               field.onChange(value);
-                              setTimeout(() => calculateTotalSALT(), 100);
                             }}
                           />
                         </div>

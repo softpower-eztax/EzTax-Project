@@ -500,7 +500,7 @@ const Deductions: React.FC = () => {
                                 </div>
                               </FormControl>
                               <FormDescription className="text-xs text-gray-600">
-                                최대 $10,000까지 공제 가능 • 상세 입력 버튼으로 각 항목별 입력 가능
+                                최대 $10,000까지 공제 가능 • 상세 입력 버튼으로 각 항목별 입력 하세요
                               </FormDescription>
                               <FormMessage />
                             </FormItem>

@@ -414,7 +414,7 @@ export default function SALTDeductions() {
                           <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-dark font-semibold">$</span>
                           <Input
                             className="pl-8 text-lg font-semibold"
-                            value={field.value || ''}
+                            value={field.value?.toLocaleString() || '0'}
                             readOnly
                           />
                         </div>

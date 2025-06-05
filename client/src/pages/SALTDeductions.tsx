@@ -371,7 +371,6 @@ export default function SALTDeductions() {
                             onChange={(e) => {
                               const value = parseFloat(e.target.value) || 0;
                               field.onChange(value);
-                              setTimeout(() => calculateTotalSALT(), 100);
                             }}
                           />
                         </div>

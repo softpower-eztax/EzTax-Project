@@ -77,12 +77,26 @@ export default function SALTDeductions() {
   // SALT 총합 자동 계산
   const calculateTotalSALT = () => {
     const values = form.getValues();
-    const selectedTaxAmount = values.taxType === 'income' 
-      ? values.stateLocalIncomeTax 
-      : values.stateLocalSalesTax;
     
-    const total = selectedTaxAmount + values.realEstateTax + values.personalPropertyTax;
+    // 각 값을 명시적으로 숫자로 변환
+    const selectedTaxAmount = values.taxType === 'income' 
+      ? parseFloat(values.stateLocalIncomeTax?.toString() || '0') || 0
+      : parseFloat(values.stateLocalSalesTax?.toString() || '0') || 0;
+    
+    const realEstate = parseFloat(values.realEstateTax?.toString() || '0') || 0;
+    const personalProperty = parseFloat(values.personalPropertyTax?.toString() || '0') || 0;
+    
+    const total = selectedTaxAmount + realEstate + personalProperty;
     const limitedTotal = Math.min(total, 10000);
+    
+    console.log('SALT 계산 디버그:', {
+      taxType: values.taxType,
+      selectedTaxAmount,
+      realEstate,
+      personalProperty,
+      total,
+      limitedTotal
+    });
     
     // setValue와 함께 trigger를 호출하여 UI 업데이트 강제
     form.setValue('totalSALT', limitedTotal, { shouldValidate: true, shouldDirty: true });

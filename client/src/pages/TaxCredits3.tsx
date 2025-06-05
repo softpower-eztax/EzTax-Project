@@ -349,6 +349,7 @@ const TaxCredits3Page: React.FC = () => {
       (values.childDependentCareCredit || 0) +
       (values.educationCredits || 0) +
       (values.retirementSavingsCredit || 0) +
+      (values.foreignTaxCredit || 0) +
       (values.otherCredits || 0) +
       otherItemsTotal;
     

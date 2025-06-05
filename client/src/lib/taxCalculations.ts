@@ -557,6 +557,7 @@ export function calculateTaxes(taxData: TaxData): CalculatedResults {
     childDependentCareCredit: calculatedChildDependentCareCredit,
     educationCredits: 0,
     retirementSavingsCredit: calculatedRetirementSavingsCredit,
+    foreignTaxCredit: 0,
     otherCredits: calculatedCreditForOtherDependents,
     totalCredits: calculatedChildTaxCredit + calculatedRetirementSavingsCredit + calculatedChildDependentCareCredit + calculatedCreditForOtherDependents
   };
@@ -573,7 +574,8 @@ export function calculateTaxes(taxData: TaxData): CalculatedResults {
       calculatedRetirementSavingsCredit +
       calculatedChildDependentCareCredit +
       calculatedCreditForOtherDependents +
-      (taxCredits.educationCredits || 0)
+      (taxCredits.educationCredits || 0) +
+      (taxCredits.foreignTaxCredit || 0)
     );
   } else {
     // Use the user's manually entered total credits

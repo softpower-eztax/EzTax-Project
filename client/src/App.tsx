@@ -11,7 +11,7 @@ import IncomePage from "@/pages/Income-fixed";
 import AdditionalIncomePage from "@/pages/AdditionalIncome-simple";
 import AdditionalAdjustmentsPage from "@/pages/AdditionalAdjustments-simple";
 import Deductions from "@/pages/Deductions";
-import SALTDeductions from "@/pages/SALTDeductions";
+import SALTDeductions from "@/pages/SALTDeductionsNew";
 import TaxCredits from "@/pages/TaxCredits3";
 import AdditionalTax from "@/pages/AdditionalTax";
 import Review from "@/pages/Review";

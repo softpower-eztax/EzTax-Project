@@ -42,6 +42,7 @@ export default function SALTDeductions() {
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const [calculatedTotal, setCalculatedTotal] = useState(0);
+  const [forceUpdate, setForceUpdate] = useState(0);
 
   // 기본값 설정
   const defaultValues: SALTFormData = {
@@ -102,6 +103,7 @@ export default function SALTDeductions() {
     // setValue와 함께 trigger를 호출하여 UI 업데이트 강제
     form.setValue('totalSALT', limitedTotal, { shouldValidate: true, shouldDirty: true });
     setCalculatedTotal(limitedTotal);
+    setForceUpdate(prev => prev + 1);
     form.trigger('totalSALT');
     
     // 강제 리렌더링을 위해 전체 폼 트리거
@@ -178,6 +180,14 @@ export default function SALTDeductions() {
 
   const watchTaxType = form.watch('taxType');
   const watchTotalSALT = form.watch('totalSALT');
+  
+  // useEffect to sync calculatedTotal with form totalSALT
+  useEffect(() => {
+    const currentTotal = form.getValues('totalSALT');
+    if (currentTotal !== calculatedTotal) {
+      setCalculatedTotal(currentTotal || 0);
+    }
+  }, [watchTotalSALT, form, calculatedTotal]);
 
   return (
     <div className="max-w-5xl mx-auto">

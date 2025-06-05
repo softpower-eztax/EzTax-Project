@@ -88,9 +88,15 @@ export default function SALTDeductions() {
     
     if (total > 10000) {
       toast({
-        title: "SALT 한도 초과",
-        description: `SALT 공제는 연간 최대 $10,000까지만 가능합니다. 입력하신 금액: $${total.toLocaleString()}`,
-        variant: "destructive"
+        title: "SALT 한도 적용",
+        description: `입력하신 총 금액 $${total.toLocaleString()}이 한도를 초과하여 $10,000으로 자동 조정되었습니다.`,
+        variant: "default"
+      });
+    } else {
+      toast({
+        title: "계산 완료",
+        description: `SALT 공제 총액: $${limitedTotal.toLocaleString()}`,
+        variant: "default"
       });
     }
     

@@ -179,6 +179,7 @@ export interface TaxCredits {
   aotcCredit: number;
   llcCredit: number;
   retirementSavingsCredit: number;
+  foreignTaxCredit: number;
   otherCredits: number;
   otherCreditItems?: OtherCreditItem[];
   totalCredits: number;
@@ -330,6 +331,7 @@ export const taxCreditsSchema = z.object({
   aotcCredit: z.number().min(0),
   llcCredit: z.number().min(0),
   retirementSavingsCredit: z.number().min(0),
+  foreignTaxCredit: z.number().min(0),
   otherCredits: z.number().min(0),
   otherCreditItems: z.array(otherCreditItemSchema).optional(),
   totalCredits: z.number().min(0),

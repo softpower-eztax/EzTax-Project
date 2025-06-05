@@ -46,6 +46,7 @@ interface TaxCredits {
   aotcCredit: number;
   llcCredit: number;
   retirementSavingsCredit: number;
+  foreignTaxCredit: number;
   otherCredits: number;
   otherCreditItems?: OtherCreditItem[];
   totalCredits: number;
@@ -97,6 +98,7 @@ const defaultFormData: TaxCreditsFormData = {
   aotcCredit: 0,
   llcCredit: 0,
   retirementSavingsCredit: 0,
+  foreignTaxCredit: 0,
   otherCredits: 0,
   otherCreditItems: [],
   totalCredits: 0,
@@ -113,6 +115,7 @@ const formSchema = z.object({
   aotcCredit: z.coerce.number().min(0).default(0),
   llcCredit: z.coerce.number().min(0).default(0),
   retirementSavingsCredit: z.coerce.number().min(0).default(0),
+  foreignTaxCredit: z.coerce.number().min(0).default(0),
   otherCredits: z.coerce.number().min(0).default(0),
   otherCreditItems: z.array(
     z.object({
@@ -1189,6 +1192,78 @@ const TaxCredits3Page: React.FC = () => {
                         </div>
                       </div>
                     )}
+                  </div>
+                  
+                  {/* Foreign Tax Credit */}
+                  <div className="mb-6 border-b border-gray-light pb-6">
+                    <div className="flex items-center mb-3">
+                      <h4 className="font-semibold">외국납부세액공제 (Foreign Tax Credit)</h4>
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Info className="h-4 w-4 text-gray-dark ml-2 cursor-help" />
+                          </TooltipTrigger>
+                          <TooltipContent className="max-w-md p-4">
+                            <div className="space-y-3">
+                              <div>
+                                <h4 className="font-semibold text-blue-700 mb-2">💰 외국납부세액공제</h4>
+                                <p className="text-sm">외국에서 소득에 대해 납부한 세금을 미국 연방세에서 공제받을 수 있는 제도입니다.</p>
+                              </div>
+                              
+                              <div>
+                                <h4 className="font-semibold text-green-700 mb-2">✅ 대상 항목</h4>
+                                <ul className="text-sm space-y-1">
+                                  <li>• 외국 소득세 (Foreign income tax)</li>
+                                  <li>• 외국 배당금에 대한 원천징수세</li>
+                                  <li>• 외국 이자소득에 대한 세금</li>
+                                  <li>• 외국 임대소득에 대한 세금</li>
+                                </ul>
+                              </div>
+                              
+                              <div>
+                                <h4 className="font-semibold text-red-700 mb-2">⚠️ 제한사항</h4>
+                                <ul className="text-sm space-y-1">
+                                  <li>• 공제액은 해당 외국소득에 대한 미국 연방세를 초과할 수 없음</li>
+                                  <li>• Form 1116 또는 Form 1040에서 선택하여 신고</li>
+                                  <li>• $300 (부부합산 $600) 이하는 간편 신고 가능</li>
+                                </ul>
+                              </div>
+                            </div>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    </div>
+                    
+                    <div className="space-y-4">
+                      <FormField
+                        control={form.control}
+                        name="foreignTaxCredit"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>외국납부세액공제액 (Foreign Tax Credit Amount)</FormLabel>
+                            <FormControl>
+                              <div className="relative">
+                                <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-dark">$</span>
+                                <Input 
+                                  placeholder="0.00"
+                                  className="pl-8"
+                                  value={field.value || ''}
+                                  onChange={(e) => {
+                                    const formatted = formatNumberInput(e.target.value);
+                                    field.onChange(formatted ? Number(formatted) : 0);
+                                    setPendingChanges(true);
+                                  }}
+                                />
+                              </div>
+                            </FormControl>
+                            <FormDescription className="text-sm text-gray-600">
+                              외국에서 납부한 소득세액을 입력하세요. $300 초과 시 Form 1116이 필요할 수 있습니다.
+                            </FormDescription>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
                   </div>
                   
                   {/* 기타 세액공제 */}

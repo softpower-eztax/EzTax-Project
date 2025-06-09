@@ -169,14 +169,17 @@ export default function SALTDeductionsNew() {
               <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-dark font-semibold">$</span>
               <Input
                 type="number"
+                step="0.01"
+                min="0"
                 className="pl-8"
-                value={stateLocalIncomeTax}
+                value={stateLocalIncomeTax || ''}
                 onChange={(e) => {
-                  setStateLocalIncomeTax(Number(e.target.value) || 0);
+                  const value = e.target.value === '' ? 0 : parseFloat(e.target.value) || 0;
+                  setStateLocalIncomeTax(value);
                   setTimeout(calculateTotalSALT, 100);
                 }}
                 disabled={taxType !== 'income'}
-                placeholder="선택된 세금 유형입니다"
+                placeholder="0"
               />
             </div>
           </div>
@@ -188,14 +191,17 @@ export default function SALTDeductionsNew() {
               <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-dark font-semibold">$</span>
               <Input
                 type="number"
+                step="0.01"
+                min="0"
                 className="pl-8"
-                value={stateLocalSalesTax}
+                value={stateLocalSalesTax || ''}
                 onChange={(e) => {
-                  setStateLocalSalesTax(Number(e.target.value) || 0);
+                  const value = e.target.value === '' ? 0 : parseFloat(e.target.value) || 0;
+                  setStateLocalSalesTax(value);
                   setTimeout(calculateTotalSALT, 100);
                 }}
                 disabled={taxType !== 'sales'}
-                placeholder="현재 비활성화됨"
+                placeholder="0"
               />
             </div>
           </div>
@@ -219,12 +225,16 @@ export default function SALTDeductionsNew() {
               <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-dark font-semibold">$</span>
               <Input
                 type="number"
+                step="0.01"
+                min="0"
                 className="pl-8"
-                value={realEstateTax}
+                value={realEstateTax || ''}
                 onChange={(e) => {
-                  setRealEstateTax(Number(e.target.value) || 0);
+                  const value = e.target.value === '' ? 0 : parseFloat(e.target.value) || 0;
+                  setRealEstateTax(value);
                   setTimeout(calculateTotalSALT, 100);
                 }}
+                placeholder="0"
               />
             </div>
           </div>
@@ -248,12 +258,16 @@ export default function SALTDeductionsNew() {
               <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-dark font-semibold">$</span>
               <Input
                 type="number"
+                step="0.01"
+                min="0"
                 className="pl-8"
-                value={personalPropertyTax}
+                value={personalPropertyTax || ''}
                 onChange={(e) => {
-                  setPersonalPropertyTax(Number(e.target.value) || 0);
+                  const value = e.target.value === '' ? 0 : parseFloat(e.target.value) || 0;
+                  setPersonalPropertyTax(value);
                   setTimeout(calculateTotalSALT, 100);
                 }}
+                placeholder="0"
               />
             </div>
           </div>

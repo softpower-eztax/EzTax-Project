@@ -51,27 +51,26 @@ app.use((req, res, next) => {
     }
   }
 
+  // Setup authentication first
+  setupAuth(app);
   log("구글 로그인 설정 완료");
   
   const server = await registerRoutes(app);
 
-  app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
-    const status = err.status || err.statusCode || 500;
-    const message = err.message || "Internal Server Error";
-
-    res.status(status).json({ message });
-    throw err;
-  });
-
-  // Setup authentication first
-  setupAuth(app);
-  
   // Setup development or production environment
   if (app.get("env") === "development") {
     await setupVite(app, server);
   } else {
     serveStatic(app);
   }
+
+  // Error handler should be last
+  app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
+    const status = err.status || err.statusCode || 500;
+    const message = err.message || "Internal Server Error";
+    log(`Error: ${message}`);
+    res.status(status).json({ message });
+  });
 
   // Start server on port 5000
   const port = 5000;

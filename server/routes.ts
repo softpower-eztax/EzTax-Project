@@ -1,7 +1,6 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { setupAuth } from "./auth";
 import { insertTaxReturnSchema } from "@shared/schema";
 import { z } from "zod";
 
@@ -9,9 +8,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/ping", (req, res) => {
     res.json({ ok: true });
   });
-
-  // Set up authentication routes
-  setupAuth(app);
   
   // Get current tax return (always gets the most recent one)
   app.get("/api/tax-return", async (req, res) => {

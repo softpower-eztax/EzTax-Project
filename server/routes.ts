@@ -47,12 +47,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
             state: 'IL',
             zipCode: '62704',
             filingStatus: 'married_joint',
+            isDisabled: false,
+            isNonresidentAlien: false,
             spouseInfo: {
               firstName: 'Jane',
               middleInitial: 'B',
               lastName: 'Smith',
               ssn: '987-65-4321',
-              dateOfBirth: '1982-05-20'
+              dateOfBirth: '1982-05-20',
+              isDisabled: false,
+              isNonresidentAlien: false
             },
             dependents: [
               {
@@ -60,7 +64,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
                 lastName: 'Smith',
                 ssn: '111-22-3333',
                 relationship: 'Son',
-                dateOfBirth: '2010-03-12'
+                dateOfBirth: '2010-03-12',
+                isDisabled: false,
+                isNonresidentAlien: false,
+                isQualifyingChild: true
               }
             ]
           },
@@ -145,12 +152,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
             state: 'IL',
             zipCode: '62704',
             filingStatus: 'married_joint',
+            isDisabled: false,
+            isNonresidentAlien: false,
             spouseInfo: {
               firstName: 'Jane',
               middleInitial: 'B',
               lastName: 'Smith',
               ssn: '987-65-4321',
-              dateOfBirth: '1982-05-20'
+              dateOfBirth: '1982-05-20',
+              isDisabled: false,
+              isNonresidentAlien: false
             },
             dependents: [
               {
@@ -158,7 +169,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
                 lastName: 'Smith',
                 ssn: '111-22-3333',
                 relationship: 'Son',
-                dateOfBirth: '2010-03-12'
+                dateOfBirth: '2010-03-12',
+                isDisabled: false,
+                isNonresidentAlien: false,
+                isQualifyingChild: true
               }
             ]
           },

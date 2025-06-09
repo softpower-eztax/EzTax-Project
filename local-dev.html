@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EzTax 로컬 개발 환경</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: system-ui, -apple-system, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f8fafc;
+        }
+        .container { 
+            max-width: 1400px; 
+            margin: 0 auto; 
+            padding: 20px;
+        }
+        .header { 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white; 
+            padding: 30px; 
+            border-radius: 12px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        .grid { 
+            display: grid; 
+            grid-template-columns: 1fr 1fr; 
+            gap: 30px; 
+            margin-bottom: 30px;
+        }
+        .card { 
+            background: white; 
+            border-radius: 12px; 
+            padding: 25px; 
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            border: 1px solid #e2e8f0;
+        }
+        .card h3 { 
+            color: #2d3748; 
+            margin-bottom: 20px; 
+            font-size: 1.25rem;
+        }
+        .btn { 
+            background: #4f46e5; 
+            color: white; 
+            border: none; 
+            padding: 12px 24px; 
+            border-radius: 8px; 
+            cursor: pointer; 
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s;
+            margin: 4px;
+        }
+        .btn:hover { 
+            background: #3730a3; 
+            transform: translateY(-1px);
+        }
+        .btn-secondary { 
+            background: #6b7280; 
+        }
+        .btn-secondary:hover { 
+            background: #4b5563; 
+        }
+        .result { 
+            background: #f1f5f9; 
+            border: 1px solid #cbd5e1; 
+            padding: 15px; 
+            border-radius: 8px; 
+            margin: 15px 0; 
+            font-family: 'Courier New', monospace; 
+            font-size: 13px;
+            white-space: pre-wrap; 
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .status-good { 
+            background: #dcfce7; 
+            color: #166534; 
+            border-color: #bbf7d0;
+        }
+        .status-error { 
+            background: #fef2f2; 
+            color: #dc2626; 
+            border-color: #fecaca;
+        }
+        .input-group { 
+            margin: 15px 0; 
+        }
+        .input-group label { 
+            display: block; 
+            margin-bottom: 5px; 
+            font-weight: 500;
+        }
+        .input-group input, .input-group select, .input-group textarea { 
+            width: 100%; 
+            padding: 10px; 
+            border: 1px solid #d1d5db; 
+            border-radius: 6px; 
+            font-size: 14px;
+        }
+        .tabs { 
+            display: flex; 
+            margin-bottom: 20px; 
+            border-bottom: 1px solid #e2e8f0;
+        }
+        .tab { 
+            padding: 12px 20px; 
+            cursor: pointer; 
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s;
+        }
+        .tab.active { 
+            border-bottom-color: #4f46e5; 
+            color: #4f46e5; 
+            font-weight: 500;
+        }
+        .tab-content { 
+            display: none; 
+        }
+        .tab-content.active { 
+            display: block; 
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>EzTax 개발 환경</h1>
+            <p>세금 신고 시스템 테스트 및 개발 도구</p>
+            <div style="margin-top: 20px;">
+                <span id="server-status" class="result status-good">서버 상태: 확인 중...</span>
+            </div>
+        </div>
+
+        <div class="tabs">
+            <div class="tab active" onclick="showTab('api-test')">API 테스트</div>
+            <div class="tab" onclick="showTab('data-input')">데이터 입력</div>
+            <div class="tab" onclick="showTab('calculations')">계산 테스트</div>
+            <div class="tab" onclick="showTab('files')">파일 관리</div>
+        </div>
+
+        <div id="api-test" class="tab-content active">
+            <div class="grid">
+                <div class="card">
+                    <h3>세금 신고서 관리</h3>
+                    <button class="btn" onclick="testAPI('/api/tax-return', 'GET')">현재 신고서 조회</button>
+                    <button class="btn" onclick="createNewTaxReturn()">새 신고서 생성</button>
+                    <button class="btn btn-secondary" onclick="testAPI('/api/user', 'GET')">사용자 정보</button>
+                    <div id="tax-api-result" class="result"></div>
+                </div>
+
+                <div class="card">
+                    <h3>서버 연결 상태</h3>
+                    <button class="btn" onclick="checkAllConnections()">전체 연결 테스트</button>
+                    <button class="btn btn-secondary" onclick="checkServerHealth()">서버 상태 확인</button>
+                    <div id="connection-result" class="result"></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="data-input" class="tab-content">
+            <div class="card">
+                <h3>세금 신고서 데이터 입력</h3>
+                <div class="input-group">
+                    <label>이름</label>
+                    <input type="text" id="firstName" placeholder="홍길동">
+                </div>
+                <div class="input-group">
+                    <label>성</label>
+                    <input type="text" id="lastName" placeholder="김">
+                </div>
+                <div class="input-group">
+                    <label>신고 유형</label>
+                    <select id="filingStatus">
+                        <option value="single">Single</option>
+                        <option value="married_joint">Married Filing Jointly</option>
+                        <option value="married_separate">Married Filing Separately</option>
+                        <option value="head_of_household">Head of Household</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label>연간 소득 ($)</label>
+                    <input type="number" id="wages" placeholder="50000">
+                </div>
+                <button class="btn" onclick="savePersonalInfo()">개인정보 저장</button>
+                <div id="save-result" class="result"></div>
+            </div>
+        </div>
+
+        <div id="calculations" class="tab-content">
+            <div class="card">
+                <h3>세금 계산 테스트</h3>
+                <p>현재 입력된 데이터로 세금을 계산합니다.</p>
+                <button class="btn" onclick="calculateTaxes()">세금 계산 실행</button>
+                <button class="btn btn-secondary" onclick="showTaxBreakdown()">세부 계산 내역</button>
+                <div id="calc-result" class="result"></div>
+            </div>
+        </div>
+
+        <div id="files" class="tab-content">
+            <div class="card">
+                <h3>주요 파일 수정</h3>
+                <p>개발 중 수정할 수 있는 주요 파일들:</p>
+                <ul style="margin: 15px 0; padding-left: 20px;">
+                    <li><strong>client/src/pages/PersonalInfo.tsx</strong> - 개인정보 입력 페이지</li>
+                    <li><strong>client/src/pages/Income.tsx</strong> - 소득 입력 페이지</li>
+                    <li><strong>client/src/pages/Deductions.tsx</strong> - 공제 입력 페이지</li>
+                    <li><strong>client/src/context/TaxContext.tsx</strong> - 세금 계산 로직</li>
+                    <li><strong>server/routes.ts</strong> - API 라우트</li>
+                </ul>
+                <button class="btn" onclick="showProjectStructure()">프로젝트 구조 보기</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentTaxReturn = null;
+
+        function showTab(tabName) {
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            
+            event.target.classList.add('active');
+            document.getElementById(tabName).classList.add('active');
+        }
+
+        async function testAPI(endpoint, method = 'GET', data = null) {
+            const resultId = 'tax-api-result';
+            const resultDiv = document.getElementById(resultId);
+            
+            resultDiv.textContent = '연결 중...';
+            resultDiv.className = 'result';
+            
+            const urls = [
+                `http://localhost:5000${endpoint}`,
+                `https://3e18f96e-0fbf-4af6-b766-cfbae9f2437b-00-17nnd6cbvtwuy.janeway.replit.dev${endpoint}`
+            ];
+            
+            for (const url of urls) {
+                try {
+                    const options = {
+                        method,
+                        headers: { 'Content-Type': 'application/json' },
+                        mode: 'cors'
+                    };
+                    
+                    if (data) options.body = JSON.stringify(data);
+                    
+                    const response = await fetch(url, options);
+                    const result = await response.json();
+                    
+                    if (endpoint === '/api/tax-return' && method === 'GET') {
+                        currentTaxReturn = result;
+                    }
+                    
+                    resultDiv.textContent = `연결 성공: ${method} ${endpoint}\n상태: ${response.status}\n\n${JSON.stringify(result, null, 2)}`;
+                    resultDiv.className = 'result status-good';
+                    return result;
+                } catch (error) {
+                    continue;
+                }
+            }
+            
+            resultDiv.textContent = `연결 실패\n모든 URL에서 응답 없음:\n- ${urls.join('\n- ')}`;
+            resultDiv.className = 'result status-error';
+        }
+
+        async function createNewTaxReturn() {
+            const newTaxReturn = {
+                userId: 1,
+                taxYear: 2025,
+                status: 'in_progress',
+                personalInfo: {
+                    firstName: '',
+                    lastName: '',
+                    filingStatus: 'single',
+                    dependents: []
+                },
+                income: {
+                    wages: 0,
+                    totalIncome: 0,
+                    adjustedGrossIncome: 0
+                }
+            };
+            
+            await testAPI('/api/tax-return', 'POST', newTaxReturn);
+        }
+
+        async function savePersonalInfo() {
+            if (!currentTaxReturn) {
+                document.getElementById('save-result').textContent = '먼저 세금 신고서를 불러오거나 생성하세요.';
+                return;
+            }
+
+            const updatedData = {
+                ...currentTaxReturn,
+                personalInfo: {
+                    ...currentTaxReturn.personalInfo,
+                    firstName: document.getElementById('firstName').value,
+                    lastName: document.getElementById('lastName').value,
+                    filingStatus: document.getElementById('filingStatus').value
+                },
+                income: {
+                    ...currentTaxReturn.income,
+                    wages: parseFloat(document.getElementById('wages').value) || 0
+                }
+            };
+
+            try {
+                const result = await testAPI(`/api/tax-return/${currentTaxReturn.id}`, 'PUT', updatedData);
+                document.getElementById('save-result').textContent = '저장 완료!';
+                document.getElementById('save-result').className = 'result status-good';
+                currentTaxReturn = result;
+            } catch (error) {
+                document.getElementById('save-result').textContent = `저장 실패: ${error.message}`;
+                document.getElementById('save-result').className = 'result status-error';
+            }
+        }
+
+        async function calculateTaxes() {
+            if (!currentTaxReturn) {
+                document.getElementById('calc-result').textContent = '먼저 세금 신고서를 불러오세요.';
+                return;
+            }
+
+            // 기본 세금 계산 로직 시뮬레이션
+            const wages = currentTaxReturn.income?.wages || 0;
+            const standardDeduction = currentTaxReturn.personalInfo?.filingStatus === 'married_joint' ? 29200 : 14600;
+            const taxableIncome = Math.max(0, wages - standardDeduction);
+            const federalTax = calculateFederalTax(taxableIncome, currentTaxReturn.personalInfo?.filingStatus);
+
+            const calculation = {
+                totalIncome: wages,
+                standardDeduction: standardDeduction,
+                taxableIncome: taxableIncome,
+                federalTax: federalTax,
+                refundAmount: Math.max(0, 0 - federalTax),
+                amountOwed: Math.max(0, federalTax - 0)
+            };
+
+            document.getElementById('calc-result').textContent = 
+                `세금 계산 결과:\n\n` +
+                `총 소득: $${wages.toLocaleString()}\n` +
+                `표준공제: $${standardDeduction.toLocaleString()}\n` +
+                `과세소득: $${taxableIncome.toLocaleString()}\n` +
+                `연방세: $${federalTax.toLocaleString()}\n\n` +
+                (calculation.refundAmount > 0 ? 
+                    `환급 예상액: $${calculation.refundAmount.toLocaleString()}` :
+                    `납부 예상액: $${calculation.amountOwed.toLocaleString()}`);
+            
+            document.getElementById('calc-result').className = 'result status-good';
+        }
+
+        function calculateFederalTax(taxableIncome, filingStatus) {
+            // 2024년 세율표 기준 간단한 계산
+            const brackets = filingStatus === 'married_joint' ? 
+                [[0, 0.10], [23200, 0.12], [94300, 0.22], [201050, 0.24]] :
+                [[0, 0.10], [11600, 0.12], [47150, 0.22], [100525, 0.24]];
+            
+            let tax = 0;
+            let previousBracket = 0;
+            
+            for (const [threshold, rate] of brackets) {
+                if (taxableIncome > threshold) {
+                    tax += (Math.min(taxableIncome, threshold === brackets[brackets.length - 1][0] ? Infinity : brackets[brackets.indexOf([threshold, rate]) + 1][0]) - threshold) * rate;
+                    previousBracket = threshold;
+                } else {
+                    break;
+                }
+            }
+            
+            return Math.round(tax);
+        }
+
+        async function checkAllConnections() {
+            const resultDiv = document.getElementById('connection-result');
+            resultDiv.textContent = '모든 연결 테스트 중...';
+            
+            const tests = [
+                { name: '로컬호스트', url: 'http://localhost:5000' },
+                { name: 'Replit 도메인', url: 'https://3e18f96e-0fbf-4af6-b766-cfbae9f2437b-00-17nnd6cbvtwuy.janeway.replit.dev' }
+            ];
+            
+            let results = '연결 테스트 결과:\n\n';
+            
+            for (const test of tests) {
+                try {
+                    const response = await fetch(test.url + '/api/tax-return', { mode: 'cors' });
+                    results += `✅ ${test.name}: 연결 성공 (${response.status})\n`;
+                } catch (error) {
+                    results += `❌ ${test.name}: 연결 실패 (${error.message})\n`;
+                }
+            }
+            
+            resultDiv.textContent = results;
+        }
+
+        async function checkServerHealth() {
+            document.getElementById('server-status').textContent = '서버 상태 확인 중...';
+            
+            try {
+                const response = await fetch('http://localhost:5000/api/tax-return');
+                if (response.ok) {
+                    document.getElementById('server-status').textContent = '서버 상태: 정상 운영 중';
+                    document.getElementById('server-status').className = 'result status-good';
+                } else {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+            } catch (error) {
+                document.getElementById('server-status').textContent = `서버 상태: 연결 불가 (${error.message})`;
+                document.getElementById('server-status').className = 'result status-error';
+            }
+        }
+
+        function showProjectStructure() {
+            const structure = `EzTax 프로젝트 구조:
+
+📁 client/src/
+├── 📁 pages/
+│   ├── PersonalInfo.tsx - 개인정보 입력
+│   ├── Income.tsx - 소득 정보 입력  
+│   ├── Deductions.tsx - 공제 정보 입력
+│   ├── TaxCredits.tsx - 세액공제 입력
+│   ├── AdditionalTax.tsx - 추가세금 입력
+│   └── ReviewCalculate.tsx - 검토 및 계산
+├── 📁 components/
+│   ├── Header.tsx - 상단 헤더
+│   ├── Footer.tsx - 하단 푸터
+│   ├── ProgressTracker.tsx - 진행 상황
+│   └── StepNavigation.tsx - 단계 네비게이션
+├── 📁 context/
+│   └── TaxContext.tsx - 전역 상태 관리
+└── 📁 hooks/
+    └── use-auth.tsx - 인증 훅
+
+📁 server/
+├── routes.ts - API 라우트 정의
+├── auth.ts - 인증 시스템
+├── storage.ts - 데이터 저장소
+└── index.ts - 서버 진입점
+
+📁 shared/
+└── schema.ts - 데이터 스키마 정의`;
+
+            alert(structure);
+        }
+
+        // 페이지 로드 시 서버 상태 확인
+        window.onload = function() {
+            checkServerHealth();
+            testAPI('/api/tax-return', 'GET');
+        };
+    </script>
+</body>
+</html>

@@ -25,7 +25,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const taxReturn = await storage.getCurrentTaxReturn();
       if (!taxReturn) {
-        // Return a test tax return with dummy data
+        // Return valid test tax return data
         const testTaxReturn = {
           id: 1,
           userId: 1,

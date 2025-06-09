@@ -390,6 +390,7 @@ export const TaxProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       aotcCredit: 0,
       llcCredit: 0,
       retirementSavingsCredit: 0,
+      foreignTaxCredit: 0,
       otherCredits: 0,
       totalCredits: 0
     };

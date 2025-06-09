@@ -89,7 +89,7 @@ app.use((req, res, next) => {
   const port = 5000;
   server.listen(port, "0.0.0.0", () => {
     log(`serving on port ${port}`);
-    log(`Application accessible at: http://localhost:${port}`);
-    log(`External URL: https://${process.env.REPL_SLUG}.${process.env.REPL_OWNER}.repl.co`);
+    log(`Direct access: https://${process.env.REPLIT_DEV_DOMAIN || '3e18f96e-0fbf-4af6-b766-cfbae9f2437b-00-17nnd6cbvtwuy.janeway.replit.dev'}`);
+    log(`Local development file: file://${process.cwd()}/local-dev.html`);
   });
 })();

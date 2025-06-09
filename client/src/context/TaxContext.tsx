@@ -264,10 +264,17 @@ export const TaxProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       const method = taxData.id ? 'PUT' : 'POST';
       const url = taxData.id ? `/api/tax-return/${taxData.id}` : '/api/tax-return';
       
-      const response = await apiRequest(method, url, {
+      // Prepare data for server - ensure required fields are present
+      const dataToSave = {
         ...taxData,
+        userId: taxData.userId || 1, // Default userId for unauthenticated users
+        taxYear: taxData.taxYear || new Date().getFullYear(),
+        status: taxData.status || 'in_progress',
+        createdAt: taxData.createdAt || new Date().toISOString(),
         updatedAt: new Date().toISOString()
-      });
+      };
+      
+      const response = await apiRequest(method, url, dataToSave);
       
       if (response.ok) {
         // 서버에서 받은 데이터 그대로 상태 업데이트하는 대신 ID만 업데이트

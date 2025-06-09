@@ -73,6 +73,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           },
           income: {
             wages: 75000,
+            otherEarnedIncome: 0,
             interestIncome: 1200,
             dividends: 3500,
             businessIncome: 15000,
@@ -85,8 +86,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
             adjustments: {
               studentLoanInterest: 2500,
               retirementContributions: 6000,
-              healthSavingsAccount: 3500,
-              otherAdjustments: 1000
+              otherAdjustments: 4500
             },
             adjustedGrossIncome: 100200
           },
@@ -178,6 +178,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           },
           income: {
             wages: 75000,
+            otherEarnedIncome: 0,
             interestIncome: 1200,
             dividends: 3500,
             businessIncome: 15000,
@@ -190,8 +191,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
             adjustments: {
               studentLoanInterest: 2500,
               retirementContributions: 6000,
-              healthSavingsAccount: 3500,
-              otherAdjustments: 1000
+              otherAdjustments: 4500
             },
             adjustedGrossIncome: 100200
           },

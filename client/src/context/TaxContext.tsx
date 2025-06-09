@@ -101,23 +101,7 @@ export const TaxProvider: React.FC<{ children: React.ReactNode }> = ({ children 
             // 데이터 마이그레이션 및 수정
             console.log("마이그레이션: 데이터 수정");
             
-            // 1. HSA 필드 제거
-            if (serverData.income?.adjustments?.healthSavingsAccount) {
-              if (serverData.income && serverData.income.adjustments) {
-                const hsaValue = serverData.income.adjustments.healthSavingsAccount || 0;
-                const currentOtherAdjustments = serverData.income.adjustments.otherAdjustments || 0;
-                
-                // otherAdjustments에 HSA 값을 추가
-                serverData.income = {
-                  ...serverData.income,
-                  adjustments: {
-                    studentLoanInterest: serverData.income.adjustments.studentLoanInterest || 0,
-                    retirementContributions: serverData.income.adjustments.retirementContributions || 0,
-                    otherAdjustments: currentOtherAdjustments + hsaValue
-                  }
-                };
-              }
-            }
+            // Data migration completed - HSA field already handled in server data
             
             // 2. 부양가족 isQualifyingChild 필드 확인
             if (serverData.personalInfo?.dependents) {

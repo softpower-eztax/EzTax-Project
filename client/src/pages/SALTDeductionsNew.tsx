@@ -37,6 +37,7 @@ export default function SALTDeductionsNew() {
   const calculateTotalSALT = () => {
     const selectedTaxAmount = taxType === 'income' ? stateLocalIncomeTax : stateLocalSalesTax;
     const total = selectedTaxAmount + realEstateTax + personalPropertyTax;
+    const limitedTotal = Math.min(total, 10000);
     
     console.log('SALT 계산 디버그:', {
       taxType,
@@ -44,55 +45,24 @@ export default function SALTDeductionsNew() {
       realEstate: realEstateTax,
       personalProperty: personalPropertyTax,
       total,
-      limitedTotal: Math.min(total, 10000)
+      limitedTotal
     });
     
+    // 사용자 입력값은 변경하지 않고, 총합만 한도에 맞춰 조정
+    setTotalSALT(limitedTotal);
+    
     if (total > 10000) {
-      // 한도 초과 시 비례적으로 각 항목 조정
-      const ratio = 10000 / total;
-      const adjustedSelectedTax = Math.floor(selectedTaxAmount * ratio);
-      const adjustedRealEstate = Math.floor(realEstateTax * ratio);
-      const adjustedPersonalProperty = Math.floor(personalPropertyTax * ratio);
-      
-      // 남은 금액을 가장 큰 항목에 추가
-      let remaining = 10000 - (adjustedSelectedTax + adjustedRealEstate + adjustedPersonalProperty);
-      
-      if (selectedTaxAmount >= realEstateTax && selectedTaxAmount >= personalPropertyTax) {
-        const finalSelectedTax = adjustedSelectedTax + remaining;
-        if (taxType === 'income') {
-          setStateLocalIncomeTax(finalSelectedTax);
-        } else {
-          setStateLocalSalesTax(finalSelectedTax);
-        }
-        setRealEstateTax(adjustedRealEstate);
-        setPersonalPropertyTax(adjustedPersonalProperty);
-      } else if (realEstateTax >= personalPropertyTax) {
-        if (taxType === 'income') {
-          setStateLocalIncomeTax(adjustedSelectedTax);
-        } else {
-          setStateLocalSalesTax(adjustedSelectedTax);
-        }
-        setRealEstateTax(adjustedRealEstate + remaining);
-        setPersonalPropertyTax(adjustedPersonalProperty);
-      } else {
-        if (taxType === 'income') {
-          setStateLocalIncomeTax(adjustedSelectedTax);
-        } else {
-          setStateLocalSalesTax(adjustedSelectedTax);
-        }
-        setRealEstateTax(adjustedRealEstate);
-        setPersonalPropertyTax(adjustedPersonalProperty + remaining);
-      }
-      
-      setTotalSALT(10000);
-      
       toast({
         title: "SALT 한도 적용",
-        description: `입력하신 금액 $${total.toLocaleString()}이 $10,000 한도를 초과하여 각 항목이 비례적으로 조정되었습니다.`,
-        variant: "default",
+        description: `입력하신 총 금액 $${total.toLocaleString()}이 $10,000 한도를 초과합니다. 실제 공제액은 $10,000로 제한됩니다.`,
+        variant: "destructive",
       });
     } else {
-      setTotalSALT(total);
+      toast({
+        title: "계산 완료",
+        description: `SALT 공제 총액: $${total.toLocaleString()}`,
+        variant: "default",
+      });
     }
   };
 
@@ -108,6 +78,8 @@ export default function SALTDeductionsNew() {
       const updatedDeductions = {
         ...taxData.deductions,
         useStandardDeduction: false,
+        standardDeductionAmount: 0,
+        totalDeductions: limitedSaltAmount,
         itemizedDeductions: {
           ...taxData.deductions?.itemizedDeductions,
           stateLocalIncomeTax: limitedSaltAmount, // Store total SALT amount here
@@ -199,7 +171,10 @@ export default function SALTDeductionsNew() {
                 type="number"
                 className="pl-8"
                 value={stateLocalIncomeTax}
-                onChange={(e) => setStateLocalIncomeTax(Number(e.target.value) || 0)}
+                onChange={(e) => {
+                  setStateLocalIncomeTax(Number(e.target.value) || 0);
+                  setTimeout(calculateTotalSALT, 100);
+                }}
                 disabled={taxType !== 'income'}
                 placeholder="선택된 세금 유형입니다"
               />
@@ -215,7 +190,10 @@ export default function SALTDeductionsNew() {
                 type="number"
                 className="pl-8"
                 value={stateLocalSalesTax}
-                onChange={(e) => setStateLocalSalesTax(Number(e.target.value) || 0)}
+                onChange={(e) => {
+                  setStateLocalSalesTax(Number(e.target.value) || 0);
+                  setTimeout(calculateTotalSALT, 100);
+                }}
                 disabled={taxType !== 'sales'}
                 placeholder="현재 비활성화됨"
               />
@@ -243,7 +221,10 @@ export default function SALTDeductionsNew() {
                 type="number"
                 className="pl-8"
                 value={realEstateTax}
-                onChange={(e) => setRealEstateTax(Number(e.target.value) || 0)}
+                onChange={(e) => {
+                  setRealEstateTax(Number(e.target.value) || 0);
+                  setTimeout(calculateTotalSALT, 100);
+                }}
               />
             </div>
           </div>
@@ -269,7 +250,10 @@ export default function SALTDeductionsNew() {
                 type="number"
                 className="pl-8"
                 value={personalPropertyTax}
-                onChange={(e) => setPersonalPropertyTax(Number(e.target.value) || 0)}
+                onChange={(e) => {
+                  setPersonalPropertyTax(Number(e.target.value) || 0);
+                  setTimeout(calculateTotalSALT, 100);
+                }}
               />
             </div>
           </div>

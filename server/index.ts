@@ -63,6 +63,9 @@ app.use((req, res, next) => {
     throw err;
   });
 
+  // Setup authentication first
+  setupAuth(app);
+  
   // Setup development or production environment
   if (app.get("env") === "development") {
     await setupVite(app, server);

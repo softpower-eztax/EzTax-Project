@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useTaxContext } from "@/context/TaxContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,25 +14,17 @@ export default function SALTDeductionsNew() {
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
   
-  // State for all SALT inputs
+  // State for all SALT inputs - initialize from existing data or defaults
   const [taxType, setTaxType] = useState<'income' | 'sales'>('income');
-  const [stateLocalIncomeTax, setStateLocalIncomeTax] = useState(0);
+  const [stateLocalIncomeTax, setStateLocalIncomeTax] = useState(
+    taxData?.deductions?.itemizedDeductions?.stateLocalIncomeTax || 0
+  );
   const [stateLocalSalesTax, setStateLocalSalesTax] = useState(0);
-  const [realEstateTax, setRealEstateTax] = useState(0);
+  const [realEstateTax, setRealEstateTax] = useState(
+    taxData?.deductions?.itemizedDeductions?.realEstateTaxes || 0
+  );
   const [personalPropertyTax, setPersonalPropertyTax] = useState(0);
   const [totalSALT, setTotalSALT] = useState(0);
-
-  // Load existing data on mount
-  useEffect(() => {
-    if (taxData?.deductions?.itemizedDeductions) {
-      const itemized = taxData.deductions.itemizedDeductions;
-      setStateLocalIncomeTax(itemized.stateLocalIncomeTax || 0);
-      setRealEstateTax(itemized.realEstateTaxes || 0);
-      // Set initial total
-      const initial = (itemized.stateLocalIncomeTax || 0) + (itemized.realEstateTaxes || 0);
-      setTotalSALT(Math.min(initial, 10000));
-    }
-  }, [taxData]);
 
   const calculateTotalSALT = () => {
     const selectedTaxAmount = taxType === 'income' ? stateLocalIncomeTax : stateLocalSalesTax;
@@ -172,9 +164,9 @@ export default function SALTDeductionsNew() {
                 step="0.01"
                 min="0"
                 className="pl-8"
-                value={stateLocalIncomeTax || ''}
+                value={stateLocalIncomeTax}
                 onChange={(e) => {
-                  const value = e.target.value === '' ? 0 : parseFloat(e.target.value) || 0;
+                  const value = parseFloat(e.target.value) || 0;
                   setStateLocalIncomeTax(value);
                   setTimeout(calculateTotalSALT, 100);
                 }}
@@ -228,9 +220,9 @@ export default function SALTDeductionsNew() {
                 step="0.01"
                 min="0"
                 className="pl-8"
-                value={realEstateTax || ''}
+                value={realEstateTax}
                 onChange={(e) => {
-                  const value = e.target.value === '' ? 0 : parseFloat(e.target.value) || 0;
+                  const value = parseFloat(e.target.value) || 0;
                   setRealEstateTax(value);
                   setTimeout(calculateTotalSALT, 100);
                 }}
@@ -261,9 +253,9 @@ export default function SALTDeductionsNew() {
                 step="0.01"
                 min="0"
                 className="pl-8"
-                value={personalPropertyTax || ''}
+                value={personalPropertyTax}
                 onChange={(e) => {
-                  const value = e.target.value === '' ? 0 : parseFloat(e.target.value) || 0;
+                  const value = parseFloat(e.target.value) || 0;
                   setPersonalPropertyTax(value);
                   setTimeout(calculateTotalSALT, 100);
                 }}

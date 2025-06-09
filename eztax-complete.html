@@ -1,0 +1,980 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EzTax - 완전한 세금 계산기</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container { 
+            max-width: 1200px; 
+            margin: 0 auto; 
+            background: white; 
+            border-radius: 12px; 
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .header .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .status-banner {
+            background: #d1fae5;
+            color: #065f46;
+            border: 2px solid #10b981;
+            margin: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .steps-nav {
+            display: flex;
+            background: #f8fafc;
+            border-bottom: 1px solid #e2e8f0;
+            overflow-x: auto;
+        }
+
+        .step-button {
+            flex: 1;
+            padding: 20px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            color: #64748b;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+            min-width: 140px;
+        }
+
+        .step-button.active {
+            background: #4f46e5;
+            color: white;
+        }
+
+        .step-button.completed {
+            background: #10b981;
+            color: white;
+        }
+
+        .step-button:hover:not(.active) {
+            background: #e2e8f0;
+            color: #475569;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .step-content {
+            display: none;
+        }
+
+        .step-content.active {
+            display: block;
+        }
+
+        .form-section {
+            margin-bottom: 40px;
+        }
+
+        .form-section h2 {
+            color: #1e293b;
+            font-size: 1.8rem;
+            margin-bottom: 25px;
+            border-bottom: 3px solid #4f46e5;
+            padding-bottom: 10px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .form-group input, .form-group select {
+            padding: 12px;
+            border: 2px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: #4f46e5;
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+
+        .navigation-buttons {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 40px;
+            padding-top: 30px;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: #4f46e5;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #4338ca;
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: #6b7280;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #4b5563;
+        }
+
+        .btn-success {
+            background: #059669;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #047857;
+        }
+
+        .calculations-summary {
+            background: #f8fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 25px;
+            margin-top: 30px;
+        }
+
+        .calculation-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .calculation-row:last-child {
+            border-bottom: none;
+            font-weight: bold;
+            font-size: 1.1rem;
+            color: #1e293b;
+        }
+
+        .amount {
+            font-weight: 600;
+            color: #059669;
+        }
+
+        .amount.negative {
+            color: #dc2626;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 15px 0;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+        }
+
+        .info-box {
+            background: #eff6ff;
+            border: 1px solid #93c5fd;
+            border-radius: 6px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+
+        .info-box h4 {
+            color: #1e40af;
+            margin-bottom: 8px;
+        }
+
+        .info-box p {
+            color: #1e3a8a;
+            font-size: 14px;
+        }
+
+        @media (max-width: 768px) {
+            .container { margin: 10px; border-radius: 8px; }
+            .header { padding: 20px; }
+            .header h1 { font-size: 2rem; }
+            .content { padding: 20px; }
+            .form-grid { grid-template-columns: 1fr; }
+            .steps-nav { flex-direction: column; }
+            .step-button { min-width: auto; }
+            .navigation-buttons { flex-direction: column; gap: 15px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📋 EzTax</h1>
+            <div class="subtitle">완전한 오프라인 세금 계산기</div>
+        </div>
+
+        <div class="status-banner">
+            🟢 오프라인 모드 - 모든 계산이 브라우저에서 실시간으로 처리됩니다
+        </div>
+
+        <div class="steps-nav">
+            <button class="step-button active" data-step="0">1. 개인정보</button>
+            <button class="step-button" data-step="1">2. 소득정보</button>
+            <button class="step-button" data-step="2">3. 공제</button>
+            <button class="step-button" data-step="3">4. 세액공제</button>
+            <button class="step-button" data-step="4">5. 추가세금</button>
+            <button class="step-button" data-step="5">6. 최종계산</button>
+        </div>
+
+        <div class="content">
+            <!-- Step 1: Personal Information -->
+            <div class="step-content active" data-step="0">
+                <div class="form-section">
+                    <h2>개인정보 입력</h2>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="firstName">이름 (First Name) *</label>
+                            <input type="text" id="firstName" name="firstName" placeholder="홍길동" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="lastName">성 (Last Name) *</label>
+                            <input type="text" id="lastName" name="lastName" placeholder="김" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="ssn">SSN *</label>
+                            <input type="text" id="ssn" name="ssn" placeholder="123-45-6789" maxlength="11" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="dateOfBirth">생년월일 *</label>
+                            <input type="date" id="dateOfBirth" name="dateOfBirth" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="filingStatus">신고 유형 *</label>
+                            <select id="filingStatus" name="filingStatus" required>
+                                <option value="">선택하세요</option>
+                                <option value="single">Single (독신)</option>
+                                <option value="married_joint">Married Filing Jointly (부부합산)</option>
+                                <option value="married_separate">Married Filing Separately (부부별도)</option>
+                                <option value="head_of_household">Head of Household (세대주)</option>
+                                <option value="qualifying_widow">Qualifying Widow(er) (적격 미망인)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="email">이메일</label>
+                            <input type="email" id="email" name="email" placeholder="example@email.com">
+                        </div>
+                    </div>
+                    
+                    <div class="info-box">
+                        <h4>2024 표준공제액</h4>
+                        <p>Single: $14,600 | Married Filing Jointly: $29,200 | Head of Household: $21,900</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 2: Income -->
+            <div class="step-content" data-step="1">
+                <div class="form-section">
+                    <h2>소득정보</h2>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="wages">급여 소득 (W-2 Wages)</label>
+                            <input type="number" id="wages" name="wages" placeholder="0.00" step="0.01" min="0">
+                        </div>
+                        <div class="form-group">
+                            <label for="interestIncome">이자 소득 (Interest Income)</label>
+                            <input type="number" id="interestIncome" name="interestIncome" placeholder="0.00" step="0.01" min="0">
+                        </div>
+                        <div class="form-group">
+                            <label for="dividends">배당 소득 (Qualified Dividends)</label>
+                            <input type="number" id="dividends" name="dividends" placeholder="0.00" step="0.01" min="0">
+                        </div>
+                        <div class="form-group">
+                            <label for="businessIncome">사업 소득 (Business Income)</label>
+                            <input type="number" id="businessIncome" name="businessIncome" placeholder="0.00" step="0.01">
+                        </div>
+                        <div class="form-group">
+                            <label for="capitalGains">자본 이득 (Capital Gains)</label>
+                            <input type="number" id="capitalGains" name="capitalGains" placeholder="0.00" step="0.01">
+                        </div>
+                        <div class="form-group">
+                            <label for="otherIncome">기타 소득 (Other Income)</label>
+                            <input type="number" id="otherIncome" name="otherIncome" placeholder="0.00" step="0.01">
+                        </div>
+                    </div>
+                    
+                    <div class="calculations-summary">
+                        <div class="calculation-row">
+                            <span>총 소득 (Total Income):</span>
+                            <span class="amount" id="totalIncomeDisplay">$0.00</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 3: Deductions -->
+            <div class="step-content" data-step="2">
+                <div class="form-section">
+                    <h2>공제</h2>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="useStandardDeduction" name="useStandardDeduction" checked>
+                        <label for="useStandardDeduction">표준공제 사용 (Use Standard Deduction)</label>
+                    </div>
+                    
+                    <div id="standardDeductionInfo" class="info-box">
+                        <h4>표준공제액</h4>
+                        <p id="standardDeductionAmount">신고 유형을 선택하면 표준공제액이 표시됩니다.</p>
+                    </div>
+                    
+                    <div id="itemizedDeductions" style="display: none;">
+                        <h3>항목별 공제 (Itemized Deductions)</h3>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="medicalExpenses">의료비 (Medical Expenses)</label>
+                                <input type="number" id="medicalExpenses" name="medicalExpenses" placeholder="0.00" step="0.01" min="0">
+                                <small>AGI의 7.5% 초과분만 공제 가능</small>
+                            </div>
+                            <div class="form-group">
+                                <label for="stateLocalTax">주/지방세 SALT (State & Local Tax)</label>
+                                <input type="number" id="stateLocalTax" name="stateLocalTax" placeholder="0.00" step="0.01" min="0" max="10000">
+                                <small>최대 $10,000까지 공제 가능</small>
+                            </div>
+                            <div class="form-group">
+                                <label for="mortgageInterest">주택담보대출 이자 (Mortgage Interest)</label>
+                                <input type="number" id="mortgageInterest" name="mortgageInterest" placeholder="0.00" step="0.01" min="0">
+                            </div>
+                            <div class="form-group">
+                                <label for="charitableContributions">자선기부 (Charitable Contributions)</label>
+                                <input type="number" id="charitableContributions" name="charitableContributions" placeholder="0.00" step="0.01" min="0">
+                            </div>
+                        </div>
+                        
+                        <div class="calculations-summary">
+                            <div class="calculation-row">
+                                <span>항목별 공제 합계:</span>
+                                <span class="amount" id="itemizedTotal">$0.00</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 4: Tax Credits -->
+            <div class="step-content" data-step="3">
+                <div class="form-section">
+                    <h2>세액공제</h2>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="childTaxCredit">자녀 세액공제 (Child Tax Credit)</label>
+                            <input type="number" id="childTaxCredit" name="childTaxCredit" placeholder="0.00" step="0.01" min="0">
+                            <small>17세 미만 자녀 1명당 최대 $2,000</small>
+                        </div>
+                        <div class="form-group">
+                            <label for="educationCredits">교육 세액공제 (Education Credits)</label>
+                            <input type="number" id="educationCredits" name="educationCredits" placeholder="0.00" step="0.01" min="0">
+                            <small>AOTC: 최대 $2,500, LLC: 최대 $2,000</small>
+                        </div>
+                        <div class="form-group">
+                            <label for="earnedIncomeCredit">근로소득 세액공제 (EITC)</label>
+                            <input type="number" id="earnedIncomeCredit" name="earnedIncomeCredit" placeholder="0.00" step="0.01" min="0">
+                            <small>소득 수준에 따라 자동 계산됩니다</small>
+                        </div>
+                        <div class="form-group">
+                            <label for="otherCredits">기타 세액공제 (Other Credits)</label>
+                            <input type="number" id="otherCredits" name="otherCredits" placeholder="0.00" step="0.01" min="0">
+                        </div>
+                    </div>
+                    
+                    <div class="calculations-summary">
+                        <div class="calculation-row">
+                            <span>총 세액공제:</span>
+                            <span class="amount" id="totalCreditsDisplay">$0.00</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 5: Additional Tax -->
+            <div class="step-content" data-step="4">
+                <div class="form-section">
+                    <h2>추가 세금 및 납부액</h2>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="selfEmploymentIncome">자영업 소득 (Self-Employment Income)</label>
+                            <input type="number" id="selfEmploymentIncome" name="selfEmploymentIncome" placeholder="0.00" step="0.01">
+                            <small>자영업세 15.3% 적용</small>
+                        </div>
+                        <div class="form-group">
+                            <label for="federalTaxWithheld">연방세 원천징수 (Federal Tax Withheld)</label>
+                            <input type="number" id="federalTaxWithheld" name="federalTaxWithheld" placeholder="0.00" step="0.01" min="0">
+                        </div>
+                        <div class="form-group">
+                            <label for="estimatedTaxPayments">추정세 납부 (Estimated Tax Payments)</label>
+                            <input type="number" id="estimatedTaxPayments" name="estimatedTaxPayments" placeholder="0.00" step="0.01" min="0">
+                        </div>
+                    </div>
+                    
+                    <div class="calculations-summary">
+                        <div class="calculation-row">
+                            <span>자영업세 (Self-Employment Tax):</span>
+                            <span class="amount" id="selfEmploymentTaxDisplay">$0.00</span>
+                        </div>
+                        <div class="calculation-row">
+                            <span>총 납부세액:</span>
+                            <span class="amount" id="totalPaymentsDisplay">$0.00</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 6: Final Calculation -->
+            <div class="step-content" data-step="5">
+                <div class="form-section">
+                    <h2>최종 세금 계산 결과</h2>
+                    
+                    <div class="calculations-summary" id="finalCalculationResults">
+                        <div class="calculation-row">
+                            <span>총 소득 (Total Income):</span>
+                            <span class="amount" id="finalTotalIncome">$0.00</span>
+                        </div>
+                        <div class="calculation-row">
+                            <span>조정총소득 (Adjusted Gross Income):</span>
+                            <span class="amount" id="finalAGI">$0.00</span>
+                        </div>
+                        <div class="calculation-row">
+                            <span>공제액 (Deductions):</span>
+                            <span class="amount" id="finalDeductions">$0.00</span>
+                        </div>
+                        <div class="calculation-row">
+                            <span>과세소득 (Taxable Income):</span>
+                            <span class="amount" id="finalTaxableIncome">$0.00</span>
+                        </div>
+                        <div class="calculation-row">
+                            <span>연방 소득세 (Federal Income Tax):</span>
+                            <span class="amount" id="finalFederalTax">$0.00</span>
+                        </div>
+                        <div class="calculation-row">
+                            <span>자영업세 (Self-Employment Tax):</span>
+                            <span class="amount" id="finalSelfEmploymentTax">$0.00</span>
+                        </div>
+                        <div class="calculation-row">
+                            <span>총 세액 (Total Tax):</span>
+                            <span class="amount" id="finalTotalTax">$0.00</span>
+                        </div>
+                        <div class="calculation-row">
+                            <span>세액공제 (Tax Credits):</span>
+                            <span class="amount" id="finalTotalCredits">$0.00</span>
+                        </div>
+                        <div class="calculation-row">
+                            <span>납부할 세액 (Tax After Credits):</span>
+                            <span class="amount" id="finalTaxAfterCredits">$0.00</span>
+                        </div>
+                        <div class="calculation-row">
+                            <span>총 납부액 (Total Payments):</span>
+                            <span class="amount" id="finalTotalPayments">$0.00</span>
+                        </div>
+                        <div class="calculation-row" style="border-top: 2px solid #4f46e5; padding-top: 15px; margin-top: 15px;">
+                            <span><strong>최종 결과:</strong></span>
+                            <span class="amount" id="finalResult" style="font-size: 1.2em;"><strong>$0.00</strong></span>
+                        </div>
+                        <div style="text-align: center; margin-top: 15px; font-size: 14px; color: #6b7280;">
+                            <span id="resultDescription">계산을 완료하려면 '세금 계산하기' 버튼을 클릭하세요.</span>
+                        </div>
+                    </div>
+                    
+                    <div style="text-align: center; margin-top: 30px;">
+                        <button class="btn btn-success" onclick="calculateFinalTaxes()" style="font-size: 18px; padding: 15px 30px;">
+                            🧮 세금 계산하기
+                        </button>
+                        <button class="btn btn-secondary" onclick="downloadPDF()" style="margin-left: 15px;">
+                            📄 PDF 다운로드
+                        </button>
+                        <button class="btn btn-secondary" onclick="saveToLocalStorage()" style="margin-left: 15px;">
+                            💾 데이터 저장
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="navigation-buttons">
+                <button class="btn btn-secondary" id="prevBtn" onclick="previousStep()">⬅ 이전</button>
+                <button class="btn btn-primary" id="nextBtn" onclick="nextStep()">다음 ➡</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentStep = 0;
+        const taxData = {
+            personalInfo: {},
+            income: {},
+            deductions: {},
+            credits: {},
+            additionalTax: {},
+            calculatedResults: {}
+        };
+
+        // 2024 Tax Brackets
+        const TAX_BRACKETS_2024 = {
+            single: [
+                { min: 0, max: 11600, rate: 0.10 },
+                { min: 11600, max: 47150, rate: 0.12 },
+                { min: 47150, max: 100525, rate: 0.22 },
+                { min: 100525, max: 191950, rate: 0.24 },
+                { min: 191950, max: 243725, rate: 0.32 },
+                { min: 243725, max: 609350, rate: 0.35 },
+                { min: 609350, max: Infinity, rate: 0.37 }
+            ],
+            married_joint: [
+                { min: 0, max: 23200, rate: 0.10 },
+                { min: 23200, max: 94300, rate: 0.12 },
+                { min: 94300, max: 201050, rate: 0.22 },
+                { min: 201050, max: 383900, rate: 0.24 },
+                { min: 383900, max: 487450, rate: 0.32 },
+                { min: 487450, max: 731200, rate: 0.35 },
+                { min: 731200, max: Infinity, rate: 0.37 }
+            ],
+            married_separate: [
+                { min: 0, max: 11600, rate: 0.10 },
+                { min: 11600, max: 47150, rate: 0.12 },
+                { min: 47150, max: 100525, rate: 0.22 },
+                { min: 100525, max: 191950, rate: 0.24 },
+                { min: 191950, max: 243725, rate: 0.32 },
+                { min: 243725, max: 365600, rate: 0.35 },
+                { min: 365600, max: Infinity, rate: 0.37 }
+            ],
+            head_of_household: [
+                { min: 0, max: 16550, rate: 0.10 },
+                { min: 16550, max: 63100, rate: 0.12 },
+                { min: 63100, max: 100500, rate: 0.22 },
+                { min: 100500, max: 191950, rate: 0.24 },
+                { min: 191950, max: 243700, rate: 0.32 },
+                { min: 243700, max: 609350, rate: 0.35 },
+                { min: 609350, max: Infinity, rate: 0.37 }
+            ],
+            qualifying_widow: [
+                { min: 0, max: 23200, rate: 0.10 },
+                { min: 23200, max: 94300, rate: 0.12 },
+                { min: 94300, max: 201050, rate: 0.22 },
+                { min: 201050, max: 383900, rate: 0.24 },
+                { min: 383900, max: 487450, rate: 0.32 },
+                { min: 487450, max: 731200, rate: 0.35 },
+                { min: 731200, max: Infinity, rate: 0.37 }
+            ]
+        };
+
+        // Standard Deduction Amounts for 2024
+        const STANDARD_DEDUCTIONS_2024 = {
+            single: 14600,
+            married_joint: 29200,
+            married_separate: 14600,
+            head_of_household: 21900,
+            qualifying_widow: 29200
+        };
+
+        function formatCurrency(amount) {
+            return new Intl.NumberFormat('en-US', {
+                style: 'currency',
+                currency: 'USD'
+            }).format(amount || 0);
+        }
+
+        function calculateFederalTax(taxableIncome, filingStatus) {
+            if (!filingStatus || taxableIncome <= 0) return 0;
+            
+            const brackets = TAX_BRACKETS_2024[filingStatus];
+            if (!brackets) return 0;
+
+            let tax = 0;
+            let previousMax = 0;
+
+            for (const bracket of brackets) {
+                if (taxableIncome <= previousMax) break;
+                
+                const taxableAtThisBracket = Math.min(taxableIncome, bracket.max) - previousMax;
+                tax += taxableAtThisBracket * bracket.rate;
+                previousMax = bracket.max;
+                
+                if (taxableIncome <= bracket.max) break;
+            }
+
+            return Math.round(tax * 100) / 100;
+        }
+
+        function calculateSelfEmploymentTax(selfEmploymentIncome) {
+            if (!selfEmploymentIncome || selfEmploymentIncome <= 0) return 0;
+            
+            // Self-employment tax is 15.3% (12.4% Social Security + 2.9% Medicare)
+            // Only applies to first $160,200 for Social Security portion in 2024
+            const socialSecurityWageBase = 160200;
+            const socialSecurityRate = 0.124;
+            const medicareRate = 0.029;
+            
+            const socialSecurityTax = Math.min(selfEmploymentIncome, socialSecurityWageBase) * socialSecurityRate;
+            const medicareTax = selfEmploymentIncome * medicareRate;
+            
+            // Additional Medicare tax of 0.9% on income over $200,000 (single) or $250,000 (married filing jointly)
+            const additionalMedicareThreshold = 200000; // Simplified for this example
+            const additionalMedicareTax = selfEmploymentIncome > additionalMedicareThreshold 
+                ? (selfEmploymentIncome - additionalMedicareThreshold) * 0.009 
+                : 0;
+            
+            return Math.round((socialSecurityTax + medicareTax + additionalMedicareTax) * 100) / 100;
+        }
+
+        function updateStandardDeductionDisplay() {
+            const filingStatus = document.getElementById('filingStatus').value;
+            const standardDeductionAmount = STANDARD_DEDUCTIONS_2024[filingStatus] || 0;
+            
+            document.getElementById('standardDeductionAmount').textContent = 
+                filingStatus ? `${filingStatus}의 경우: ${formatCurrency(standardDeductionAmount)}` : '신고 유형을 선택하면 표준공제액이 표시됩니다.';
+        }
+
+        function updateRealTimeCalculations() {
+            // Update total income
+            const wages = parseFloat(document.getElementById('wages').value) || 0;
+            const interestIncome = parseFloat(document.getElementById('interestIncome').value) || 0;
+            const dividends = parseFloat(document.getElementById('dividends').value) || 0;
+            const businessIncome = parseFloat(document.getElementById('businessIncome').value) || 0;
+            const capitalGains = parseFloat(document.getElementById('capitalGains').value) || 0;
+            const otherIncome = parseFloat(document.getElementById('otherIncome').value) || 0;
+            
+            const totalIncome = wages + interestIncome + dividends + businessIncome + capitalGains + otherIncome;
+            document.getElementById('totalIncomeDisplay').textContent = formatCurrency(totalIncome);
+
+            // Update itemized deductions total
+            const medicalExpenses = parseFloat(document.getElementById('medicalExpenses').value) || 0;
+            const stateLocalTax = Math.min(parseFloat(document.getElementById('stateLocalTax').value) || 0, 10000);
+            const mortgageInterest = parseFloat(document.getElementById('mortgageInterest').value) || 0;
+            const charitableContributions = parseFloat(document.getElementById('charitableContributions').value) || 0;
+            
+            // Medical expenses deduction (only amount over 7.5% of AGI)
+            const medicalDeduction = Math.max(0, medicalExpenses - (totalIncome * 0.075));
+            const itemizedTotal = medicalDeduction + stateLocalTax + mortgageInterest + charitableContributions;
+            document.getElementById('itemizedTotal').textContent = formatCurrency(itemizedTotal);
+
+            // Update total credits
+            const childTaxCredit = parseFloat(document.getElementById('childTaxCredit').value) || 0;
+            const educationCredits = parseFloat(document.getElementById('educationCredits').value) || 0;
+            const earnedIncomeCredit = parseFloat(document.getElementById('earnedIncomeCredit').value) || 0;
+            const otherCredits = parseFloat(document.getElementById('otherCredits').value) || 0;
+            
+            const totalCredits = childTaxCredit + educationCredits + earnedIncomeCredit + otherCredits;
+            document.getElementById('totalCreditsDisplay').textContent = formatCurrency(totalCredits);
+
+            // Update self-employment tax
+            const selfEmploymentIncome = parseFloat(document.getElementById('selfEmploymentIncome').value) || 0;
+            const selfEmploymentTax = calculateSelfEmploymentTax(selfEmploymentIncome);
+            document.getElementById('selfEmploymentTaxDisplay').textContent = formatCurrency(selfEmploymentTax);
+
+            // Update total payments
+            const federalTaxWithheld = parseFloat(document.getElementById('federalTaxWithheld').value) || 0;
+            const estimatedTaxPayments = parseFloat(document.getElementById('estimatedTaxPayments').value) || 0;
+            const totalPayments = federalTaxWithheld + estimatedTaxPayments;
+            document.getElementById('totalPaymentsDisplay').textContent = formatCurrency(totalPayments);
+
+            // Enforce SALT limit
+            if (stateLocalTax > 10000) {
+                document.getElementById('stateLocalTax').value = 10000;
+            }
+        }
+
+        function calculateFinalTaxes() {
+            // Collect all data
+            const filingStatus = document.getElementById('filingStatus').value;
+            if (!filingStatus) {
+                alert('신고 유형을 선택해주세요.');
+                showStep(0);
+                return;
+            }
+
+            // Income
+            const wages = parseFloat(document.getElementById('wages').value) || 0;
+            const interestIncome = parseFloat(document.getElementById('interestIncome').value) || 0;
+            const dividends = parseFloat(document.getElementById('dividends').value) || 0;
+            const businessIncome = parseFloat(document.getElementById('businessIncome').value) || 0;
+            const capitalGains = parseFloat(document.getElementById('capitalGains').value) || 0;
+            const otherIncome = parseFloat(document.getElementById('otherIncome').value) || 0;
+            const totalIncome = wages + interestIncome + dividends + businessIncome + capitalGains + otherIncome;
+
+            // AGI (simplified - total income minus self-employment tax deduction)
+            const selfEmploymentIncome = parseFloat(document.getElementById('selfEmploymentIncome').value) || 0;
+            const selfEmploymentTax = calculateSelfEmploymentTax(selfEmploymentIncome);
+            const selfEmploymentTaxDeduction = selfEmploymentTax * 0.5; // Half of SE tax is deductible
+            const adjustedGrossIncome = totalIncome - selfEmploymentTaxDeduction;
+
+            // Deductions
+            const useStandardDeduction = document.getElementById('useStandardDeduction').checked;
+            let totalDeductions;
+            
+            if (useStandardDeduction) {
+                totalDeductions = STANDARD_DEDUCTIONS_2024[filingStatus] || 0;
+            } else {
+                const medicalExpenses = parseFloat(document.getElementById('medicalExpenses').value) || 0;
+                const stateLocalTax = Math.min(parseFloat(document.getElementById('stateLocalTax').value) || 0, 10000);
+                const mortgageInterest = parseFloat(document.getElementById('mortgageInterest').value) || 0;
+                const charitableContributions = parseFloat(document.getElementById('charitableContributions').value) || 0;
+                
+                const medicalDeduction = Math.max(0, medicalExpenses - (adjustedGrossIncome * 0.075));
+                totalDeductions = medicalDeduction + stateLocalTax + mortgageInterest + charitableContributions;
+            }
+
+            // Taxable Income
+            const taxableIncome = Math.max(0, adjustedGrossIncome - totalDeductions);
+
+            // Federal Income Tax
+            const federalIncomeTax = calculateFederalTax(taxableIncome, filingStatus);
+
+            // Total Tax
+            const totalTax = federalIncomeTax + selfEmploymentTax;
+
+            // Credits
+            const childTaxCredit = parseFloat(document.getElementById('childTaxCredit').value) || 0;
+            const educationCredits = parseFloat(document.getElementById('educationCredits').value) || 0;
+            const earnedIncomeCredit = parseFloat(document.getElementById('earnedIncomeCredit').value) || 0;
+            const otherCredits = parseFloat(document.getElementById('otherCredits').value) || 0;
+            const totalCredits = childTaxCredit + educationCredits + earnedIncomeCredit + otherCredits;
+
+            // Tax After Credits
+            const taxAfterCredits = Math.max(0, totalTax - totalCredits);
+
+            // Payments
+            const federalTaxWithheld = parseFloat(document.getElementById('federalTaxWithheld').value) || 0;
+            const estimatedTaxPayments = parseFloat(document.getElementById('estimatedTaxPayments').value) || 0;
+            const totalPayments = federalTaxWithheld + estimatedTaxPayments;
+
+            // Final Result
+            const finalResult = totalPayments - taxAfterCredits;
+
+            // Update display
+            document.getElementById('finalTotalIncome').textContent = formatCurrency(totalIncome);
+            document.getElementById('finalAGI').textContent = formatCurrency(adjustedGrossIncome);
+            document.getElementById('finalDeductions').textContent = formatCurrency(totalDeductions);
+            document.getElementById('finalTaxableIncome').textContent = formatCurrency(taxableIncome);
+            document.getElementById('finalFederalTax').textContent = formatCurrency(federalIncomeTax);
+            document.getElementById('finalSelfEmploymentTax').textContent = formatCurrency(selfEmploymentTax);
+            document.getElementById('finalTotalTax').textContent = formatCurrency(totalTax);
+            document.getElementById('finalTotalCredits').textContent = formatCurrency(totalCredits);
+            document.getElementById('finalTaxAfterCredits').textContent = formatCurrency(taxAfterCredits);
+            document.getElementById('finalTotalPayments').textContent = formatCurrency(totalPayments);
+
+            const finalResultElement = document.getElementById('finalResult');
+            const resultDescriptionElement = document.getElementById('resultDescription');
+            
+            if (finalResult >= 0) {
+                finalResultElement.textContent = formatCurrency(finalResult);
+                finalResultElement.className = 'amount';
+                resultDescriptionElement.textContent = '🎉 환급받을 금액입니다!';
+                resultDescriptionElement.style.color = '#059669';
+            } else {
+                finalResultElement.textContent = formatCurrency(Math.abs(finalResult));
+                finalResultElement.className = 'amount negative';
+                resultDescriptionElement.textContent = '💰 추가로 납부해야 할 금액입니다.';
+                resultDescriptionElement.style.color = '#dc2626';
+            }
+
+            // Store results
+            taxData.calculatedResults = {
+                totalIncome,
+                adjustedGrossIncome,
+                totalDeductions,
+                taxableIncome,
+                federalIncomeTax,
+                selfEmploymentTax,
+                totalTax,
+                totalCredits,
+                taxAfterCredits,
+                totalPayments,
+                finalResult
+            };
+
+            // Mark all steps as completed
+            document.querySelectorAll('.step-button').forEach(button => {
+                button.classList.add('completed');
+            });
+        }
+
+        function saveToLocalStorage() {
+            const allData = {
+                personalInfo: {
+                    firstName: document.getElementById('firstName').value,
+                    lastName: document.getElementById('lastName').value,
+                    ssn: document.getElementById('ssn').value,
+                    dateOfBirth: document.getElementById('dateOfBirth').value,
+                    filingStatus: document.getElementById('filingStatus').value,
+                    email: document.getElementById('email').value
+                },
+                savedAt: new Date().toISOString()
+            };
+
+            localStorage.setItem('eztax_data', JSON.stringify(allData));
+            alert('데이터가 브라우저에 저장되었습니다!');
+        }
+
+        function loadFromLocalStorage() {
+            const savedData = localStorage.getItem('eztax_data');
+            if (savedData) {
+                const data = JSON.parse(savedData);
+                if (data.personalInfo) {
+                    document.getElementById('firstName').value = data.personalInfo.firstName || '';
+                    document.getElementById('lastName').value = data.personalInfo.lastName || '';
+                    document.getElementById('ssn').value = data.personalInfo.ssn || '';
+                    document.getElementById('dateOfBirth').value = data.personalInfo.dateOfBirth || '';
+                    document.getElementById('filingStatus').value = data.personalInfo.filingStatus || '';
+                    document.getElementById('email').value = data.personalInfo.email || '';
+                }
+                updateStandardDeductionDisplay();
+            }
+        }
+
+        function downloadPDF() {
+            alert('PDF 다운로드 기능은 향후 추가될 예정입니다.');
+        }
+
+        function showStep(step) {
+            document.querySelectorAll('.step-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            document.querySelectorAll('.step-button').forEach(button => {
+                button.classList.remove('active');
+            });
+
+            document.querySelector(`[data-step="${step}"]`).classList.add('active');
+            document.querySelector(`[data-step="${step}"].step-button`).classList.add('active');
+
+            currentStep = step;
+            updateNavigationButtons();
+        }
+
+        function nextStep() {
+            if (currentStep < 5) {
+                showStep(currentStep + 1);
+            }
+        }
+
+        function previousStep() {
+            if (currentStep > 0) {
+                showStep(currentStep - 1);
+            }
+        }
+
+        function updateNavigationButtons() {
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+
+            prevBtn.style.display = currentStep === 0 ? 'none' : 'inline-block';
+            
+            if (currentStep === 5) {
+                nextBtn.style.display = 'none';
+            } else {
+                nextBtn.style.display = 'inline-block';
+            }
+        }
+
+        function toggleDeductionType() {
+            const useStandard = document.getElementById('useStandardDeduction').checked;
+            const itemizedDiv = document.getElementById('itemizedDeductions');
+            const standardDiv = document.getElementById('standardDeductionInfo');
+            
+            itemizedDiv.style.display = useStandard ? 'none' : 'block';
+            standardDiv.style.display = useStandard ? 'block' : 'none';
+        }
+
+        // Event listeners
+        document.querySelectorAll('.step-button').forEach(button => {
+            button.addEventListener('click', () => {
+                const step = parseInt(button.dataset.step);
+                showStep(step);
+            });
+        });
+
+        document.getElementById('useStandardDeduction').addEventListener('change', toggleDeductionType);
+        document.getElementById('filingStatus').addEventListener('change', updateStandardDeductionDisplay);
+
+        // Real-time calculation updates
+        document.querySelectorAll('input[type="number"]').forEach(input => {
+            input.addEventListener('input', updateRealTimeCalculations);
+        });
+
+        // SSN formatting
+        document.getElementById('ssn').addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value.length >= 6) {
+                value = value.substring(0, 3) + '-' + value.substring(3, 5) + '-' + value.substring(5, 9);
+            } else if (value.length >= 4) {
+                value = value.substring(0, 3) + '-' + value.substring(3);
+            }
+            e.target.value = value;
+        });
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            updateNavigationButtons();
+            updateStandardDeductionDisplay();
+            loadFromLocalStorage();
+            updateRealTimeCalculations();
+        });
+    </script>
+</body>
+</html>

@@ -106,7 +106,7 @@ const Home: React.FC = () => {
     <div className="max-w-5xl mx-auto">
       <section className="mb-12 text-center py-10">
         <h1 className="text-4xl md:text-5xl font-heading font-bold text-primary-dark mb-4">
-          세상쉬운 세금 보고
+          세상쉬운 세금 계산
         </h1>
         <p className="text-xl text-gray-dark max-w-3xl mx-auto mb-8">
           EzTax로 간단한 과정을 통해 자신감 있게 세금 보고를 완료하세요.

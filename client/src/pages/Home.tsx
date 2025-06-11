@@ -142,7 +142,7 @@ const Home: React.FC = () => {
               className="bg-green-500 hover:bg-green-600 text-white"
               onClick={() => navigate('/personal-info')}
             >
-              Tax Simulator
+              세금시뮬레이터(Tax Simulator)
             </Button>
           </div>
         )}
@@ -228,7 +228,7 @@ const Home: React.FC = () => {
               className="w-full bg-green-500 hover:bg-green-600 text-white"
               onClick={() => navigate('/personal-info')}
             >
-              Tax Simulator
+              세금시뮬레이터(Tax Simulator)
             </Button>
           </CardFooter>
         </Card>

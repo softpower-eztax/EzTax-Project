@@ -113,7 +113,8 @@ export default function RetirementContributions() {
 
     // Update adjustments to include retirement contributions in AGI calculation
     const updatedAdjustments = {
-      ...taxData.income?.adjustments,
+      studentLoanInterest: taxData.income?.adjustments?.studentLoanInterest || 0,
+      otherAdjustments: taxData.income?.adjustments?.otherAdjustments || 0,
       retirementContributions: data.traditionalIRA + data.plan401k + data.plan403b + 
                                data.plan457 + data.simpleIRA + data.sepIRA + data.tsp
     };
@@ -126,7 +127,19 @@ export default function RetirementContributions() {
     await updateTaxData({
       retirementContributions,
       income: {
-        ...taxData.income,
+        wages: taxData.income?.wages || 0,
+        otherEarnedIncome: taxData.income?.otherEarnedIncome || 0,
+        interestIncome: taxData.income?.interestIncome || 0,
+        dividends: taxData.income?.dividends || 0,
+        businessIncome: taxData.income?.businessIncome || 0,
+        capitalGains: taxData.income?.capitalGains || 0,
+        rentalIncome: taxData.income?.rentalIncome || 0,
+        retirementIncome: taxData.income?.retirementIncome || 0,
+        unemploymentIncome: taxData.income?.unemploymentIncome || 0,
+        otherIncome: taxData.income?.otherIncome || 0,
+        totalIncome: taxData.income?.totalIncome || 0,
+        additionalIncomeItems: taxData.income?.additionalIncomeItems || [],
+        additionalAdjustmentItems: taxData.income?.additionalAdjustmentItems || [],
         adjustments: updatedAdjustments,
         adjustedGrossIncome,
       }
@@ -482,7 +495,7 @@ export default function RetirementContributions() {
             <Button
               type="button"
               variant="outline"
-              onClick={() => navigate('/additional-adjustments')}
+              onClick={() => navigate('/income')}
             >
               이전 단계 (Previous)
             </Button>

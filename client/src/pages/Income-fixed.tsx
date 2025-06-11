@@ -945,8 +945,8 @@ export default function IncomePage() {
               
               <StepNavigation 
                 prevStep="/personal-info" 
-                nextStep="/deductions"
-                submitText="소득공제(Deduction)"
+                nextStep="/retirement-contributions"
+                submitText="은퇴계획(Retirement)"
                 onNext={() => {
                   if (form.formState.errors && Object.keys(form.formState.errors).length > 0) {
                     toast({

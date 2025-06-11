@@ -10,6 +10,7 @@ import PersonalInfo from "@/pages/PersonalInfo";
 import IncomePage from "@/pages/Income-fixed";
 import AdditionalIncomePage from "@/pages/AdditionalIncome-simple";
 import AdditionalAdjustmentsPage from "@/pages/AdditionalAdjustments-simple";
+import RetirementContributions from "@/pages/RetirementContributions";
 import Deductions from "@/pages/Deductions";
 import SALTDeductions from "@/pages/SALTDeductionsNew";
 import TaxCredits from "@/pages/TaxCredits3";
@@ -41,6 +42,7 @@ function Router() {
       <ProtectedRoute path="/filing-status-checker" component={FilingStatusChecker} />
       <ProtectedRoute path="/additional-income" component={AdditionalIncomePage} />
       <ProtectedRoute path="/additional-adjustments" component={AdditionalAdjustmentsPage} />
+      <ProtectedRoute path="/retirement-contributions" component={RetirementContributions} />
       <ProtectedRoute path="/deductions" component={Deductions} />
       <ProtectedRoute path="/salt-deductions" component={SALTDeductions} />
       <ProtectedRoute path="/tax-credits" component={TaxCredits} />

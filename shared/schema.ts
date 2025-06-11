@@ -358,3 +358,14 @@ export const calculatedResultsSchema = z.object({
   refundAmount: z.number(),
   amountOwed: z.number(),
 });
+
+// Main TaxData interface
+export interface TaxData {
+  personalInfo?: PersonalInformation;
+  income?: Income;
+  deductions?: Deductions;
+  retirementContributions?: RetirementContributions;
+  taxCredits?: TaxCredits;
+  additionalTax?: AdditionalTax;
+  calculatedResults?: CalculatedResults;
+}

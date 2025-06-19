@@ -16,11 +16,7 @@ const ADJUSTMENT_TYPES = [
     label: "교육자 비용 (Educator expenses)",
     info: "교사, 강사, 상담사 등 교육 분야 종사자가 직무와 관련하여 지출한 비용입니다."
   },
-  {
-    id: "hsa_deduction",
-    label: "HSA 적립금 (Health savings account deduction)",
-    info: "건강 저축 계좌(HSA)에 납입한 금액입니다."
-  },
+
   {
     id: "moving_expenses",
     label: "이주 비용 (Moving expenses for armed forces)",

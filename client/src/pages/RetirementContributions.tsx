@@ -491,6 +491,60 @@ export default function RetirementContributions() {
             </CardContent>
           </Card>
 
+          {/* AGI Impact Display */}
+          <Card className="bg-green-50 border-green-200">
+            <CardHeader>
+              <CardTitle className="text-green-800">조정총소득 영향 (AGI Impact)</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-2">
+                <div className="flex justify-between">
+                  <span>현재 총소득 (Current Total Income):</span>
+                  <span className="font-semibold">
+                    ${(taxData.income?.totalIncome || 0).toLocaleString()}
+                  </span>
+                </div>
+                <div className="flex justify-between">
+                  <span>기존 조정항목 (Existing Adjustments):</span>
+                  <span className="font-semibold">
+                    ${((taxData.income?.adjustments?.studentLoanInterest || 0) + 
+                      (taxData.income?.adjustments?.otherAdjustments || 0)).toLocaleString()}
+                  </span>
+                </div>
+                <div className="flex justify-between text-blue-600">
+                  <span>은퇴 기여금 조정 (Retirement Adjustments):</span>
+                  <span className="font-semibold">
+                    ${(form.watch('traditionalIRA') + form.watch('plan401k') + 
+                      form.watch('plan403b') + form.watch('plan457') + 
+                      form.watch('simpleIRA') + form.watch('sepIRA') + 
+                      form.watch('tsp')).toLocaleString()}
+                  </span>
+                </div>
+                <Separator />
+                <div className="flex justify-between font-bold text-lg text-green-700">
+                  <span>예상 조정총소득 (Projected AGI):</span>
+                  <span>
+                    ${Math.max(0, (taxData.income?.totalIncome || 0) - 
+                      ((taxData.income?.adjustments?.studentLoanInterest || 0) + 
+                       (taxData.income?.adjustments?.otherAdjustments || 0) + 
+                       (form.watch('traditionalIRA') + form.watch('plan401k') + 
+                        form.watch('plan403b') + form.watch('plan457') + 
+                        form.watch('simpleIRA') + form.watch('sepIRA') + 
+                        form.watch('tsp')))).toLocaleString()}
+                  </span>
+                </div>
+                <div className="text-sm text-green-600 mt-2">
+                  💡 은퇴 기여금으로 인한 세금 절약액: 약 ${Math.round(
+                    (form.watch('traditionalIRA') + form.watch('plan401k') + 
+                     form.watch('plan403b') + form.watch('plan457') + 
+                     form.watch('simpleIRA') + form.watch('sepIRA') + 
+                     form.watch('tsp')) * 0.22
+                  ).toLocaleString()} (22% 세율 기준)
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
           <div className="flex justify-between">
             <Button
               type="button"

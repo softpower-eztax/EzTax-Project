@@ -34,7 +34,7 @@ const ADJUSTMENT_TYPES = [
   {
     id: "self_employed_retirement",
     label: "자영업자 은퇴 계획 (Self-employed retirement plans)",
-    info: "자영업자가 자신의 은퇴를 위해 설정한 SEP, SIMPLE 및 적격 플랜에 대한 납입금입니다."
+    info: ""
   },
   {
     id: "self_employed_health_insurance",

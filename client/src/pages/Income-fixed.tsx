@@ -846,10 +846,10 @@ export default function IncomePage() {
                         render={({ field }) => (
                           <FormItem>
                             <div className="flex justify-between">
-                              <FormLabel>은퇴계좌기여금 (Retirement Contributions)</FormLabel>
+                              <FormLabel>HSA 적립금 (Health Savings Account)</FormLabel>
                               <div className="tooltip">
                                 <InfoIcon className="h-4 w-4 text-gray-dark" />
-                                <span className="tooltip-text">IRA, 401k, etc. contributions</span>
+                                <span className="tooltip-text">Health Savings Account contributions</span>
                               </div>
                             </div>
                             <FormControl>
@@ -857,7 +857,7 @@ export default function IncomePage() {
                                 type="number"
                                 step="0.01"
                                 min="0"
-                                placeholder="은퇴계좌 기여금 금액"
+                                placeholder="HSA 적립금 금액"
                                 value={field.value === 0 ? '' : field.value}
                                 onChange={(e) => {
                                   field.onChange(parseFloat(e.target.value) || 0);

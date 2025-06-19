@@ -490,7 +490,8 @@ export default function IncomePage() {
                                 type="number"
                                 step="0.01"
                                 min="0"
-                                {...field}
+                                placeholder="급여 금액을 입력하세요"
+                                value={field.value === 0 ? '' : field.value}
                                 onChange={(e) => {
                                   field.onChange(parseFloat(e.target.value) || 0);
                                 }}
@@ -564,7 +565,8 @@ export default function IncomePage() {
                                 type="number"
                                 step="0.01"
                                 min="0"
-                                {...field}
+                                placeholder="기타 근로소득 금액"
+                                value={field.value === 0 ? '' : field.value}
                                 onChange={(e) => {
                                   field.onChange(parseFloat(e.target.value) || 0);
                                 }}
@@ -598,7 +600,8 @@ export default function IncomePage() {
                                 type="number"
                                 step="0.01"
                                 min="0"
-                                {...field}
+                                placeholder="이자소득 금액"
+                                value={field.value === 0 ? '' : field.value}
                                 onChange={(e) => {
                                   field.onChange(parseFloat(e.target.value) || 0);
                                 }}
@@ -626,7 +629,8 @@ export default function IncomePage() {
                                 type="number"
                                 step="0.01"
                                 min="0"
-                                {...field}
+                                placeholder="배당소득 금액"
+                                value={field.value === 0 ? '' : field.value}
                                 onChange={(e) => {
                                   field.onChange(parseFloat(e.target.value) || 0);
                                 }}
@@ -696,7 +700,8 @@ export default function IncomePage() {
                                 type="number"
                                 step="0.01"
                                 min="0"
-                                {...field}
+                                placeholder="임대소득 금액"
+                                value={field.value === 0 ? '' : field.value}
                                 onChange={(e) => {
                                   field.onChange(parseFloat(e.target.value) || 0);
                                 }}

@@ -3,7 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Link } from 'wouter';
-import { AlertCircle, ArrowLeft, Lightbulb, TrendingUp, ArrowRight } from 'lucide-react';
+import { AlertCircle, ArrowLeft, Lightbulb, TrendingUp, ArrowRight, Phone, Mail, MessageCircle, Users } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { TaxSavingSuggestion, generateTaxSavingSuggestions } from '@/lib/taxSavingSuggestions';
@@ -120,6 +120,117 @@ const TaxSavingAdvice: React.FC = () => {
           ))}
         </div>
       )}
+      
+      {/* Expert Consultation Section */}
+      <Card className="mt-8 border-2 border-blue-200 bg-blue-50">
+        <CardHeader className="bg-blue-100">
+          <div className="flex items-center">
+            <Users className="h-6 w-6 mr-2 text-blue-600" />
+            <CardTitle className="text-xl font-heading font-semibold text-blue-800">
+              세무 전문가 상담 (Expert Tax Consultation)
+            </CardTitle>
+          </div>
+          <CardDescription className="text-blue-700">
+            복잡한 세무 상황이나 추가적인 절세 전략이 필요하시다면 전문가와 상담하세요
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Phone Consultation */}
+            <div className="bg-white p-4 rounded-lg border border-blue-200">
+              <div className="flex items-center mb-2">
+                <Phone className="h-5 w-5 mr-2 text-blue-600" />
+                <h3 className="font-semibold text-blue-800">전화 상담 (Phone Consultation)</h3>
+              </div>
+              <p className="text-sm text-gray-600 mb-3">
+                즉시 전문가와 통화하여 세무 문제를 해결하세요
+              </p>
+              <Button 
+                className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+                onClick={() => window.open('tel:+1-800-TAX-HELP', '_self')}
+              >
+                <Phone className="h-4 w-4 mr-2" />
+                1-800-TAX-HELP
+              </Button>
+            </div>
+
+            {/* Email Consultation */}
+            <div className="bg-white p-4 rounded-lg border border-blue-200">
+              <div className="flex items-center mb-2">
+                <Mail className="h-5 w-5 mr-2 text-blue-600" />
+                <h3 className="font-semibold text-blue-800">이메일 상담 (Email Consultation)</h3>
+              </div>
+              <p className="text-sm text-gray-600 mb-3">
+                세부적인 세무 질문을 이메일로 문의하세요
+              </p>
+              <Button 
+                className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+                onClick={() => window.open('mailto:experts@eztax.com?subject=세무상담 문의 (Tax Consultation Inquiry)', '_blank')}
+              >
+                <Mail className="h-4 w-4 mr-2" />
+                experts@eztax.com
+              </Button>
+            </div>
+
+            {/* Live Chat */}
+            <div className="bg-white p-4 rounded-lg border border-blue-200">
+              <div className="flex items-center mb-2">
+                <MessageCircle className="h-5 w-5 mr-2 text-blue-600" />
+                <h3 className="font-semibold text-blue-800">실시간 채팅 (Live Chat)</h3>
+              </div>
+              <p className="text-sm text-gray-600 mb-3">
+                온라인 채팅으로 빠른 답변을 받으세요
+              </p>
+              <Button 
+                className="w-full bg-green-600 hover:bg-green-700 text-white"
+                onClick={() => window.open('https://chat.eztax.com', '_blank')}
+              >
+                <MessageCircle className="h-4 w-4 mr-2" />
+                채팅 시작하기
+              </Button>
+            </div>
+
+            {/* Video Consultation */}
+            <div className="bg-white p-4 rounded-lg border border-blue-200">
+              <div className="flex items-center mb-2">
+                <Users className="h-5 w-5 mr-2 text-blue-600" />
+                <h3 className="font-semibold text-blue-800">화상 상담 (Video Consultation)</h3>
+              </div>
+              <p className="text-sm text-gray-600 mb-3">
+                화상통화로 전문가와 1:1 상담을 진행하세요
+              </p>
+              <Button 
+                className="w-full bg-purple-600 hover:bg-purple-700 text-white"
+                onClick={() => window.open('https://calendly.com/eztax-experts', '_blank')}
+              >
+                <Users className="h-4 w-4 mr-2" />
+                상담 예약하기
+              </Button>
+            </div>
+          </div>
+
+          <Alert className="bg-yellow-50 border-yellow-200">
+            <AlertCircle className="h-4 w-4" />
+            <AlertDescription className="text-yellow-800">
+              <strong>상담 시간:</strong> 월-금 9AM-6PM (EST) | <strong>응답 시간:</strong> 이메일 24시간 이내, 채팅 즉시
+              <br />
+              <strong>상담료:</strong> 첫 15분 무료, 이후 분당 $2.99
+            </AlertDescription>
+          </Alert>
+
+          <div className="bg-white p-4 rounded-lg border border-gray-200">
+            <h4 className="font-semibold text-gray-800 mb-2">전문가 상담이 도움이 되는 경우:</h4>
+            <ul className="text-sm text-gray-600 space-y-1">
+              <li>• 복잡한 사업 소득이나 투자 소득이 있는 경우</li>
+              <li>• 여러 주에서 소득이 발생한 경우</li>
+              <li>• 국제 소득이나 해외 자산이 있는 경우</li>
+              <li>• 대규모 자선 기부나 특별 공제가 필요한 경우</li>
+              <li>• IRS 감사나 세무 문제가 발생한 경우</li>
+              <li>• 은퇴 계획이나 부동산 거래와 관련된 세무 문제</li>
+            </ul>
+          </div>
+        </CardContent>
+      </Card>
       
       <div className="mt-10 text-center">
         <Link href="/review">

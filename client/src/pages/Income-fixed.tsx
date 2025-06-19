@@ -672,7 +672,8 @@ export default function IncomePage() {
                                 type="number"
                                 step="0.01"
                                 min="0"
-                                {...field}
+                                placeholder="자본이득 금액"
+                                value={field.value === 0 ? '' : field.value}
                                 onChange={(e) => {
                                   field.onChange(parseFloat(e.target.value) || 0);
                                 }}
@@ -827,7 +828,8 @@ export default function IncomePage() {
                                 step="0.01"
                                 min="0"
                                 max="2500"
-                                {...field}
+                                placeholder="학자금 대출 이자 금액"
+                                value={field.value === 0 ? '' : field.value}
                                 onChange={(e) => {
                                   field.onChange(parseFloat(e.target.value) || 0);
                                 }}
@@ -855,7 +857,8 @@ export default function IncomePage() {
                                 type="number"
                                 step="0.01"
                                 min="0"
-                                {...field}
+                                placeholder="은퇴계좌 기여금 금액"
+                                value={field.value === 0 ? '' : field.value}
                                 onChange={(e) => {
                                   field.onChange(parseFloat(e.target.value) || 0);
                                 }}

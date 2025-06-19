@@ -198,12 +198,18 @@ export default function RetirementContributions() {
                   name="traditionalIRA"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="flex justify-between">
-                        전통적 IRA (Traditional IRA)
+                      <div className="flex justify-between items-center">
+                        <div className="flex items-center gap-2">
+                          <FormLabel>전통적 IRA (Traditional IRA)</FormLabel>
+                          <div className="tooltip">
+                            <InfoIcon className="h-4 w-4 text-gray-400" />
+                            <span className="tooltip-text">누구나 개설 가능한 개인 은퇴계좌. 기여금은 세금공제되며 인출시 과세됩니다.</span>
+                          </div>
+                        </div>
                         <Badge variant="outline">
                           한도: ${getLimit('traditionalIRA').toLocaleString()}
                         </Badge>
-                      </FormLabel>
+                      </div>
                       <FormControl>
                         <Input
                           type="number"
@@ -222,12 +228,18 @@ export default function RetirementContributions() {
                   name="plan401k"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="flex justify-between">
-                        401(k) 플랜
+                      <div className="flex justify-between items-center">
+                        <div className="flex items-center gap-2">
+                          <FormLabel>401(k) 플랜</FormLabel>
+                          <div className="tooltip">
+                            <InfoIcon className="h-4 w-4 text-gray-400" />
+                            <span className="tooltip-text">일반 기업에서 제공하는 은퇴계좌. 회사에서 401k를 제공하는 직장인을 위한 플랜입니다.</span>
+                          </div>
+                        </div>
                         <Badge variant="outline">
                           한도: ${getLimit('plan401k').toLocaleString()}
                         </Badge>
-                      </FormLabel>
+                      </div>
                       <FormControl>
                         <Input
                           type="number"
@@ -246,12 +258,18 @@ export default function RetirementContributions() {
                   name="plan403b"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="flex justify-between">
-                        403(b) 플랜
+                      <div className="flex justify-between items-center">
+                        <div className="flex items-center gap-2">
+                          <FormLabel>403(b) 플랜</FormLabel>
+                          <div className="tooltip">
+                            <InfoIcon className="h-4 w-4 text-gray-400" />
+                            <span className="tooltip-text">학교, 병원, 비영리단체 직원을 위한 은퇴계좌. 교육기관이나 의료기관 근무자에게 적합합니다.</span>
+                          </div>
+                        </div>
                         <Badge variant="outline">
                           한도: ${getLimit('plan403b').toLocaleString()}
                         </Badge>
-                      </FormLabel>
+                      </div>
                       <FormControl>
                         <Input
                           type="number"
@@ -270,12 +288,18 @@ export default function RetirementContributions() {
                   name="plan457"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="flex justify-between">
-                        457 플랜
+                      <div className="flex justify-between items-center">
+                        <div className="flex items-center gap-2">
+                          <FormLabel>457 플랜</FormLabel>
+                          <div className="tooltip">
+                            <InfoIcon className="h-4 w-4 text-gray-400" />
+                            <span className="tooltip-text">정부기관 및 비영리단체 직원을 위한 은퇴계좌. 공무원이나 비영리기관 근무자에게 적합합니다.</span>
+                          </div>
+                        </div>
                         <Badge variant="outline">
                           한도: ${getLimit('plan457').toLocaleString()}
                         </Badge>
-                      </FormLabel>
+                      </div>
                       <FormControl>
                         <Input
                           type="number"
@@ -294,12 +318,18 @@ export default function RetirementContributions() {
                   name="simpleIRA"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="flex justify-between">
-                        SIMPLE IRA
+                      <div className="flex justify-between items-center">
+                        <div className="flex items-center gap-2">
+                          <FormLabel>SIMPLE IRA</FormLabel>
+                          <div className="tooltip">
+                            <InfoIcon className="h-4 w-4 text-gray-400" />
+                            <span className="tooltip-text">소규모 회사(100명 이하) 직원을 위한 은퇴계좌. 작은 회사에서 일하는 분들에게 적합합니다.</span>
+                          </div>
+                        </div>
                         <Badge variant="outline">
                           한도: ${getLimit('simpleIRA').toLocaleString()}
                         </Badge>
-                      </FormLabel>
+                      </div>
                       <FormControl>
                         <Input
                           type="number"
@@ -318,12 +348,18 @@ export default function RetirementContributions() {
                   name="sepIRA"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="flex justify-between">
-                        SEP-IRA
+                      <div className="flex justify-between items-center">
+                        <div className="flex items-center gap-2">
+                          <FormLabel>SEP-IRA</FormLabel>
+                          <div className="tooltip">
+                            <InfoIcon className="h-4 w-4 text-gray-400" />
+                            <span className="tooltip-text">자영업자나 소상공인을 위한 은퇴계좌. 개인사업자나 프리랜서에게 적합합니다.</span>
+                          </div>
+                        </div>
                         <Badge variant="outline">
                           한도: $70,000
                         </Badge>
-                      </FormLabel>
+                      </div>
                       <FormControl>
                         <Input
                           type="number"
@@ -342,12 +378,18 @@ export default function RetirementContributions() {
                   name="tsp"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="flex justify-between">
-                        TSP (연방직원)
+                      <div className="flex justify-between items-center">
+                        <div className="flex items-center gap-2">
+                          <FormLabel>TSP (연방직원)</FormLabel>
+                          <div className="tooltip">
+                            <InfoIcon className="h-4 w-4 text-gray-400" />
+                            <span className="tooltip-text">연방정부 직원 및 군인을 위한 은퇴저축플랜. 연방공무원이나 현역 군인에게 적합합니다.</span>
+                          </div>
+                        </div>
                         <Badge variant="outline">
                           한도: ${getLimit('tsp').toLocaleString()}
                         </Badge>
-                      </FormLabel>
+                      </div>
                       <FormControl>
                         <Input
                           type="number"

@@ -19,7 +19,7 @@ const ADJUSTMENT_TYPES = [
 
   {
     id: "moving_expenses",
-    label: "이주 비용 (Moving expenses for armed forces)",
+    label: "군인이주비용 (Moving expenses for armed forces)",
     info: "현역 군인이 영구적인 변경 명령으로 인해 발생한 이사 비용입니다."
   },
   {

@@ -31,11 +31,7 @@ const ADJUSTMENT_TYPES = [
     label: "자영업 세금 공제 (Self-employment tax deduction)",
     info: "자영업자가 납부한 사회보장세 및 메디케어세의 일부 공제 항목입니다."
   },
-  {
-    id: "self_employed_retirement",
-    label: "자영업자 은퇴 계획 (Self-employed retirement plans)",
-    info: ""
-  },
+
   {
     id: "self_employed_health_insurance",
     label: "자영업자 건강보험 (Self-employed health insurance)",

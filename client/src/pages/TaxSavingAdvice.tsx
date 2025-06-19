@@ -131,7 +131,7 @@ const TaxSavingAdvice: React.FC = () => {
             </CardTitle>
           </div>
           <CardDescription className="text-blue-700">
-            복잡한 세무 상황이나 추가적인 절세 전략이 필요하시다면 전문가와 상담하세요
+            절세방안을 실현하시길 원하시면 전문가와 상담하세요
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">

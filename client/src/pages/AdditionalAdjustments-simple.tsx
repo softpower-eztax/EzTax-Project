@@ -47,11 +47,7 @@ const ADJUSTMENT_TYPES = [
     label: "지불된 위자료 (Alimony paid)",
     info: "2019년 이전에 체결된 이혼 또는 별거 합의에 따라 지급한 위자료입니다."
   },
-  {
-    id: "ira_deduction",
-    label: "Traditional IRA 납입금",
-    info: "전통적인 개인 은퇴 계좌에 납입한 금액에 대한 공제입니다."
-  },
+
   {
     id: "other_adjustments",
     label: "기타 조정 (Other adjustments)",

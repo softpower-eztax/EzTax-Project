@@ -330,8 +330,9 @@ const PersonalInfo: React.FC = () => {
                       type="button"
                       onClick={() => fillWithDummyData()}
                       variant="outline"
-                      className="mb-4"
+                      className="mb-4 bg-blue-50 border-blue-200 text-blue-700 hover:bg-blue-100 hover:border-blue-300 font-semibold"
                     >
+                      <ClipboardCheck className="w-4 h-4 mr-2" />
                       예시 데이터 채우기
                     </Button>
                   </div>

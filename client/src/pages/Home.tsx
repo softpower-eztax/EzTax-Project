@@ -106,9 +106,12 @@ const Home: React.FC = () => {
   return (
     <div className="max-w-5xl mx-auto">
       <section className="mb-12 text-center py-10">
-        <h1 className="text-4xl md:text-5xl font-heading font-bold text-primary-dark mb-4">
+        <h1 className="text-4xl md:text-5xl font-heading font-bold text-primary-dark mb-2">
           세상쉬운 세금계산 세상귀한 노후준비
         </h1>
+        <p className="text-2xl md:text-3xl font-bold text-gray-600 mb-4 tracking-wide" style={{ fontFamily: 'Georgia, serif' }}>
+          Less Tax, More Wealth
+        </p>
         <p className="text-lg font-medium text-primary-dark max-w-4xl mx-auto mb-4 bg-primary/5 p-4 rounded-lg border border-primary/20">
           EzTax는 단순히 올해 세금을 정리하는 것에 그치지 않고,<br />
           당신의 평생 세금+은퇴 전략을 함께 설계합니다.

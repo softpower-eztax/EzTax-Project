@@ -106,7 +106,7 @@ const Home: React.FC = () => {
     <div className="max-w-5xl mx-auto">
       <section className="mb-12 text-center py-10">
         <h1 className="text-4xl md:text-5xl font-heading font-bold text-primary-dark mb-4">
-          세상쉬운 세금 계산
+          세상쉬운 세금계산 세상귀한 노후준비
         </h1>
         <p className="text-xl text-gray-dark max-w-3xl mx-auto mb-4">
           EzTax로 간단하게 세금계산하시고 노후준비도 계획하세요.

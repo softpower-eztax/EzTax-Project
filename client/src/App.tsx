@@ -17,6 +17,7 @@ import TaxCredits from "@/pages/TaxCredits3";
 import AdditionalTax from "@/pages/AdditionalTax";
 import Review from "@/pages/Review";
 import TaxSavingAdvice from "@/pages/TaxSavingAdvice";
+import RetirementScore from "@/pages/RetirementScore";
 import PricingPage from "@/pages/PricingPage";
 import NotFound from "@/pages/not-found";
 import AuthPage from "@/pages/auth-page";
@@ -47,6 +48,7 @@ function Router() {
       <ProtectedRoute path="/salt-deductions" component={SALTDeductions} />
       <ProtectedRoute path="/tax-credits" component={TaxCredits} />
       <ProtectedRoute path="/additional-tax" component={AdditionalTax} />
+      <ProtectedRoute path="/retirement-score" component={RetirementScore} />
       <ProtectedRoute path="/review" component={Review} />
       <ProtectedRoute path="/tax-saving-advice" component={TaxSavingAdvice} />
       <ProtectedRoute path="/pricing" component={PricingPage} />

@@ -105,6 +105,11 @@ Preferred communication style: Simple, everyday language.
 ## Changelog
 
 Recent Changes:
+- June 20, 2025: Monte Carlo simulation implementation for retirement planning (10,000 scenarios, percentile analysis, success probability)
+- June 20, 2025: Advanced probabilistic modeling with market volatility consideration (15% standard deviation)
+- June 20, 2025: Enhanced retirement score visualization with color-coded percentile ranges and success metrics
+- June 20, 2025: Expert photo display fix using proper Vite asset import system
+- June 20, 2025: Homepage UI improvements with prominent retirement diagnostic button and EzTax blue branding
 - June 20, 2025: Advanced retirement score calculation with comprehensive factors (preparedness ratio, financial health, lifestyle)
 - June 20, 2025: Professional expert introduction for 지대현 EA/RIA replacing premium offers
 - June 20, 2025: 4-tab retirement assessment form (기본정보, 재정상태, 생활환경, 투자성향)

@@ -236,18 +236,26 @@ const Home: React.FC = () => {
               <li><strong>검토 및 계산</strong> - 최종 확인 및 신고서 생성</li>
             </ol>
           </CardContent>
-          <CardFooter className="flex flex-col sm:flex-row gap-4">
+          <CardFooter className="flex flex-col gap-4">
+            <div className="flex flex-col sm:flex-row gap-4 w-full">
+              <Button 
+                className="flex-1 bg-primary hover:bg-primary-dark text-white font-bold"
+                onClick={() => user ? navigate('/personal-info') : navigate('/auth')}
+              >
+                {user ? '지금 시작하기' : '로그인하고 시작하기(Login to Start)'}
+              </Button>
+              <Button 
+                className="flex-1 bg-green-500 hover:bg-green-600 text-white"
+                onClick={() => navigate('/personal-info')}
+              >
+                세금시뮬레이터(Tax Simulator)
+              </Button>
+            </div>
             <Button 
-              className="w-full bg-primary hover:bg-primary-dark text-white font-bold"
-              onClick={() => user ? navigate('/personal-info') : navigate('/auth')}
+              className="w-full bg-blue-50 border-blue-200 text-blue-700 hover:bg-blue-100 hover:border-blue-300 font-semibold border"
+              onClick={() => navigate('/retirement-score')}
             >
-              {user ? '지금 시작하기' : '로그인하고 시작하기(Login to Start)'}
-            </Button>
-            <Button 
-              className="w-full bg-green-500 hover:bg-green-600 text-white"
-              onClick={() => navigate('/personal-info')}
-            >
-              세금시뮬레이터(Tax Simulator)
+              📈 은퇴 준비 상태도 같이 진단받아보시겠어요? (무료)
             </Button>
           </CardFooter>
         </Card>

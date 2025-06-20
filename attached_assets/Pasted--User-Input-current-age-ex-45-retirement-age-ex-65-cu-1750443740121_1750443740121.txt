@@ -1,0 +1,92 @@
+. 입력 정보 (User Input)
+입력값	설명
+현재 나이 (current_age)	ex) 45
+희망 은퇴 나이 (retirement_age)	ex) 65
+현재 총 저축액 (current_savings)	401k, IRA, 예금 등 합산
+현재 연 저축액 (annual_saving)	매년 추가 저축 예상 금액
+예상 연 투자수익률 (expected_return)	보수적으로 5~6% 가정
+은퇴 후 예상 생활비 (annual_retirement_expense)	현재 생활비 기준 × 80~90% 가정
+은퇴 후 수명(수명 가정, life_expectancy)	ex) 90세
+예상 Social Security 연금액 (annual_ss_income)	간략화 버전 (옵션)
+
+2. 기본 계산 (Step-by-Step)
+Step 1: 은퇴까지 남은 기간
+python
+Copy
+Edit
+years_to_retirement = retirement_age - current_age
+Step 2: 은퇴 후 필요한 자금 계산
+python
+Copy
+Edit
+years_in_retirement = life_expectancy - retirement_age
+total_needed_in_retirement = annual_retirement_expense * years_in_retirement
+(간단 버전은 물가상승률은 무시하고 일단 평탄한 생활비로 계산)
+
+Step 3: 은퇴 시점 예상 자산 추정
+(현재 저축액 + 매년 저축하는 금액을 투자수익률 반영해서 계산)
+
+python
+Copy
+Edit
+# 복리 계산 공식
+future_savings = current_savings * ((1 + expected_return) ** years_to_retirement)
+future_contributions = annual_saving * (((1 + expected_return) ** years_to_retirement - 1) / expected_return)
+total_savings_at_retirement = future_savings + future_contributions
+Step 4: Social Security 포함 시
+(선택적으로 추가 계산 가능)
+
+python
+Copy
+Edit
+total_ss_income = annual_ss_income * years_in_retirement
+(간단화 버전에서는 일단 은퇴 후 Social Security 수입은 제외해도 가능)
+
+Step 5: 준비율 계산
+python
+Copy
+Edit
+preparedness_ratio = total_savings_at_retirement / total_needed_in_retirement
+(예: 준비율이 0.7 = 은퇴 후 필요한 돈의 70% 준비)
+
+3. 점수 변환 (Preparedness Ratio ➔ Score)
+준비율	점수
+1.0 이상 (100% 이상 준비)	95점~100점
+0.8 ~ 0.99	85점~94점
+0.6 ~ 0.79	70점~84점
+0.4 ~ 0.59	50점~69점
+0.4 미만	0점~49점
+
+(약간 비율별로 점수 구간 조정 가능)
+
+예제 변환
+python
+Copy
+Edit
+if preparedness_ratio >= 1.0:
+    score = 100
+elif preparedness_ratio >= 0.8:
+    score = 90 + (preparedness_ratio - 0.8) * 50
+elif preparedness_ratio >= 0.6:
+    score = 70 + (preparedness_ratio - 0.6) * 100
+elif preparedness_ratio >= 0.4:
+    score = 50 + (preparedness_ratio - 0.4) * 100
+else:
+    score = preparedness_ratio * 125
+(→ 이런 식으로 계산하면 자연스럽게 0~100점 사이 점수 완성)
+
+🧩 최종 결과
+결과 페이지 예시:
+
+당신의 은퇴 준비 점수: 72점
+
+준비 상황: "양호하지만 추가 저축 필요"
+
+추천 플랜:
+
+연간 저축액 +$5,000 증가
+
+Roth IRA 추가 납입 제안
+
+은퇴 목표를 2년 늦추는 대안 제시
+

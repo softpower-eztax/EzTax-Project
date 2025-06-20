@@ -27,7 +27,25 @@ const retirementFormSchema = z.object({
   currentSavings: z.number().min(0),
   monthlyContribution: z.number().min(0),
   expectedAnnualReturn: z.number().min(0).max(20).default(7),
-  desiredRetirementIncome: z.number().min(0)
+  desiredRetirementIncome: z.number().min(0),
+  // Financial health factors
+  currentIncome: z.number().min(0),
+  emergencyFund: z.number().min(0),
+  totalDebt: z.number().min(0),
+  // Healthcare considerations
+  healthStatus: z.enum(['excellent', 'good', 'fair', 'poor']).default('good'),
+  hasHealthInsurance: z.boolean().default(true),
+  // Lifestyle factors
+  homeOwnership: z.enum(['own_outright', 'mortgage', 'rent']).default('mortgage'),
+  familyStatus: z.enum(['single', 'married', 'divorced', 'widowed']).default('single'),
+  dependentsCount: z.number().min(0).default(0),
+  // Risk tolerance
+  investmentExperience: z.enum(['beginner', 'intermediate', 'advanced']).default('intermediate'),
+  riskTolerance: z.enum(['conservative', 'moderate', 'aggressive']).default('moderate'),
+  // Social Security
+  expectedSocialSecurityBenefit: z.number().min(0).default(0),
+  // Inflation consideration
+  expectedInflationRate: z.number().min(0).max(10).default(3)
 });
 
 type RetirementFormData = z.infer<typeof retirementFormSchema>;

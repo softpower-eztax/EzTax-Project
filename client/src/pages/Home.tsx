@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { useLocation } from 'wouter';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { File, FileText, Clock, Shield } from 'lucide-react';
 import { useTaxContext } from '@/context/TaxContext';
 import { useAuth } from '@/hooks/use-auth';
@@ -116,14 +117,23 @@ const Home: React.FC = () => {
           <p className="text-xl text-gray-dark">
             EzTax로 간단하게 세금계산하시고 노후준비도 계획하세요.
           </p>
-          <Button 
-            size="lg" 
-            variant="secondary"
-            className="bg-green-500 hover:bg-green-600 text-white"
-            onClick={() => navigate('/personal-info')}
-          >
-            세금시뮬레이터(Tax Simulator)
-          </Button>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button 
+                  size="lg" 
+                  variant="secondary"
+                  className="bg-green-500 hover:bg-green-600 text-white"
+                  onClick={() => navigate('/personal-info')}
+                >
+                  세금시뮬레이터(Tax Simulator)
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>가입없이도 세금을 계산해볼수 있습니다</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         </div>
         {user ? (
           <Button 

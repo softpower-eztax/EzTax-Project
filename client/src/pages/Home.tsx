@@ -116,9 +116,14 @@ const Home: React.FC = () => {
           <p className="text-xl text-gray-dark">
             EzTax로 간단하게 세금계산하시고 노후준비도 계획하세요.
           </p>
-          <div className="bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold text-lg shadow-lg">
-            세금시뮬레이터
-          </div>
+          <Button 
+            size="lg" 
+            variant="secondary"
+            className="bg-green-500 hover:bg-green-600 text-white"
+            onClick={() => navigate('/personal-info')}
+          >
+            세금시뮬레이터(Tax Simulator)
+          </Button>
         </div>
         {user ? (
           <Button 

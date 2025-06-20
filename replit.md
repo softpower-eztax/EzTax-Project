@@ -105,6 +105,10 @@ Preferred communication style: Simple, everyday language.
 ## Changelog
 
 Recent Changes:
+- June 20, 2025: Dedicated company About page created with comprehensive EzTax overview and founder profile
+- June 20, 2025: Professional company presentation featuring mission, vision, core values, and CEO credentials
+- June 20, 2025: Enhanced navigation with homepage link to company information page
+- June 20, 2025: CEO profile streamlined with EzTax founding prominently featured in career history
 - June 20, 2025: Monte Carlo simulation implementation for retirement planning (10,000 scenarios, percentile analysis, success probability)
 - June 20, 2025: Advanced probabilistic modeling with market volatility consideration (15% standard deviation)
 - June 20, 2025: Enhanced retirement score visualization with color-coded percentile ranges and success metrics

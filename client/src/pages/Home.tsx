@@ -193,10 +193,10 @@ const Home: React.FC = () => {
           <Card>
             <CardHeader className="pb-2">
               <Clock className="h-10 w-10 text-primary mb-2" />
-              <CardTitle className="text-lg">저장 및 재개</CardTitle>
+              <CardTitle className="text-lg">최적의 은퇴전략 제안</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-gray-dark">자동 저장 기능으로 원하는 속도에 맞춰 작업할 수 있습니다.</p>
+              <p className="text-gray-dark">개인 맞춤형 은퇴 계획과 세금 최적화 전략을 제공합니다.</p>
             </CardContent>
           </Card>
           

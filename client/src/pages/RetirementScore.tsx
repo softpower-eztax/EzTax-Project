@@ -8,6 +8,9 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Progress } from "@/components/ui/progress";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useTaxContext } from "@/context/TaxContext";
 import { useLocation } from "wouter";
 import { useState } from "react";
@@ -83,70 +86,151 @@ export default function RetirementScore() {
       expectedRetirementAge: 65,
       currentSavings: 0,
       monthlyContribution: 0,
-      expectedAnnualReturn: 7,
-      desiredRetirementIncome: 60000
+      expectedAnnualReturn: 6,
+      desiredRetirementIncome: 60000,
+      // Financial health factors
+      currentIncome: taxData.income?.adjustedGrossIncome || 0,
+      emergencyFund: 0,
+      totalDebt: 0,
+      // Healthcare considerations
+      healthStatus: 'good',
+      hasHealthInsurance: true,
+      // Lifestyle factors
+      homeOwnership: 'mortgage',
+      familyStatus: taxData.personalInfo?.filingStatus?.includes('married') ? 'married' : 'single',
+      dependentsCount: taxData.personalInfo?.dependents?.length || 0,
+      // Risk tolerance
+      investmentExperience: 'intermediate',
+      riskTolerance: 'moderate',
+      // Social Security
+      expectedSocialSecurityBenefit: 0,
+      // Inflation consideration
+      expectedInflationRate: 3
     }
   });
 
   const calculateRetirementScore = (data: RetirementFormData): RetirementAnalysis => {
+    // Step 1: 은퇴까지 남은 기간
     const yearsToRetirement = data.expectedRetirementAge - data.currentAge;
-    const monthsToRetirement = yearsToRetirement * 12;
-    const monthlyReturn = data.expectedAnnualReturn / 100 / 12;
+    const lifeExpectancy = 90; // Default life expectancy
+    const yearsInRetirement = lifeExpectancy - data.expectedRetirementAge;
     
-    // Calculate future value of current savings
-    const futureValueCurrent = data.currentSavings * Math.pow(1 + data.expectedAnnualReturn / 100, yearsToRetirement);
+    // Step 2: 은퇴 후 필요한 자금 계산 (생활비의 80-90% 가정)
+    const annualRetirementExpense = data.desiredRetirementIncome * 0.85; // 85% of desired income
+    const totalNeededInRetirement = annualRetirementExpense * yearsInRetirement;
     
-    // Calculate future value of monthly contributions
-    const futureValueContributions = data.monthlyContribution * 
-      ((Math.pow(1 + monthlyReturn, monthsToRetirement) - 1) / monthlyReturn);
+    // Step 3: 은퇴 시점 예상 자산 추정
+    const expectedReturn = data.expectedAnnualReturn / 100;
+    const annualSaving = data.monthlyContribution * 12;
     
-    const totalProjected = futureValueCurrent + futureValueContributions;
+    // 복리 계산 공식
+    const futureSavings = data.currentSavings * Math.pow(1 + expectedReturn, yearsToRetirement);
+    const futureContributions = annualSaving > 0 ? 
+      annualSaving * ((Math.pow(1 + expectedReturn, yearsToRetirement) - 1) / expectedReturn) : 0;
+    const totalSavingsAtRetirement = futureSavings + futureContributions;
     
-    // Estimate needed retirement fund (25x annual income rule)
-    const neededForRetirement = data.desiredRetirementIncome * 25;
+    // Step 4: Social Security 포함
+    const totalSocialSecurityIncome = data.expectedSocialSecurityBenefit * yearsInRetirement;
+    const totalResourcesAtRetirement = totalSavingsAtRetirement + totalSocialSecurityIncome;
     
-    const additionalNeeded = Math.max(0, neededForRetirement - totalProjected);
-    const monthlyNeeded = additionalNeeded > 0 ? 
-      (additionalNeeded / ((Math.pow(1 + monthlyReturn, monthsToRetirement) - 1) / monthlyReturn)) : 0;
+    // Step 5: 준비율 계산
+    const preparednessRatio = totalResourcesAtRetirement / totalNeededInRetirement;
     
-    // Calculate score (0-100)
-    const readinessRatio = totalProjected / neededForRetirement;
-    let score = Math.min(100, readinessRatio * 100);
+    // Step 6: 점수 변환 (Preparedness Ratio ➔ Score)
+    let score = 0;
+    if (preparednessRatio >= 1.0) {
+      score = Math.min(100, 95 + (preparednessRatio - 1.0) * 5);
+    } else if (preparednessRatio >= 0.8) {
+      score = 85 + (preparednessRatio - 0.8) * 50;
+    } else if (preparednessRatio >= 0.6) {
+      score = 70 + (preparednessRatio - 0.6) * 75;
+    } else if (preparednessRatio >= 0.4) {
+      score = 50 + (preparednessRatio - 0.4) * 100;
+    } else {
+      score = preparednessRatio * 125;
+    }
     
-    // Adjust score based on factors
-    if (yearsToRetirement < 10) score *= 0.9; // Penalty for late start
-    if (data.monthlyContribution > data.desiredRetirementIncome * 0.15 / 12) score += 5; // Bonus for high savings rate
+    // Additional score adjustments based on comprehensive factors
+    let adjustmentFactor = 1.0;
     
-    score = Math.round(Math.max(0, Math.min(100, score)));
+    // Financial health adjustments
+    const emergencyFundMonths = data.emergencyFund / (data.currentIncome / 12);
+    if (emergencyFundMonths >= 6) adjustmentFactor += 0.05;
+    else if (emergencyFundMonths < 3) adjustmentFactor -= 0.1;
     
-    // Generate recommendations
+    const debtToIncomeRatio = data.totalDebt / data.currentIncome;
+    if (debtToIncomeRatio > 0.4) adjustmentFactor -= 0.15;
+    else if (debtToIncomeRatio < 0.1) adjustmentFactor += 0.05;
+    
+    // Health and insurance adjustments
+    if (!data.hasHealthInsurance) adjustmentFactor -= 0.2;
+    if (data.healthStatus === 'poor') adjustmentFactor -= 0.1;
+    else if (data.healthStatus === 'excellent') adjustmentFactor += 0.05;
+    
+    // Risk tolerance and experience adjustments
+    if (data.investmentExperience === 'beginner' && data.riskTolerance === 'aggressive') {
+      adjustmentFactor -= 0.1; // Mismatch penalty
+    }
+    if (data.investmentExperience === 'advanced' && data.riskTolerance === 'conservative') {
+      adjustmentFactor -= 0.05; // Conservative but experienced
+    }
+    
+    // Apply adjustments
+    score = Math.round(Math.max(0, Math.min(100, score * adjustmentFactor)));
+    
+    const additionalNeeded = Math.max(0, totalNeededInRetirement - totalResourcesAtRetirement);
+    const monthlyNeeded = additionalNeeded > 0 && yearsToRetirement > 0 ? 
+      (additionalNeeded / ((Math.pow(1 + expectedReturn, yearsToRetirement) - 1) / expectedReturn)) / 12 : 0;
+    
+    // Generate comprehensive recommendations
     const recommendations = [];
     const strengths = [];
     const concerns = [];
     
-    if (score >= 80) {
+    // Score-based feedback
+    if (score >= 85) {
       strengths.push("훌륭한 은퇴 준비 상태입니다!");
       recommendations.push("현재 전략을 유지하면서 세금 효율적인 계좌 활용을 극대화하세요");
-    } else if (score >= 60) {
-      strengths.push("양호한 은퇴 준비 기반이 있습니다");
-      recommendations.push("월 저축액을 증가시키거나 더 적극적인 투자 전략을 고려하세요");
-    } else {
+    } else if (score >= 70) {
+      strengths.push("양호하지만 추가 저축 필요");
+      if (additionalNeeded > 0) {
+        recommendations.push(`연간 저축액 $${Math.round(monthlyNeeded * 12).toLocaleString()} 증가 필요`);
+      }
+    } else if (score >= 50) {
       concerns.push("은퇴 준비가 부족한 상태입니다");
-      recommendations.push("즉시 저축을 시작하고 Catch-up Contribution을 활용하세요");
+      recommendations.push("Roth IRA 추가 납입 제안");
+      if (yearsToRetirement > 5) {
+        recommendations.push("은퇴 목표를 2-3년 늦추는 대안 제시");
+      }
+    } else {
+      concerns.push("즉시 적극적인 은퇴 준비가 필요합니다");
+      recommendations.push("전문가 상담을 통한 종합적인 계획 수립");
     }
     
+    // Specific factor-based recommendations
     if (data.currentAge >= 50) {
       recommendations.push("50세 이상 추가 기여금(Catch-up Contribution) 활용 가능");
     }
     
-    if (additionalNeeded > 0) {
-      recommendations.push("Roth IRA 추가 납입으로 세후 소득 증대");
-      recommendations.push("HSA를 은퇴 저축 계좌로 활용");
+    if (emergencyFundMonths < 6) {
+      recommendations.push("비상 자금을 6개월 생활비로 우선 확보");
+    }
+    
+    if (debtToIncomeRatio > 0.3) {
+      recommendations.push("고금리 부채 상환을 우선 진행");
+    }
+    
+    if (!data.hasHealthInsurance) {
+      concerns.push("건강보험 가입이 시급합니다");
+    }
+    
+    if (data.homeOwnership === 'rent') {
+      recommendations.push("주택 구매를 통한 자산 형성 고려");
     }
     
     return {
       score,
-      projectedSavings: totalProjected,
+      projectedSavings: totalSavingsAtRetirement,
       additionalNeeded,
       monthlyNeeded,
       recommendations,
@@ -224,127 +308,400 @@ Generated by EzTax - ${new Date().toLocaleDateString()}
           </CardHeader>
           <CardContent>
             <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <FormField
-                    control={form.control}
-                    name="currentAge"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>현재 나이</FormLabel>
-                        <FormControl>
-                          <Input
-                            type="number"
-                            placeholder="30"
-                            {...field}
-                            onChange={(e) => field.onChange(Number(e.target.value))}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                <Tabs defaultValue="basic" className="w-full">
+                  <TabsList className="grid w-full grid-cols-4">
+                    <TabsTrigger value="basic">기본 정보</TabsTrigger>
+                    <TabsTrigger value="financial">재정 상태</TabsTrigger>
+                    <TabsTrigger value="lifestyle">생활 환경</TabsTrigger>
+                    <TabsTrigger value="investment">투자 성향</TabsTrigger>
+                  </TabsList>
 
-                  <FormField
-                    control={form.control}
-                    name="expectedRetirementAge"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>예상 은퇴 나이</FormLabel>
-                        <FormControl>
-                          <Input
-                            type="number"
-                            placeholder="65"
-                            {...field}
-                            onChange={(e) => field.onChange(Number(e.target.value))}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                  <TabsContent value="basic" className="space-y-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <FormField
+                        control={form.control}
+                        name="currentAge"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>현재 나이</FormLabel>
+                            <FormControl>
+                              <Input
+                                type="number"
+                                placeholder="45"
+                                {...field}
+                                onChange={(e) => field.onChange(Number(e.target.value))}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
 
-                  <FormField
-                    control={form.control}
-                    name="currentSavings"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>현재 은퇴 저축액 ($)</FormLabel>
-                        <FormControl>
-                          <Input
-                            type="number"
-                            placeholder="50000"
-                            {...field}
-                            onChange={(e) => field.onChange(Number(e.target.value))}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                      <FormField
+                        control={form.control}
+                        name="expectedRetirementAge"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>희망 은퇴 나이</FormLabel>
+                            <FormControl>
+                              <Input
+                                type="number"
+                                placeholder="65"
+                                {...field}
+                                onChange={(e) => field.onChange(Number(e.target.value))}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
 
-                  <FormField
-                    control={form.control}
-                    name="monthlyContribution"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>월 저축액 ($)</FormLabel>
-                        <FormControl>
-                          <Input
-                            type="number"
-                            placeholder="500"
-                            {...field}
-                            onChange={(e) => field.onChange(Number(e.target.value))}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                      <FormField
+                        control={form.control}
+                        name="currentSavings"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>현재 총 저축액 ($)</FormLabel>
+                            <FormControl>
+                              <Input
+                                type="number"
+                                placeholder="401k, IRA, 예금 등 합산"
+                                {...field}
+                                onChange={(e) => field.onChange(Number(e.target.value))}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
 
-                  <FormField
-                    control={form.control}
-                    name="desiredRetirementIncome"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>희망 연 은퇴 소득 ($)</FormLabel>
-                        <FormControl>
-                          <Input
-                            type="number"
-                            placeholder="60000"
-                            {...field}
-                            onChange={(e) => field.onChange(Number(e.target.value))}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                      <FormField
+                        control={form.control}
+                        name="monthlyContribution"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>월 저축액 ($)</FormLabel>
+                            <FormControl>
+                              <Input
+                                type="number"
+                                placeholder="매월 추가 저축 금액"
+                                {...field}
+                                onChange={(e) => field.onChange(Number(e.target.value))}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
 
-                  <FormField
-                    control={form.control}
-                    name="expectedAnnualReturn"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>예상 연 수익률 (%)</FormLabel>
-                        <FormControl>
-                          <Input
-                            type="number"
-                            placeholder="7"
-                            step="0.1"
-                            {...field}
-                            onChange={(e) => field.onChange(Number(e.target.value))}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
+                      <FormField
+                        control={form.control}
+                        name="desiredRetirementIncome"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>은퇴 후 예상 생활비 ($)</FormLabel>
+                            <FormControl>
+                              <Input
+                                type="number"
+                                placeholder="연간 필요 생활비"
+                                {...field}
+                                onChange={(e) => field.onChange(Number(e.target.value))}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={form.control}
+                        name="expectedAnnualReturn"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>예상 연 투자수익률 (%)</FormLabel>
+                            <FormControl>
+                              <Input
+                                type="number"
+                                placeholder="5-6% 보수적 가정"
+                                step="0.1"
+                                {...field}
+                                onChange={(e) => field.onChange(Number(e.target.value))}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                  </TabsContent>
+
+                  <TabsContent value="financial" className="space-y-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <FormField
+                        control={form.control}
+                        name="currentIncome"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>현재 연소득 ($)</FormLabel>
+                            <FormControl>
+                              <Input
+                                type="number"
+                                placeholder="세후 소득"
+                                {...field}
+                                onChange={(e) => field.onChange(Number(e.target.value))}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={form.control}
+                        name="emergencyFund"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>비상 자금 ($)</FormLabel>
+                            <FormControl>
+                              <Input
+                                type="number"
+                                placeholder="6개월 생활비 권장"
+                                {...field}
+                                onChange={(e) => field.onChange(Number(e.target.value))}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={form.control}
+                        name="totalDebt"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>총 부채 ($)</FormLabel>
+                            <FormControl>
+                              <Input
+                                type="number"
+                                placeholder="모기지 제외 부채"
+                                {...field}
+                                onChange={(e) => field.onChange(Number(e.target.value))}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={form.control}
+                        name="expectedSocialSecurityBenefit"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>예상 Social Security 연금 ($)</FormLabel>
+                            <FormControl>
+                              <Input
+                                type="number"
+                                placeholder="연간 예상 수령액"
+                                {...field}
+                                onChange={(e) => field.onChange(Number(e.target.value))}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                  </TabsContent>
+
+                  <TabsContent value="lifestyle" className="space-y-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <FormField
+                        control={form.control}
+                        name="healthStatus"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>건강 상태</FormLabel>
+                            <Select onValueChange={field.onChange} defaultValue={field.value}>
+                              <FormControl>
+                                <SelectTrigger>
+                                  <SelectValue placeholder="건강 상태 선택" />
+                                </SelectTrigger>
+                              </FormControl>
+                              <SelectContent>
+                                <SelectItem value="excellent">매우 좋음</SelectItem>
+                                <SelectItem value="good">좋음</SelectItem>
+                                <SelectItem value="fair">보통</SelectItem>
+                                <SelectItem value="poor">나쁨</SelectItem>
+                              </SelectContent>
+                            </Select>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={form.control}
+                        name="hasHealthInsurance"
+                        render={({ field }) => (
+                          <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                            <FormControl>
+                              <Checkbox
+                                checked={field.value}
+                                onCheckedChange={field.onChange}
+                              />
+                            </FormControl>
+                            <div className="space-y-1 leading-none">
+                              <FormLabel>건강보험 가입</FormLabel>
+                            </div>
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={form.control}
+                        name="homeOwnership"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>주거 상태</FormLabel>
+                            <Select onValueChange={field.onChange} defaultValue={field.value}>
+                              <FormControl>
+                                <SelectTrigger>
+                                  <SelectValue placeholder="주거 상태 선택" />
+                                </SelectTrigger>
+                              </FormControl>
+                              <SelectContent>
+                                <SelectItem value="own_outright">자가 (완전 소유)</SelectItem>
+                                <SelectItem value="mortgage">자가 (모기지)</SelectItem>
+                                <SelectItem value="rent">임대</SelectItem>
+                              </SelectContent>
+                            </Select>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={form.control}
+                        name="familyStatus"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>가족 상태</FormLabel>
+                            <Select onValueChange={field.onChange} defaultValue={field.value}>
+                              <FormControl>
+                                <SelectTrigger>
+                                  <SelectValue placeholder="가족 상태 선택" />
+                                </SelectTrigger>
+                              </FormControl>
+                              <SelectContent>
+                                <SelectItem value="single">미혼</SelectItem>
+                                <SelectItem value="married">기혼</SelectItem>
+                                <SelectItem value="divorced">이혼</SelectItem>
+                                <SelectItem value="widowed">사별</SelectItem>
+                              </SelectContent>
+                            </Select>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={form.control}
+                        name="dependentsCount"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>부양가족 수</FormLabel>
+                            <FormControl>
+                              <Input
+                                type="number"
+                                placeholder="0"
+                                {...field}
+                                onChange={(e) => field.onChange(Number(e.target.value))}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                  </TabsContent>
+
+                  <TabsContent value="investment" className="space-y-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <FormField
+                        control={form.control}
+                        name="investmentExperience"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>투자 경험</FormLabel>
+                            <Select onValueChange={field.onChange} defaultValue={field.value}>
+                              <FormControl>
+                                <SelectTrigger>
+                                  <SelectValue placeholder="투자 경험 선택" />
+                                </SelectTrigger>
+                              </FormControl>
+                              <SelectContent>
+                                <SelectItem value="beginner">초급 (1-2년)</SelectItem>
+                                <SelectItem value="intermediate">중급 (3-7년)</SelectItem>
+                                <SelectItem value="advanced">고급 (8년 이상)</SelectItem>
+                              </SelectContent>
+                            </Select>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={form.control}
+                        name="riskTolerance"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>위험 성향</FormLabel>
+                            <Select onValueChange={field.onChange} defaultValue={field.value}>
+                              <FormControl>
+                                <SelectTrigger>
+                                  <SelectValue placeholder="위험 성향 선택" />
+                                </SelectTrigger>
+                              </FormControl>
+                              <SelectContent>
+                                <SelectItem value="conservative">보수적 (안정성 중시)</SelectItem>
+                                <SelectItem value="moderate">균형형 (중간 위험)</SelectItem>
+                                <SelectItem value="aggressive">공격적 (고수익 추구)</SelectItem>
+                              </SelectContent>
+                            </Select>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={form.control}
+                        name="expectedInflationRate"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>예상 물가상승률 (%)</FormLabel>
+                            <FormControl>
+                              <Input
+                                type="number"
+                                placeholder="3"
+                                step="0.1"
+                                {...field}
+                                onChange={(e) => field.onChange(Number(e.target.value))}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                  </TabsContent>
+                </Tabs>
 
                 <Button type="submit" className="w-full bg-primary hover:bg-primary-dark">
                   <TargetIcon className="h-4 w-4 mr-2" />
-                  은퇴 점수 계산하기
+                  종합 은퇴 점수 계산하기
                 </Button>
               </form>
             </Form>
@@ -366,7 +723,7 @@ Generated by EzTax - ${new Date().toLocaleDateString()}
           </Card>
 
           {/* Analysis Results */}
-          <div className="grid md:grid-cols-2 gap-6">
+          <div className="grid md:grid-cols-3 gap-6">
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
@@ -396,6 +753,85 @@ Generated by EzTax - ${new Date().toLocaleDateString()}
                 <p className="text-gray-600">
                   월 ${analysis.monthlyNeeded.toLocaleString()} 추가 저축 필요
                 </p>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <PiggyBankIcon className="h-5 w-5" />
+                  준비율
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-3xl font-bold text-blue-600 mb-2">
+                  {((analysis.projectedSavings / (form.getValues('desiredRetirementIncome') * 0.85 * 25)) * 100).toFixed(1)}%
+                </div>
+                <p className="text-gray-600">은퇴 후 필요 자금 대비 준비율</p>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Detailed Analysis */}
+          <div className="grid md:grid-cols-2 gap-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>재정 건강도 분석</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <div className="flex justify-between">
+                  <span>비상 자금:</span>
+                  <Badge variant={form.getValues('emergencyFund') >= (form.getValues('currentIncome') / 2) ? 'default' : 'destructive'}>
+                    {(form.getValues('emergencyFund') / (form.getValues('currentIncome') / 12)).toFixed(1)}개월분
+                  </Badge>
+                </div>
+                <div className="flex justify-between">
+                  <span>부채 비율:</span>
+                  <Badge variant={(form.getValues('totalDebt') / form.getValues('currentIncome')) < 0.3 ? 'default' : 'destructive'}>
+                    {((form.getValues('totalDebt') / form.getValues('currentIncome')) * 100).toFixed(1)}%
+                  </Badge>
+                </div>
+                <div className="flex justify-between">
+                  <span>저축률:</span>
+                  <Badge variant={(form.getValues('monthlyContribution') * 12 / form.getValues('currentIncome')) >= 0.15 ? 'default' : 'secondary'}>
+                    {((form.getValues('monthlyContribution') * 12 / form.getValues('currentIncome')) * 100).toFixed(1)}%
+                  </Badge>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>라이프스타일 요인</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <div className="flex justify-between">
+                  <span>건강 상태:</span>
+                  <Badge variant={form.getValues('healthStatus') === 'excellent' || form.getValues('healthStatus') === 'good' ? 'default' : 'secondary'}>
+                    {form.getValues('healthStatus') === 'excellent' ? '매우 좋음' : 
+                     form.getValues('healthStatus') === 'good' ? '좋음' :
+                     form.getValues('healthStatus') === 'fair' ? '보통' : '나쁨'}
+                  </Badge>
+                </div>
+                <div className="flex justify-between">
+                  <span>건강보험:</span>
+                  <Badge variant={form.getValues('hasHealthInsurance') ? 'default' : 'destructive'}>
+                    {form.getValues('hasHealthInsurance') ? '가입' : '미가입'}
+                  </Badge>
+                </div>
+                <div className="flex justify-between">
+                  <span>주거 상태:</span>
+                  <Badge variant="secondary">
+                    {form.getValues('homeOwnership') === 'own_outright' ? '자가(완전소유)' :
+                     form.getValues('homeOwnership') === 'mortgage' ? '자가(모기지)' : '임대'}
+                  </Badge>
+                </div>
+                <div className="flex justify-between">
+                  <span>부양가족:</span>
+                  <Badge variant="secondary">
+                    {form.getValues('dependentsCount')}명
+                  </Badge>
+                </div>
               </CardContent>
             </Card>
           </div>

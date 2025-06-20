@@ -104,5 +104,9 @@ Preferred communication style: Simple, everyday language.
 
 ## Changelog
 
-Changelog:
-- June 19, 2025. Initial setup
+Recent Changes:
+- June 20, 2025: Comprehensive retirement score calculation system integrated
+- June 20, 2025: Homepage messaging hierarchy optimized for better user flow
+- June 20, 2025: Brand positioning updated to "세상쉬운 세금계산 세상귀한 노후준비"
+- June 20, 2025: Retirement planning naturally integrated into tax workflow
+- June 19, 2025: Initial setup

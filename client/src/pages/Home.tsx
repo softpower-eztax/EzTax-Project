@@ -109,7 +109,7 @@ const Home: React.FC = () => {
           세상쉬운 세금 계산
         </h1>
         <p className="text-xl text-gray-dark max-w-3xl mx-auto mb-4">
-          EzTax로 간단한 과정을 통해 자신감 있게 세금 보고를 완료하세요.
+          EzTax로 간단하게 세금계산하시고 노후준비도 계획하세요.
         </p>
         <p className="text-lg font-medium text-primary-dark max-w-4xl mx-auto mb-8 bg-primary/5 p-4 rounded-lg border border-primary/20">
           EzTax는 단순히 올해 세금을 정리하는 것에 그치지 않고,<br />

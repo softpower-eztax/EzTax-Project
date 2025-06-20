@@ -251,7 +251,8 @@ const Home: React.FC = () => {
               {user ? '지금 시작하기' : '로그인하고 시작하기(Login to Start)'}
             </Button>
             <Button 
-              className="w-full bg-green-500 hover:bg-green-600 text-white"
+              size="lg"
+              className="w-full bg-green-500 hover:bg-green-600 text-white font-bold text-lg py-4"
               onClick={() => navigate('/personal-info')}
             >
               세금시뮬레이터(Tax Simulator)

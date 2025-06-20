@@ -62,6 +62,16 @@ interface RetirementAnalysis {
   recommendations: string[];
   strengths: string[];
   concerns: string[];
+  // Monte Carlo simulation results
+  monteCarloResults?: {
+    percentile5: number;    // 5% worst case
+    percentile25: number;   // 25% below average
+    percentile50: number;   // 50% median
+    percentile75: number;   // 75% above average
+    percentile95: number;   // 95% best case
+    successProbability: number; // Probability of meeting retirement goal
+    scenarios: number[];    // All simulation results
+  };
 }
 
 export default function RetirementScore() {
@@ -77,6 +87,58 @@ export default function RetirementScore() {
       return today.getFullYear() - birthDate.getFullYear();
     }
     return 30; // Default
+  };
+
+  // Monte Carlo simulation for retirement planning
+  const runMonteCarloSimulation = (
+    currentSavings: number,
+    monthlyContribution: number,
+    yearsToRetirement: number,
+    expectedReturn: number,
+    volatility: number = 0.15, // 15% standard deviation
+    simulations: number = 10000
+  ) => {
+    const scenarios: number[] = [];
+    
+    for (let i = 0; i < simulations; i++) {
+      let savings = currentSavings;
+      
+      for (let year = 0; year < yearsToRetirement; year++) {
+        // Generate random return using normal distribution approximation
+        const u1 = Math.random();
+        const u2 = Math.random();
+        const z0 = Math.sqrt(-2 * Math.log(u1)) * Math.cos(2 * Math.PI * u2);
+        const annualReturn = expectedReturn + (volatility * z0);
+        
+        // Add monthly contributions throughout the year
+        savings += monthlyContribution * 12;
+        
+        // Apply annual return (can be negative in bad years)
+        savings *= (1 + annualReturn);
+        
+        // Ensure savings don't go negative
+        savings = Math.max(0, savings);
+      }
+      
+      scenarios.push(savings);
+    }
+    
+    // Sort scenarios to calculate percentiles
+    scenarios.sort((a, b) => a - b);
+    
+    const getPercentile = (percentile: number) => {
+      const index = Math.floor((percentile / 100) * scenarios.length);
+      return scenarios[Math.min(index, scenarios.length - 1)];
+    };
+    
+    return {
+      percentile5: getPercentile(5),
+      percentile25: getPercentile(25),
+      percentile50: getPercentile(50),
+      percentile75: getPercentile(75),
+      percentile95: getPercentile(95),
+      scenarios
+    };
   };
 
   const form = useForm<RetirementFormData>({
@@ -119,15 +181,25 @@ export default function RetirementScore() {
     const annualRetirementExpense = data.desiredRetirementIncome * 0.85; // 85% of desired income
     const totalNeededInRetirement = annualRetirementExpense * yearsInRetirement;
     
-    // Step 3: 은퇴 시점 예상 자산 추정
+    // Step 3: Monte Carlo 시뮬레이션으로 은퇴 시점 예상 자산 추정
     const expectedReturn = data.expectedAnnualReturn / 100;
     const annualSaving = data.monthlyContribution * 12;
     
-    // 복리 계산 공식
-    const futureSavings = data.currentSavings * Math.pow(1 + expectedReturn, yearsToRetirement);
-    const futureContributions = annualSaving > 0 ? 
-      annualSaving * ((Math.pow(1 + expectedReturn, yearsToRetirement) - 1) / expectedReturn) : 0;
-    const totalSavingsAtRetirement = futureSavings + futureContributions;
+    // 몬테카를로 시뮬레이션 실행
+    const monteCarloResults = runMonteCarloSimulation(
+      data.currentSavings,
+      data.monthlyContribution,
+      yearsToRetirement,
+      expectedReturn
+    );
+    
+    // 목표 은퇴 자금 대비 성공 확률 계산 (4% 출금 규칙 기준)
+    const targetRetirementFund = data.desiredRetirementIncome * 25;
+    const successfulScenarios = monteCarloResults.scenarios.filter(s => s >= targetRetirementFund);
+    const successProbability = (successfulScenarios.length / monteCarloResults.scenarios.length) * 100;
+    
+    // 중위값(50%ile)을 기본 예상값으로 사용
+    const totalSavingsAtRetirement = monteCarloResults.percentile50;
     
     // Step 4: Social Security 포함
     const totalSocialSecurityIncome = data.expectedSocialSecurityBenefit * yearsInRetirement;
@@ -235,7 +307,11 @@ export default function RetirementScore() {
       monthlyNeeded,
       recommendations,
       strengths,
-      concerns
+      concerns,
+      monteCarloResults: {
+        ...monteCarloResults,
+        successProbability
+      }
     };
   };
 
@@ -248,12 +324,21 @@ export default function RetirementScore() {
     if (!analysis) return;
     
     const reportContent = `
-은퇴 준비 점수 리포트
-=====================
+은퇴 준비 점수 리포트 (몬테카를로 시뮬레이션 포함)
+=====================================================
 
 📊 현재 점수: ${analysis.score}점
 
-💰 예상 은퇴 자금: $${analysis.projectedSavings.toLocaleString()}
+🎯 몬테카를로 시뮬레이션 결과 (10,000가지 시나리오 분석):
+• 최악의 경우 (5%): $${analysis.monteCarloResults?.percentile5.toLocaleString() || 'N/A'}
+• 하위 25%: $${analysis.monteCarloResults?.percentile25.toLocaleString() || 'N/A'}
+• 중위값 (50%): $${analysis.monteCarloResults?.percentile50.toLocaleString() || 'N/A'}
+• 상위 25%: $${analysis.monteCarloResults?.percentile75.toLocaleString() || 'N/A'}
+• 최고의 경우 (95%): $${analysis.monteCarloResults?.percentile95.toLocaleString() || 'N/A'}
+
+🎲 은퇴 목표 달성 확률: ${analysis.monteCarloResults?.successProbability.toFixed(1) || 'N/A'}%
+
+💰 예상 은퇴 자금 (중위값): $${analysis.projectedSavings.toLocaleString()}
 💸 추가 필요 금액: $${analysis.additionalNeeded.toLocaleString()}
 📅 월 추가 저축액: $${analysis.monthlyNeeded.toLocaleString()}
 
@@ -265,6 +350,11 @@ ${analysis.concerns.map(c => `• ${c}`).join('\n')}
 
 💡 추천 전략:
 ${analysis.recommendations.map(r => `• ${r}`).join('\n')}
+
+📈 시뮬레이션 해석:
+• 시장 변동성을 고려한 확률적 분석 결과입니다
+• 중위값은 50% 확률로 달성 가능한 현실적 목표입니다
+• 최악의 경우도 대비하여 위험 관리 전략을 수립하세요
 
 Generated by EzTax - ${new Date().toLocaleDateString()}
     `;
@@ -717,20 +807,88 @@ Generated by EzTax - ${new Date().toLocaleDateString()}
             </CardHeader>
           </Card>
 
+          {/* Monte Carlo Simulation Results */}
+          {analysis.monteCarloResults && (
+            <Card className="border-purple-200 bg-gradient-to-r from-purple-50 to-indigo-50">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-purple-700">
+                  📊 몬테카를로 시뮬레이션 결과
+                </CardTitle>
+                <CardDescription className="text-purple-600">
+                  10,000가지 시나리오를 분석한 확률적 예측
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <div className="grid grid-cols-2 md:grid-cols-5 gap-4 text-center">
+                    <div className="bg-red-50 p-3 rounded-lg border border-red-200">
+                      <div className="text-xs text-red-600 font-medium">최악 5%</div>
+                      <div className="text-lg font-bold text-red-700">
+                        ${analysis.monteCarloResults.percentile5.toLocaleString()}
+                      </div>
+                    </div>
+                    <div className="bg-orange-50 p-3 rounded-lg border border-orange-200">
+                      <div className="text-xs text-orange-600 font-medium">하위 25%</div>
+                      <div className="text-lg font-bold text-orange-700">
+                        ${analysis.monteCarloResults.percentile25.toLocaleString()}
+                      </div>
+                    </div>
+                    <div className="bg-blue-50 p-3 rounded-lg border border-blue-200">
+                      <div className="text-xs text-blue-600 font-medium">중위값 50%</div>
+                      <div className="text-lg font-bold text-blue-700">
+                        ${analysis.monteCarloResults.percentile50.toLocaleString()}
+                      </div>
+                    </div>
+                    <div className="bg-green-50 p-3 rounded-lg border border-green-200">
+                      <div className="text-xs text-green-600 font-medium">상위 25%</div>
+                      <div className="text-lg font-bold text-green-700">
+                        ${analysis.monteCarloResults.percentile75.toLocaleString()}
+                      </div>
+                    </div>
+                    <div className="bg-emerald-50 p-3 rounded-lg border border-emerald-200">
+                      <div className="text-xs text-emerald-600 font-medium">최고 5%</div>
+                      <div className="text-lg font-bold text-emerald-700">
+                        ${analysis.monteCarloResults.percentile95.toLocaleString()}
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="bg-white/80 p-4 rounded-lg">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="font-medium">은퇴 목표 달성 확률</span>
+                      <span className="text-2xl font-bold text-primary">
+                        {analysis.monteCarloResults.successProbability.toFixed(1)}%
+                      </span>
+                    </div>
+                    <Progress value={analysis.monteCarloResults.successProbability} className="h-2" />
+                    <p className="text-sm text-gray-600 mt-2">
+                      {analysis.monteCarloResults.successProbability >= 80 ? 
+                        "매우 높은 성공 확률" : 
+                        analysis.monteCarloResults.successProbability >= 60 ?
+                        "적정 수준의 성공 확률" :
+                        "성공 확률 개선 필요"
+                      }
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
           {/* Analysis Results */}
           <div className="grid md:grid-cols-3 gap-6">
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <TrendingUpIcon className="h-5 w-5" />
-                  예상 은퇴 자금
+                  예상 은퇴 자금 (중위값)
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="text-3xl font-bold text-green-600 mb-2">
                   ${analysis.projectedSavings.toLocaleString()}
                 </div>
-                <p className="text-gray-600">현재 계획대로 진행시 예상 금액</p>
+                <p className="text-gray-600">50% 확률로 달성 가능한 금액</p>
               </CardContent>
             </Card>
 

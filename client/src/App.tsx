@@ -19,6 +19,7 @@ import Review from "@/pages/Review";
 import TaxSavingAdvice from "@/pages/TaxSavingAdvice";
 import RetirementScore from "@/pages/RetirementScore";
 import PricingPage from "@/pages/PricingPage";
+import About from "@/pages/About";
 import NotFound from "@/pages/not-found";
 import AuthPage from "@/pages/auth-page";
 import DataTester from "@/pages/DataTester";
@@ -34,6 +35,7 @@ function Router() {
   return (
     <Switch>
       <Route path="/" component={Home} />
+      <Route path="/about" component={About} />
       <Route path="/auth" component={AuthPage} />
       <ProtectedRoute path="/personal-info" component={PersonalInfo} />
       <ProtectedRoute path="/income" component={IncomePage} />

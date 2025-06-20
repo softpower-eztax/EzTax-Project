@@ -147,30 +147,41 @@ const Home: React.FC = () => {
             2025년 세금 보고 시작하기
           </Button>
         ) : (
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button 
-              size="lg" 
-              className="bg-blue-50 border-blue-200 text-blue-700 hover:bg-blue-100 hover:border-blue-300 font-semibold border"
-              onClick={() => navigate('/auth')}
-            >
-              로그인하고 시작하기(Login and Start)
-            </Button>
-            <Button 
-              size="lg" 
-              variant="outline"
-              className="border-primary text-primary hover:bg-primary/10"
-              onClick={() => navigate('/auth')}
-            >
-              계정 만들기(Create Account)
-            </Button>
-            <Button 
-              size="lg" 
-              className="bg-primary hover:bg-primary-dark text-white font-semibold"
-              onClick={() => navigate('/retirement-score')}
-            >
-              은퇴준비상태진단
-            </Button>
-          </div>
+          <>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Button 
+                size="lg" 
+                className="bg-blue-50 border-blue-200 text-blue-700 hover:bg-blue-100 hover:border-blue-300 font-semibold border"
+                onClick={() => navigate('/auth')}
+              >
+                로그인하고 시작하기(Login and Start)
+              </Button>
+              <Button 
+                size="lg" 
+                variant="outline"
+                className="border-primary text-primary hover:bg-primary/10"
+                onClick={() => navigate('/auth')}
+              >
+                계정 만들기(Create Account)
+              </Button>
+              <Button 
+                size="lg" 
+                className="bg-primary hover:bg-primary-dark text-white font-semibold"
+                onClick={() => navigate('/retirement-score')}
+              >
+                은퇴준비상태진단
+              </Button>
+            </div>
+            <div className="text-center mt-6">
+              <Button 
+                variant="ghost" 
+                className="text-gray-600 hover:text-primary underline"
+                onClick={() => navigate('/about')}
+              >
+                EzTax와 지대현 CEO에 대해 더 알아보기 →
+              </Button>
+            </div>
+          </>
         )}
       </section>
 

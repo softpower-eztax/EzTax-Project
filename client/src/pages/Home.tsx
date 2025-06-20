@@ -150,14 +150,6 @@ const Home: React.FC = () => {
             >
               계정 만들기(Create Account)
             </Button>
-            <Button 
-              size="lg" 
-              variant="secondary"
-              className="bg-green-500 hover:bg-green-600 text-white"
-              onClick={() => navigate('/personal-info')}
-            >
-              세금시뮬레이터(Tax Simulator)
-            </Button>
           </div>
         )}
       </section>

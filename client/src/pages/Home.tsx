@@ -137,7 +137,7 @@ const Home: React.FC = () => {
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button 
               size="lg" 
-              className="bg-primary hover:bg-primary-dark text-white font-bold"
+              className="bg-blue-50 border-blue-200 text-blue-700 hover:bg-blue-100 hover:border-blue-300 font-semibold border"
               onClick={() => navigate('/auth')}
             >
               로그인하고 시작하기(Login and Start)

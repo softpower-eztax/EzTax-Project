@@ -165,7 +165,7 @@ const Home: React.FC = () => {
             </Button>
             <Button 
               size="lg" 
-              className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-semibold"
+              className="bg-primary hover:bg-primary-dark text-white font-semibold"
               onClick={() => navigate('/retirement-score')}
             >
               은퇴준비상태진단

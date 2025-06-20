@@ -31,7 +31,7 @@ const Footer: React.FC = () => {
             <div>
               <h4 className="font-heading font-semibold mb-4">회사 소개</h4>
               <ul className="space-y-2 text-sm text-gray-light">
-                <li><Link href="#"><div className="hover:text-white cursor-pointer">회사 소개</div></Link></li>
+                <li><Link href="/about"><div className="hover:text-white cursor-pointer">회사 소개</div></Link></li>
                 <li><Link href="#"><div className="hover:text-white cursor-pointer">채용 정보</div></Link></li>
                 <li><Link href="#"><div className="hover:text-white cursor-pointer">보도 자료</div></Link></li>
                 <li><Link href="#"><div className="hover:text-white cursor-pointer">문의하기</div></Link></li>

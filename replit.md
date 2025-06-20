@@ -105,6 +105,11 @@ Preferred communication style: Simple, everyday language.
 ## Changelog
 
 Recent Changes:
+- June 20, 2025: Advanced retirement score calculation with comprehensive factors (preparedness ratio, financial health, lifestyle)
+- June 20, 2025: Professional expert introduction for 지대현 EA/RIA replacing premium offers
+- June 20, 2025: 4-tab retirement assessment form (기본정보, 재정상태, 생활환경, 투자성향)
+- June 20, 2025: Enhanced homepage with "Less Tax, More Wealth" English tagline
+- June 20, 2025: Feature repositioning from "저장 및 재개" to "최적의 은퇴전략 제안"
 - June 20, 2025: Comprehensive retirement score calculation system integrated
 - June 20, 2025: Homepage messaging hierarchy optimized for better user flow
 - June 20, 2025: Brand positioning updated to "세상쉬운 세금계산 세상귀한 노후준비"

@@ -118,7 +118,7 @@ const Home: React.FC = () => {
         </p>
         <div className="flex flex-col md:flex-row items-center justify-center gap-6 mb-8">
           <p className="text-xl text-gray-dark">
-            EzTax로 간단하게 세금계산하시고 노후준비도 계획하세요.
+            세금시뮬레이터로 간단하게 계산하시고 노후준비도 진단하세요.
           </p>
           <TooltipProvider>
             <Tooltip>

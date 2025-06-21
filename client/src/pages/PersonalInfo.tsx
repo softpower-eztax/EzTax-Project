@@ -529,6 +529,7 @@ const PersonalInfo: React.FC = () => {
                                 {...field}
                                 type="date"
                                 placeholder="YYYY-MM-DD"
+                                onBlur={handleFormBlur}
                               />
                             </FormControl>
                             <FormMessage />

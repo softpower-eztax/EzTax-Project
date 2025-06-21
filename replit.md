@@ -110,6 +110,7 @@ Recent Changes:
 - June 21, 2025: Expert profile simplified by removing "전직 재무임원" for cleaner presentation
 - June 21, 2025: About page enhanced with professional Mission and Vision images
 - June 21, 2025: Removed redundant header section from About page for cleaner layout
+- June 21, 2025: UI refinements - "Filing Status 확인" button text updated and homepage explanation text removed for cleaner design
 - June 20, 2025: Homepage messaging updated to "세금시뮬레이터로 간단하게 계산하시고 노후준비도 진단하세요"
 - June 20, 2025: "리포트 다운로드" button changed to "다시 계산하기" with form reset functionality
 - June 20, 2025: Footer "회사 소개" link connected to About page

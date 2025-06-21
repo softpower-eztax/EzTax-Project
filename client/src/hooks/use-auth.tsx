@@ -84,7 +84,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const logoutMutation = useMutation({
     mutationFn: async () => {
       try {
-        const response = await apiRequest("POST", "/api/logout");
+        const response = await apiRequest({
+          url: "/api/logout",
+          method: "POST"
+        });
         if (!response.ok) {
           const errorData = await response.json();
           throw new Error(errorData.message || "로그아웃 실패");

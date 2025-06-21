@@ -360,6 +360,7 @@ export default function AdminPanel() {
                   <TableHead>가입일</TableHead>
                   <TableHead>신고서 수</TableHead>
                   <TableHead>상태</TableHead>
+                  <TableHead>관리</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -412,6 +413,50 @@ export default function AdminPanel() {
                         {user.status === 'active' ? '활성' : '비활성'}
                       </Badge>
                     </TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-2">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => handleEditUser(user)}
+                          className="h-8 w-8 p-0"
+                        >
+                          <Edit className="h-3 w-3" />
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => handleResetPassword(user)}
+                          className="h-8 w-8 p-0"
+                        >
+                          <Key className="h-3 w-3" />
+                        </Button>
+                        {user.taxReturnsCount > 0 && (
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => {
+                              if (confirm(`사용자 "${user.username}"의 모든 세금 신고서를 삭제하시겠습니까?`)) {
+                                deleteUserTaxReturnsMutation.mutate(user.id);
+                              }
+                            }}
+                            className="h-8 w-8 p-0 text-orange-600 hover:text-orange-700"
+                          >
+                            <Trash2 className="h-3 w-3" />
+                          </Button>
+                        )}
+                        {user.id !== 3 && (
+                          <Button
+                            size="sm"
+                            variant="destructive"
+                            onClick={() => handleDeleteUser(user)}
+                            className="h-8 w-8 p-0"
+                          >
+                            <Trash2 className="h-3 w-3" />
+                          </Button>
+                        )}
+                      </div>
+                    </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
@@ -429,6 +474,92 @@ export default function AdminPanel() {
           )}
         </CardContent>
       </Card>
+
+      {/* Edit User Dialog */}
+      <Dialog open={showEditDialog} onOpenChange={setShowEditDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>사용자 정보 수정</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <Label htmlFor="username">사용자명</Label>
+              <Input
+                id="username"
+                value={editForm.username}
+                onChange={(e) => setEditForm(prev => ({ ...prev, username: e.target.value }))}
+                placeholder="사용자명을 입력하세요"
+              />
+            </div>
+            <div>
+              <Label htmlFor="email">이메일</Label>
+              <Input
+                id="email"
+                type="email"
+                value={editForm.email}
+                onChange={(e) => setEditForm(prev => ({ ...prev, email: e.target.value }))}
+                placeholder="이메일을 입력하세요"
+              />
+            </div>
+            <div>
+              <Label htmlFor="displayName">표시명</Label>
+              <Input
+                id="displayName"
+                value={editForm.displayName}
+                onChange={(e) => setEditForm(prev => ({ ...prev, displayName: e.target.value }))}
+                placeholder="표시명을 입력하세요"
+              />
+            </div>
+            <div className="flex justify-end gap-2">
+              <Button variant="outline" onClick={() => setShowEditDialog(false)}>
+                취소
+              </Button>
+              <Button onClick={handleSubmitEdit} disabled={updateUserMutation.isPending}>
+                {updateUserMutation.isPending ? '수정 중...' : '수정'}
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Reset Password Dialog */}
+      <Dialog open={showPasswordDialog} onOpenChange={setShowPasswordDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>비밀번호 재설정</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <Label htmlFor="newPassword">새 비밀번호</Label>
+              <Input
+                id="newPassword"
+                type="password"
+                value={passwordForm.newPassword}
+                onChange={(e) => setPasswordForm(prev => ({ ...prev, newPassword: e.target.value }))}
+                placeholder="새 비밀번호를 입력하세요"
+              />
+            </div>
+            <div>
+              <Label htmlFor="confirmPassword">비밀번호 확인</Label>
+              <Input
+                id="confirmPassword"
+                type="password"
+                value={passwordForm.confirmPassword}
+                onChange={(e) => setPasswordForm(prev => ({ ...prev, confirmPassword: e.target.value }))}
+                placeholder="비밀번호를 다시 입력하세요"
+              />
+            </div>
+            <div className="flex justify-end gap-2">
+              <Button variant="outline" onClick={() => setShowPasswordDialog(false)}>
+                취소
+              </Button>
+              <Button onClick={handleSubmitPassword} disabled={resetPasswordMutation.isPending}>
+                {resetPasswordMutation.isPending ? '재설정 중...' : '재설정'}
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

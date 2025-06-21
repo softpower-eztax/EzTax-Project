@@ -131,33 +131,108 @@ const PersonalInfo: React.FC = () => {
     ...taxData.personalInfo
   };
 
-  // 로컬 스토리지에서 데이터 불러오기 (페이지 로드 시)
+  // 사용자 데이터 격리 및 로드 관리
   useEffect(() => {
-    console.log("PersonalInfo - 최초 로드 시 taxData:", taxData);
-    
-    // 1. 서버 데이터가 있는 경우 우선 사용
-    if (taxData.personalInfo) {
-      console.log("PersonalInfo - 서버 데이터 사용:", taxData.personalInfo);
-      form.reset(taxData.personalInfo);
-      setSavedValues(taxData.personalInfo);
-      // 로컬 스토리지 업데이트
-      localStorage.setItem('personalInfo', JSON.stringify(taxData.personalInfo));
-      return;
-    }
-    
-    // 2. 서버 데이터가 없는 경우에만 로컬 스토리지 데이터 사용
-    const storedData = localStorage.getItem('personalInfo');
-    if (storedData) {
+    const loadUserData = async () => {
       try {
-        const parsedData = JSON.parse(storedData);
-        console.log("PersonalInfo - 로컬스토리지에서 복원:", parsedData);
-        setSavedValues(parsedData);
-        form.reset(parsedData); // 폼 데이터 설정
-      } catch (e) {
-        console.error("로컬 스토리지 데이터 파싱 오류:", e);
+        // 모든 로컬 저장소 데이터 먼저 정리
+        localStorage.removeItem('personalInfo');
+        
+        // 인증 상태 확인
+        const userResponse = await fetch('/api/user', {
+          credentials: 'include',
+          cache: 'no-cache',
+          headers: {
+            'Cache-Control': 'no-cache, no-store, must-revalidate'
+          }
+        });
+        
+        if (!userResponse.ok) {
+          // 비인증 사용자 - 완전 초기화
+          console.log("PersonalInfo - 비인증 사용자: 완전 초기화");
+          form.reset({
+            firstName: "",
+            middleInitial: "",
+            lastName: "",
+            ssn: "",
+            dateOfBirth: "",
+            email: "",
+            phone: "",
+            address1: "",
+            address2: "",
+            city: "",
+            state: "",
+            zipCode: "",
+            filingStatus: "single",
+            isDisabled: false,
+            isNonresidentAlien: false,
+            dependents: [],
+            spouseInfo: undefined
+          });
+          setSavedValues(null);
+          return;
+        }
+        
+        const currentUser = await userResponse.json();
+        console.log(`PersonalInfo - 현재 사용자: ${currentUser.username} (ID: ${currentUser.id})`);
+        
+        // TaxContext에서 로드된 데이터가 현재 사용자 것인지 확인
+        if (taxData.personalInfo) {
+          console.log("PersonalInfo - TaxContext에서 개인정보 로드");
+          form.reset(taxData.personalInfo);
+          setSavedValues(taxData.personalInfo);
+        } else {
+          // 개인정보가 없으면 빈 폼으로 시작
+          console.log("PersonalInfo - 개인정보 없음, 빈 폼으로 시작");
+          form.reset({
+            firstName: "",
+            middleInitial: "",
+            lastName: "",
+            ssn: "",
+            dateOfBirth: "",
+            email: "",
+            phone: "",
+            address1: "",
+            address2: "",
+            city: "",
+            state: "",
+            zipCode: "",
+            filingStatus: "single",
+            isDisabled: false,
+            isNonresidentAlien: false,
+            dependents: [],
+            spouseInfo: undefined
+          });
+          setSavedValues(null);
+        }
+      } catch (error) {
+        console.error("PersonalInfo - 데이터 로드 오류:", error);
+        // 오류 발생 시 빈 폼으로 초기화
+        form.reset({
+          firstName: "",
+          middleInitial: "",
+          lastName: "",
+          ssn: "",
+          dateOfBirth: "",
+          email: "",
+          phone: "",
+          address1: "",
+          address2: "",
+          city: "",
+          state: "",
+          zipCode: "",
+          filingStatus: "single",
+          isDisabled: false,
+          isNonresidentAlien: false,
+          dependents: [],
+          spouseInfo: undefined
+        });
+        setSavedValues(null);
       }
-    }
-  }, [taxData]);
+    };
+    
+    loadUserData();
+  }, [taxData.personalInfo]);
 
   // Disable zod validation to avoid form validation errors
   const form = useForm<PersonalInformation>({

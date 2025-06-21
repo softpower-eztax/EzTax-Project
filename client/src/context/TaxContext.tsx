@@ -85,20 +85,30 @@ export const TaxProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     }
   });
 
-  // Load tax data on initial render
+  // Load tax data on initial render with strict user isolation
   useEffect(() => {
     const loadTaxData = async () => {
       try {
         setIsLoading(true);
         
-        // First check if user is authenticated
+        // CRITICAL: Clear all cached data first to prevent contamination
+        localStorage.clear();
+        sessionStorage.clear();
+        
+        // Get current authenticated user
         const userResponse = await fetch('/api/user', {
           credentials: 'include',
-          cache: 'no-cache'
+          cache: 'no-cache',
+          headers: {
+            'Cache-Control': 'no-cache, no-store, must-revalidate',
+            'Pragma': 'no-cache',
+            'Expires': '0'
+          }
         });
         
         if (!userResponse.ok) {
           // User not authenticated - start with completely empty data
+          console.log("사용자 인증되지 않음 - 빈 데이터로 초기화");
           setTaxData({
             taxYear: 2025,
             status: 'in_progress',
@@ -121,37 +131,44 @@ export const TaxProvider: React.FC<{ children: React.ReactNode }> = ({ children 
           return;
         }
         
-        const response = await fetch('/api/tax-return');
+        const currentUser = await userResponse.json();
+        console.log(`현재 인증된 사용자: ${currentUser.username} (ID: ${currentUser.id})`);
+        
+        // Get tax return data for current user only
+        const response = await fetch('/api/tax-return', {
+          credentials: 'include',
+          cache: 'no-cache',
+          headers: {
+            'Cache-Control': 'no-cache, no-store, must-revalidate',
+            'Pragma': 'no-cache',
+            'Expires': '0'
+          }
+        });
         
         if (response.ok) {
           const data = await response.json();
-          if (data) {
-            // 서버에서 가져온 데이터 사용
+          
+          // CRITICAL SECURITY CHECK: Verify data belongs to authenticated user
+          if (data && data.userId === currentUser.id) {
+            console.log(`사용자 ${currentUser.username}의 세금 데이터 로드 (검증됨)`);
+            
+            // Process and set verified user data
             let serverData = { ...data };
             
-            // 데이터 마이그레이션 및 수정
-            console.log("마이그레이션: 데이터 수정");
-            
-            // Data migration completed - HSA field already handled in server data
-            
-            // 2. 부양가족 isQualifyingChild 필드 확인
+            // Data migration for dependents
             if (serverData.personalInfo?.dependents) {
-              // 기존 부양가족 데이터에 isQualifyingChild 프로퍼티가 없으면 기본값 설정
               serverData.personalInfo = {
                 ...serverData.personalInfo,
                 dependents: serverData.personalInfo.dependents.map((dependent: any) => {
                   if (dependent.isQualifyingChild === undefined) {
-                    return {
-                      ...dependent,
-                      isQualifyingChild: true  // 기본값은 true로 설정
-                    };
+                    return { ...dependent, isQualifyingChild: true };
                   }
                   return dependent;
                 })
               };
             }
             
-            // 3. SpouseInfo에 필수 필드 없으면 추가
+            // Data migration for spouse info
             if (serverData.personalInfo?.spouseInfo) {
               const spouseInfo = serverData.personalInfo.spouseInfo;
               if (spouseInfo.isDisabled === undefined || spouseInfo.isNonresidentAlien === undefined) {
@@ -166,24 +183,80 @@ export const TaxProvider: React.FC<{ children: React.ReactNode }> = ({ children 
               }
             }
             
-            // Immediately recalculate taxes
             const calculatedResults = calculateTaxes(serverData);
             setTaxData({
               ...serverData,
               calculatedResults,
               updatedAt: new Date().toISOString()
             });
+          } else {
+            // SECURITY VIOLATION: Data doesn't belong to current user
+            console.error(`보안 오류: 데이터 사용자 ID (${data?.userId})가 현재 사용자 ID (${currentUser.id})와 불일치`);
+            setTaxData({
+              taxYear: 2025,
+              status: 'in_progress',
+              createdAt: new Date().toISOString(),
+              updatedAt: new Date().toISOString(),
+              calculatedResults: {
+                totalIncome: 0,
+                adjustments: 0,
+                adjustedGrossIncome: 0,
+                deductions: 0,
+                taxableIncome: 0,
+                federalTax: 0,
+                credits: 0,
+                taxDue: 0,
+                payments: 0,
+                refundAmount: 0,
+                amountOwed: 0
+              }
+            });
           }
+        } else {
+          // No tax return data for user - initialize empty
+          console.log(`사용자 ${currentUser.username}의 세금 데이터 없음 - 새로 시작`);
+          setTaxData({
+            taxYear: 2025,
+            status: 'in_progress',
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+            calculatedResults: {
+              totalIncome: 0,
+              adjustments: 0,
+              adjustedGrossIncome: 0,
+              deductions: 0,
+              taxableIncome: 0,
+              federalTax: 0,
+              credits: 0,
+              taxDue: 0,
+              payments: 0,
+              refundAmount: 0,
+              amountOwed: 0
+            }
+          });
         }
       } catch (error) {
-        console.error('Error loading tax data:', error);
-        // If error loading from server, still initialize with calculated values
-        const calculatedResults = calculateTaxes(taxData);
-        setTaxData(prev => ({
-          ...prev,
-          calculatedResults,
-          updatedAt: new Date().toISOString()
-        }));
+        console.error('세금 데이터 로드 오류:', error);
+        // Always initialize with empty data on error
+        setTaxData({
+          taxYear: 2025,
+          status: 'in_progress',
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+          calculatedResults: {
+            totalIncome: 0,
+            adjustments: 0,
+            adjustedGrossIncome: 0,
+            deductions: 0,
+            taxableIncome: 0,
+            federalTax: 0,
+            credits: 0,
+            taxDue: 0,
+            payments: 0,
+            refundAmount: 0,
+            amountOwed: 0
+          }
+        });
       } finally {
         setIsLoading(false);
       }

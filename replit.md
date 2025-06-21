@@ -105,6 +105,7 @@ Preferred communication style: Simple, everyday language.
 ## Changelog
 
 Recent Changes:
+- June 21, 2025: State tax results display removed from Review page - now purely shows federal tax calculations
 - June 21, 2025: State Tax workflow repositioned to start after Federal Tax Review completion per user request
 - June 21, 2025: Review page enhanced with "주소득세 계산(State Income Tax)" button for optional state tax calculation
 - June 21, 2025: Additional Tax page navigation updated to proceed directly to Review, bypassing State Tax

@@ -285,34 +285,7 @@ const Review: React.FC = () => {
                 </div>
               </div>
 
-              {/* State Tax Summary */}
-              {calculatedResults.stateIncomeTax && (
-                <div className="border border-blue-300 rounded-lg p-6 bg-blue-50 mb-6">
-                  <h3 className="text-lg font-heading font-semibold text-blue-800 mb-4">주 소득세 계산(State Income Tax)</h3>
-                  
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <Field label="주(State)" value={calculatedResults.stateIncomeTax.state} />
-                      <Field label="주 과세소득(State Taxable Income)" value={formatCurrency(calculatedResults.stateIncomeTax.stateTaxableIncome)} />
-                      <Field label="주 소득세(State Income Tax)" value={formatCurrency(calculatedResults.stateIncomeTax.stateTax)} />
-                    </div>
-                    <div>
-                      <Field label="주 원천징수(State Withholding)" value={formatCurrency(calculatedResults.stateIncomeTax.stateWithholding || 0)} />
-                      {calculatedResults.stateIncomeTax.stateRefund && calculatedResults.stateIncomeTax.stateRefund > 0 ? (
-                        <div className="flex justify-between py-2 font-bold bg-green-100 rounded px-2 text-green-700">
-                          <span>주 환급액(State Refund):</span>
-                          <span>{formatCurrency(calculatedResults.stateIncomeTax.stateRefund)}</span>
-                        </div>
-                      ) : calculatedResults.stateIncomeTax.stateAmountOwed && calculatedResults.stateIncomeTax.stateAmountOwed > 0 ? (
-                        <div className="flex justify-between py-2 font-bold bg-red-100 rounded px-2 text-red-700">
-                          <span>주 납부액(State Amount Owed):</span>
-                          <span>{formatCurrency(calculatedResults.stateIncomeTax.stateAmountOwed)}</span>
-                        </div>
-                      ) : null}
-                    </div>
-                  </div>
-                </div>
-              )}
+
               
               {/* Tax Saving Advice Button */}
               <div className="border border-primary-light rounded-lg p-6 bg-primary/5 mb-6">

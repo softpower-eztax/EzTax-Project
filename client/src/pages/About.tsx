@@ -14,6 +14,7 @@ import {
   MailIcon
 } from "lucide-react";
 import expertPhotoPath from "@assets/내이미지_1750444585639.jpg";
+import visionImagePath from "@assets/ChatGPT Image Jun 20, 2025, 09_38_11 PM_1750473512527.png";
 
 export default function About() {
   const [, navigate] = useLocation();
@@ -60,11 +61,26 @@ export default function About() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-gray-700 leading-relaxed">
-              세계 최고의 AI 기반 세무·은퇴 플랫폼이 되어 모든 사람이 재정적 자유를 달성할 수 있도록 돕겠습니다. 
-              몬테카를로 시뮬레이션과 같은 첨단 기술로 정확한 예측을 제공하고, 
-              개인 맞춤형 전략으로 부의 창조를 실현합니다.
-            </p>
+            <div className="grid md:grid-cols-2 gap-8 items-center">
+              <div>
+                <p className="text-gray-700 leading-relaxed mb-4">
+                  세계 최고의 AI 기반 세무·은퇴 플랫폼이 되어 모든 사람이 재정적 자유를 달성할 수 있도록 돕겠습니다. 
+                  몬테카를로 시뮬레이션과 같은 첨단 기술로 정확한 예측을 제공하고, 
+                  개인 맞춤형 전략으로 부의 창조를 실현합니다.
+                </p>
+                <p className="text-green-600 font-medium text-sm">
+                  절세, 그 이상의 가치를 전하는 재정플랜 플랫폼
+                </p>
+              </div>
+              
+              <div className="flex justify-center">
+                <img 
+                  src={visionImagePath} 
+                  alt="EzTax Vision - 절세, 그 이상의 가치를 전하는 재정플랜 플랫폼" 
+                  className="max-w-full h-auto rounded-lg shadow-md"
+                />
+              </div>
+            </div>
           </CardContent>
         </Card>
       </div>

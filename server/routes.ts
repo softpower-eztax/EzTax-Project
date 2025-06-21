@@ -4,6 +4,7 @@ import { storage } from "./storage";
 import { insertTaxReturnSchema } from "@shared/schema";
 import { z } from "zod";
 import nodemailer from "nodemailer";
+import path from "path";
 
 // Configure email transporter for Gmail with better error handling
 const createEmailTransporter = () => {
@@ -32,6 +33,39 @@ const createEmailTransporter = () => {
 export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/ping", (req, res) => {
     res.json({ ok: true });
+  });
+
+  // Serve admin setup page
+  app.get("/setup-admin", (req, res) => {
+    res.sendFile(path.resolve(process.cwd(), "setup-admin.html"));
+  });
+
+  // Temporary admin setup endpoint for deployment
+  app.post("/api/setup-admin", async (req, res) => {
+    try {
+      // Check if admin already exists
+      const existingUsers = await storage.getAllUsers();
+      const adminExists = existingUsers.some(user => user.username === 'admin');
+      
+      if (adminExists) {
+        return res.json({ message: "Admin already exists", success: true });
+      }
+
+      // Create admin user
+      const adminUser = await storage.createUser({
+        username: 'admin',
+        password: 'admin'
+      });
+
+      res.json({ 
+        message: "Admin user created successfully", 
+        username: adminUser.username,
+        success: true 
+      });
+    } catch (error: any) {
+      console.error('Admin setup error:', error);
+      res.status(500).json({ message: error.message || "Admin setup failed" });
+    }
   });
 
   // Admin endpoints

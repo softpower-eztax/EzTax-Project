@@ -160,15 +160,32 @@ export default function FilingStatusChecker() {
 
   const handleApplyResult = () => {
     if (result) {
-      // personalInfo가 있으면 filingStatus만 업데이트하고, 없으면 기본 객체 생성
-      if (taxData.personalInfo) {
-        // 기존 personalInfo 사용하고 filingStatus만 업데이트
-        updateTaxData({ 
-          personalInfo: {
-            ...taxData.personalInfo,
-            filingStatus: result
-          }
-        });
+      // localStorage에서 임시 저장된 폼 데이터 복원
+      const savedFormData = localStorage.getItem('tempPersonalInfo');
+      let currentPersonalInfo = taxData.personalInfo;
+      
+      // localStorage에 저장된 데이터가 있으면 우선 사용
+      if (savedFormData) {
+        try {
+          const parsedData = JSON.parse(savedFormData);
+          currentPersonalInfo = parsedData;
+          console.log("FilingStatusChecker - 저장된 폼 데이터 복원:", parsedData);
+        } catch (error) {
+          console.error("Failed to parse saved form data:", error);
+        }
+      }
+      
+      if (currentPersonalInfo) {
+        // 기존 personalInfo 데이터 보존하고 filingStatus만 업데이트
+        const preservedData = {
+          ...currentPersonalInfo,
+          filingStatus: result
+        };
+        
+        updateTaxData({ personalInfo: preservedData });
+        // localStorage도 업데이트
+        localStorage.setItem('tempPersonalInfo', JSON.stringify(preservedData));
+        console.log("FilingStatusChecker - 데이터 보존하며 filingStatus 업데이트:", preservedData);
       } else {
         // 새 personalInfo 객체 생성
         const newPersonalInfo: PersonalInformation = {

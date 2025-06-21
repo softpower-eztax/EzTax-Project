@@ -104,6 +104,8 @@ const Deductions: React.FC = () => {
     };
   };
 
+  const [formKey, setFormKey] = useState(0);
+  
   const form = useForm<Deductions>({
     resolver: zodResolver(deductionsSchema),
     defaultValues: getDefaultValues(),
@@ -240,43 +242,34 @@ const Deductions: React.FC = () => {
     form
   ]);
 
-  // Update form values when taxData changes
+  // Reset form completely when taxData changes
   useEffect(() => {
     if (taxData.deductions) {
-      console.log('Deductions 페이지에서 기존 데이터 setValue로 업데이트:', taxData.deductions);
+      console.log('Deductions 페이지에서 기존 데이터로 form.reset 실행:', taxData.deductions);
       
       const deductions = taxData.deductions;
       
-      // Force trigger form state update
-      const timer = setTimeout(() => {
-        // Set individual field values
-        form.setValue('useStandardDeduction', deductions.useStandardDeduction ?? true);
-        form.setValue('standardDeductionAmount', deductions.standardDeductionAmount ?? standardDeductionAmount);
-        form.setValue('totalDeductions', deductions.totalDeductions ?? standardDeductionAmount);
-        
-        // Set itemized deduction values with trigger option
-        if (deductions.itemizedDeductions) {
-          const itemized = deductions.itemizedDeductions;
-          form.setValue('itemizedDeductions.medicalExpenses', itemized.medicalExpenses ?? 0, { shouldDirty: true });
-          form.setValue('itemizedDeductions.stateLocalIncomeTax', itemized.stateLocalIncomeTax ?? 0, { shouldDirty: true });
-          form.setValue('itemizedDeductions.realEstateTaxes', itemized.realEstateTaxes ?? 0, { shouldDirty: true });
-          form.setValue('itemizedDeductions.mortgageInterest', itemized.mortgageInterest ?? 0, { shouldDirty: true });
-          form.setValue('itemizedDeductions.charitableCash', itemized.charitableCash ?? 0, { shouldDirty: true });
-          form.setValue('itemizedDeductions.charitableNonCash', itemized.charitableNonCash ?? 0, { shouldDirty: true });
-          
-          console.log('SALT 필드 값 설정 완료:', {
-            stateLocalIncomeTax: itemized.stateLocalIncomeTax,
-            realEstateTaxes: itemized.realEstateTaxes
-          });
-        }
-        
-        // Set other deduction items
-        if (deductions.otherDeductionItems) {
-          form.setValue('otherDeductionItems', deductions.otherDeductionItems);
-        }
-      }, 100);
+      // Use form.reset with new values to completely refresh the form
+      const newFormValues: Deductions = {
+        useStandardDeduction: deductions.useStandardDeduction ?? true,
+        standardDeductionAmount: deductions.standardDeductionAmount ?? standardDeductionAmount,
+        itemizedDeductions: {
+          medicalExpenses: deductions.itemizedDeductions?.medicalExpenses ?? 0,
+          stateLocalIncomeTax: deductions.itemizedDeductions?.stateLocalIncomeTax ?? 0,
+          realEstateTaxes: deductions.itemizedDeductions?.realEstateTaxes ?? 0,
+          mortgageInterest: deductions.itemizedDeductions?.mortgageInterest ?? 0,
+          charitableCash: deductions.itemizedDeductions?.charitableCash ?? 0,
+          charitableNonCash: deductions.itemizedDeductions?.charitableNonCash ?? 0
+        },
+        otherDeductionItems: deductions.otherDeductionItems || [],
+        totalDeductions: deductions.totalDeductions ?? standardDeductionAmount
+      };
       
-      return () => clearTimeout(timer);
+      console.log('새로운 폼 값으로 reset:', newFormValues);
+      form.reset(newFormValues);
+      
+      // Also trigger form key change to force re-render
+      setFormKey(prev => prev + 1);
     }
   }, [taxData.deductions, form, standardDeductionAmount]);
 
@@ -356,7 +349,7 @@ const Deductions: React.FC = () => {
                 <h2 className="text-2xl font-heading font-semibold text-primary-dark">공제 (Deductions)</h2>
               </div>
               
-              <Form {...form}>
+              <Form {...form} key={formKey}>
                 <form onSubmit={form.handleSubmit(onSubmit)}>
                   <div className="mb-8">
                     <h3 className="text-lg font-heading font-semibold mb-4">공제방법선택 (Choose Your Deduction Method)</h3>

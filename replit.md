@@ -105,6 +105,11 @@ Preferred communication style: Simple, everyday language.
 ## Changelog
 
 Recent Changes:
+- June 21, 2025: State Income Tax calculation system fully implemented and tested with live data
+- June 21, 2025: 50-state tax rules engine integrated with federal tax calculations
+- June 21, 2025: StateTax page added to workflow between Additional Tax and Review pages
+- June 21, 2025: State tax results display in Review page with refund/owed calculations
+- June 21, 2025: Verified working with Illinois sample data ($4,359.71 state tax on $100,200 AGI)
 - June 21, 2025: Gmail email delivery successfully implemented and verified working
 - June 21, 2025: Application submissions now automatically sent to eztax88@gmail.com with HTML formatting
 - June 21, 2025: Email authentication resolved with proper Gmail app password configuration

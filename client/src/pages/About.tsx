@@ -22,19 +22,7 @@ export default function About() {
 
   return (
     <div className="max-w-6xl mx-auto p-6 space-y-8">
-      {/* Header Section */}
-      <div className="text-center py-12 bg-gradient-to-r from-primary/10 to-blue-100 rounded-2xl">
-        <h1 className="text-4xl font-bold text-gray-900 mb-4">
-          EzTax에 대해 알아보세요
-        </h1>
-        <p className="text-xl text-gray-600 mb-6 max-w-3xl mx-auto">
-          "Less Tax, More Wealth" - 세상 쉬운 세금계산, 세상 귀한 노후준비
-        </p>
-        <p className="text-lg text-gray-700 max-w-4xl mx-auto">
-          복잡한 세무와 은퇴 계획을 간단하고 정확하게 만들어 
-          모든 사람이 더 나은 재정적 미래를 설계할 수 있도록 돕습니다.
-        </p>
-      </div>
+
 
       {/* Company Mission & Vision */}
       <div className="grid md:grid-cols-2 gap-8">

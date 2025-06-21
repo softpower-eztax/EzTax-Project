@@ -105,6 +105,10 @@ Preferred communication style: Simple, everyday language.
 ## Changelog
 
 Recent Changes:
+- June 21, 2025: Critical data isolation bug fixed - new users no longer see other users' tax data
+- June 21, 2025: getCurrentTaxReturn() method updated to filter by userId for proper user data separation
+- June 21, 2025: POST /api/tax-return endpoint fixed to assign correct userId to new tax returns
+- June 21, 2025: Empty initial data template implemented for new users instead of sample data
 - June 21, 2025: RetirementContributions page placeholders updated from "0" to "달러 금액" for better user experience
 - June 21, 2025: Critical security vulnerability fixed - admin access now restricted to 'admin' username only
 - June 21, 2025: Admin account properly recreated in PostgreSQL with secure password hashing (ID: 3)

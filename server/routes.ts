@@ -208,7 +208,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Create or update tax return
   app.post("/api/tax-return", async (req, res) => {
     try {
-      const validationResult = insertTaxReturnSchema.safeParse(req.body);
+      // Ensure userId is set correctly
+      const userId = req.user ? (req.user as any).id : 1;
+      const dataWithUserId = { ...req.body, userId };
+      
+      const validationResult = insertTaxReturnSchema.safeParse(dataWithUserId);
       
       if (!validationResult.success) {
         return res.status(400).json({

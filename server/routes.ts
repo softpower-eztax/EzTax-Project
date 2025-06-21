@@ -5,15 +5,23 @@ import { insertTaxReturnSchema } from "@shared/schema";
 import { z } from "zod";
 import nodemailer from "nodemailer";
 
-// Configure email transporter
+// Configure email transporter for Gmail with better error handling
 const createEmailTransporter = () => {
-  // Use Gmail SMTP with app password (more secure than regular password)
+  if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
+    console.log('Email credentials not configured - emails will be logged only');
+    return null;
+  }
+
+  console.log(`Configuring email for: ${process.env.EMAIL_USER}`);
+  
   return nodemailer.createTransport({
     service: 'gmail',
     auth: {
-      user: process.env.EMAIL_USER || 'eztax88@gmail.com',
-      pass: process.env.EMAIL_PASS // This should be an app-specific password
-    }
+      user: process.env.EMAIL_USER,
+      pass: process.env.EMAIL_PASS
+    },
+    debug: true,
+    logger: true
   });
 };
 
@@ -216,12 +224,12 @@ ${additionalRequests || '없음'}
       `.trim();
 
       // Try to send actual email if credentials are available
-      if (process.env.EMAIL_PASS) {
+      const transporter = createEmailTransporter();
+      
+      if (transporter) {
         try {
-          const transporter = createEmailTransporter();
-          
           const mailOptions = {
-            from: process.env.EMAIL_USER || 'eztax88@gmail.com',
+            from: process.env.EMAIL_USER,
             to: 'eztax88@gmail.com',
             subject: '[EzTax] 새로운 유료검토 서비스 신청',
             text: emailContent,
@@ -250,19 +258,18 @@ ${additionalRequests || '없음'}
             `
           };
 
-          await transporter.sendMail(mailOptions);
+          const info = await transporter.sendMail(mailOptions);
           console.log('Email sent successfully to eztax88@gmail.com');
+          console.log('Message ID:', info.messageId);
         } catch (emailError) {
           console.error('Failed to send email:', emailError);
-          // Fall back to logging if email fails
           console.log('Application Email Content (fallback):');
           console.log('To: eztax88@gmail.com');
           console.log('Subject: [EzTax] 새로운 유료검토 서비스 신청');
           console.log('Content:', emailContent);
         }
       } else {
-        // Log email content if no email credentials
-        console.log('Application Email Content (no credentials):');
+        console.log('Email credentials not configured - logging application:');
         console.log('To: eztax88@gmail.com');
         console.log('Subject: [EzTax] 새로운 유료검토 서비스 신청');
         console.log('Content:', emailContent);

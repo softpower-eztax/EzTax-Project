@@ -97,15 +97,25 @@ export default function SALTDeductionsNew() {
       const totalSaltAmount = selectedTaxAmount + realEstateTax + personalPropertyTax;
       const limitedSaltAmount = Math.min(totalSaltAmount, 10000);
       
+      // Calculate total itemized deductions with SALT limit applied
+      const otherItemizedDeductions = 
+        (taxData.deductions?.itemizedDeductions?.medicalExpenses || 0) +
+        (taxData.deductions?.itemizedDeductions?.mortgageInterest || 0) +
+        (taxData.deductions?.itemizedDeductions?.charitableCash || 0) +
+        (taxData.deductions?.itemizedDeductions?.charitableNonCash || 0);
+      
+      const totalItemizedDeductions = limitedSaltAmount + otherItemizedDeductions;
+
       const updatedDeductions = {
         ...taxData.deductions,
         useStandardDeduction: false,
         standardDeductionAmount: 0,
-        totalDeductions: limitedSaltAmount,
+        totalDeductions: totalItemizedDeductions,
         itemizedDeductions: {
           ...taxData.deductions?.itemizedDeductions,
-          stateLocalIncomeTax: limitedSaltAmount, // Store total SALT amount here
+          stateLocalIncomeTax: selectedTaxAmount, // Store the selected tax type amount
           realEstateTaxes: realEstateTax,
+          personalPropertyTax: personalPropertyTax, // Store personal property tax separately
           medicalExpenses: taxData.deductions?.itemizedDeductions?.medicalExpenses || 0,
           mortgageInterest: taxData.deductions?.itemizedDeductions?.mortgageInterest || 0,
           charitableCash: taxData.deductions?.itemizedDeductions?.charitableCash || 0,

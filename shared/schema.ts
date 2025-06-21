@@ -144,6 +144,7 @@ export interface Deductions {
     medicalExpenses: number;
     stateLocalIncomeTax: number;
     realEstateTaxes: number;
+    personalPropertyTax: number;
     mortgageInterest: number;
     charitableCash: number;
     charitableNonCash: number;

@@ -38,6 +38,7 @@ const Deductions: React.FC = () => {
         medicalExpenses: 0,
         stateLocalIncomeTax: 0,
         realEstateTaxes: 0,
+        personalPropertyTax: 0,
         mortgageInterest: 0,
         charitableCash: 0,
         charitableNonCash: 0
@@ -54,6 +55,7 @@ const Deductions: React.FC = () => {
           medicalExpenses: 0,
           stateLocalIncomeTax: 0,
           realEstateTaxes: 0,
+          personalPropertyTax: 0,
           mortgageInterest: 0,
           charitableCash: 0,
           charitableNonCash: 0
@@ -78,6 +80,7 @@ const Deductions: React.FC = () => {
           medicalExpenses: taxData.deductions.itemizedDeductions?.medicalExpenses ?? 0,
           stateLocalIncomeTax: taxData.deductions.itemizedDeductions?.stateLocalIncomeTax ?? 0,
           realEstateTaxes: taxData.deductions.itemizedDeductions?.realEstateTaxes ?? 0,
+          personalPropertyTax: taxData.deductions.itemizedDeductions?.personalPropertyTax ?? 0,
           mortgageInterest: taxData.deductions.itemizedDeductions?.mortgageInterest ?? 0,
           charitableCash: taxData.deductions.itemizedDeductions?.charitableCash ?? 0,
           charitableNonCash: taxData.deductions.itemizedDeductions?.charitableNonCash ?? 0
@@ -95,6 +98,7 @@ const Deductions: React.FC = () => {
         medicalExpenses: 0,
         stateLocalIncomeTax: 0,
         realEstateTaxes: 0,
+        personalPropertyTax: 0,
         mortgageInterest: 0,
         charitableCash: 0,
         charitableNonCash: 0

@@ -187,6 +187,18 @@ export const TaxProvider: React.FC<{ children: React.ReactNode }> = ({ children 
             
             let serverData = { ...data };
             
+            // localStorage에서 임시 저장된 개인정보 복원 (우선순위 높음)
+            const savedPersonalInfo = localStorage.getItem('tempPersonalInfo');
+            if (savedPersonalInfo) {
+              try {
+                const parsedPersonalInfo = JSON.parse(savedPersonalInfo);
+                console.log("TaxContext - localStorage에서 개인정보 복원:", parsedPersonalInfo);
+                serverData.personalInfo = parsedPersonalInfo;
+              } catch (error) {
+                console.error("Failed to parse saved personal info:", error);
+              }
+            }
+            
             // 의존성 데이터 마이그레이션
             if (serverData.personalInfo?.dependents) {
               serverData.personalInfo = {

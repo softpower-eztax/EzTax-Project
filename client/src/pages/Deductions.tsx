@@ -134,6 +134,18 @@ const Deductions: React.FC = () => {
     form.watch('itemizedDeductions.charitableCash'),
     form.watch('itemizedDeductions.charitableNonCash'),
   ];
+
+  // Calculate total SALT amount for display
+  const totalSALTAmount = React.useMemo(() => {
+    const itemized = form.getValues('itemizedDeductions');
+    if (!itemized) return 0;
+    return Math.min(
+      Number(itemized.stateLocalIncomeTax || 0) + 
+      Number(itemized.realEstateTaxes || 0) + 
+      Number(itemized.personalPropertyTax || 0),
+      10000
+    );
+  }, [watchItemizedFields]);
   
   // Watch changes to otherDeductionItems
   const watchOtherDeductionItems = form.watch('otherDeductionItems');
@@ -524,28 +536,16 @@ const Deductions: React.FC = () => {
                           <div className="space-y-2">
                             <div className="flex gap-2">
                               <div className="flex-1">
-                                {(() => {
-                                  const itemized = form.getValues('itemizedDeductions');
-                                  const totalSALT = Math.min(
-                                    Number(itemized?.stateLocalIncomeTax || 0) + 
-                                    Number(itemized?.realEstateTaxes || 0) + 
-                                    Number(itemized?.personalPropertyTax || 0),
-                                    10000
-                                  );
-                                  
-                                  return (
-                                    <Input
-                                      type="number"
-                                      step="0.01"
-                                      min="0"
-                                      max="10000"
-                                      value={totalSALT === 0 ? '' : totalSALT}
-                                      disabled={isItemizedDisabled}
-                                      readOnly={true}
-                                      className="bg-gray-50"
-                                    />
-                                  );
-                                })()}
+                                <Input
+                                  type="number"
+                                  step="0.01"
+                                  min="0"
+                                  max="10000"
+                                  value={totalSALTAmount === 0 ? '' : totalSALTAmount}
+                                  disabled={isItemizedDisabled}
+                                  readOnly={true}
+                                  className="bg-gray-50"
+                                />
                               </div>
                               <Button
                                 type="button"

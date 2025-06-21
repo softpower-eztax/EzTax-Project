@@ -128,13 +128,24 @@ export function setupAuth(app: Express) {
     console.error("구글 인증 설정 중 오류 발생:", error);
   }
 
-  passport.serializeUser((user, done) => done(null, user.id));
+  passport.serializeUser((user, done) => {
+    console.log('Serializing user:', user.id);
+    done(null, user.id);
+  });
+  
   passport.deserializeUser(async (id: number, done) => {
     try {
-      const user = await storage.getUser(id);
+      console.log('Deserializing user ID:', id);
+      const user = await storage.getUserById(id);
+      if (!user) {
+        console.log('User not found during deserialization:', id);
+        return done(null, false);
+      }
+      console.log('User deserialized successfully:', user.username);
       done(null, user);
     } catch (error) {
-      done(error);
+      console.error('Deserialization error:', error);
+      done(null, false);
     }
   });
 

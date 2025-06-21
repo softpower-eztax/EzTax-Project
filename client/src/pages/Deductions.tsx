@@ -129,6 +129,7 @@ const Deductions: React.FC = () => {
     form.watch('itemizedDeductions.medicalExpenses'),
     form.watch('itemizedDeductions.stateLocalIncomeTax'),
     form.watch('itemizedDeductions.realEstateTaxes'),
+    form.watch('itemizedDeductions.personalPropertyTax'),
     form.watch('itemizedDeductions.mortgageInterest'),
     form.watch('itemizedDeductions.charitableCash'),
     form.watch('itemizedDeductions.charitableNonCash'),
@@ -522,31 +523,30 @@ const Deductions: React.FC = () => {
                           </div>
                           <div className="space-y-2">
                             <div className="flex gap-2">
-                              <FormField
-                                control={form.control}
-                                name="itemizedDeductions.stateLocalIncomeTax"
-                                render={({ field }) => (
-                                  <FormItem className="flex-1">
-                                    <FormControl>
-                                      <Input
-                                        type="number"
-                                        step="0.01"
-                                        min="0"
-                                        max="10000"
-                                        {...field}
-                                        value={field.value === 0 ? '' : field.value}
-                                        onChange={(e) => {
-                                          const value = parseFloat(e.target.value) || 0;
-                                          const limitedValue = Math.min(value, 10000);
-                                          field.onChange(limitedValue);
-                                        }}
-                                        disabled={isItemizedDisabled}
-                                      />
-                                    </FormControl>
-                                    <FormMessage />
-                                  </FormItem>
-                                )}
-                              />
+                              <div className="flex-1">
+                                {(() => {
+                                  const itemized = form.getValues('itemizedDeductions');
+                                  const totalSALT = Math.min(
+                                    Number(itemized?.stateLocalIncomeTax || 0) + 
+                                    Number(itemized?.realEstateTaxes || 0) + 
+                                    Number(itemized?.personalPropertyTax || 0),
+                                    10000
+                                  );
+                                  
+                                  return (
+                                    <Input
+                                      type="number"
+                                      step="0.01"
+                                      min="0"
+                                      max="10000"
+                                      value={totalSALT === 0 ? '' : totalSALT}
+                                      disabled={isItemizedDisabled}
+                                      readOnly={true}
+                                      className="bg-gray-50"
+                                    />
+                                  );
+                                })()}
+                              </div>
                               <Button
                                 type="button"
                                 variant="outline"

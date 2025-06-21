@@ -43,28 +43,81 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Temporary admin setup endpoint for deployment
   app.post("/api/setup-admin", async (req, res) => {
     try {
+      const crypto = await import('crypto');
+      const { promisify } = await import('util');
+      const scryptAsync = promisify(crypto.scrypt);
+      
       // Check if admin already exists
       const existingUsers = await storage.getAllUsers();
-      const adminExists = existingUsers.some(user => user.username === 'admin');
+      const adminExists = existingUsers.some((user: any) => user.username === 'admin');
       
       if (adminExists) {
-        return res.json({ message: "Admin already exists", success: true });
+        return res.json({ 
+          message: "Admin already exists", 
+          success: true,
+          userCount: existingUsers.length,
+          existingAdmin: existingUsers.find((user: any) => user.username === 'admin')?.id
+        });
       }
 
-      // Create admin user
+      // Hash the password properly
+      const salt = crypto.randomBytes(16).toString('hex');
+      const buf = (await scryptAsync('admin', salt, 64)) as Buffer;
+      const hashedPassword = `${buf.toString('hex')}.${salt}`;
+
+      // Create admin user with hashed password
       const adminUser = await storage.createUser({
         username: 'admin',
-        password: 'admin'
+        password: hashedPassword,
+        email: null,
+        googleId: null,
+        displayName: null
       });
 
       res.json({ 
-        message: "Admin user created successfully", 
+        message: "Admin user created successfully with proper password hashing", 
         username: adminUser.username,
+        userId: adminUser.id,
+        userCount: existingUsers.length + 1,
         success: true 
       });
     } catch (error: any) {
       console.error('Admin setup error:', error);
-      res.status(500).json({ message: error.message || "Admin setup failed" });
+      res.status(500).json({ 
+        message: error.message || "Admin setup failed",
+        error: error.stack,
+        success: false
+      });
+    }
+  });
+
+  // Test login endpoint for debugging
+  app.post("/api/test-login", async (req, res) => {
+    try {
+      const { username, password } = req.body;
+      const user = await storage.getUserByUsername(username);
+      
+      if (!user) {
+        return res.json({ 
+          message: "User not found",
+          success: false,
+          allUsers: (await storage.getAllUsers()).map((u: any) => ({ id: u.id, username: u.username }))
+        });
+      }
+
+      res.json({
+        message: "User found",
+        success: true,
+        userId: user.id,
+        username: user.username,
+        hasPassword: !!user.password,
+        passwordLength: user.password?.length || 0
+      });
+    } catch (error: any) {
+      res.status(500).json({ 
+        message: error.message,
+        success: false
+      });
     }
   });
 

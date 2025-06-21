@@ -294,6 +294,26 @@ const Deductions: React.FC = () => {
     return digits;
   };
 
+  // Helper function to calculate itemized deductions with SALT limit
+  const calculateItemizedTotal = (itemized: any, otherItemsTotal: number = 0) => {
+    if (!itemized) return 0;
+    
+    // SALT 공제 한도 적용 (주/지방세 + 부동산세 최대 $10,000)
+    const saltTotal = Math.min(
+      Number(itemized.stateLocalIncomeTax || 0) + Number(itemized.realEstateTaxes || 0),
+      10000
+    );
+    
+    const itemizedTotal = 
+      Number(itemized.medicalExpenses || 0) +
+      saltTotal + // SALT 한도 적용된 값 사용
+      Number(itemized.mortgageInterest || 0) +
+      Number(itemized.charitableCash || 0) +
+      Number(itemized.charitableNonCash || 0);
+    
+    return itemizedTotal + otherItemsTotal;
+  };
+
   return (
     <div className="max-w-5xl mx-auto">
       <div className="mb-8">

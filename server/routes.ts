@@ -34,9 +34,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Create storage instance
   const storage = new DbStorage();
   
-  // Debug: log available methods
-  console.log('Storage methods:', Object.getOwnPropertyNames(Object.getPrototypeOf(storage)));
-  
   app.get("/api/ping", (req, res) => {
     res.json({ ok: true });
   });

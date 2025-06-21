@@ -131,7 +131,7 @@ const PersonalInfo: React.FC = () => {
     ...taxData.personalInfo
   };
 
-  // 사용자 데이터 격리 및 로드 관리
+  // 사용자 데이터 격리 및 로드 관리 - 컴포넌트 마운트 시에만 실행
   useEffect(() => {
     const loadUserData = async () => {
       try {
@@ -232,6 +232,19 @@ const PersonalInfo: React.FC = () => {
     };
     
     loadUserData();
+  }, []); // 빈 의존성 배열로 변경하여 컴포넌트 마운트 시에만 실행
+
+  // taxData.personalInfo가 변경될 때만 폼 업데이트 (데이터 보존)
+  useEffect(() => {
+    if (taxData.personalInfo && Object.keys(taxData.personalInfo).length > 0) {
+      // 기존 폼 데이터와 새 데이터를 병합하여 데이터 손실 방지
+      const currentFormData = form.getValues();
+      const mergedData = { ...currentFormData, ...taxData.personalInfo };
+      
+      console.log("PersonalInfo - 데이터 업데이트:", mergedData);
+      form.reset(mergedData);
+      setSavedValues(mergedData);
+    }
   }, [taxData.personalInfo]);
 
   // Disable zod validation to avoid form validation errors

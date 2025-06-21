@@ -220,6 +220,27 @@ const Deductions: React.FC = () => {
     form
   ]);
 
+  // Add useEffect to reload data when returning from SALT page
+  useEffect(() => {
+    if (taxData.deductions) {
+      console.log('Deductions 페이지에서 기존 데이터 로드:', taxData.deductions);
+      form.reset({
+        useStandardDeduction: taxData.deductions.useStandardDeduction ?? true,
+        standardDeductionAmount: taxData.deductions.standardDeductionAmount ?? standardDeductionAmount,
+        itemizedDeductions: {
+          medicalExpenses: taxData.deductions.itemizedDeductions?.medicalExpenses ?? 0,
+          stateLocalIncomeTax: taxData.deductions.itemizedDeductions?.stateLocalIncomeTax ?? 0,
+          realEstateTaxes: taxData.deductions.itemizedDeductions?.realEstateTaxes ?? 0,
+          mortgageInterest: taxData.deductions.itemizedDeductions?.mortgageInterest ?? 0,
+          charitableCash: taxData.deductions.itemizedDeductions?.charitableCash ?? 0,
+          charitableNonCash: taxData.deductions.itemizedDeductions?.charitableNonCash ?? 0
+        },
+        otherDeductionItems: taxData.deductions.otherDeductionItems || [],
+        totalDeductions: taxData.deductions.totalDeductions ?? standardDeductionAmount
+      });
+    }
+  }, [taxData.deductions, form, standardDeductionAmount]);
+
   const onSubmit = (data: Deductions) => {
     // 표준 공제를 선택한 경우에도 항목별 공제 값을 유지하기 위해 
     // taxData에서 기존 itemizedDeductions 값을 보존

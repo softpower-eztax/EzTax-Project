@@ -228,6 +228,10 @@ ${additionalRequests || '없음'}
       
       if (transporter) {
         try {
+          // Test connection first
+          await transporter.verify();
+          console.log('Gmail SMTP connection verified successfully');
+          
           const mailOptions = {
             from: process.env.EMAIL_USER,
             to: 'eztax88@gmail.com',
@@ -259,17 +263,18 @@ ${additionalRequests || '없음'}
           };
 
           const info = await transporter.sendMail(mailOptions);
-          console.log('Email sent successfully to eztax88@gmail.com');
+          console.log('✅ Email sent successfully to eztax88@gmail.com');
           console.log('Message ID:', info.messageId);
+          console.log('Response:', info.response);
         } catch (emailError) {
-          console.error('Failed to send email:', emailError);
-          console.log('Application Email Content (fallback):');
+          console.error('❌ Failed to send email:', emailError);
+          console.log('📧 Application Email Content (logged as backup):');
           console.log('To: eztax88@gmail.com');
           console.log('Subject: [EzTax] 새로운 유료검토 서비스 신청');
           console.log('Content:', emailContent);
         }
       } else {
-        console.log('Email credentials not configured - logging application:');
+        console.log('📧 Email credentials not configured - logging application:');
         console.log('To: eztax88@gmail.com');
         console.log('Subject: [EzTax] 새로운 유료검토 서비스 신청');
         console.log('Content:', emailContent);

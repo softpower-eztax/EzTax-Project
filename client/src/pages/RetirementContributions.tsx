@@ -213,7 +213,7 @@ export default function RetirementContributions() {
                       <FormControl>
                         <Input
                           type="number"
-                          placeholder="$"
+                          placeholder="$0"
                           {...field}
                           onChange={(e) => field.onChange(Number(e.target.value))}
                         />
@@ -243,7 +243,7 @@ export default function RetirementContributions() {
                       <FormControl>
                         <Input
                           type="number"
-                          placeholder="$"
+                          placeholder="$0"
                           {...field}
                           onChange={(e) => field.onChange(Number(e.target.value))}
                         />
@@ -273,7 +273,7 @@ export default function RetirementContributions() {
                       <FormControl>
                         <Input
                           type="number"
-                          placeholder="$"
+                          placeholder="$0"
                           {...field}
                           onChange={(e) => field.onChange(Number(e.target.value))}
                         />
@@ -303,7 +303,7 @@ export default function RetirementContributions() {
                       <FormControl>
                         <Input
                           type="number"
-                          placeholder="$"
+                          placeholder="$0"
                           {...field}
                           onChange={(e) => field.onChange(Number(e.target.value))}
                         />
@@ -333,7 +333,7 @@ export default function RetirementContributions() {
                       <FormControl>
                         <Input
                           type="number"
-                          placeholder="$"
+                          placeholder="$0"
                           {...field}
                           onChange={(e) => field.onChange(Number(e.target.value))}
                         />
@@ -363,7 +363,7 @@ export default function RetirementContributions() {
                       <FormControl>
                         <Input
                           type="number"
-                          placeholder="$"
+                          placeholder="$0"
                           {...field}
                           onChange={(e) => field.onChange(Number(e.target.value))}
                         />
@@ -393,7 +393,7 @@ export default function RetirementContributions() {
                       <FormControl>
                         <Input
                           type="number"
-                          placeholder="$"
+                          placeholder="$0"
                           {...field}
                           onChange={(e) => field.onChange(Number(e.target.value))}
                         />
@@ -430,7 +430,7 @@ export default function RetirementContributions() {
                       <FormControl>
                         <Input
                           type="number"
-                          placeholder="$"
+                          placeholder="$0"
                           {...field}
                           onChange={(e) => field.onChange(Number(e.target.value))}
                         />
@@ -454,7 +454,7 @@ export default function RetirementContributions() {
                       <FormControl>
                         <Input
                           type="number"
-                          placeholder="$"
+                          placeholder="$0"
                           {...field}
                           onChange={(e) => field.onChange(Number(e.target.value))}
                         />
@@ -482,7 +482,7 @@ export default function RetirementContributions() {
                     <FormControl>
                       <Input
                         type="number"
-                        placeholder="$"
+                        placeholder="$0"
                         {...field}
                         onChange={(e) => field.onChange(Number(e.target.value))}
                       />

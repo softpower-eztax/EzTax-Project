@@ -282,7 +282,7 @@ const AdditionalTaxPage: React.FC = () => {
               
               <StepNavigation
                 prevStep="/tax-credits"
-                nextStep="/review"
+                nextStep="/state-tax"
                 submitText="검토 및 계산 (Review & Calculate)"
                 onNext={() => {
                   // Always submit the form regardless of validation state

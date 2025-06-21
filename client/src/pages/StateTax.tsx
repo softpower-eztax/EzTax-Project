@@ -8,16 +8,17 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Separator } from '@/components/ui/separator';
 import { Calculator, MapPin, DollarSign } from 'lucide-react';
 import { useTaxContext } from '@/context/TaxContext';
-import { StepNavigation } from '@/components/StepNavigation';
+import StepNavigation from '@/components/StepNavigation';
 import { calculateStateTax, getAllStates, getStateTaxSummary } from '@shared/stateTaxCalculator';
-import type { StateTaxCalculationInput, StateIncomeTax } from '@shared/stateTaxCalculator';
+import type { StateTaxCalculationInput } from '@shared/stateTaxCalculator';
+import type { StateIncomeTax } from '@shared/schema';
 
 const STATES = getAllStates().sort((a, b) => a.name.localeCompare(b.name));
 
 export default function StateTax() {
   const { taxData, updateTaxData } = useTaxContext();
   const [stateWithholding, setStateWithholding] = useState(0);
-  const [calculatedStateTax, setCalculatedStateTax] = useState<StateIncomeTax | null>(null);
+  const [calculatedStateTax, setCalculatedStateTax] = useState<StateIncomeTax | undefined>(undefined);
   const [isCalculating, setIsCalculating] = useState(false);
 
   const selectedState = taxData.personalInfo?.state || '';
@@ -51,15 +52,17 @@ export default function StateTax() {
 
     try {
       const result = calculateStateTax(input);
-      setCalculatedStateTax(result);
+      setCalculatedStateTax(result ?? undefined);
       
       // Update tax data with state tax results
-      updateTaxData({
-        calculatedResults: {
-          ...taxData.calculatedResults,
-          stateIncomeTax: result,
-        },
-      });
+      if (result && taxData.calculatedResults) {
+        updateTaxData({
+          calculatedResults: {
+            ...taxData.calculatedResults,
+            stateIncomeTax: result,
+          },
+        });
+      }
     } catch (error) {
       console.error('State tax calculation error:', error);
     } finally {
@@ -241,10 +244,11 @@ export default function StateTax() {
       )}
 
       <StepNavigation 
-        currentStep="/state-tax"
+        prevStep="/additional-tax"
+        nextStep="/review"
         onNext={async () => {
           // Auto-save current state tax data
-          if (calculatedStateTax) {
+          if (calculatedStateTax && taxData.calculatedResults) {
             updateTaxData({
               calculatedResults: {
                 ...taxData.calculatedResults,

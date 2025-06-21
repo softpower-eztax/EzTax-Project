@@ -15,6 +15,7 @@ import Deductions from "@/pages/Deductions";
 import SALTDeductions from "@/pages/SALTDeductionsNew";
 import TaxCredits from "@/pages/TaxCredits3";
 import AdditionalTax from "@/pages/AdditionalTax";
+import StateTax from "@/pages/StateTax";
 import Review from "@/pages/Review";
 import TaxSavingAdvice from "@/pages/TaxSavingAdvice";
 import RetirementScore from "@/pages/RetirementScore";
@@ -51,6 +52,7 @@ function Router() {
       <ProtectedRoute path="/salt-deductions" component={SALTDeductions} />
       <ProtectedRoute path="/tax-credits" component={TaxCredits} />
       <ProtectedRoute path="/additional-tax" component={AdditionalTax} />
+      <ProtectedRoute path="/state-tax" component={StateTax} />
       <ProtectedRoute path="/retirement-score" component={RetirementScore} />
       <ProtectedRoute path="/review" component={Review} />
       <ProtectedRoute path="/tax-saving-advice" component={TaxSavingAdvice} />

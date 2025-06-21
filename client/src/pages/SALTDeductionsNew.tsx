@@ -162,7 +162,7 @@ export default function SALTDeductionsNew() {
                 step="0.01"
                 min="0"
                 className="pl-8"
-                value={stateLocalIncomeTax}
+                value={stateLocalIncomeTax === 0 ? '' : stateLocalIncomeTax}
                 onChange={(e) => {
                   const inputValue = e.target.value;
                   if (inputValue === '' || !isNaN(Number(inputValue))) {
@@ -188,7 +188,7 @@ export default function SALTDeductionsNew() {
                 step="0.01"
                 min="0"
                 className="pl-8"
-                value={stateLocalSalesTax}
+                value={stateLocalSalesTax === 0 ? '' : stateLocalSalesTax}
                 onChange={(e) => {
                   const inputValue = e.target.value;
                   if (inputValue === '' || !isNaN(Number(inputValue))) {
@@ -226,7 +226,7 @@ export default function SALTDeductionsNew() {
                 step="0.01"
                 min="0"
                 className="pl-8"
-                value={realEstateTax}
+                value={realEstateTax === 0 ? '' : realEstateTax}
                 onChange={(e) => {
                   const inputValue = e.target.value;
                   if (inputValue === '' || !isNaN(Number(inputValue))) {
@@ -263,7 +263,7 @@ export default function SALTDeductionsNew() {
                 step="0.01"
                 min="0"
                 className="pl-8"
-                value={personalPropertyTax}
+                value={personalPropertyTax === 0 ? '' : personalPropertyTax}
                 onChange={(e) => {
                   const inputValue = e.target.value;
                   if (inputValue === '' || !isNaN(Number(inputValue))) {
@@ -300,7 +300,7 @@ export default function SALTDeductionsNew() {
             <div className="relative">
               <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-dark font-semibold">$</span>
               <div className="pl-8 pr-4 py-3 text-xl font-bold bg-white border-2 border-blue-300 rounded-md min-h-[50px] flex items-center">
-                {totalSALT.toLocaleString()}
+                {totalSALT === 0 ? '' : totalSALT.toLocaleString()}
               </div>
             </div>
             <p className="text-sm text-gray-600">

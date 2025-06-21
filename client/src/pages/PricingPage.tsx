@@ -32,8 +32,7 @@ const PricingPage = () => {
           유료검토 서비스 안내(Paid Review Service)
         </h1>
         <p className="text-gray-dark max-w-2xl mx-auto">
-          전문적인 세무사의 검토를 통해 더 많은 세금 환급을 받거나 세무 위험을 줄일 수 있습니다. 
-          아래의 다양한 검토 옵션 중에서 선택하세요.(Choose from our professional tax review options to maximize your refund or minimize tax risks.)
+          전문적인 세무사의 검토를 통해 더 많은 세금 환급을 받거나 세무 위험을 줄일 수 있습니다.
         </p>
       </div>
 

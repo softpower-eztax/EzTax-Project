@@ -349,6 +349,16 @@ export default function SALTDeductionsNew() {
             {isLoading ? "저장 중..." : "저장"}
           </Button>
         </div>
+
+        {/* 하단 돌아가기 버튼 */}
+        <div className="mt-8 pt-6 border-t border-gray-200">
+          <Link href="/deductions">
+            <Button variant="outline" className="flex items-center gap-2">
+              <ArrowLeft className="h-4 w-4" />
+              공제 페이지로 돌아가기
+            </Button>
+          </Link>
+        </div>
       </div>
     </div>
   );

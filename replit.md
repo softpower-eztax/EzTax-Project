@@ -105,6 +105,10 @@ Preferred communication style: Simple, everyday language.
 ## Changelog
 
 Recent Changes:
+- June 21, 2025: Retirement consultation section removed from Additional Tax page per user request
+- June 21, 2025: SALT data persistence completely fixed with personalPropertyTax field added to database schema
+- June 21, 2025: Enhanced SALT deduction calculations to include personal property tax in $10,000 limit
+- June 21, 2025: Improved navigation from window.location to wouter navigate for seamless page transitions
 - June 20, 2025: Deployment completed to https://web-data-pro-kloombergtv.replit.app for eztax.kr domain forwarding
 - June 21, 2025: Book title finalized to "절세로 시작하는 은퇴설계 Less Tax, Better Retirement" across all pages
 - June 21, 2025: Expert profile simplified by removing "전직 재무임원" for cleaner presentation

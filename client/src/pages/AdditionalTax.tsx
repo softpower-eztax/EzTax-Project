@@ -278,35 +278,7 @@ const AdditionalTaxPage: React.FC = () => {
                 </form>
               </Form>
 
-              {/* Retirement Score Recommendation */}
-              <Card className="mt-6 border-primary/20 bg-gradient-to-r from-primary/5 to-blue-50">
-                <CardContent className="p-6">
-                  <div className="flex items-start gap-4">
-                    <div className="text-3xl">📈</div>
-                    <div className="flex-1">
-                      <h3 className="text-lg font-semibold text-primary-dark mb-2">
-                        은퇴 준비 상태도 같이 진단받아보시겠어요? (무료)
-                      </h3>
-                      <p className="text-gray-600 mb-4">
-                        세금 신고가 거의 완료되었습니다! 이제 장기적인 은퇴 전략도 확인해보세요.
-                        간단한 질문으로 개인 맞춤 은퇴 점수와 전략을 받아보실 수 있습니다.
-                      </p>
-                      <div className="flex gap-3">
-                        <Button 
-                          variant="outline" 
-                          className="border-primary text-primary hover:bg-primary/10"
-                          onClick={() => navigate('/retirement-score')}
-                        >
-                          은퇴 점수 확인하기
-                        </Button>
-                        <Button variant="ghost" size="sm" className="text-gray-500">
-                          나중에
-                        </Button>
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+
               
               <StepNavigation
                 prevStep="/tax-credits"

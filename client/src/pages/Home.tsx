@@ -178,7 +178,7 @@ const Home: React.FC = () => {
                 className="text-gray-600 hover:text-primary underline"
                 onClick={() => navigate('/about')}
               >
-                EzTax와 지대현 CEO에 대해 더 알아보기 →
+                EzTax와 운영진에 대해 더 알아보기 →
               </Button>
             </div>
           </>

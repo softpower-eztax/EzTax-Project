@@ -351,6 +351,13 @@ const Review: React.FC = () => {
                   </Button>
                   
                   <Button
+                    className="bg-blue-600 text-white font-semibold rounded hover:bg-blue-700 transition duration-200 w-[240px] justify-center"
+                    onClick={() => navigate('/state-tax')}
+                  >
+                    주소득세 계산(State Income Tax)
+                  </Button>
+                  
+                  <Button
                     className="bg-primary text-white font-semibold rounded hover:bg-primary-dark transition duration-200 w-[240px] justify-center"
                     onClick={() => setShowSubmitDialog(true)}
                     disabled={isLoading}

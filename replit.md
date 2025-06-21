@@ -105,9 +105,11 @@ Preferred communication style: Simple, everyday language.
 ## Changelog
 
 Recent Changes:
+- June 21, 2025: State Tax workflow repositioned to start after Federal Tax Review completion per user request
+- June 21, 2025: Review page enhanced with "주소득세 계산(State Income Tax)" button for optional state tax calculation
+- June 21, 2025: Additional Tax page navigation updated to proceed directly to Review, bypassing State Tax
 - June 21, 2025: State Income Tax calculation system fully implemented and tested with live data
 - June 21, 2025: 50-state tax rules engine integrated with federal tax calculations
-- June 21, 2025: StateTax page added to workflow between Additional Tax and Review pages
 - June 21, 2025: State tax results display in Review page with refund/owed calculations
 - June 21, 2025: Verified working with Illinois sample data ($4,359.71 state tax on $100,200 AGI)
 - June 21, 2025: Gmail email delivery successfully implemented and verified working

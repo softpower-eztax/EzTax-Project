@@ -273,8 +273,9 @@ export default function StateTax() {
       )}
 
       <StepNavigation 
-        prevStep="/additional-tax"
+        prevStep="/review"
         nextStep="/review"
+        submitText="연방세 검토로 돌아가기 (Return to Federal Tax Review)"
         onNext={async () => {
           // Auto-save current state tax data
           if (calculatedStateTax && taxData.calculatedResults) {

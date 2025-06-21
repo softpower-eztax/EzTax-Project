@@ -176,6 +176,25 @@ const PersonalInfo: React.FC = () => {
         const currentUser = await userResponse.json();
         console.log(`PersonalInfo - 현재 사용자: ${currentUser.username} (ID: ${currentUser.id})`);
         
+        // 서버에서 최신 데이터를 다시 가져와서 확인
+        const taxResponse = await fetch('/api/tax-return', {
+          credentials: 'include',
+          cache: 'no-cache',
+          headers: {
+            'Cache-Control': 'no-cache, no-store, must-revalidate'
+          }
+        });
+        
+        if (taxResponse.ok) {
+          const serverData = await taxResponse.json();
+          if (serverData.personalInfo) {
+            console.log("PersonalInfo - 서버에서 최신 개인정보 로드:", serverData.personalInfo);
+            form.reset(serverData.personalInfo);
+            setSavedValues(serverData.personalInfo);
+            return;
+          }
+        }
+        
         // TaxContext에서 로드된 데이터가 현재 사용자 것인지 확인
         if (taxData.personalInfo) {
           console.log("PersonalInfo - TaxContext에서 개인정보 로드");

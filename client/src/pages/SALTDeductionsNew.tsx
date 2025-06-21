@@ -22,21 +22,7 @@ export default function SALTDeductionsNew() {
   const [personalPropertyTax, setPersonalPropertyTax] = useState(0);
   const [totalSALT, setTotalSALT] = useState(0);
 
-  // Initialize state from existing tax data only once when component mounts
-  useEffect(() => {
-    if (taxData?.deductions?.itemizedDeductions) {
-      const existingIncomeTax = taxData.deductions.itemizedDeductions.stateLocalIncomeTax || 0;
-      const existingRealEstate = taxData.deductions.itemizedDeductions.realEstateTaxes || 0;
-      
-      setStateLocalIncomeTax(existingIncomeTax);
-      setRealEstateTax(existingRealEstate);
-      
-      console.log('컴포넌트 마운트 시 초기 데이터 로드:', {
-        existingIncomeTax,
-        existingRealEstate
-      });
-    }
-  }, []); // Empty dependency array - only run once on mount
+  // Remove problematic useEffect that was causing input resets
 
   const calculateTotalSALT = () => {
     const selectedTaxAmount = taxType === 'income' ? stateLocalIncomeTax : stateLocalSalesTax;
@@ -178,9 +164,13 @@ export default function SALTDeductionsNew() {
                 className="pl-8"
                 value={stateLocalIncomeTax}
                 onChange={(e) => {
-                  const value = parseFloat(e.target.value) || 0;
-                  setStateLocalIncomeTax(value);
-                  setTimeout(calculateTotalSALT, 100);
+                  const inputValue = e.target.value;
+                  if (inputValue === '' || !isNaN(Number(inputValue))) {
+                    const numValue = inputValue === '' ? 0 : Number(inputValue);
+                    console.log('주/지방 소득세 입력 변경:', inputValue, '->', numValue);
+                    setStateLocalIncomeTax(numValue);
+                    setTimeout(() => calculateTotalSALT(), 50);
+                  }
                 }}
                 disabled={taxType !== 'income'}
                 placeholder="0"
@@ -198,11 +188,15 @@ export default function SALTDeductionsNew() {
                 step="0.01"
                 min="0"
                 className="pl-8"
-                value={stateLocalSalesTax || ''}
+                value={stateLocalSalesTax}
                 onChange={(e) => {
-                  const value = e.target.value === '' ? 0 : parseFloat(e.target.value) || 0;
-                  setStateLocalSalesTax(value);
-                  setTimeout(calculateTotalSALT, 100);
+                  const inputValue = e.target.value;
+                  if (inputValue === '' || !isNaN(Number(inputValue))) {
+                    const numValue = inputValue === '' ? 0 : Number(inputValue);
+                    console.log('주/지방 판매세 입력 변경:', inputValue, '->', numValue);
+                    setStateLocalSalesTax(numValue);
+                    setTimeout(() => calculateTotalSALT(), 50);
+                  }
                 }}
                 disabled={taxType !== 'sales'}
                 placeholder="0"
@@ -232,12 +226,15 @@ export default function SALTDeductionsNew() {
                 step="0.01"
                 min="0"
                 className="pl-8"
-                value={realEstateTax || ''}
+                value={realEstateTax}
                 onChange={(e) => {
-                  const value = e.target.value === '' ? 0 : parseFloat(e.target.value) || 0;
-                  console.log('부동산세 입력:', value);
-                  setRealEstateTax(value);
-                  setTimeout(calculateTotalSALT, 100);
+                  const inputValue = e.target.value;
+                  if (inputValue === '' || !isNaN(Number(inputValue))) {
+                    const numValue = inputValue === '' ? 0 : Number(inputValue);
+                    console.log('부동산세 입력 변경:', inputValue, '->', numValue);
+                    setRealEstateTax(numValue);
+                    setTimeout(() => calculateTotalSALT(), 50);
+                  }
                 }}
                 placeholder="0"
               />
@@ -266,12 +263,15 @@ export default function SALTDeductionsNew() {
                 step="0.01"
                 min="0"
                 className="pl-8"
-                value={personalPropertyTax || ''}
+                value={personalPropertyTax}
                 onChange={(e) => {
-                  const value = e.target.value === '' ? 0 : parseFloat(e.target.value) || 0;
-                  console.log('개인재산세 입력:', value);
-                  setPersonalPropertyTax(value);
-                  setTimeout(calculateTotalSALT, 100);
+                  const inputValue = e.target.value;
+                  if (inputValue === '' || !isNaN(Number(inputValue))) {
+                    const numValue = inputValue === '' ? 0 : Number(inputValue);
+                    console.log('개인재산세 입력 변경:', inputValue, '->', numValue);
+                    setPersonalPropertyTax(numValue);
+                    setTimeout(() => calculateTotalSALT(), 50);
+                  }
                 }}
                 placeholder="0"
               />

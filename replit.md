@@ -105,9 +105,11 @@ Preferred communication style: Simple, everyday language.
 ## Changelog
 
 Recent Changes:
+- June 21, 2025: PostgreSQL-based admin authentication system fully operational with proper password hashing
+- June 21, 2025: Admin account (username: admin, password: admin) successfully created in production database
+- June 21, 2025: Database storage migration from memory to PostgreSQL completed for persistent admin access
 - June 21, 2025: Complete admin panel system implemented with user management table, API endpoints, and header navigation
 - June 21, 2025: Admin authentication system with session management and PostgreSQL-based user data retrieval
-- June 21, 2025: Test admin account created (username: admin, password: admin123) for demonstration purposes
 - June 21, 2025: Logout functionality fixed with improved session handling and client-side failsafe for deployed environment
 - June 21, 2025: State Tax page enhanced with selectable state dropdown - auto-loads resident state but allows selection of any state for comparison
 - June 21, 2025: State tax results display removed from Review page - now purely shows federal tax calculations

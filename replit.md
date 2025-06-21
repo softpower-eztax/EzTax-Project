@@ -105,6 +105,7 @@ Preferred communication style: Simple, everyday language.
 ## Changelog
 
 Recent Changes:
+- June 21, 2025: Unnecessary direct contact information removed from application form per user request
 - June 21, 2025: Application form system implemented - users can submit service requests with name, phone, email to eztax88@gmail.com
 - June 21, 2025: Backend API endpoint added for processing application submissions with email notification functionality
 - June 21, 2025: Pricing page buttons now redirect to dedicated application form instead of showing simple toast messages

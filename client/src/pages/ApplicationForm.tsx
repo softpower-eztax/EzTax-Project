@@ -268,8 +268,7 @@ const ApplicationForm: React.FC = () => {
 
       <div className="mt-6 p-4 bg-blue-50 rounded-lg">
         <p className="text-sm text-blue-800">
-          <strong>안내사항:</strong> 신청서 제출 후 1-2일 내에 담당 세무사가 연락드립니다. 
-          급하신 경우 eztax88@gmail.com으로 직접 문의해주세요.
+          <strong>안내사항:</strong> 신청서 제출 후 1-2일 내에 담당 세무사가 연락드립니다.
         </p>
       </div>
     </div>

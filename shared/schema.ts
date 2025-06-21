@@ -389,5 +389,6 @@ export interface TaxData {
   retirementContributions?: RetirementContributions;
   taxCredits?: TaxCredits;
   additionalTax?: AdditionalTax;
+  stateIncomeTax?: StateIncomeTax;
   calculatedResults?: CalculatedResults;
 }

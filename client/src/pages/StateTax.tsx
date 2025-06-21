@@ -120,6 +120,35 @@ export default function StateTax() {
             </Alert>
           )}
 
+          {/* Enhanced State Tax Features Notice */}
+          {selectedState && (
+            <Alert className="border-blue-200 bg-blue-50">
+              <AlertDescription>
+                <div className="space-y-2">
+                  <p className="font-medium text-blue-900">
+                    📋 주별 세부 공제 및 크레딧 항목 안내
+                  </p>
+                  <p className="text-blue-800 text-sm">
+                    {STATES.find(s => s.code === selectedState)?.name}주에는 다음과 같은 추가 공제 및 크레딧이 있을 수 있습니다:
+                  </p>
+                  <ul className="text-blue-700 text-xs space-y-1 ml-4 list-disc">
+                    <li>교육자 비용 공제 (K-12 교사용 교실 자료비)</li>
+                    <li>고령자 및 장애인 면제 (연령 및 소득 조건 적용)</li>
+                    <li>학자금 대출 이자 공제 (주별 소득 한도 적용)</li>
+                    <li>임차인 크레딧 (저소득 임차인 대상)</li>
+                    <li>군인 연금 소득 제외</li>
+                    <li>자원소방관/구급요원 크레딧</li>
+                    <li>대학 등록금 크레딧/공제</li>
+                  </ul>
+                  <p className="text-blue-800 text-sm mt-2">
+                    <strong>중요:</strong> 실제 신고 시에는 {STATES.find(s => s.code === selectedState)?.name}주의 
+                    최신 세법 규정과 자격 요건을 확인하시고, 전문 세무사의 상담을 받으시기 바랍니다.
+                  </p>
+                </div>
+              </AlertDescription>
+            </Alert>
+          )}
+
           {/* State Withholding Input */}
           {selectedState && (
             <div>

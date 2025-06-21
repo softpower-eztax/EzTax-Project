@@ -14,6 +14,15 @@ export interface StateTaxCalculationInput {
     municipalBondInterest?: number;
     otherStateAdjustments?: number;
   };
+  // Enhanced state-specific deductions and credits
+  stateSpecificDeductions?: StateSpecificDeductionInput[];
+  appliedStateCredits?: StateSpecificDeductionInput[];
+}
+
+export interface StateSpecificDeductionInput {
+  id: string;
+  amount: number;
+  qualified: boolean;
 }
 
 // Calculate tax from brackets
@@ -127,6 +136,25 @@ export function calculateStateTax(input: StateTaxCalculationInput): StateIncomeT
     stateDeductions = Math.max(stateStandardDeduction, input.federalItemizedDeductions);
   }
 
+  // Apply state-specific deductions if provided
+  let additionalStateDeductions = 0;
+  if (input.stateSpecificDeductions && rule.stateSpecificDeductions) {
+    for (const deductionInput of input.stateSpecificDeductions) {
+      if (deductionInput.qualified && deductionInput.amount > 0) {
+        const ruleDeduction = rule.stateSpecificDeductions.find(d => d.id === deductionInput.id);
+        if (ruleDeduction) {
+          // Apply maximum limits if specified
+          const allowedAmount = ruleDeduction.maxAmount 
+            ? Math.min(deductionInput.amount, ruleDeduction.maxAmount)
+            : deductionInput.amount;
+          additionalStateDeductions += allowedAmount;
+        }
+      }
+    }
+  }
+  
+  stateDeductions += additionalStateDeductions;
+
   // Calculate state exemptions
   const stateExemptions = calculateStateExemptions(rule, input.filingStatus, input.dependentsCount);
 
@@ -146,9 +174,29 @@ export function calculateStateTax(input: StateTaxCalculationInput): StateIncomeT
 
   // Calculate state withholding and refund/owed
   const stateWithholding = input.stateSpecificIncome?.stateWithholding || 0;
-  const stateCredits = 0; // Basic implementation - would need more detailed state credit rules
   
-  const finalStateTax = Math.max(0, stateTax - stateCredits);
+  // Calculate state credits
+  let totalStateCredits = 0;
+  if (input.appliedStateCredits && rule.stateCredits) {
+    for (const creditInput of input.appliedStateCredits) {
+      if (creditInput.qualified && creditInput.amount > 0) {
+        const ruleCredit = rule.stateCredits.find(c => c.id === creditInput.id);
+        if (ruleCredit) {
+          // Apply maximum limits and income limits if specified
+          let allowedAmount = Math.min(creditInput.amount, ruleCredit.maxAmount);
+          
+          // Check income limits if specified
+          if (ruleCredit.incomeLimit && stateAGI > ruleCredit.incomeLimit) {
+            allowedAmount = 0; // Credit phases out completely above income limit
+          }
+          
+          totalStateCredits += allowedAmount;
+        }
+      }
+    }
+  }
+  
+  const finalStateTax = Math.max(0, stateTax - totalStateCredits);
   const stateRefundAmount = Math.max(0, stateWithholding - finalStateTax);
   const stateAmountOwed = Math.max(0, finalStateTax - stateWithholding);
 
@@ -156,7 +204,7 @@ export function calculateStateTax(input: StateTaxCalculationInput): StateIncomeT
     state: stateCode,
     stateTaxableIncome: Math.round(stateTaxableIncome * 100) / 100,
     stateTax: Math.round(finalStateTax * 100) / 100,
-    stateCredits: Math.round(stateCredits * 100) / 100,
+    stateCredits: Math.round(totalStateCredits * 100) / 100,
     stateWithholding: Math.round(stateWithholding * 100) / 100,
     stateRefund: Math.round(stateRefundAmount * 100) / 100,
     stateAmountOwed: Math.round(stateAmountOwed * 100) / 100,

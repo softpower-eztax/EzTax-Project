@@ -234,16 +234,22 @@ const PersonalInfo: React.FC = () => {
     loadUserData();
   }, []); // 빈 의존성 배열로 변경하여 컴포넌트 마운트 시에만 실행
 
-  // taxData.personalInfo가 변경될 때만 폼 업데이트 (데이터 보존)
+  // taxData.personalInfo가 변경될 때만 폼 업데이트 (데이터 보존) - 사용자 입력 중이 아닐 때만
   useEffect(() => {
     if (taxData.personalInfo && Object.keys(taxData.personalInfo).length > 0) {
-      // 기존 폼 데이터와 새 데이터를 병합하여 데이터 손실 방지
-      const currentFormData = form.getValues();
-      const mergedData = { ...currentFormData, ...taxData.personalInfo };
+      // 현재 포커스된 요소가 있는지 확인 (사용자가 입력 중인지 체크)
+      const activeElement = document.activeElement;
+      const isUserTyping = activeElement && (activeElement.tagName === 'INPUT' || activeElement.tagName === 'TEXTAREA');
       
-      console.log("PersonalInfo - 데이터 업데이트:", mergedData);
-      form.reset(mergedData);
-      setSavedValues(mergedData);
+      // 사용자가 입력 중이 아닐 때만 폼 업데이트
+      if (!isUserTyping) {
+        const currentFormData = form.getValues();
+        const mergedData = { ...currentFormData, ...taxData.personalInfo };
+        
+        console.log("PersonalInfo - 데이터 업데이트:", mergedData);
+        form.reset(mergedData);
+        setSavedValues(mergedData);
+      }
     }
   }, [taxData.personalInfo]);
 
@@ -260,20 +266,15 @@ const PersonalInfo: React.FC = () => {
   // Watch all form values and auto-save to TaxContext as user types
   const watchedValues = form.watch();
   
-  useEffect(() => {
-    // Auto-save form data to TaxContext whenever form values change
-    const subscription = form.watch((value) => {
-      if (value && Object.keys(value).length > 0) {
-        // Only update if there's actual data
-        const hasData = value.firstName || value.lastName || value.ssn || value.email;
-        if (hasData) {
-          console.log("PersonalInfo - Auto-saving form data:", value);
-          updateTaxData({ personalInfo: value as PersonalInformation });
-        }
-      }
-    });
-    return () => subscription.unsubscribe();
-  }, [updateTaxData, form]);
+  // Auto-save form data only on form blur events to prevent interference with typing
+  const handleFormBlur = () => {
+    const formData = form.getValues();
+    const hasData = formData.firstName || formData.lastName || formData.ssn || formData.email;
+    if (hasData) {
+      console.log("PersonalInfo - Saving form data on blur:", formData);
+      updateTaxData({ personalInfo: formData });
+    }
+  };
 
   const { fields, append, remove } = useFieldArray({
     control: form.control,
@@ -454,7 +455,7 @@ const PersonalInfo: React.FC = () => {
                           <FormItem>
                             <FormLabel>이름(First Name)</FormLabel>
                             <FormControl>
-                              <Input {...field} />
+                              <Input {...field} onBlur={handleFormBlur} />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -468,7 +469,7 @@ const PersonalInfo: React.FC = () => {
                           <FormItem>
                             <FormLabel>성(Last Name)</FormLabel>
                             <FormControl>
-                              <Input {...field} />
+                              <Input {...field} onBlur={handleFormBlur} />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -505,6 +506,7 @@ const PersonalInfo: React.FC = () => {
                                   const formatted = formatSSN(e.target.value);
                                   field.onChange(formatted);
                                 }}
+                                onBlur={handleFormBlur}
                                 maxLength={11}
                               />
                             </FormControl>

@@ -185,39 +185,40 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       const userId = (req.user as any).id;
+      console.log(`GET /api/tax-return - 사용자 ID: ${userId} 데이터 요청`);
+      
       const taxReturn = await storage.getCurrentTaxReturn(userId);
+      
       if (!taxReturn) {
-        // Return empty initial data for new users
-        const emptyTaxReturn = {
-          id: 1,
+        console.log(`사용자 ID ${userId}의 세금 신고서 없음 - 새 빈 신고서 생성`);
+        
+        // Create a new empty tax return for this user
+        const newTaxReturn = await storage.createTaxReturn({
           userId: userId,
           taxYear: 2025,
-          status: "in_progress",
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-          personalInfo: null,
-          income: null,
-          deductions: null,
-          taxCredits: null,
-          additionalTax: null,
-          calculatedResults: {
-            totalIncome: 0,
-            adjustments: 0,
-            adjustedGrossIncome: 0,
-            deductions: 0,
-            taxableIncome: 0,
-            federalTax: 0,
-            credits: 0,
-            taxDue: 0,
-            payments: 0,
-            refundAmount: 0,
-            amountOwed: 0
-          }
-        };
+          status: "in_progress"
+        });
         
-        res.json(emptyTaxReturn);
+        console.log(`사용자 ID ${userId}에게 새 세금 신고서 생성됨 (ID: ${newTaxReturn.id})`);
+        res.json(newTaxReturn);
       } else {
-        res.json(taxReturn);
+        // CRITICAL SECURITY CHECK: Verify the tax return belongs to the requesting user
+        if (taxReturn.userId !== userId) {
+          console.error(`보안 위반: 세금 신고서 ${taxReturn.id}는 사용자 ${taxReturn.userId}에게 속하지만 사용자 ${userId}가 요청함`);
+          
+          // Create a new tax return for the requesting user instead
+          const newTaxReturn = await storage.createTaxReturn({
+            userId: userId,
+            taxYear: 2025,
+            status: "in_progress"
+          });
+          
+          console.log(`보안 위반으로 인해 사용자 ID ${userId}에게 새 세금 신고서 생성됨`);
+          res.json(newTaxReturn);
+        } else {
+          console.log(`사용자 ID ${userId}의 기존 세금 신고서 반환 (ID: ${taxReturn.id})`);
+          res.json(taxReturn);
+        }
       }
     } catch (error) {
       console.error("Error fetching tax return:", error);

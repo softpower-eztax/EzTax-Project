@@ -100,7 +100,7 @@ const Header: React.FC = () => {
                 onClick={() => navigate('/filing-status-checker')}
               >
                 <ClipboardCheck className="h-4 w-4 mr-1" />
-                Check Filing Status
+                Filing Status 확인
               </Button>
               
               <Button 

@@ -67,26 +67,46 @@ const Deductions: React.FC = () => {
     });
   };
   
-  // 모든 필드 값을 0으로 시작하는 기본값 설정
-  const defaultValues: Deductions = {
-    useStandardDeduction: true, // 기본적으로 표준공제 선택
-    standardDeductionAmount: standardDeductionAmount,
-    itemizedDeductions: {
-      medicalExpenses: 0,
-      stateLocalIncomeTax: 0,
-      realEstateTaxes: 0,
-      mortgageInterest: 0,
-      charitableCash: 0,
-      charitableNonCash: 0
-    },
-    otherDeductionItems: taxData.deductions?.otherDeductionItems || [],
-    totalDeductions: standardDeductionAmount,
-    ...taxData.deductions
+  // 동적으로 기본값 생성
+  const getDefaultValues = (): Deductions => {
+    if (taxData.deductions) {
+      console.log('기존 데이터로 폼 초기화:', taxData.deductions);
+      return {
+        useStandardDeduction: taxData.deductions.useStandardDeduction ?? true,
+        standardDeductionAmount: taxData.deductions.standardDeductionAmount ?? standardDeductionAmount,
+        itemizedDeductions: {
+          medicalExpenses: taxData.deductions.itemizedDeductions?.medicalExpenses ?? 0,
+          stateLocalIncomeTax: taxData.deductions.itemizedDeductions?.stateLocalIncomeTax ?? 0,
+          realEstateTaxes: taxData.deductions.itemizedDeductions?.realEstateTaxes ?? 0,
+          mortgageInterest: taxData.deductions.itemizedDeductions?.mortgageInterest ?? 0,
+          charitableCash: taxData.deductions.itemizedDeductions?.charitableCash ?? 0,
+          charitableNonCash: taxData.deductions.itemizedDeductions?.charitableNonCash ?? 0
+        },
+        otherDeductionItems: taxData.deductions.otherDeductionItems || [],
+        totalDeductions: taxData.deductions.totalDeductions ?? standardDeductionAmount
+      };
+    }
+    
+    // 기본값 (새로운 세션)
+    return {
+      useStandardDeduction: true,
+      standardDeductionAmount: standardDeductionAmount,
+      itemizedDeductions: {
+        medicalExpenses: 0,
+        stateLocalIncomeTax: 0,
+        realEstateTaxes: 0,
+        mortgageInterest: 0,
+        charitableCash: 0,
+        charitableNonCash: 0
+      },
+      otherDeductionItems: [],
+      totalDeductions: standardDeductionAmount
+    };
   };
 
   const form = useForm<Deductions>({
     resolver: zodResolver(deductionsSchema),
-    defaultValues,
+    defaultValues: getDefaultValues(),
     mode: 'onChange'
   });
   
@@ -220,24 +240,30 @@ const Deductions: React.FC = () => {
     form
   ]);
 
-  // Add useEffect to reload data when returning from SALT page
+  // Update form values when taxData changes
   useEffect(() => {
     if (taxData.deductions) {
-      console.log('Deductions 페이지에서 기존 데이터 로드:', taxData.deductions);
-      form.reset({
-        useStandardDeduction: taxData.deductions.useStandardDeduction ?? true,
-        standardDeductionAmount: taxData.deductions.standardDeductionAmount ?? standardDeductionAmount,
-        itemizedDeductions: {
-          medicalExpenses: taxData.deductions.itemizedDeductions?.medicalExpenses ?? 0,
-          stateLocalIncomeTax: taxData.deductions.itemizedDeductions?.stateLocalIncomeTax ?? 0,
-          realEstateTaxes: taxData.deductions.itemizedDeductions?.realEstateTaxes ?? 0,
-          mortgageInterest: taxData.deductions.itemizedDeductions?.mortgageInterest ?? 0,
-          charitableCash: taxData.deductions.itemizedDeductions?.charitableCash ?? 0,
-          charitableNonCash: taxData.deductions.itemizedDeductions?.charitableNonCash ?? 0
-        },
-        otherDeductionItems: taxData.deductions.otherDeductionItems || [],
-        totalDeductions: taxData.deductions.totalDeductions ?? standardDeductionAmount
-      });
+      console.log('Deductions 페이지에서 기존 데이터 setValue로 업데이트:', taxData.deductions);
+      
+      // Set individual field values
+      form.setValue('useStandardDeduction', taxData.deductions.useStandardDeduction ?? true);
+      form.setValue('standardDeductionAmount', taxData.deductions.standardDeductionAmount ?? standardDeductionAmount);
+      form.setValue('totalDeductions', taxData.deductions.totalDeductions ?? standardDeductionAmount);
+      
+      // Set itemized deduction values
+      if (taxData.deductions.itemizedDeductions) {
+        form.setValue('itemizedDeductions.medicalExpenses', taxData.deductions.itemizedDeductions.medicalExpenses ?? 0);
+        form.setValue('itemizedDeductions.stateLocalIncomeTax', taxData.deductions.itemizedDeductions.stateLocalIncomeTax ?? 0);
+        form.setValue('itemizedDeductions.realEstateTaxes', taxData.deductions.itemizedDeductions.realEstateTaxes ?? 0);
+        form.setValue('itemizedDeductions.mortgageInterest', taxData.deductions.itemizedDeductions.mortgageInterest ?? 0);
+        form.setValue('itemizedDeductions.charitableCash', taxData.deductions.itemizedDeductions.charitableCash ?? 0);
+        form.setValue('itemizedDeductions.charitableNonCash', taxData.deductions.itemizedDeductions.charitableNonCash ?? 0);
+      }
+      
+      // Set other deduction items
+      if (taxData.deductions.otherDeductionItems) {
+        form.setValue('otherDeductionItems', taxData.deductions.otherDeductionItems);
+      }
     }
   }, [taxData.deductions, form, standardDeductionAmount]);
 
@@ -487,25 +513,30 @@ const Deductions: React.FC = () => {
                           </div>
                           <div className="space-y-2">
                             <div className="flex gap-2">
-                              <Input
-                                type="number"
-                                step="0.01"
-                                min="0"
-                                max="10000"
-                                value={(() => {
-                                  const itemized = taxData?.deductions?.itemizedDeductions;
-                                  if (!itemized) return 0;
-                                  // Calculate total SALT: state/local income tax + real estate tax
-                                  const saltTotal = (itemized.stateLocalIncomeTax || 0) + (itemized.realEstateTaxes || 0);
-                                  return Math.min(saltTotal, 10000);
-                                })()}
-                                onChange={(e) => {
-                                  const value = parseFloat(e.target.value) || 0;
-                                  const limitedValue = Math.min(value, 10000);
-                                  form.setValue('itemizedDeductions.stateLocalIncomeTax', limitedValue);
-                                }}
-                                disabled={isItemizedDisabled}
-                                className="flex-1"
+                              <FormField
+                                control={form.control}
+                                name="itemizedDeductions.stateLocalIncomeTax"
+                                render={({ field }) => (
+                                  <FormItem className="flex-1">
+                                    <FormControl>
+                                      <Input
+                                        type="number"
+                                        step="0.01"
+                                        min="0"
+                                        max="10000"
+                                        {...field}
+                                        value={field.value || ''}
+                                        onChange={(e) => {
+                                          const value = parseFloat(e.target.value) || 0;
+                                          const limitedValue = Math.min(value, 10000);
+                                          field.onChange(limitedValue);
+                                        }}
+                                        disabled={isItemizedDisabled}
+                                      />
+                                    </FormControl>
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
                               />
                               <Button
                                 type="button"

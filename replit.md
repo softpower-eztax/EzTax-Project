@@ -106,7 +106,8 @@ Preferred communication style: Simple, everyday language.
 
 Recent Changes:
 - June 20, 2025: Deployment completed to https://web-data-pro-kloombergtv.replit.app for eztax.kr domain forwarding
-- June 20, 2025: Book title updated to "절세로 시작하는 부의 설계 (Less Tax, More Wealth)" across all pages
+- June 21, 2025: Book title finalized to "절세로 시작하는 은퇴설계 Less Tax, Better Retirement" across all pages
+- June 21, 2025: Expert profile simplified by removing "전직 재무임원" for cleaner presentation
 - June 20, 2025: Homepage messaging updated to "세금시뮬레이터로 간단하게 계산하시고 노후준비도 진단하세요"
 - June 20, 2025: "리포트 다운로드" button changed to "다시 계산하기" with form reset functionality
 - June 20, 2025: Footer "회사 소개" link connected to About page

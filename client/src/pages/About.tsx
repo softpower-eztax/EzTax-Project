@@ -188,7 +188,7 @@ export default function About() {
               <div className="bg-blue-100/50 p-4 rounded-lg">
                 <h4 className="font-semibold text-blue-800 mb-3">📖 저서</h4>
                 <p className="text-blue-700 font-medium">
-                  『절세로 시작하는 부의 설계 (Less Tax, More Wealth)』
+                  『절세로 시작하는 은퇴설계 Less Tax, Better Retirement』
                 </p>
                 <p className="text-sm text-blue-600 mt-1">
                   실무진이 알려주는 세금 절감과 자산 증대의 비밀

@@ -3,6 +3,19 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { insertTaxReturnSchema } from "@shared/schema";
 import { z } from "zod";
+import nodemailer from "nodemailer";
+
+// Configure email transporter
+const createEmailTransporter = () => {
+  // Use Gmail SMTP with app password (more secure than regular password)
+  return nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      user: process.env.EMAIL_USER || 'eztax88@gmail.com',
+      pass: process.env.EMAIL_PASS // This should be an app-specific password
+    }
+  });
+};
 
 export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/ping", (req, res) => {
@@ -202,15 +215,58 @@ ${additionalRequests || '없음'}
 신청 시간: ${new Date().toLocaleString('ko-KR')}
       `.trim();
 
-      // In a real implementation, you would use a service like SendGrid, Nodemailer, etc.
-      // For now, we'll log the email content and return success
-      console.log('Application Email Content:');
-      console.log('To: eztax88@gmail.com');
-      console.log('Subject: [EzTax] 새로운 유료검토 서비스 신청');
-      console.log('Content:', emailContent);
-      
-      // Simulate email sending delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // Try to send actual email if credentials are available
+      if (process.env.EMAIL_PASS) {
+        try {
+          const transporter = createEmailTransporter();
+          
+          const mailOptions = {
+            from: process.env.EMAIL_USER || 'eztax88@gmail.com',
+            to: 'eztax88@gmail.com',
+            subject: '[EzTax] 새로운 유료검토 서비스 신청',
+            text: emailContent,
+            html: `
+              <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+                <h2 style="color: #0055AA;">새로운 유료검토 서비스 신청</h2>
+                <div style="background-color: #f5f5f5; padding: 20px; border-radius: 5px;">
+                  <h3>신청자 정보:</h3>
+                  <ul style="list-style: none; padding: 0;">
+                    <li><strong>이름:</strong> ${name}</li>
+                    <li><strong>전화번호:</strong> ${phone}</li>
+                    <li><strong>이메일:</strong> ${email}</li>
+                    <li><strong>선택한 플랜:</strong> ${planName}</li>
+                  </ul>
+                  
+                  <h3>추가 요청사항:</h3>
+                  <p style="background-color: white; padding: 15px; border-radius: 3px;">
+                    ${additionalRequests || '없음'}
+                  </p>
+                  
+                  <p style="margin-top: 20px; color: #666;">
+                    <strong>신청 시간:</strong> ${new Date().toLocaleString('ko-KR')}
+                  </p>
+                </div>
+              </div>
+            `
+          };
+
+          await transporter.sendMail(mailOptions);
+          console.log('Email sent successfully to eztax88@gmail.com');
+        } catch (emailError) {
+          console.error('Failed to send email:', emailError);
+          // Fall back to logging if email fails
+          console.log('Application Email Content (fallback):');
+          console.log('To: eztax88@gmail.com');
+          console.log('Subject: [EzTax] 새로운 유료검토 서비스 신청');
+          console.log('Content:', emailContent);
+        }
+      } else {
+        // Log email content if no email credentials
+        console.log('Application Email Content (no credentials):');
+        console.log('To: eztax88@gmail.com');
+        console.log('Subject: [EzTax] 새로운 유료검토 서비스 신청');
+        console.log('Content:', emailContent);
+      }
       
       res.json({ 
         success: true, 

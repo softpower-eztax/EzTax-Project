@@ -5,6 +5,18 @@ export interface StateTaxBracket {
   rate: number;
 }
 
+export interface StateSpecificDeduction {
+  id: string;
+  name: string;
+  nameKorean: string;
+  description: string;
+  descriptionKorean: string;
+  maxAmount?: number;
+  percentage?: number;
+  requirements?: string[];
+  requirementsKorean?: string[];
+}
+
 export interface StateTaxRule {
   state: string;
   stateName: string;
@@ -23,12 +35,35 @@ export interface StateTaxRule {
   };
   personalExemption: number;
   dependentExemption: number;
+  // 확장된 주별 공제 항목들
+  stateSpecificDeductions?: StateSpecificDeduction[];
   specialRules?: {
     federalDeductionAllowed?: boolean;
     altMinimumTax?: boolean;
     retirementIncomeExemption?: number;
     socialSecurityExemption?: boolean;
+    // 추가 특별 규정들
+    municipalBondInterestExempt?: boolean;
+    militaryRetirementExemption?: number;
+    teacherExpenseDeduction?: number;
+    studentLoanInterestDeduction?: boolean;
+    healthSavingsAccountDeduction?: boolean;
+    elderlyExemption?: {
+      ageThreshold: number;
+      exemptionAmount: number;
+    };
+    disabilityExemption?: number;
   };
+  // 주별 세금 크레딧들
+  stateCredits?: {
+    id: string;
+    name: string;
+    nameKorean: string;
+    maxAmount: number;
+    incomeLimit?: number;
+    description: string;
+    descriptionKorean: string;
+  }[];
 }
 
 // 2024 State Tax Rules - Major States
@@ -121,9 +156,71 @@ export const STATE_TAX_RULES: Record<string, StateTaxRule> = {
     },
     personalExemption: 154,
     dependentExemption: 446,
+    // 캘리포니아 주별 공제 항목들
+    stateSpecificDeductions: [
+      {
+        id: 'ca_disability_income',
+        name: 'Disability Income Exclusion',
+        nameKorean: '장애소득 제외',
+        description: 'Exclude disability income from state taxes',
+        descriptionKorean: '장애소득을 주세에서 제외',
+        maxAmount: 100000,
+        requirements: ['Permanent and total disability', 'Under age 65'],
+        requirementsKorean: ['영구적 완전 장애', '65세 미만']
+      },
+      {
+        id: 'ca_teacher_expense',
+        name: 'Educator Expense Deduction',
+        nameKorean: '교육자 비용 공제',
+        description: 'Deduction for qualified educator expenses',
+        descriptionKorean: '교육자 자격 비용에 대한 공제',
+        maxAmount: 300,
+        requirements: ['K-12 educator', 'Qualified expenses for classroom'],
+        requirementsKorean: ['K-12 교육자', '교실용 자격 비용']
+      },
+      {
+        id: 'ca_student_loan_interest',
+        name: 'Student Loan Interest Deduction',
+        nameKorean: '학자금 대출 이자 공제',
+        description: 'Deduction for student loan interest paid',
+        descriptionKorean: '학자금 대출 이자 지급에 대한 공제',
+        maxAmount: 2500,
+        requirements: ['Qualified student loan interest', 'Income limits apply'],
+        requirementsKorean: ['자격 학자금 대출 이자', '소득 제한 적용']
+      }
+    ],
+    stateCredits: [
+      {
+        id: 'ca_renters_credit',
+        name: 'Renters Credit',
+        nameKorean: '임차인 크레딧',
+        maxAmount: 120,
+        incomeLimit: 43533,
+        description: 'Credit for qualified renters',
+        descriptionKorean: '자격을 갖춘 임차인을 위한 크레딧'
+      },
+      {
+        id: 'ca_senior_exemption',
+        name: 'Senior Exemption Credit',
+        nameKorean: '고령자 면제 크레딧',
+        maxAmount: 140,
+        incomeLimit: 50000,
+        description: 'Additional exemption for seniors 65+',
+        descriptionKorean: '65세 이상 고령자를 위한 추가 면제'
+      }
+    ],
     specialRules: {
       federalDeductionAllowed: false,
       altMinimumTax: true,
+      municipalBondInterestExempt: true,
+      militaryRetirementExemption: 0,
+      teacherExpenseDeduction: 300,
+      studentLoanInterestDeduction: true,
+      healthSavingsAccountDeduction: true,
+      elderlyExemption: {
+        ageThreshold: 65,
+        exemptionAmount: 140
+      }
     },
   },
 
@@ -186,6 +283,70 @@ export const STATE_TAX_RULES: Record<string, StateTaxRule> = {
     },
     personalExemption: 1000,
     dependentExemption: 1000,
+    // 뉴욕주 주별 공제 항목들
+    stateSpecificDeductions: [
+      {
+        id: 'ny_pension_income',
+        name: 'Pension and Annuity Income Exclusion',
+        nameKorean: '연금 및 연금소득 제외',
+        description: 'Exclude up to $20,000 of pension/annuity income',
+        descriptionKorean: '연금/연금소득 최대 $20,000 제외',
+        maxAmount: 20000,
+        requirements: ['Age 59.5 or older', 'Qualified pension/annuity'],
+        requirementsKorean: ['59.5세 이상', '자격 연금/연금']
+      },
+      {
+        id: 'ny_college_tuition',
+        name: 'College Tuition Credit/Deduction',
+        nameKorean: '대학 등록금 크레딧/공제',
+        description: 'Credit or deduction for college tuition paid',
+        descriptionKorean: '대학 등록금 지급에 대한 크레딧 또는 공제',
+        maxAmount: 10000,
+        requirements: ['NY resident', 'Qualified higher education expenses'],
+        requirementsKorean: ['NY 거주자', '자격 고등교육 비용']
+      },
+      {
+        id: 'ny_volunteer_firefighter',
+        name: 'Volunteer Firefighter/Ambulance Credit',
+        nameKorean: '자원소방관/구급차 크레딧',
+        description: 'Credit for volunteer firefighters and ambulance workers',
+        descriptionKorean: '자원소방관 및 구급차 직원을 위한 크레딧',
+        maxAmount: 200,
+        requirements: ['Active volunteer service', 'Minimum service hours'],
+        requirementsKorean: ['활동적인 자원봉사', '최소 서비스 시간']
+      }
+    ],
+    stateCredits: [
+      {
+        id: 'ny_household_credit',
+        name: 'Household Credit',
+        nameKorean: '가계 크레딧',
+        maxAmount: 75,
+        incomeLimit: 28000,
+        description: 'Credit for low-income households',
+        descriptionKorean: '저소득 가정을 위한 크레딧'
+      },
+      {
+        id: 'ny_real_property_tax',
+        name: 'Real Property Tax Credit',
+        nameKorean: '부동산세 크레딧',
+        maxAmount: 375,
+        incomeLimit: 18000,
+        description: 'Credit for real property taxes paid',
+        descriptionKorean: '부동산세 지급에 대한 크레딧'
+      }
+    ],
+    specialRules: {
+      federalDeductionAllowed: true,
+      municipalBondInterestExempt: true,
+      militaryRetirementExemption: 0,
+      studentLoanInterestDeduction: true,
+      healthSavingsAccountDeduction: true,
+      elderlyExemption: {
+        ageThreshold: 65,
+        exemptionAmount: 0
+      }
+    },
   },
 
   // Illinois - Flat Tax State

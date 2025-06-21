@@ -194,6 +194,12 @@ export interface AdditionalTax {
   otherTaxes: number;
 }
 
+export interface StateSpecificDeductionInput {
+  id: string;
+  amount: number;
+  qualified: boolean;
+}
+
 export interface StateIncomeTax {
   state: string;
   stateTaxableIncome: number;
@@ -202,6 +208,9 @@ export interface StateIncomeTax {
   stateWithholding?: number;
   stateRefund?: number;
   stateAmountOwed?: number;
+  // 세부 주별 공제 및 크레딧 입력값들
+  stateSpecificDeductions?: StateSpecificDeductionInput[];
+  appliedStateCredits?: StateSpecificDeductionInput[];
 }
 
 export interface CalculatedResults {

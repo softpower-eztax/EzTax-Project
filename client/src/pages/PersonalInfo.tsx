@@ -276,15 +276,46 @@ const PersonalInfo: React.FC = () => {
   // Watch all form values and auto-save to TaxContext as user types
   const watchedValues = form.watch();
   
-  // Auto-save form data only on form blur events to prevent interference with typing
+  // Auto-save form data with localStorage backup to prevent data loss during navigation
   const handleFormBlur = () => {
     const formData = form.getValues();
     const hasData = formData.firstName || formData.lastName || formData.ssn || formData.email;
     if (hasData) {
       console.log("PersonalInfo - Saving form data on blur:", formData);
+      // Save to both TaxContext and localStorage for persistence
       updateTaxData({ personalInfo: formData });
+      localStorage.setItem('tempPersonalInfo', JSON.stringify(formData));
     }
   };
+
+  // Load from localStorage on component mount to restore data after navigation
+  useEffect(() => {
+    const savedFormData = localStorage.getItem('tempPersonalInfo');
+    if (savedFormData) {
+      try {
+        const parsedData = JSON.parse(savedFormData);
+        console.log("PersonalInfo - Restoring saved form data from localStorage:", parsedData);
+        form.reset(parsedData);
+        // Update TaxContext with restored data
+        updateTaxData({ personalInfo: parsedData });
+      } catch (error) {
+        console.error("Failed to parse saved form data:", error);
+      }
+    }
+  }, []);
+
+  // Clean up localStorage when component unmounts (user navigates away successfully)
+  useEffect(() => {
+    return () => {
+      // Only clean up if form has been successfully saved
+      const formData = form.getValues();
+      const hasCompleteData = formData.firstName && formData.lastName && formData.ssn && formData.dateOfBirth;
+      if (hasCompleteData) {
+        localStorage.removeItem('tempPersonalInfo');
+        console.log("PersonalInfo - Cleaned up temporary localStorage data");
+      }
+    };
+  }, []);
 
   const { fields, append, remove } = useFieldArray({
     control: form.control,

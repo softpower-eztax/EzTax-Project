@@ -256,6 +256,24 @@ const PersonalInfo: React.FC = () => {
   
   // Watch filing status to show spouse info when 'married_joint' is selected
   const filingStatus = form.watch('filingStatus');
+  
+  // Watch all form values and auto-save to TaxContext as user types
+  const watchedValues = form.watch();
+  
+  useEffect(() => {
+    // Auto-save form data to TaxContext whenever form values change
+    const subscription = form.watch((value) => {
+      if (value && Object.keys(value).length > 0) {
+        // Only update if there's actual data
+        const hasData = value.firstName || value.lastName || value.ssn || value.email;
+        if (hasData) {
+          console.log("PersonalInfo - Auto-saving form data:", value);
+          updateTaxData({ personalInfo: value as PersonalInformation });
+        }
+      }
+    });
+    return () => subscription.unsubscribe();
+  }, [updateTaxData, form]);
 
   const { fields, append, remove } = useFieldArray({
     control: form.control,

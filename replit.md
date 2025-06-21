@@ -105,6 +105,10 @@ Preferred communication style: Simple, everyday language.
 ## Changelog
 
 Recent Changes:
+- June 21, 2025: Critical security vulnerability fixed - admin access now restricted to 'admin' username only
+- June 21, 2025: Admin account properly recreated in PostgreSQL with secure password hashing (ID: 3)
+- June 21, 2025: Multi-layer security implemented: frontend button visibility, backend API validation, and admin panel access control
+- June 21, 2025: Regular users can no longer access admin features - comprehensive security audit completed
 - June 21, 2025: PostgreSQL-based admin authentication system fully operational with proper password hashing
 - June 21, 2025: Admin account (username: admin, password: admin) successfully created in production database
 - June 21, 2025: Database storage migration from memory to PostgreSQL completed for persistent admin access

@@ -28,8 +28,8 @@ export default function AdminPanel() {
   const { user } = useAuth();
   const [location, navigate] = useLocation();
 
-  // Check if user has admin privileges
-  const isAdmin = user && (user.username === 'admin' || user.username === 'default');
+  // Check if user has admin privileges - only admin allowed
+  const isAdmin = user && user.username === 'admin';
 
   // Redirect if not admin
   if (user && !isAdmin) {
@@ -61,18 +61,18 @@ export default function AdminPanel() {
   const { data: users, isLoading, error } = useQuery<AdminUser[]>({
     queryKey: ['/api/admin/users'],
     queryFn: getQueryFn({ on401: "returnNull" }),
-    enabled: isAdmin, // Only fetch if user is admin
+    enabled: !!isAdmin, // Only fetch if user is admin
   });
 
-  const filteredUsers = users?.filter(user => 
+  const filteredUsers = users?.filter((user: AdminUser) => 
     user.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
     user.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
     user.displayName?.toLowerCase().includes(searchTerm.toLowerCase())
   ) || [];
 
   const totalUsers = users?.length || 0;
-  const activeUsers = users?.filter(u => u.status === 'active').length || 0;
-  const googleUsers = users?.filter(u => u.googleId).length || 0;
+  const activeUsers = users?.filter((u: AdminUser) => u.status === 'active').length || 0;
+  const googleUsers = users?.filter((u: AdminUser) => u.googleId).length || 0;
 
   if (isLoading) {
     return (

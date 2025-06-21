@@ -129,9 +129,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(401).json({ message: "인증이 필요합니다" });
       }
 
-      // Check if user has admin privileges
-      const adminUsernames = ['admin', 'default'];
-      if (!adminUsernames.includes((req.user as any).username)) {
+      // Check if user has admin privileges - only 'admin' allowed
+      if ((req.user as any).username !== 'admin') {
         return res.status(403).json({ message: "관리자 권한이 필요합니다" });
       }
 

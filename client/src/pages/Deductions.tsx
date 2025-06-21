@@ -245,25 +245,38 @@ const Deductions: React.FC = () => {
     if (taxData.deductions) {
       console.log('Deductions 페이지에서 기존 데이터 setValue로 업데이트:', taxData.deductions);
       
-      // Set individual field values
-      form.setValue('useStandardDeduction', taxData.deductions.useStandardDeduction ?? true);
-      form.setValue('standardDeductionAmount', taxData.deductions.standardDeductionAmount ?? standardDeductionAmount);
-      form.setValue('totalDeductions', taxData.deductions.totalDeductions ?? standardDeductionAmount);
+      const deductions = taxData.deductions;
       
-      // Set itemized deduction values
-      if (taxData.deductions.itemizedDeductions) {
-        form.setValue('itemizedDeductions.medicalExpenses', taxData.deductions.itemizedDeductions.medicalExpenses ?? 0);
-        form.setValue('itemizedDeductions.stateLocalIncomeTax', taxData.deductions.itemizedDeductions.stateLocalIncomeTax ?? 0);
-        form.setValue('itemizedDeductions.realEstateTaxes', taxData.deductions.itemizedDeductions.realEstateTaxes ?? 0);
-        form.setValue('itemizedDeductions.mortgageInterest', taxData.deductions.itemizedDeductions.mortgageInterest ?? 0);
-        form.setValue('itemizedDeductions.charitableCash', taxData.deductions.itemizedDeductions.charitableCash ?? 0);
-        form.setValue('itemizedDeductions.charitableNonCash', taxData.deductions.itemizedDeductions.charitableNonCash ?? 0);
-      }
+      // Force trigger form state update
+      const timer = setTimeout(() => {
+        // Set individual field values
+        form.setValue('useStandardDeduction', deductions.useStandardDeduction ?? true);
+        form.setValue('standardDeductionAmount', deductions.standardDeductionAmount ?? standardDeductionAmount);
+        form.setValue('totalDeductions', deductions.totalDeductions ?? standardDeductionAmount);
+        
+        // Set itemized deduction values with trigger option
+        if (deductions.itemizedDeductions) {
+          const itemized = deductions.itemizedDeductions;
+          form.setValue('itemizedDeductions.medicalExpenses', itemized.medicalExpenses ?? 0, { shouldDirty: true });
+          form.setValue('itemizedDeductions.stateLocalIncomeTax', itemized.stateLocalIncomeTax ?? 0, { shouldDirty: true });
+          form.setValue('itemizedDeductions.realEstateTaxes', itemized.realEstateTaxes ?? 0, { shouldDirty: true });
+          form.setValue('itemizedDeductions.mortgageInterest', itemized.mortgageInterest ?? 0, { shouldDirty: true });
+          form.setValue('itemizedDeductions.charitableCash', itemized.charitableCash ?? 0, { shouldDirty: true });
+          form.setValue('itemizedDeductions.charitableNonCash', itemized.charitableNonCash ?? 0, { shouldDirty: true });
+          
+          console.log('SALT 필드 값 설정 완료:', {
+            stateLocalIncomeTax: itemized.stateLocalIncomeTax,
+            realEstateTaxes: itemized.realEstateTaxes
+          });
+        }
+        
+        // Set other deduction items
+        if (deductions.otherDeductionItems) {
+          form.setValue('otherDeductionItems', deductions.otherDeductionItems);
+        }
+      }, 100);
       
-      // Set other deduction items
-      if (taxData.deductions.otherDeductionItems) {
-        form.setValue('otherDeductionItems', taxData.deductions.otherDeductionItems);
-      }
+      return () => clearTimeout(timer);
     }
   }, [taxData.deductions, form, standardDeductionAmount]);
 
@@ -525,7 +538,7 @@ const Deductions: React.FC = () => {
                                         min="0"
                                         max="10000"
                                         {...field}
-                                        value={field.value || ''}
+                                        value={field.value === 0 ? '' : field.value}
                                         onChange={(e) => {
                                           const value = parseFloat(e.target.value) || 0;
                                           const limitedValue = Math.min(value, 10000);

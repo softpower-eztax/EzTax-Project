@@ -22,7 +22,23 @@ export default function SALTDeductionsNew() {
   const [personalPropertyTax, setPersonalPropertyTax] = useState(0);
   const [totalSALT, setTotalSALT] = useState(0);
 
-  // Remove problematic useEffect that was causing input resets
+  // Load existing SALT data when component mounts
+  useEffect(() => {
+    if (taxData.deductions?.itemizedDeductions) {
+      const saltAmount = taxData.deductions.itemizedDeductions.stateLocalIncomeTax || 0;
+      const realEstateAmount = taxData.deductions.itemizedDeductions.realEstateTaxes || 0;
+      
+      console.log('SALTDeductionsNew - 기존 데이터 로드:', {
+        saltAmount,
+        realEstateAmount,
+        itemizedDeductions: taxData.deductions.itemizedDeductions
+      });
+      
+      setStateLocalIncomeTax(saltAmount);
+      setRealEstateTax(realEstateAmount);
+      setTotalSALT(Math.min(saltAmount + realEstateAmount, 10000));
+    }
+  }, [taxData.deductions?.itemizedDeductions]);
 
   const calculateTotalSALT = () => {
     const selectedTaxAmount = taxType === 'income' ? stateLocalIncomeTax : stateLocalSalesTax;

@@ -191,34 +191,7 @@ const PricingPage = () => {
         </Card>
       </div>
 
-      <div className="mt-16 bg-primary/5 p-8 rounded-lg">
-        <h2 className="text-2xl font-heading font-semibold text-primary-dark mb-4">문의하기(Contact Us)</h2>
-        <p className="mb-6">더 자세한 정보나 맞춤형 견적이 필요하시면 언제든지 문의해 주세요. 저희 전문 세무팀이 도와드립니다.</p>
-        
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="flex items-center">
-            <Phone className="h-6 w-6 text-primary mr-3" />
-            <div>
-              <p className="font-semibold">전화 문의</p>
-              <p>02-1234-5678</p>
-            </div>
-          </div>
-          <div className="flex items-center">
-            <Mail className="h-6 w-6 text-primary mr-3" />
-            <div>
-              <p className="font-semibold">이메일 문의</p>
-              <p>tax@eztax.kr</p>
-            </div>
-          </div>
-          <div className="flex items-center">
-            <Calendar className="h-6 w-6 text-primary mr-3" />
-            <div>
-              <p className="font-semibold">상담 예약</p>
-              <p>홈페이지에서 일정 예약</p>
-            </div>
-          </div>
-        </div>
-      </div>
+
 
       <div className="flex justify-center mt-10">
         <Button 

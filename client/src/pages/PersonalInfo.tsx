@@ -90,46 +90,29 @@ const PersonalInfo: React.FC = () => {
     });
   };
   
-  // 예시 데이터 (영어 이름과 주소)
-  const defaultValues: PersonalInformation = {
-    firstName: 'John',
-    middleInitial: 'A',
-    lastName: 'Smith',
-    ssn: '123-45-6789',
-    dateOfBirth: '1980-01-15',
-    email: 'john.smith@example.com',
-    phone: '555-123-4567',
-    address1: '1234 Maple Street',
-    address2: 'Suite 100',
-    city: 'New York',
-    state: 'NY',
-    zipCode: '10001',
-    filingStatus: 'married_joint',
+  // 새 사용자용 빈 기본값
+  const emptyDefaults: PersonalInformation = {
+    firstName: '',
+    middleInitial: '',
+    lastName: '',
+    ssn: '',
+    dateOfBirth: '',
+    email: '',
+    phone: '',
+    address1: '',
+    address2: '',
+    city: '',
+    state: '',
+    zipCode: '',
+    filingStatus: 'single',
     isDisabled: false,
     isNonresidentAlien: false,
-    spouseInfo: {
-      firstName: 'Jane',
-      middleInitial: 'B',
-      lastName: 'Smith',
-      ssn: '987-65-4321',
-      dateOfBirth: '1982-05-20',
-      isDisabled: false,
-      isNonresidentAlien: false
-    },
-    dependents: [
-      {
-        firstName: 'Michael',
-        lastName: 'Smith',
-        ssn: '111-22-3333',
-        relationship: 'Son',
-        dateOfBirth: '2010-03-12',
-        isDisabled: false,
-        isNonresidentAlien: false,
-        isQualifyingChild: true
-      }
-    ],
-    ...taxData.personalInfo
+    dependents: [],
+    spouseInfo: undefined
   };
+
+  // 현재 taxData가 있으면 사용, 없으면 빈 기본값 사용
+  const defaultValues: PersonalInformation = taxData.personalInfo || emptyDefaults;
 
   // 사용자 데이터 격리 및 로드 관리 - 컴포넌트 마운트 시에만 실행
   useEffect(() => {

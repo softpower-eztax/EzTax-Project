@@ -155,16 +155,8 @@ const Deductions: React.FC = () => {
       const otherItemsTotal = otherItems.reduce((sum, item) => sum + Number(item.amount || 0), 0);
       
       if (itemized) {
-        const itemizedTotal = 
-          Number(itemized.medicalExpenses || 0) +
-          Number(itemized.stateLocalIncomeTax || 0) +
-          Number(itemized.realEstateTaxes || 0) +
-          Number(itemized.mortgageInterest || 0) +
-          Number(itemized.charitableCash || 0) +
-          Number(itemized.charitableNonCash || 0);
-        
-        // 항목별 공제와 기타 공제 항목의 합계
-        const total = itemizedTotal + otherItemsTotal;
+        // 항목별 공제와 기타 공제 항목의 합계 (SALT 한도 적용)
+        const total = calculateItemizedTotal(itemized, otherItemsTotal);
         
         form.setValue('totalDeductions', total);
       }
@@ -182,16 +174,8 @@ const Deductions: React.FC = () => {
       const otherItemsTotal = otherItems.reduce((sum, item) => sum + Number(item.amount || 0), 0);
       
       if (itemized) {
-        const itemizedTotal = 
-          Number(itemized.medicalExpenses || 0) +
-          Number(itemized.stateLocalIncomeTax || 0) +
-          Number(itemized.realEstateTaxes || 0) +
-          Number(itemized.mortgageInterest || 0) +
-          Number(itemized.charitableCash || 0) +
-          Number(itemized.charitableNonCash || 0);
-        
-        // 항목별 공제와 기타 공제 항목의 합계
-        const total = itemizedTotal + otherItemsTotal;
+        // 항목별 공제와 기타 공제 항목의 합계 (SALT 한도 적용)
+        const total = calculateItemizedTotal(itemized, otherItemsTotal);
         
         form.setValue('totalDeductions', total);
       }
@@ -216,16 +200,8 @@ const Deductions: React.FC = () => {
       const otherItemsTotal = otherItems.reduce((sum, item) => sum + Number(item.amount || 0), 0);
       
       if (itemized) {
-        const itemizedTotal = 
-          Number(itemized.medicalExpenses || 0) +
-          Number(itemized.stateLocalIncomeTax || 0) +
-          Number(itemized.realEstateTaxes || 0) +
-          Number(itemized.mortgageInterest || 0) +
-          Number(itemized.charitableCash || 0) +
-          Number(itemized.charitableNonCash || 0);
-        
-        // 항목별 공제와 기타 공제 항목의 합계
-        const total = itemizedTotal + otherItemsTotal;
+        // 항목별 공제와 기타 공제 항목의 합계 (SALT 한도 적용)
+        const total = calculateItemizedTotal(itemized, otherItemsTotal);
         
         form.setValue('totalDeductions', total);
       }

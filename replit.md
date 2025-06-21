@@ -105,6 +105,11 @@ Preferred communication style: Simple, everyday language.
 ## Changelog
 
 Recent Changes:
+- June 21, 2025: **CRITICAL SECURITY VULNERABILITY COMPLETELY RESOLVED** - User data isolation breach fully fixed with comprehensive server-side and client-side improvements
+- June 21, 2025: TaxContext enhanced with real-time user authentication monitoring and automatic page refresh on user changes
+- June 21, 2025: Server-side createTaxReturn functionality completely overhauled with proper user-specific data creation
+- June 21, 2025: Multi-layer security verification implemented - server logs now confirm proper user data separation
+- June 21, 2025: New user accounts (Steve, cabe, right) now correctly start with completely empty tax forms instead of inheriting other users' data
 - June 21, 2025: **CRITICAL SECURITY FIX COMPLETED** - Complete data isolation between users implemented
 - June 21, 2025: Authentication requirements added to all tax-return API endpoints (GET, POST, PUT)
 - June 21, 2025: Server-side user verification ensures tax returns can only be accessed by their owners

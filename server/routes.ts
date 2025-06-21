@@ -196,7 +196,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         const newTaxReturn = await storage.createTaxReturn({
           userId: userId,
           taxYear: 2025,
-          status: "in_progress"
+          status: "in_progress",
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
         });
         
         console.log(`사용자 ID ${userId}에게 새 세금 신고서 생성됨 (ID: ${newTaxReturn.id})`);

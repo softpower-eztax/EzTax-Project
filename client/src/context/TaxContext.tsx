@@ -85,17 +85,19 @@ export const TaxProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     }
   });
 
-  // Load tax data on initial render with strict user isolation
+  // 사용자 인증 상태를 추적하기 위한 상태
+  const [currentUserId, setCurrentUserId] = useState<number | null>(null);
+
+  // 인증 상태 및 사용자 변경 감지
   useEffect(() => {
-    const loadTaxData = async () => {
+    const checkAuthAndLoadData = async () => {
       try {
         setIsLoading(true);
         
-        // CRITICAL: Clear all cached data first to prevent contamination
+        // 모든 캐시 데이터 정리
         localStorage.clear();
         sessionStorage.clear();
         
-        // Get current authenticated user
         const userResponse = await fetch('/api/user', {
           credentials: 'include',
           cache: 'no-cache',
@@ -107,8 +109,8 @@ export const TaxProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         });
         
         if (!userResponse.ok) {
-          // User not authenticated - start with completely empty data
           console.log("사용자 인증되지 않음 - 빈 데이터로 초기화");
+          setCurrentUserId(null);
           setTaxData({
             taxYear: 2025,
             status: 'in_progress',
@@ -132,9 +134,18 @@ export const TaxProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         }
         
         const currentUser = await userResponse.json();
+        
+        // 사용자가 변경되었는지 확인
+        if (currentUserId !== null && currentUserId !== currentUser.id) {
+          console.log(`사용자 변경 감지: ${currentUserId} -> ${currentUser.id}`);
+          // 페이지 새로고침으로 완전 초기화
+          window.location.reload();
+          return;
+        }
+        
+        setCurrentUserId(currentUser.id);
         console.log(`현재 인증된 사용자: ${currentUser.username} (ID: ${currentUser.id})`);
         
-        // Get tax return data for current user only
         const response = await fetch('/api/tax-return', {
           credentials: 'include',
           cache: 'no-cache',
@@ -148,14 +159,12 @@ export const TaxProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         if (response.ok) {
           const data = await response.json();
           
-          // CRITICAL SECURITY CHECK: Verify data belongs to authenticated user
           if (data && data.userId === currentUser.id) {
             console.log(`사용자 ${currentUser.username}의 세금 데이터 로드 (검증됨)`);
             
-            // Process and set verified user data
             let serverData = { ...data };
             
-            // Data migration for dependents
+            // 의존성 데이터 마이그레이션
             if (serverData.personalInfo?.dependents) {
               serverData.personalInfo = {
                 ...serverData.personalInfo,
@@ -168,7 +177,7 @@ export const TaxProvider: React.FC<{ children: React.ReactNode }> = ({ children 
               };
             }
             
-            // Data migration for spouse info
+            // 배우자 정보 마이그레이션
             if (serverData.personalInfo?.spouseInfo) {
               const spouseInfo = serverData.personalInfo.spouseInfo;
               if (spouseInfo.isDisabled === undefined || spouseInfo.isNonresidentAlien === undefined) {
@@ -190,30 +199,11 @@ export const TaxProvider: React.FC<{ children: React.ReactNode }> = ({ children 
               updatedAt: new Date().toISOString()
             });
           } else {
-            // SECURITY VIOLATION: Data doesn't belong to current user
             console.error(`보안 오류: 데이터 사용자 ID (${data?.userId})가 현재 사용자 ID (${currentUser.id})와 불일치`);
-            setTaxData({
-              taxYear: 2025,
-              status: 'in_progress',
-              createdAt: new Date().toISOString(),
-              updatedAt: new Date().toISOString(),
-              calculatedResults: {
-                totalIncome: 0,
-                adjustments: 0,
-                adjustedGrossIncome: 0,
-                deductions: 0,
-                taxableIncome: 0,
-                federalTax: 0,
-                credits: 0,
-                taxDue: 0,
-                payments: 0,
-                refundAmount: 0,
-                amountOwed: 0
-              }
-            });
+            // 강제 페이지 새로고침으로 완전 초기화
+            window.location.reload();
           }
         } else {
-          // No tax return data for user - initialize empty
           console.log(`사용자 ${currentUser.username}의 세금 데이터 없음 - 새로 시작`);
           setTaxData({
             taxYear: 2025,
@@ -237,7 +227,6 @@ export const TaxProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         }
       } catch (error) {
         console.error('세금 데이터 로드 오류:', error);
-        // Always initialize with empty data on error
         setTaxData({
           taxYear: 2025,
           status: 'in_progress',
@@ -262,8 +251,12 @@ export const TaxProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       }
     };
 
-    loadTaxData();
-  }, []);
+    // 정기적으로 인증 상태 확인 (5초마다)
+    checkAuthAndLoadData();
+    const intervalId = setInterval(checkAuthAndLoadData, 5000);
+
+    return () => clearInterval(intervalId);
+  }, [currentUserId]);
 
   // Update tax data and recalculate taxes - without auto-saving to server
   const updateTaxData = (data: Partial<TaxData>) => {

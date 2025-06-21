@@ -4,11 +4,14 @@ import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
-import { useQuery } from '@tanstack/react-query';
-import { getQueryFn } from '@/lib/queryClient';
-import { Users, Search, Calendar, Mail, User, Shield, AlertTriangle } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Label } from '@/components/ui/label';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { getQueryFn, apiRequest } from '@/lib/queryClient';
+import { Users, Search, Calendar, Mail, User, Shield, AlertTriangle, Edit, Trash2, Key } from 'lucide-react';
 import { useAuth } from '@/hooks/use-auth';
 import { useLocation } from 'wouter';
+import { useToast } from '@/hooks/use-toast';
 // Remove date-fns import since it's not available
 
 interface AdminUser {
@@ -25,8 +28,15 @@ interface AdminUser {
 
 export default function AdminPanel() {
   const [searchTerm, setSearchTerm] = useState('');
+  const [editingUser, setEditingUser] = useState<AdminUser | null>(null);
+  const [editForm, setEditForm] = useState({ username: '', email: '', displayName: '' });
+  const [passwordForm, setPasswordForm] = useState({ newPassword: '', confirmPassword: '' });
+  const [showEditDialog, setShowEditDialog] = useState(false);
+  const [showPasswordDialog, setShowPasswordDialog] = useState(false);
   const { user } = useAuth();
   const [location, navigate] = useLocation();
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
 
   // Check if user has admin privileges - only admin allowed
   const isAdmin = user && user.username === 'admin';
@@ -63,6 +73,176 @@ export default function AdminPanel() {
     queryFn: getQueryFn({ on401: "returnNull" }),
     enabled: !!isAdmin, // Only fetch if user is admin
   });
+
+  // Mutations for admin actions
+  const deleteUserMutation = useMutation({
+    mutationFn: (userId: number) => apiRequest({
+      url: `/api/admin/users/${userId}`,
+      method: 'DELETE'
+    }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/users'] });
+      toast({
+        title: "성공",
+        description: "사용자가 성공적으로 삭제되었습니다.",
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "오류",
+        description: error.message || "사용자 삭제에 실패했습니다.",
+        variant: "destructive"
+      });
+    }
+  });
+
+  const updateUserMutation = useMutation({
+    mutationFn: ({ userId, data }: { userId: number; data: { username: string; email: string; displayName: string } }) =>
+      apiRequest({
+        url: `/api/admin/users/${userId}`,
+        method: 'PUT',
+        body: data
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/users'] });
+      setShowEditDialog(false);
+      setEditingUser(null);
+      toast({
+        title: "성공",
+        description: "사용자 정보가 업데이트되었습니다.",
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "오류",
+        description: error.message || "사용자 정보 업데이트에 실패했습니다.",
+        variant: "destructive"
+      });
+    }
+  });
+
+  const resetPasswordMutation = useMutation({
+    mutationFn: ({ userId, newPassword }: { userId: number; newPassword: string }) =>
+      apiRequest({
+        url: `/api/admin/users/${userId}/reset-password`,
+        method: 'POST',
+        body: { newPassword }
+      }),
+    onSuccess: () => {
+      setShowPasswordDialog(false);
+      setEditingUser(null);
+      setPasswordForm({ newPassword: '', confirmPassword: '' });
+      toast({
+        title: "성공",
+        description: "비밀번호가 재설정되었습니다.",
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "오류",
+        description: error.message || "비밀번호 재설정에 실패했습니다.",
+        variant: "destructive"
+      });
+    }
+  });
+
+  const deleteUserTaxReturnsMutation = useMutation({
+    mutationFn: (userId: number) => apiRequest({
+      url: `/api/admin/users/${userId}/tax-returns`,
+      method: 'DELETE'
+    }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/users'] });
+      toast({
+        title: "성공",
+        description: "사용자의 모든 세금 신고서가 삭제되었습니다.",
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "오류",
+        description: error.message || "세금 신고서 삭제에 실패했습니다.",
+        variant: "destructive"
+      });
+    }
+  });
+
+  // Handler functions
+  const handleEditUser = (user: AdminUser) => {
+    setEditingUser(user);
+    setEditForm({
+      username: user.username,
+      email: user.email || '',
+      displayName: user.displayName || ''
+    });
+    setShowEditDialog(true);
+  };
+
+  const handleResetPassword = (user: AdminUser) => {
+    setEditingUser(user);
+    setPasswordForm({ newPassword: '', confirmPassword: '' });
+    setShowPasswordDialog(true);
+  };
+
+  const handleDeleteUser = (user: AdminUser) => {
+    if (user.id === 3) {
+      toast({
+        title: "오류",
+        description: "관리자 계정은 삭제할 수 없습니다.",
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    if (confirm(`정말로 사용자 "${user.username}"을(를) 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.`)) {
+      deleteUserMutation.mutate(user.id);
+    }
+  };
+
+  const handleSubmitEdit = () => {
+    if (!editingUser) return;
+    
+    if (!editForm.username.trim()) {
+      toast({
+        title: "오류",
+        description: "사용자 이름을 입력해주세요.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    updateUserMutation.mutate({
+      userId: editingUser.id,
+      data: editForm
+    });
+  };
+
+  const handleSubmitPassword = () => {
+    if (!editingUser) return;
+    
+    if (!passwordForm.newPassword.trim()) {
+      toast({
+        title: "오류",
+        description: "새 비밀번호를 입력해주세요.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    if (passwordForm.newPassword !== passwordForm.confirmPassword) {
+      toast({
+        title: "오류",
+        description: "비밀번호가 일치하지 않습니다.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    resetPasswordMutation.mutate({
+      userId: editingUser.id,
+      newPassword: passwordForm.newPassword
+    });
+  };
 
   const filteredUsers = users?.filter((user: AdminUser) => 
     user.username.toLowerCase().includes(searchTerm.toLowerCase()) ||

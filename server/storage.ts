@@ -13,6 +13,9 @@ export interface IStorage {
   getUserByGoogleId(googleId: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
   getAllUsers(): Promise<User[]>;
+  deleteUser(userId: number): Promise<void>;
+  updateUser(userId: number, updates: Partial<User>): Promise<User>;
+  updateUserPassword(userId: number, newPassword: string): Promise<void>;
   
   // Tax return methods
   getTaxReturn(id: number): Promise<TaxReturn | undefined>;
@@ -21,6 +24,7 @@ export interface IStorage {
   createTaxReturn(taxReturn: InsertTaxReturn): Promise<TaxReturn>;
   updateTaxReturn(id: number, taxReturn: Partial<TaxReturn>): Promise<TaxReturn>;
   deleteTaxReturn(id: number): Promise<void>;
+  deleteUserTaxReturns(userId: number): Promise<void>;
 }
 
 export class DbStorage implements IStorage {
@@ -302,6 +306,61 @@ export class DatabaseStorage implements IStorage {
     if (!result || result.length === 0) {
       throw new Error(`세금 신고서 ID ${id}를 찾을 수 없습니다`);
     }
+  }
+
+  // 관리자 전용 메서드들
+  async deleteUser(userId: number): Promise<void> {
+    const result = await db
+      .delete(users)
+      .where(eq(users.id, userId))
+      .returning({ id: users.id });
+    
+    if (!result || result.length === 0) {
+      throw new Error(`사용자 ID ${userId}를 찾을 수 없습니다`);
+    }
+  }
+
+  async updateUser(userId: number, updates: Partial<User>): Promise<User> {
+    const updateData = {
+      ...updates,
+      updatedAt: new Date().toISOString()
+    };
+
+    const [updatedUser] = await db
+      .update(users)
+      .set(updateData)
+      .where(eq(users.id, userId))
+      .returning();
+    
+    if (!updatedUser) {
+      throw new Error(`사용자 ID ${userId}를 찾을 수 없습니다`);
+    }
+    
+    return updatedUser;
+  }
+
+  async updateUserPassword(userId: number, newPassword: string): Promise<void> {
+    const crypto = await import('crypto');
+    const hashedPassword = crypto.scryptSync(newPassword, 'salt', 64).toString('hex');
+    
+    const result = await db
+      .update(users)
+      .set({ 
+        password: hashedPassword,
+        updatedAt: new Date().toISOString()
+      })
+      .where(eq(users.id, userId))
+      .returning({ id: users.id });
+    
+    if (!result || result.length === 0) {
+      throw new Error(`사용자 ID ${userId}를 찾을 수 없습니다`);
+    }
+  }
+
+  async deleteUserTaxReturns(userId: number): Promise<void> {
+    await db
+      .delete(taxReturns)
+      .where(eq(taxReturns.userId, userId));
   }
 
   // 데이터베이스 초기화 메서드

@@ -383,6 +383,98 @@ ${additionalRequests || '없음'}
     }
   });
 
+  // Admin API - Delete User
+  app.delete('/api/admin/users/:id', async (req, res) => {
+    if (!req.isAuthenticated() || (req.user as any).username !== 'admin') {
+      return res.status(403).json({ message: 'Admin access required' });
+    }
+
+    try {
+      const userId = parseInt(req.params.id);
+      
+      // Prevent deletion of admin user
+      if (userId === 3) {
+        return res.status(400).json({ message: '관리자 계정은 삭제할 수 없습니다' });
+      }
+
+      // Delete user's tax returns first (cascade delete)
+      await storage.deleteUserTaxReturns(userId);
+      
+      // Delete user
+      await storage.deleteUser(userId);
+      
+      res.json({ success: true, message: '사용자가 성공적으로 삭제되었습니다' });
+    } catch (error) {
+      console.error('Error deleting user:', error);
+      res.status(500).json({ message: 'Failed to delete user' });
+    }
+  });
+
+  // Admin API - Update User
+  app.put('/api/admin/users/:id', async (req, res) => {
+    if (!req.isAuthenticated() || (req.user as any).username !== 'admin') {
+      return res.status(403).json({ message: 'Admin access required' });
+    }
+
+    try {
+      const userId = parseInt(req.params.id);
+      const { username, email, displayName } = req.body;
+      
+      // Prevent modification of admin username
+      if (userId === 3 && username !== 'admin') {
+        return res.status(400).json({ message: '관리자 계정의 아이디는 변경할 수 없습니다' });
+      }
+
+      const updatedUser = await storage.updateUser(userId, {
+        username,
+        email,
+        displayName
+      });
+      
+      res.json(updatedUser);
+    } catch (error) {
+      console.error('Error updating user:', error);
+      res.status(500).json({ message: 'Failed to update user' });
+    }
+  });
+
+  // Admin API - Reset User Password
+  app.post('/api/admin/users/:id/reset-password', async (req, res) => {
+    if (!req.isAuthenticated() || (req.user as any).username !== 'admin') {
+      return res.status(403).json({ message: 'Admin access required' });
+    }
+
+    try {
+      const userId = parseInt(req.params.id);
+      const { newPassword } = req.body;
+      
+      await storage.updateUserPassword(userId, newPassword);
+      
+      res.json({ success: true, message: '비밀번호가 성공적으로 재설정되었습니다' });
+    } catch (error) {
+      console.error('Error resetting password:', error);
+      res.status(500).json({ message: 'Failed to reset password' });
+    }
+  });
+
+  // Admin API - Delete User Tax Returns
+  app.delete('/api/admin/users/:id/tax-returns', async (req, res) => {
+    if (!req.isAuthenticated() || (req.user as any).username !== 'admin') {
+      return res.status(403).json({ message: 'Admin access required' });
+    }
+
+    try {
+      const userId = parseInt(req.params.id);
+      
+      await storage.deleteUserTaxReturns(userId);
+      
+      res.json({ success: true, message: '사용자의 모든 세금 신고서가 삭제되었습니다' });
+    } catch (error) {
+      console.error('Error deleting tax returns:', error);
+      res.status(500).json({ message: 'Failed to delete tax returns' });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

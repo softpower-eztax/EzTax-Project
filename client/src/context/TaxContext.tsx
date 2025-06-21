@@ -138,6 +138,29 @@ export const TaxProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         // 사용자가 변경되었는지 확인
         if (currentUserId !== null && currentUserId !== currentUser.id) {
           console.log(`사용자 변경 감지: ${currentUserId} -> ${currentUser.id}`);
+          // 완전한 초기화
+          localStorage.clear();
+          sessionStorage.clear();
+          setCurrentUserId(currentUser.id);
+          setTaxData({
+            taxYear: 2025,
+            status: 'in_progress',
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+            calculatedResults: {
+              totalIncome: 0,
+              adjustments: 0,
+              adjustedGrossIncome: 0,
+              deductions: 0,
+              taxableIncome: 0,
+              federalTax: 0,
+              credits: 0,
+              taxDue: 0,
+              payments: 0,
+              refundAmount: 0,
+              amountOwed: 0
+            }
+          });
           // 페이지 새로고침으로 완전 초기화
           window.location.reload();
           return;

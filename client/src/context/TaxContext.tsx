@@ -267,7 +267,7 @@ export const TaxProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       // Prepare data for server - ensure required fields are present
       const dataToSave = {
         ...taxData,
-        userId: taxData.userId || 1, // Default userId for unauthenticated users
+        // Don't set userId here - let server handle it from authentication
         taxYear: taxData.taxYear || new Date().getFullYear(),
         status: taxData.status || 'in_progress',
         createdAt: taxData.createdAt || new Date().toISOString(),

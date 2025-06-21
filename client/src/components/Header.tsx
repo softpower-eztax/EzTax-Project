@@ -126,15 +126,17 @@ const Header: React.FC = () => {
                 <User className="h-4 w-4 mr-1" />
                 {user.username}
               </div>
-              <Button 
-                variant="outline" 
-                size="sm"
-                className="text-primary-dark hover:text-primary flex items-center text-sm"
-                onClick={() => navigate('/admin')}
-              >
-                <Shield className="h-4 w-4 mr-1" />
-                관리자
-              </Button>
+              {(user.username === 'admin' || user.username === 'default') && (
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  className="text-primary-dark hover:text-primary flex items-center text-sm"
+                  onClick={() => navigate('/admin')}
+                >
+                  <Shield className="h-4 w-4 mr-1" />
+                  관리자
+                </Button>
+              )}
               <Button 
                 variant="outline" 
                 size="sm"

@@ -6,7 +6,9 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { useQuery } from '@tanstack/react-query';
 import { getQueryFn } from '@/lib/queryClient';
-import { Users, Search, Calendar, Mail, User, Shield } from 'lucide-react';
+import { Users, Search, Calendar, Mail, User, Shield, AlertTriangle } from 'lucide-react';
+import { useAuth } from '@/hooks/use-auth';
+import { useLocation } from 'wouter';
 // Remove date-fns import since it's not available
 
 interface AdminUser {
@@ -23,10 +25,43 @@ interface AdminUser {
 
 export default function AdminPanel() {
   const [searchTerm, setSearchTerm] = useState('');
-  
+  const { user } = useAuth();
+  const [location, navigate] = useLocation();
+
+  // Check if user has admin privileges
+  const isAdmin = user && (user.username === 'admin' || user.username === 'default');
+
+  // Redirect if not admin
+  if (user && !isAdmin) {
+    return (
+      <div className="max-w-4xl mx-auto p-6">
+        <Card className="border-red-200 bg-red-50">
+          <CardHeader>
+            <div className="flex items-center gap-2">
+              <AlertTriangle className="h-6 w-6 text-red-600" />
+              <CardTitle className="text-red-800">접근 권한 없음</CardTitle>
+            </div>
+            <CardDescription className="text-red-700">
+              관리자 권한이 필요합니다. 이 페이지에 접근할 수 있는 권한이 없습니다.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Button 
+              onClick={() => navigate('/')}
+              className="bg-red-600 hover:bg-red-700 text-white"
+            >
+              홈페이지로 돌아가기
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
   const { data: users, isLoading, error } = useQuery<AdminUser[]>({
     queryKey: ['/api/admin/users'],
     queryFn: getQueryFn({ on401: "returnNull" }),
+    enabled: isAdmin, // Only fetch if user is admin
   });
 
   const filteredUsers = users?.filter(user => 

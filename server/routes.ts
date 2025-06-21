@@ -124,9 +124,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Admin endpoints
   app.get("/api/admin/users", async (req, res) => {
     try {
-      // Simple admin check - you can enhance this with proper role-based access
+      // Enhanced admin check - only allow specific admin users
       if (!req.user) {
         return res.status(401).json({ message: "인증이 필요합니다" });
+      }
+
+      // Check if user has admin privileges
+      const adminUsernames = ['admin', 'default'];
+      if (!adminUsernames.includes((req.user as any).username)) {
+        return res.status(403).json({ message: "관리자 권한이 필요합니다" });
       }
 
       const users = await storage.getAllUsers();

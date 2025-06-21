@@ -351,16 +351,6 @@ export default function SALTDeductionsNew() {
               <h3 className="text-lg font-semibold">
                 SALT 공제 총액 (Total SALT Deduction)
               </h3>
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={calculateTotalSALT}
-                className="flex items-center gap-1"
-              >
-                <RefreshCw className="h-4 w-4" />
-                계산
-              </Button>
             </div>
             <div className="relative">
               <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-dark font-semibold">$</span>

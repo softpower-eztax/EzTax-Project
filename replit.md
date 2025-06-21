@@ -105,6 +105,8 @@ Preferred communication style: Simple, everyday language.
 ## Changelog
 
 Recent Changes:
+- June 21, 2025: Calculate button removed from SALT deductions page - automatic real-time calculation implemented
+- June 21, 2025: SALT total amount display fixed to show correct combined value (10,000) instead of individual components
 - June 21, 2025: Retirement consultation section removed from Additional Tax page per user request
 - June 21, 2025: SALT data persistence completely fixed with personalPropertyTax field added to database schema
 - June 21, 2025: Enhanced SALT deduction calculations to include personal property tax in $10,000 limit

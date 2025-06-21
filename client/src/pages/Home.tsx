@@ -172,15 +172,7 @@ const Home: React.FC = () => {
                 은퇴준비상태진단
               </Button>
             </div>
-            <div className="text-center mt-6">
-              <Button 
-                variant="ghost" 
-                className="text-gray-600 hover:text-primary underline"
-                onClick={() => navigate('/about')}
-              >
-                EzTax와 운영진에 대해 더 알아보기 →
-              </Button>
-            </div>
+
           </>
         )}
       </section>
@@ -230,6 +222,16 @@ const Home: React.FC = () => {
               <p className="text-gray-dark">귀하의 데이터는 은행 수준의 보안으로 암호화되고 보호됩니다.</p>
             </CardContent>
           </Card>
+        </div>
+        
+        <div className="text-center mt-8">
+          <Button 
+            variant="ghost" 
+            className="text-gray-600 hover:text-primary underline"
+            onClick={() => navigate('/about')}
+          >
+            EzTax와 운영진에 대해 더 알아보기 →
+          </Button>
         </div>
       </section>
 

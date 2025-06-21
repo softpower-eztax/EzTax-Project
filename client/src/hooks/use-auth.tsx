@@ -13,7 +13,7 @@ type AuthContextType = {
   isLoading: boolean;
   error: Error | null;
   loginMutation: UseMutationResult<SelectUser, Error, LoginData>;
-  logoutMutation: UseMutationResult<void, Error, void>;
+  logoutMutation: UseMutationResult<Response, Error, void>;
   registerMutation: UseMutationResult<SelectUser, Error, InsertUser>;
 };
 
@@ -75,20 +75,40 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const logoutMutation = useMutation({
     mutationFn: async () => {
-      await apiRequest("POST", "/api/logout");
+      try {
+        const response = await apiRequest("POST", "/api/logout");
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.message || "로그아웃 실패");
+        }
+        return response;
+      } catch (error) {
+        console.error("Logout error:", error);
+        throw error;
+      }
     },
     onSuccess: () => {
+      // 모든 캐시 데이터 초기화
+      queryClient.clear();
       queryClient.setQueryData(["/api/user"], null);
+      
+      // 홈페이지로 강제 이동
+      window.location.href = "/";
+      
       toast({
         title: "로그아웃 되었습니다(Logged out)",
         description: "성공적으로 로그아웃 되었습니다.(You have been successfully logged out.)",
       });
     },
     onError: (error: Error) => {
+      // 오류가 발생해도 클라이언트 측에서 로그아웃 처리
+      queryClient.clear();
+      queryClient.setQueryData(["/api/user"], null);
+      window.location.href = "/";
+      
       toast({
-        title: "로그아웃 실패(Logout failed)",
-        description: error.message,
-        variant: "destructive",
+        title: "로그아웃 처리됨(Logout processed)",
+        description: "로그아웃이 처리되었습니다.(Logout has been processed.)",
       });
     },
   });

@@ -172,8 +172,22 @@ export function setupAuth(app: Express) {
 
   app.post("/api/logout", (req, res, next) => {
     req.logout((err) => {
-      if (err) return next(err);
-      res.sendStatus(200);
+      if (err) {
+        console.error("Logout error:", err);
+        return res.status(500).json({ message: "로그아웃 중 오류가 발생했습니다(Error during logout)" });
+      }
+      
+      // 세션 파괴
+      req.session.destroy((sessionErr) => {
+        if (sessionErr) {
+          console.error("Session destroy error:", sessionErr);
+          return res.status(500).json({ message: "세션 정리 중 오류가 발생했습니다(Error clearing session)" });
+        }
+        
+        // 세션 쿠키 삭제
+        res.clearCookie('connect.sid');
+        res.status(200).json({ message: "로그아웃 성공(Logout successful)" });
+      });
     });
   });
 

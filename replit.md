@@ -105,6 +105,7 @@ Preferred communication style: Simple, everyday language.
 ## Changelog
 
 Recent Changes:
+- June 21, 2025: Logout functionality fixed with improved session handling and client-side failsafe for deployed environment
 - June 21, 2025: State Tax page enhanced with selectable state dropdown - auto-loads resident state but allows selection of any state for comparison
 - June 21, 2025: State tax results display removed from Review page - now purely shows federal tax calculations
 - June 21, 2025: State Tax workflow repositioned to start after Federal Tax Review completion per user request

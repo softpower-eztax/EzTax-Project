@@ -105,7 +105,7 @@ export function calculateStateTax(input: StateTaxCalculationInput): StateIncomeT
       stateTax: 0,
       stateCredits: 0,
       stateWithholding: input.stateSpecificIncome?.stateWithholding || 0,
-      stateRefundAmount: input.stateSpecificIncome?.stateWithholding || 0,
+      stateRefund: input.stateSpecificIncome?.stateWithholding || 0,
       stateAmountOwed: 0,
     };
   }
@@ -158,7 +158,7 @@ export function calculateStateTax(input: StateTaxCalculationInput): StateIncomeT
     stateTax: Math.round(finalStateTax * 100) / 100,
     stateCredits: Math.round(stateCredits * 100) / 100,
     stateWithholding: Math.round(stateWithholding * 100) / 100,
-    stateRefundAmount: Math.round(stateRefundAmount * 100) / 100,
+    stateRefund: Math.round(stateRefundAmount * 100) / 100,
     stateAmountOwed: Math.round(stateAmountOwed * 100) / 100,
   };
 }

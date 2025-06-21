@@ -196,20 +196,20 @@ export default function StateTax() {
                 <div className="space-y-2">
                   <Label className="text-sm text-gray-600">원천징수세액</Label>
                   <p className="text-lg">
-                    ${calculatedStateTax.stateWithholding.toLocaleString()}
+                    ${(calculatedStateTax.stateWithholding || 0).toLocaleString()}
                   </p>
                 </div>
                 
                 <div className="space-y-2">
                   <Label className="text-sm text-gray-600">
-                    {calculatedStateTax.stateRefundAmount > 0 ? '환급액' : '납부액'}
+                    {(calculatedStateTax.stateRefund || 0) > 0 ? '환급액' : '납부액'}
                   </Label>
                   <p className={`text-lg font-semibold ${
-                    calculatedStateTax.stateRefundAmount > 0 ? 'text-green-600' : 'text-red-600'
+                    (calculatedStateTax.stateRefund || 0) > 0 ? 'text-green-600' : 'text-red-600'
                   }`}>
-                    ${calculatedStateTax.stateRefundAmount > 0 ? 
-                      calculatedStateTax.stateRefundAmount.toLocaleString() :
-                      calculatedStateTax.stateAmountOwed.toLocaleString()
+                    ${(calculatedStateTax.stateRefund || 0) > 0 ? 
+                      (calculatedStateTax.stateRefund || 0).toLocaleString() :
+                      (calculatedStateTax.stateAmountOwed || 0).toLocaleString()
                     }
                   </p>
                 </div>

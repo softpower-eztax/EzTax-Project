@@ -105,6 +105,8 @@ Preferred communication style: Simple, everyday language.
 ## Changelog
 
 Recent Changes:
+- June 21, 2025: Form 1040 PDF generator implemented with official IRS format, line numbers, and proper tax form structure
+- June 21, 2025: PDF download filename updated to "Form_1040_[year].pdf" format for professional appearance
 - June 21, 2025: Calculate button removed from SALT deductions page - automatic real-time calculation implemented
 - June 21, 2025: SALT total amount display fixed to show correct combined value (10,000) instead of individual components
 - June 21, 2025: Retirement consultation section removed from Additional Tax page per user request

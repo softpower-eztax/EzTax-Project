@@ -34,18 +34,21 @@ export default function SALTDeductionsNew() {
       if (taxData.deductions.itemizedDeductions) {
         const saltAmount = taxData.deductions.itemizedDeductions.stateLocalIncomeTax || 0;
         const realEstateAmount = taxData.deductions.itemizedDeductions.realEstateTaxes || 0;
+        const personalPropertyAmount = taxData.deductions.itemizedDeductions.personalPropertyTax || 0;
         
         console.log('SALTDeductionsNew - 기존 데이터 로드:', {
           saltAmount,
           realEstateAmount,
+          personalPropertyAmount,
           itemizedDeductions: taxData.deductions.itemizedDeductions
         });
         
         // Set values regardless of whether they are 0 or not (to show saved state)
         setStateLocalIncomeTax(saltAmount);
         setRealEstateTax(realEstateAmount);
-        setTotalSALT(Math.min(saltAmount + realEstateAmount, 10000));
-        console.log('SALT 데이터 설정 완료:', { saltAmount, realEstateAmount });
+        setPersonalPropertyTax(personalPropertyAmount);
+        setTotalSALT(Math.min(saltAmount + realEstateAmount + personalPropertyAmount, 10000));
+        console.log('SALT 데이터 설정 완료:', { saltAmount, realEstateAmount, personalPropertyAmount });
       } else {
         console.log('SALTDeductionsNew - itemizedDeductions 없음, 기본값 유지');
       }

@@ -237,6 +237,7 @@ const Deductions: React.FC = () => {
           medicalExpenses: deductions.itemizedDeductions?.medicalExpenses ?? 0,
           stateLocalIncomeTax: deductions.itemizedDeductions?.stateLocalIncomeTax ?? 0,
           realEstateTaxes: deductions.itemizedDeductions?.realEstateTaxes ?? 0,
+          personalPropertyTax: deductions.itemizedDeductions?.personalPropertyTax ?? 0,
           mortgageInterest: deductions.itemizedDeductions?.mortgageInterest ?? 0,
           charitableCash: deductions.itemizedDeductions?.charitableCash ?? 0,
           charitableNonCash: deductions.itemizedDeductions?.charitableNonCash ?? 0
@@ -278,9 +279,11 @@ const Deductions: React.FC = () => {
   const calculateItemizedTotal = (itemized: any, otherItemsTotal: number = 0) => {
     if (!itemized) return 0;
     
-    // SALT 공제 한도 적용 (주/지방세 + 부동산세 최대 $10,000)
+    // SALT 공제 한도 적용 (주/지방세 + 부동산세 + 개인재산세 최대 $10,000)
     const saltTotal = Math.min(
-      Number(itemized.stateLocalIncomeTax || 0) + Number(itemized.realEstateTaxes || 0),
+      Number(itemized.stateLocalIncomeTax || 0) + 
+      Number(itemized.realEstateTaxes || 0) + 
+      Number(itemized.personalPropertyTax || 0),
       10000
     );
     

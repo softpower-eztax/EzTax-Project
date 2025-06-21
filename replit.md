@@ -105,6 +105,11 @@ Preferred communication style: Simple, everyday language.
 ## Changelog
 
 Recent Changes:
+- June 21, 2025: **CRITICAL SECURITY FIX COMPLETED** - Complete data isolation between users implemented
+- June 21, 2025: Authentication requirements added to all tax-return API endpoints (GET, POST, PUT)
+- June 21, 2025: Server-side user verification ensures tax returns can only be accessed by their owners
+- June 21, 2025: Client-side userId hardcoding removed - server now uses authenticated user ID
+- June 21, 2025: TaxContext initialization fixed to prevent data inheritance between user sessions
 - June 21, 2025: Critical data isolation bug fixed - new users no longer see other users' tax data
 - June 21, 2025: getCurrentTaxReturn() method updated to filter by userId for proper user data separation
 - June 21, 2025: POST /api/tax-return endpoint fixed to assign correct userId to new tax returns

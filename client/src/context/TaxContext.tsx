@@ -158,19 +158,7 @@ export const TaxProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       }
     };
 
-    loadTaxData()
-      .then(() => {
-        // 컴포넌트 마운트 시 데이터 초기화 - 즉시 데이터 지우기
-        // 로컬 스토리지 데이터 초기화
-        localStorage.removeItem('personalInfo');
-        localStorage.removeItem('income');
-        localStorage.removeItem('deductions');
-        localStorage.removeItem('taxCredits');
-        localStorage.removeItem('additionalTax');
-        
-        // 빈 데이터로 초기화 및 서버 저장
-        resetToZero();
-      });
+    loadTaxData();
   }, []);
 
   // Update tax data and recalculate taxes - without auto-saving to server

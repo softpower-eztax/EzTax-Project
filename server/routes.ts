@@ -163,8 +163,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Get current tax return (always gets the most recent one)
   app.get("/api/tax-return", async (req, res) => {
     try {
-      // Default to userId 1 for non-authenticated users
-      const userId = req.user ? (req.user as any).id : 1;
+      // Only authenticated users can access tax returns
+      if (!req.user) {
+        // Return empty initial data for non-authenticated users
+        const emptyTaxReturn = {
+          id: 0,
+          userId: 0,
+          taxYear: 2025,
+          status: "in_progress",
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+          personalInfo: null,
+          income: null,
+          deductions: null,
+          taxCredits: null,
+          retirementContributions: null,
+          additionalTax: null,
+          calculatedResults: null
+        };
+        return res.json(emptyTaxReturn);
+      }
+      
+      const userId = (req.user as any).id;
       const taxReturn = await storage.getCurrentTaxReturn(userId);
       if (!taxReturn) {
         // Return empty initial data for new users
@@ -208,8 +228,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Create or update tax return
   app.post("/api/tax-return", async (req, res) => {
     try {
-      // Ensure userId is set correctly
-      const userId = req.user ? (req.user as any).id : 1;
+      // Only authenticated users can create tax returns
+      if (!req.user) {
+        return res.status(401).json({ message: "Authentication required" });
+      }
+      
+      const userId = (req.user as any).id;
       const dataWithUserId = { ...req.body, userId };
       
       const validationResult = insertTaxReturnSchema.safeParse(dataWithUserId);
@@ -232,7 +256,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Update existing tax return
   app.put("/api/tax-return/:id", async (req, res) => {
     try {
+      // Only authenticated users can update tax returns
+      if (!req.user) {
+        return res.status(401).json({ message: "Authentication required" });
+      }
+      
       const id = parseInt(req.params.id);
+      const userId = (req.user as any).id;
+      
+      // Verify that the tax return belongs to the authenticated user
+      const existingReturn = await storage.getTaxReturn(id);
+      if (!existingReturn || existingReturn.userId !== userId) {
+        return res.status(403).json({ message: "Access denied" });
+      }
+      
       const updatedTaxReturn = await storage.updateTaxReturn(id, req.body);
       res.json(updatedTaxReturn);
     } catch (error) {

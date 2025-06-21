@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useTaxContext } from "@/context/TaxContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,17 +14,29 @@ export default function SALTDeductionsNew() {
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
   
-  // State for all SALT inputs - initialize from existing data or defaults
+  // State for all SALT inputs - initialize with proper defaults
   const [taxType, setTaxType] = useState<'income' | 'sales'>('income');
-  const [stateLocalIncomeTax, setStateLocalIncomeTax] = useState(
-    taxData?.deductions?.itemizedDeductions?.stateLocalIncomeTax || 0
-  );
+  const [stateLocalIncomeTax, setStateLocalIncomeTax] = useState(0);
   const [stateLocalSalesTax, setStateLocalSalesTax] = useState(0);
-  const [realEstateTax, setRealEstateTax] = useState(
-    taxData?.deductions?.itemizedDeductions?.realEstateTaxes || 0
-  );
+  const [realEstateTax, setRealEstateTax] = useState(0);
   const [personalPropertyTax, setPersonalPropertyTax] = useState(0);
   const [totalSALT, setTotalSALT] = useState(0);
+
+  // Initialize state from existing tax data when component loads
+  useEffect(() => {
+    if (taxData?.deductions?.itemizedDeductions) {
+      const existingIncomeTax = taxData.deductions.itemizedDeductions.stateLocalIncomeTax || 0;
+      const existingRealEstate = taxData.deductions.itemizedDeductions.realEstateTaxes || 0;
+      
+      setStateLocalIncomeTax(existingIncomeTax);
+      setRealEstateTax(existingRealEstate);
+      
+      console.log('초기 데이터 로드:', {
+        existingIncomeTax,
+        existingRealEstate
+      });
+    }
+  }, [taxData]);
 
   const calculateTotalSALT = () => {
     const selectedTaxAmount = taxType === 'income' ? stateLocalIncomeTax : stateLocalSalesTax;
@@ -220,9 +232,10 @@ export default function SALTDeductionsNew() {
                 step="0.01"
                 min="0"
                 className="pl-8"
-                value={realEstateTax}
+                value={realEstateTax || ''}
                 onChange={(e) => {
-                  const value = parseFloat(e.target.value) || 0;
+                  const value = e.target.value === '' ? 0 : parseFloat(e.target.value) || 0;
+                  console.log('부동산세 입력:', value);
                   setRealEstateTax(value);
                   setTimeout(calculateTotalSALT, 100);
                 }}
@@ -253,9 +266,10 @@ export default function SALTDeductionsNew() {
                 step="0.01"
                 min="0"
                 className="pl-8"
-                value={personalPropertyTax}
+                value={personalPropertyTax || ''}
                 onChange={(e) => {
-                  const value = parseFloat(e.target.value) || 0;
+                  const value = e.target.value === '' ? 0 : parseFloat(e.target.value) || 0;
+                  console.log('개인재산세 입력:', value);
                   setPersonalPropertyTax(value);
                   setTimeout(calculateTotalSALT, 100);
                 }}

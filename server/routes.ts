@@ -7,12 +7,11 @@ import nodemailer from "nodemailer";
 
 // Configure email transporter for Gmail with better error handling
 const createEmailTransporter = () => {
-  // Use eztax88@gmail.com as the default email address
-  const emailUser = process.env.EMAIL_USER === '38770267188-ptuvvhjkupkj3jgq58h15fricllompri.apps.googleusercontent.com' 
-    ? 'eztax88@gmail.com' 
-    : process.env.EMAIL_USER;
+  // Force use eztax88@gmail.com and the correct app password
+  const emailUser = 'eztax88@gmail.com';
+  const emailPass = 'fetlnvjnmkjetfov';
     
-  if (!emailUser || !process.env.EMAIL_PASS) {
+  if (!emailUser || !emailPass) {
     console.log('Email credentials not configured - emails will be logged only');
     return null;
   }
@@ -23,7 +22,7 @@ const createEmailTransporter = () => {
     service: 'gmail',
     auth: {
       user: emailUser,
-      pass: process.env.EMAIL_PASS
+      pass: emailPass
     },
     debug: false,
     logger: false

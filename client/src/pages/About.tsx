@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import expertPhotoPath from "@assets/내이미지_1750444585639.jpg";
 import visionImagePath from "@assets/ChatGPT Image Jun 20, 2025, 09_38_11 PM_1750473512527.png";
+import missionImagePath from "@assets/ChatGPT Image Jun 20, 2025, 09_42_31 PM_1750473769339.png";
 
 export default function About() {
   const [, navigate] = useLocation();
@@ -45,11 +46,26 @@ export default function About() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-gray-700 leading-relaxed">
-              기술의 힘으로 복잡한 세무와 은퇴 계획을 누구나 쉽게 이해하고 실행할 수 있게 만듭니다. 
-              혁신적인 핀테크 솔루션을 통해 개인의 재정적 성공을 지원하고, 
-              더 풍요로운 미래를 향한 여정에 동행합니다.
-            </p>
+            <div className="grid md:grid-cols-2 gap-8 items-center">
+              <div>
+                <p className="text-gray-700 leading-relaxed mb-4">
+                  기술의 힘으로 복잡한 세무와 은퇴 계획을 누구나 쉽게 이해하고 실행할 수 있게 만듭니다. 
+                  혁신적인 핀테크 솔루션을 통해 개인의 재정적 성공을 지원하고, 
+                  더 풍요로운 미래를 향한 여정에 동행합니다.
+                </p>
+                <p className="text-blue-600 font-medium text-sm">
+                  혁신적인 핀테크 솔루션을 통해 개인의 재정적 성공을 지원
+                </p>
+              </div>
+              
+              <div className="flex justify-center">
+                <img 
+                  src={missionImagePath} 
+                  alt="EzTax Mission - 혁신적인 핀테크 솔루션을 통해 개인의 재정적 성공을 지원" 
+                  className="max-w-full h-auto rounded-lg shadow-md"
+                />
+              </div>
+            </div>
           </CardContent>
         </Card>
 

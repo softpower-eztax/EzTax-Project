@@ -17,7 +17,7 @@ export interface IStorage {
   // Tax return methods
   getTaxReturn(id: number): Promise<TaxReturn | undefined>;
   getAllTaxReturns(): Promise<TaxReturn[]>;
-  getCurrentTaxReturn(): Promise<TaxReturn | undefined>;
+  getCurrentTaxReturn(userId: number): Promise<TaxReturn | undefined>;
   createTaxReturn(taxReturn: InsertTaxReturn): Promise<TaxReturn>;
   updateTaxReturn(id: number, taxReturn: Partial<TaxReturn>): Promise<TaxReturn>;
   deleteTaxReturn(id: number): Promise<void>;
@@ -92,8 +92,11 @@ export class DbStorage implements IStorage {
     return await db.select().from(taxReturns);
   }
   
-  async getCurrentTaxReturn(): Promise<TaxReturn | undefined> {
-    const result = await db.select().from(taxReturns).orderBy(desc(taxReturns.updatedAt)).limit(1);
+  async getCurrentTaxReturn(userId: number): Promise<TaxReturn | undefined> {
+    const result = await db.select().from(taxReturns)
+      .where(eq(taxReturns.userId, userId))
+      .orderBy(desc(taxReturns.updatedAt))
+      .limit(1);
     return result[0];
   }
   

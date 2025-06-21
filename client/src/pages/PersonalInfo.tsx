@@ -253,22 +253,30 @@ const PersonalInfo: React.FC = () => {
     loadUserData();
   }, []); // 빈 의존성 배열로 변경하여 컴포넌트 마운트 시에만 실행
 
-  // taxData.personalInfo가 변경될 때만 폼 업데이트 (데이터 보존) - 사용자 입력 중이 아닐 때만
+  // taxData.personalInfo가 변경될 때만 폼 업데이트 (데이터 보존) - 현재 폼 값 우선 보존
   useEffect(() => {
     if (taxData.personalInfo && Object.keys(taxData.personalInfo).length > 0) {
-      // 현재 포커스된 요소가 있는지 확인 (사용자가 입력 중인지 체크)
-      const activeElement = document.activeElement;
-      const isUserTyping = activeElement && (activeElement.tagName === 'INPUT' || activeElement.tagName === 'TEXTAREA');
+      const currentFormData = form.getValues();
       
-      // 사용자가 입력 중이 아닐 때만 폼 업데이트
-      if (!isUserTyping) {
-        const currentFormData = form.getValues();
-        const mergedData = { ...currentFormData, ...taxData.personalInfo };
-        
-        console.log("PersonalInfo - 데이터 업데이트:", mergedData);
-        form.reset(mergedData);
-        setSavedValues(mergedData);
-      }
+      // 현재 폼에 있는 데이터를 우선하고, 없는 필드만 서버 데이터로 채움
+      const mergedData = {
+        ...taxData.personalInfo,  // 서버 데이터를 기본으로
+        ...Object.fromEntries(    // 현재 폼에서 값이 있는 필드들만 덮어씀
+          Object.entries(currentFormData).filter(([_, value]) => 
+            value !== "" && value !== null && value !== undefined
+          )
+        )
+      };
+      
+      // SSN과 dateOfBirth가 현재 폼에 있으면 절대 지우지 않음
+      if (currentFormData.ssn) mergedData.ssn = currentFormData.ssn;
+      if (currentFormData.dateOfBirth) mergedData.dateOfBirth = currentFormData.dateOfBirth;
+      if (currentFormData.firstName) mergedData.firstName = currentFormData.firstName;
+      if (currentFormData.lastName) mergedData.lastName = currentFormData.lastName;
+      
+      console.log("PersonalInfo - 폼 값 보존 데이터 업데이트:", mergedData);
+      form.reset(mergedData);
+      setSavedValues(mergedData);
     }
   }, [taxData.personalInfo]);
 

@@ -20,10 +20,17 @@ export default function StateTax() {
   const [stateWithholding, setStateWithholding] = useState(0);
   const [calculatedStateTax, setCalculatedStateTax] = useState<StateIncomeTax | undefined>(undefined);
   const [isCalculating, setIsCalculating] = useState(false);
+  const [selectedState, setSelectedState] = useState('');
 
-  const selectedState = taxData.personalInfo?.state || '';
   const filingStatus = taxData.personalInfo?.filingStatus || 'single';
   const dependentsCount = taxData.personalInfo?.dependents?.length || 0;
+
+  // Initialize with resident state from personal info
+  useEffect(() => {
+    if (taxData.personalInfo?.state) {
+      setSelectedState(taxData.personalInfo.state);
+    }
+  }, [taxData.personalInfo?.state]);
 
   // Auto-calculate when data changes
   useEffect(() => {
@@ -98,17 +105,30 @@ export default function StateTax() {
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
-          {/* State Selection - Read from personal info */}
+          {/* State Selection - Can override resident state */}
           <div>
-            <Label className="text-sm font-medium">거주 주</Label>
-            <div className="mt-1 p-3 bg-gray-50 rounded-md">
-              <p className="text-sm">
-                {selectedState ? 
-                  STATES.find(s => s.code === selectedState)?.name || selectedState :
-                  '개인정보에서 거주 주를 먼저 설정해주세요'
-                }
+            <Label className="text-sm font-medium flex items-center gap-2">
+              <MapPin className="h-4 w-4" />
+              세금 계산할 주 선택
+            </Label>
+            <Select value={selectedState} onValueChange={setSelectedState}>
+              <SelectTrigger className="mt-1">
+                <SelectValue placeholder="주를 선택하세요" />
+              </SelectTrigger>
+              <SelectContent>
+                {STATES.map((state) => (
+                  <SelectItem key={state.code} value={state.code}>
+                    {state.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            {taxData.personalInfo?.state && taxData.personalInfo.state !== selectedState && (
+              <p className="text-xs text-blue-600 mt-1">
+                거주주: {STATES.find(s => s.code === taxData.personalInfo?.state)?.name} 
+                (현재 {STATES.find(s => s.code === selectedState)?.name} 세금을 계산 중)
               </p>
-            </div>
+            )}
           </div>
 
           {/* State Tax Information */}

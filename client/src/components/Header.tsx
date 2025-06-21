@@ -126,7 +126,7 @@ const Header: React.FC = () => {
                 <User className="h-4 w-4 mr-1" />
                 {user.username}
               </div>
-              {(user.username === 'admin' || user.username === 'default') && (
+              {user.username === 'admin' && (
                 <Button 
                   variant="outline" 
                   size="sm"

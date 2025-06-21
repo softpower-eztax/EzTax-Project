@@ -167,6 +167,61 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Send application email
+  app.post("/api/send-application", async (req, res) => {
+    try {
+      const { name, phone, email, selectedPlan, additionalRequests } = req.body;
+      
+      // Validate required fields
+      if (!name || !phone || !email || !selectedPlan) {
+        return res.status(400).json({ message: "Missing required fields" });
+      }
+
+      // Map plan codes to readable names
+      const planNames = {
+        'basic': '기본 검토 ($99) - 개인 기본 세금 신고 검토',
+        'advanced': '고급 검토 ($199) - 복잡한 세무 상황 검토',
+        'premium': '프리미엄 검토 ($299) - 종합 세무 자문 및 최적화'
+      };
+
+      const planName = planNames[selectedPlan as keyof typeof planNames] || selectedPlan;
+      
+      // Create email content
+      const emailContent = `
+새로운 유료검토 서비스 신청이 접수되었습니다.
+
+신청자 정보:
+- 이름: ${name}
+- 전화번호: ${phone}
+- 이메일: ${email}
+- 선택한 플랜: ${planName}
+
+추가 요청사항:
+${additionalRequests || '없음'}
+
+신청 시간: ${new Date().toLocaleString('ko-KR')}
+      `.trim();
+
+      // In a real implementation, you would use a service like SendGrid, Nodemailer, etc.
+      // For now, we'll log the email content and return success
+      console.log('Application Email Content:');
+      console.log('To: eztax88@gmail.com');
+      console.log('Subject: [EzTax] 새로운 유료검토 서비스 신청');
+      console.log('Content:', emailContent);
+      
+      // Simulate email sending delay
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      res.json({ 
+        success: true, 
+        message: "Application submitted successfully" 
+      });
+    } catch (error) {
+      console.error("Error sending application email:", error);
+      res.status(500).json({ message: "Failed to send application" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

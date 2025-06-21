@@ -19,6 +19,7 @@ import Review from "@/pages/Review";
 import TaxSavingAdvice from "@/pages/TaxSavingAdvice";
 import RetirementScore from "@/pages/RetirementScore";
 import PricingPage from "@/pages/PricingPage";
+import ApplicationForm from "@/pages/ApplicationForm";
 import About from "@/pages/About";
 import NotFound from "@/pages/not-found";
 import AuthPage from "@/pages/auth-page";
@@ -54,6 +55,7 @@ function Router() {
       <ProtectedRoute path="/review" component={Review} />
       <ProtectedRoute path="/tax-saving-advice" component={TaxSavingAdvice} />
       <ProtectedRoute path="/pricing" component={PricingPage} />
+      <Route path="/application" component={ApplicationForm} />
       <ProtectedRoute path="/test-data" component={DataTester} />
       <Route component={NotFound} />
     </Switch>

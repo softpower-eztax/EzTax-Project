@@ -382,7 +382,11 @@ export const TaxProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         updatedAt: new Date().toISOString()
       };
       
-      const response = await apiRequest(method, url, dataToSave);
+      const response = await apiRequest({
+        url,
+        method,
+        body: dataToSave
+      });
       
       if (response.ok) {
         // 서버에서 받은 데이터 그대로 상태 업데이트하는 대신 ID만 업데이트

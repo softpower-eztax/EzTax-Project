@@ -456,140 +456,25 @@ export const TaxProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   // 폼 오류 상태 (필요한 경우 여기에 추가)
   const [formErrors, setFormErrors] = useState<Record<string, string[]>>({});
 
-  // 모든 숫자 필드를 0으로 초기화하는 함수
+  // 진행상황 저장 함수 - 개인정보는 보존하고 현재 상태만 저장
   const resetToZero = async () => {
-    // 먼저 로컬 스토리지 초기화
-    localStorage.removeItem('personalInfo');
-    localStorage.removeItem('income');
-    localStorage.removeItem('deductions');
-    localStorage.removeItem('taxCredits');
-    localStorage.removeItem('additionalTax');
-    
-    // 데이터 초기화
-    const emptyIncome = {
-      wages: 0,
-      otherEarnedIncome: 0,
-      interestIncome: 0,
-      dividends: 0,
-      businessIncome: 0,
-      capitalGains: 0,
-      rentalIncome: 0,
-      retirementIncome: 0,
-      unemploymentIncome: 0,
-      otherIncome: 0,
-      totalIncome: 0,
-      additionalIncomeItems: [],
-      adjustments: {
-        studentLoanInterest: 0,
-        retirementContributions: 0,
-        otherAdjustments: 0
-      },
-      adjustedGrossIncome: 0,
-      additionalAdjustmentItems: []
-    };
-
-    const emptyDeductions = {
-      useStandardDeduction: true,
-      standardDeductionAmount: 0, // 초기값 0으로 설정
-      itemizedDeductions: {
-        medicalExpenses: 0,
-        stateLocalIncomeTax: 0,
-        realEstateTaxes: 0,
-        mortgageInterest: 0,
-        charitableCash: 0,
-        charitableNonCash: 0
-      },
-      totalDeductions: 0
-    };
-
-    const emptyTaxCredits = {
-      childTaxCredit: 0,
-      childDependentCareCredit: 0,
-      educationCredits: 0,
-      aotcCredit: 0,
-      llcCredit: 0,
-      retirementSavingsCredit: 0,
-      foreignTaxCredit: 0,
-      otherCredits: 0,
-      totalCredits: 0
-    };
-    
-    const emptyRetirementContributions = {
-      traditionalIRA: 0,
-      rothIRA: 0,
-      plan401k: 0,
-      plan403b: 0,
-      plan457: 0,
-      simpleIRA: 0,
-      sepIRA: 0,
-      able: 0,
-      tsp: 0,
-      otherRetirementPlans: 0,
-      totalContributions: 0
-    };
-
-    const emptyAdditionalTax = {
-      selfEmploymentIncome: 0,
-      selfEmploymentTax: 0,
-      estimatedTaxPayments: 0,
-      otherIncome: 0,
-      otherTaxes: 0
-    };
-    
-    // 빈 개인정보
-    const emptyPersonalInfo = {
-      firstName: "",
-      lastName: "",
-      ssn: "",
-      dateOfBirth: "",
-      email: "",
-      phone: "",
-      address1: "",
-      address2: "",
-      city: "",
-      state: "",
-      zipCode: "",
-      filingStatus: "single" as const,
-      isDisabled: false,
-      isNonresidentAlien: false,
-      dependents: []
-    };
-
     try {
       setIsLoading(true);
       
-      // 먼저 상태 업데이트
-      setTaxData(prevData => {
-        const updatedData = {
-          ...prevData,
-          personalInfo: emptyPersonalInfo,
-          income: emptyIncome,
-          deductions: emptyDeductions,
-          taxCredits: emptyTaxCredits,
-          retirementContributions: emptyRetirementContributions,
-          additionalTax: emptyAdditionalTax,
-          updatedAt: new Date().toISOString()
-        };
-        
-        // 세금 재계산
-        const calculatedResults = calculateTaxes(updatedData);
-        updatedData.calculatedResults = calculatedResults;
-        
-        return updatedData;
-      });
-      
-      // 서버에 저장
+      // 현재 상태를 그대로 서버에 저장 (개인정보 포함)
       await saveTaxReturn();
       
       toast({
-        title: "모든 정보를 초기화했습니다",
-        description: "모든 개인정보와 숫자 필드가 초기화되고 서버에 저장되었습니다.",
+        title: "진행상황 저장됨",
+        description: "현재 입력한 정보가 성공적으로 저장되었습니다.",
+        variant: "default"
       });
+      
     } catch (error) {
-      console.error("데이터 초기화 실패:", error);
+      console.error('Error saving progress:', error);
       toast({
-        title: "초기화 실패",
-        description: "데이터 초기화 중 오류가 발생했습니다.",
+        title: "저장 실패",
+        description: "저장 중 오류가 발생했습니다.",
         variant: "destructive"
       });
     } finally {

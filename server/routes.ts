@@ -33,6 +33,40 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/ping", (req, res) => {
     res.json({ ok: true });
   });
+
+  // Admin endpoints
+  app.get("/api/admin/users", async (req, res) => {
+    try {
+      // Simple admin check - you can enhance this with proper role-based access
+      if (!req.user) {
+        return res.status(401).json({ message: "인증이 필요합니다" });
+      }
+
+      const users = await storage.getAllUsers();
+      const taxReturns = await storage.getAllTaxReturns();
+      
+      // Create admin user data with tax return counts
+      const adminUsers = users.map(user => {
+        const userTaxReturns = taxReturns.filter(tr => tr.userId === user.id);
+        return {
+          id: user.id,
+          username: user.username,
+          email: user.email,
+          displayName: user.displayName,
+          googleId: user.googleId,
+          createdAt: user.createdAt,
+          lastLogin: user.updatedAt, // Using updatedAt as proxy for last login
+          taxReturnsCount: userTaxReturns.length,
+          status: 'active' as const
+        };
+      });
+
+      res.json(adminUsers);
+    } catch (error) {
+      console.error("Admin users fetch error:", error);
+      res.status(500).json({ message: "서버 오류가 발생했습니다" });
+    }
+  });
   
   // Get current tax return (always gets the most recent one)
   app.get("/api/tax-return", async (req, res) => {

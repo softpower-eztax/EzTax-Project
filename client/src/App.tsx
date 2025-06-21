@@ -22,6 +22,7 @@ import RetirementScore from "@/pages/RetirementScore";
 import PricingPage from "@/pages/PricingPage";
 import ApplicationForm from "@/pages/ApplicationForm";
 import About from "@/pages/About";
+import AdminPanel from "@/pages/AdminPanel";
 import NotFound from "@/pages/not-found";
 import AuthPage from "@/pages/auth-page";
 import DataTester from "@/pages/DataTester";
@@ -57,6 +58,7 @@ function Router() {
       <ProtectedRoute path="/review" component={Review} />
       <ProtectedRoute path="/tax-saving-advice" component={TaxSavingAdvice} />
       <ProtectedRoute path="/pricing" component={PricingPage} />
+      <ProtectedRoute path="/admin" component={AdminPanel} />
       <Route path="/application" component={ApplicationForm} />
       <ProtectedRoute path="/test-data" component={DataTester} />
       <Route component={NotFound} />

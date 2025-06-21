@@ -11,6 +11,7 @@ export interface IStorage {
   getUserByUsername(username: string): Promise<User | undefined>;
   getUserByGoogleId(googleId: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
+  getAllUsers(): Promise<User[]>;
   
   // Tax return methods
   getTaxReturn(id: number): Promise<TaxReturn | undefined>;
@@ -99,6 +100,10 @@ export class MemStorage implements IStorage {
     this.users.set(id, user);
     return user;
   }
+
+  async getAllUsers(): Promise<User[]> {
+    return Array.from(this.users.values());
+  }
   
   // Tax return methods
   async getTaxReturn(id: number): Promise<TaxReturn | undefined> {
@@ -178,6 +183,10 @@ export class DatabaseStorage implements IStorage {
       })
       .returning();
     return user;
+  }
+
+  async getAllUsers(): Promise<User[]> {
+    return await db.select().from(users);
   }
 
   // 세금 신고서 메서드

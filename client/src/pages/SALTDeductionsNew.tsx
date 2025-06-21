@@ -22,23 +22,37 @@ export default function SALTDeductionsNew() {
   const [personalPropertyTax, setPersonalPropertyTax] = useState(0);
   const [totalSALT, setTotalSALT] = useState(0);
 
-  // Load existing SALT data when component mounts
+  // Wait for taxData to fully load and then set SALT values
   useEffect(() => {
-    if (taxData.deductions?.itemizedDeductions) {
-      const saltAmount = taxData.deductions.itemizedDeductions.stateLocalIncomeTax || 0;
-      const realEstateAmount = taxData.deductions.itemizedDeductions.realEstateTaxes || 0;
+    console.log('SALTDeductionsNew - useEffect 트리거, 전체 taxData:', taxData);
+    console.log('SALTDeductionsNew - deductions 확인:', taxData.deductions);
+    
+    // Wait for taxData to be fully loaded (has userId)
+    if (taxData.userId && taxData.deductions) {
+      console.log('SALTDeductionsNew - 완전한 taxData 로드됨, itemizedDeductions 확인:', taxData.deductions.itemizedDeductions);
       
-      console.log('SALTDeductionsNew - 기존 데이터 로드:', {
-        saltAmount,
-        realEstateAmount,
-        itemizedDeductions: taxData.deductions.itemizedDeductions
-      });
-      
-      setStateLocalIncomeTax(saltAmount);
-      setRealEstateTax(realEstateAmount);
-      setTotalSALT(Math.min(saltAmount + realEstateAmount, 10000));
+      if (taxData.deductions.itemizedDeductions) {
+        const saltAmount = taxData.deductions.itemizedDeductions.stateLocalIncomeTax || 0;
+        const realEstateAmount = taxData.deductions.itemizedDeductions.realEstateTaxes || 0;
+        
+        console.log('SALTDeductionsNew - 기존 데이터 로드:', {
+          saltAmount,
+          realEstateAmount,
+          itemizedDeductions: taxData.deductions.itemizedDeductions
+        });
+        
+        // Set values regardless of whether they are 0 or not (to show saved state)
+        setStateLocalIncomeTax(saltAmount);
+        setRealEstateTax(realEstateAmount);
+        setTotalSALT(Math.min(saltAmount + realEstateAmount, 10000));
+        console.log('SALT 데이터 설정 완료:', { saltAmount, realEstateAmount });
+      } else {
+        console.log('SALTDeductionsNew - itemizedDeductions 없음, 기본값 유지');
+      }
+    } else {
+      console.log('SALTDeductionsNew - taxData 아직 로딩 중...');
     }
-  }, [taxData.deductions?.itemizedDeductions]);
+  }, [taxData.userId, taxData.deductions]);
 
   const calculateTotalSALT = () => {
     const selectedTaxAmount = taxType === 'income' ? stateLocalIncomeTax : stateLocalSalesTax;

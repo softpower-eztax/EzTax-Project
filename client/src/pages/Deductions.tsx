@@ -548,7 +548,7 @@ const Deductions: React.FC = () => {
                                 type="button"
                                 variant="outline"
                                 size="sm"
-                                onClick={() => window.location.href = '/salt-deductions'}
+                                onClick={() => navigate('/salt-deductions')}
                                 disabled={isItemizedDisabled}
                                 className="whitespace-nowrap"
                               >

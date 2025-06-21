@@ -26,7 +26,7 @@ export default function AdminPanel() {
   
   const { data: users, isLoading, error } = useQuery<AdminUser[]>({
     queryKey: ['/api/admin/users'],
-    queryFn: getQueryFn(),
+    queryFn: getQueryFn({ on401: "returnNull" }),
   });
 
   const filteredUsers = users?.filter(user => 
@@ -181,7 +181,7 @@ export default function AdminPanel() {
                     <TableCell>
                       <div className="flex items-center gap-2">
                         <Calendar className="h-3 w-3" />
-                        {format(new Date(user.createdAt), 'yyyy-MM-dd')}
+                        {new Date(user.createdAt).toLocaleDateString('ko-KR')}
                       </div>
                     </TableCell>
                     <TableCell>

@@ -32,6 +32,8 @@ export default function SALTDeductionsNew() {
     console.log('SALT 계산 디버그:', {
       taxType,
       selectedTaxAmount,
+      stateLocalIncomeTax, // Added for debugging
+      stateLocalSalesTax, // Added for debugging
       realEstate: realEstateTax,
       personalProperty: personalPropertyTax,
       total,
@@ -169,7 +171,12 @@ export default function SALTDeductionsNew() {
                     const numValue = inputValue === '' ? 0 : Number(inputValue);
                     console.log('주/지방 소득세 입력 변경:', inputValue, '->', numValue);
                     setStateLocalIncomeTax(numValue);
-                    setTimeout(() => calculateTotalSALT(), 50);
+                    
+                    // Calculate immediately with new value
+                    const selectedTaxAmount = taxType === 'income' ? numValue : stateLocalSalesTax;
+                    const total = selectedTaxAmount + realEstateTax + personalPropertyTax;
+                    const limitedTotal = Math.min(total, 10000);
+                    setTotalSALT(limitedTotal);
                   }
                 }}
                 disabled={taxType !== 'income'}
@@ -195,7 +202,12 @@ export default function SALTDeductionsNew() {
                     const numValue = inputValue === '' ? 0 : Number(inputValue);
                     console.log('주/지방 판매세 입력 변경:', inputValue, '->', numValue);
                     setStateLocalSalesTax(numValue);
-                    setTimeout(() => calculateTotalSALT(), 50);
+                    
+                    // Calculate immediately with new value
+                    const selectedTaxAmount = taxType === 'sales' ? numValue : stateLocalIncomeTax;
+                    const total = selectedTaxAmount + realEstateTax + personalPropertyTax;
+                    const limitedTotal = Math.min(total, 10000);
+                    setTotalSALT(limitedTotal);
                   }
                 }}
                 disabled={taxType !== 'sales'}
@@ -233,7 +245,12 @@ export default function SALTDeductionsNew() {
                     const numValue = inputValue === '' ? 0 : Number(inputValue);
                     console.log('부동산세 입력 변경:', inputValue, '->', numValue);
                     setRealEstateTax(numValue);
-                    setTimeout(() => calculateTotalSALT(), 50);
+                    
+                    // Calculate immediately with new value
+                    const selectedTaxAmount = taxType === 'income' ? stateLocalIncomeTax : stateLocalSalesTax;
+                    const total = selectedTaxAmount + numValue + personalPropertyTax;
+                    const limitedTotal = Math.min(total, 10000);
+                    setTotalSALT(limitedTotal);
                   }
                 }}
                 placeholder="0"
@@ -270,7 +287,12 @@ export default function SALTDeductionsNew() {
                     const numValue = inputValue === '' ? 0 : Number(inputValue);
                     console.log('개인재산세 입력 변경:', inputValue, '->', numValue);
                     setPersonalPropertyTax(numValue);
-                    setTimeout(() => calculateTotalSALT(), 50);
+                    
+                    // Calculate immediately with new value
+                    const selectedTaxAmount = taxType === 'income' ? stateLocalIncomeTax : stateLocalSalesTax;
+                    const total = selectedTaxAmount + realEstateTax + numValue;
+                    const limitedTotal = Math.min(total, 10000);
+                    setTotalSALT(limitedTotal);
                   }
                 }}
                 placeholder="0"

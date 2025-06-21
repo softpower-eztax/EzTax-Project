@@ -105,6 +105,7 @@ Preferred communication style: Simple, everyday language.
 ## Changelog
 
 Recent Changes:
+- June 21, 2025: RetirementContributions page placeholders updated from "0" to "달러 금액" for better user experience
 - June 21, 2025: Critical security vulnerability fixed - admin access now restricted to 'admin' username only
 - June 21, 2025: Admin account properly recreated in PostgreSQL with secure password hashing (ID: 3)
 - June 21, 2025: Multi-layer security implemented: frontend button visibility, backend API validation, and admin panel access control

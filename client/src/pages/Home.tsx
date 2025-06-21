@@ -112,10 +112,10 @@ const Home: React.FC = () => {
         <p className="text-2xl md:text-3xl font-bold text-gray-600 mb-4 tracking-wide" style={{ fontFamily: 'Georgia, serif' }}>
           Less Tax, More Wealth
         </p>
-        <p className="text-lg font-medium text-primary-dark max-w-4xl mx-auto mb-4 bg-primary/5 p-4 rounded-lg border border-primary/20">
+        {/* <p className="text-lg font-medium text-primary-dark max-w-4xl mx-auto mb-4 bg-primary/5 p-4 rounded-lg border border-primary/20">
           EzTax는 단순히 올해 세금을 정리하는 것에 그치지 않고,<br />
           당신의 평생 세금+은퇴 전략을 함께 설계합니다.
-        </p>
+        </p> */}
         <div className="flex flex-col md:flex-row items-center justify-center gap-6 mb-8">
           <p className="text-xl text-gray-dark">
             세금시뮬레이터로 간단하게 계산하시고 노후준비도 진단하세요.

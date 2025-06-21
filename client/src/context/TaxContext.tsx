@@ -274,11 +274,8 @@ export const TaxProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       }
     };
 
-    // 정기적으로 인증 상태 확인 (5초마다)
+    // 초기 데이터 로드만 수행 (정기적 폴링 제거)
     checkAuthAndLoadData();
-    const intervalId = setInterval(checkAuthAndLoadData, 5000);
-
-    return () => clearInterval(intervalId);
   }, [currentUserId]);
 
   // Update tax data and recalculate taxes - without auto-saving to server

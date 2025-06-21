@@ -198,10 +198,10 @@ export interface StateIncomeTax {
   state: string;
   stateTaxableIncome: number;
   stateTax: number;
-  stateCredits: number;
-  stateWithholding: number;
-  stateRefundAmount: number;
-  stateAmountOwed: number;
+  stateCredits?: number;
+  stateWithholding?: number;
+  stateRefund?: number;
+  stateAmountOwed?: number;
 }
 
 export interface CalculatedResults {

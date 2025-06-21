@@ -8,6 +8,8 @@ import {
   FilingStatus,
   Dependent
 } from '@shared/schema';
+import { calculateStateTax } from '@shared/stateTaxCalculator';
+import type { StateTaxCalculationInput } from '@shared/stateTaxCalculator';
 
 interface TaxData {
   personalInfo?: PersonalInformation;
@@ -462,7 +464,7 @@ export function calculateTaxes(taxData: TaxData): CalculatedResults {
     result.adjustments = (
       incomeAdjustments.studentLoanInterest +
       incomeAdjustments.retirementContributions +
-      incomeAdjustments.healthSavingsAccount +
+      ('healthSavingsAccount' in incomeAdjustments ? incomeAdjustments.healthSavingsAccount : 0) +
       incomeAdjustments.otherAdjustments +
       halfSETax +
       additionalAdjustmentsTotal
@@ -596,6 +598,28 @@ export function calculateTaxes(taxData: TaxData): CalculatedResults {
   // 원천징수액 계산을 제거하고 사용자 입력값만 사용
   result.payments = estimatedPayments;
   
+  // Calculate state income tax if state information is available
+  if (taxData.personalInfo?.state && result.adjustedGrossIncome > 0) {
+    const stateInput: StateTaxCalculationInput = {
+      state: taxData.personalInfo.state,
+      filingStatus: filingStatus as any,
+      federalAGI: result.adjustedGrossIncome,
+      federalTaxableIncome: result.taxableIncome,
+      federalItemizedDeductions: taxData.deductions?.useStandardDeduction ? 
+        undefined : taxData.deductions?.totalDeductions,
+      dependentsCount: taxData.personalInfo?.dependents?.length || 0,
+    };
+    
+    try {
+      const stateResult = calculateStateTax(stateInput);
+      if (stateResult) {
+        result.stateIncomeTax = stateResult;
+      }
+    } catch (error) {
+      console.error('State tax calculation error:', error);
+    }
+  }
+
   // Calculate refund or amount owed
   if (result.payments > result.taxDue) {
     result.refundAmount = Math.round((result.payments - result.taxDue) * 100) / 100;

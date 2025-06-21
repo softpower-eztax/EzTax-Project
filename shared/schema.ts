@@ -194,6 +194,16 @@ export interface AdditionalTax {
   otherTaxes: number;
 }
 
+export interface StateIncomeTax {
+  state: string;
+  stateTaxableIncome: number;
+  stateTax: number;
+  stateCredits: number;
+  stateWithholding: number;
+  stateRefundAmount: number;
+  stateAmountOwed: number;
+}
+
 export interface CalculatedResults {
   totalIncome: number;
   adjustments: number;
@@ -206,6 +216,8 @@ export interface CalculatedResults {
   payments: number;
   refundAmount: number;
   amountOwed: number;
+  // State Income Tax
+  stateIncomeTax?: StateIncomeTax;
 }
 
 // Zod schemas for validation

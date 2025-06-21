@@ -215,7 +215,11 @@ const ApplicationForm: React.FC = () => {
 
             <div className="space-y-2">
               <Label htmlFor="selectedPlan">검토 플랜 선택 *</Label>
-              <Select onValueChange={(value) => handleInputChange('selectedPlan', value)} disabled={isSubmitting}>
+              <Select 
+                value={formData.selectedPlan}
+                onValueChange={(value) => handleInputChange('selectedPlan', value)} 
+                disabled={isSubmitting}
+              >
                 <SelectTrigger>
                   <SelectValue placeholder="원하시는 검토 플랜을 선택해주세요" />
                 </SelectTrigger>

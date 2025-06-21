@@ -105,6 +105,9 @@ Preferred communication style: Simple, everyday language.
 ## Changelog
 
 Recent Changes:
+- June 21, 2025: Application form system implemented - users can submit service requests with name, phone, email to eztax88@gmail.com
+- June 21, 2025: Backend API endpoint added for processing application submissions with email notification functionality
+- June 21, 2025: Pricing page buttons now redirect to dedicated application form instead of showing simple toast messages
 - June 21, 2025: English text about professional tax review options removed from pricing page description
 - June 21, 2025: Contact Us section removed from pricing page per user request
 - June 21, 2025: Submit button text updated to "신고서제출(준비중)" to indicate feature is in preparation

@@ -22,7 +22,7 @@ export default function SALTDeductionsNew() {
   const [personalPropertyTax, setPersonalPropertyTax] = useState(0);
   const [totalSALT, setTotalSALT] = useState(0);
 
-  // Initialize state from existing tax data when component loads
+  // Initialize state from existing tax data only once when component mounts
   useEffect(() => {
     if (taxData?.deductions?.itemizedDeductions) {
       const existingIncomeTax = taxData.deductions.itemizedDeductions.stateLocalIncomeTax || 0;
@@ -31,12 +31,12 @@ export default function SALTDeductionsNew() {
       setStateLocalIncomeTax(existingIncomeTax);
       setRealEstateTax(existingRealEstate);
       
-      console.log('초기 데이터 로드:', {
+      console.log('컴포넌트 마운트 시 초기 데이터 로드:', {
         existingIncomeTax,
         existingRealEstate
       });
     }
-  }, [taxData]);
+  }, []); // Empty dependency array - only run once on mount
 
   const calculateTotalSALT = () => {
     const selectedTaxAmount = taxType === 'income' ? stateLocalIncomeTax : stateLocalSalesTax;

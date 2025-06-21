@@ -64,12 +64,24 @@ app.use((req, res, next) => {
     serveStatic(app);
   }
 
-  // Error handler should be last
-  app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
+  // Global error handler - must be last middleware
+  app.use((err: any, req: Request, res: Response, _next: NextFunction) => {
     const status = err.status || err.statusCode || 500;
     const message = err.message || "Internal Server Error";
-    log(`Error: ${message}`);
-    res.status(status).json({ message });
+    
+    log(`Error ${status} on ${req.method} ${req.path}: ${message}`);
+    
+    // Don't expose sensitive error details in production
+    const responseMessage = process.env.NODE_ENV === "production" 
+      ? (status === 500 ? "서버 오류가 발생했습니다" : message)
+      : message;
+    
+    if (!res.headersSent) {
+      res.status(status).json({ 
+        message: responseMessage,
+        ...(process.env.NODE_ENV === "development" && { stack: err.stack })
+      });
+    }
   });
 
   // Start server on port 5000

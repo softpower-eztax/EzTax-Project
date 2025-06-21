@@ -90,6 +90,37 @@ export const TaxProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     const loadTaxData = async () => {
       try {
         setIsLoading(true);
+        
+        // First check if user is authenticated
+        const userResponse = await fetch('/api/user', {
+          credentials: 'include',
+          cache: 'no-cache'
+        });
+        
+        if (!userResponse.ok) {
+          // User not authenticated - start with completely empty data
+          setTaxData({
+            taxYear: 2025,
+            status: 'in_progress',
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+            calculatedResults: {
+              totalIncome: 0,
+              adjustments: 0,
+              adjustedGrossIncome: 0,
+              deductions: 0,
+              taxableIncome: 0,
+              federalTax: 0,
+              credits: 0,
+              taxDue: 0,
+              payments: 0,
+              refundAmount: 0,
+              amountOwed: 0
+            }
+          });
+          return;
+        }
+        
         const response = await fetch('/api/tax-return');
         
         if (response.ok) {

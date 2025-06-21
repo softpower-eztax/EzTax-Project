@@ -23,64 +23,36 @@ export interface IStorage {
   deleteTaxReturn(id: number): Promise<void>;
 }
 
-export class MemStorage implements IStorage {
-  private users: Map<number, User>;
-  private taxReturns: Map<number, TaxReturn>;
-  private userIdCounter: number;
-  private taxReturnIdCounter: number;
-
+export class DbStorage implements IStorage {
   constructor() {
-    this.users = new Map();
-    this.taxReturns = new Map();
-    this.userIdCounter = 1;
-    this.taxReturnIdCounter = 1;
-    
-    // Create default user
-    this.createUser({
-      username: "default",
-      password: "password"
-    });
-    
-    // Create a sample tax return
-    this.createTaxReturn({
-      userId: 1,
-      taxYear: new Date().getFullYear() - 1,
-      status: "in_progress",
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-      personalInfo: {
-        firstName: "",
-        lastName: "",
-        ssn: "",
-        dateOfBirth: "",
-        email: "",
-        phone: "",
-        address1: "",
-        city: "",
-        state: "",
-        zipCode: "",
-        filingStatus: "single",
-        dependents: []
-      },
-      calculatedResults: {
-        totalIncome: 0,
-        adjustments: 0,
-        adjustedGrossIncome: 0,
-        deductions: 0,
-        taxableIncome: 0,
-        federalTax: 0,
-        credits: 0,
-        taxDue: 0,
-        payments: 0,
-        refundAmount: 0,
-        amountOwed: 0
+    // Initialize default data if database is empty
+    this.initializeDefaultData();
+  }
+
+  private async initializeDefaultData() {
+    try {
+      const existingUsers = await db.select().from(users);
+      if (existingUsers.length === 0) {
+        // Create default user
+        await db.insert(users).values({
+          username: "default",
+          password: "password",
+          email: null,
+          googleId: null,
+          displayName: null,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
+        });
       }
-    });
+    } catch (error) {
+      console.error('Failed to initialize default data:', error);
+    }
   }
 
   // User methods
   async getUser(id: number): Promise<User | undefined> {
-    return this.users.get(id);
+    const result = await db.select().from(users).where(eq(users.id, id));
+    return result[0];
   }
 
   async getUserById(id: number): Promise<User | undefined> {
@@ -88,76 +60,70 @@ export class MemStorage implements IStorage {
   }
 
   async getUserByUsername(username: string): Promise<User | undefined> {
-    return Array.from(this.users.values()).find(
-      (user) => user.username === username,
-    );
+    const result = await db.select().from(users).where(eq(users.username, username));
+    return result[0];
   }
   
   async getUserByGoogleId(googleId: string): Promise<User | undefined> {
-    return Array.from(this.users.values()).find(
-      (user) => user.googleId === googleId,
-    );
+    const result = await db.select().from(users).where(eq(users.googleId, googleId));
+    return result[0];
   }
 
   async createUser(insertUser: InsertUser): Promise<User> {
-    const id = this.userIdCounter++;
-    const user: User = { ...insertUser, id };
-    this.users.set(id, user);
-    return user;
+    const result = await db.insert(users).values({
+      ...insertUser,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    }).returning();
+    return result[0];
   }
 
   async getAllUsers(): Promise<User[]> {
-    return Array.from(this.users.values());
+    return await db.select().from(users);
   }
   
   // Tax return methods
   async getTaxReturn(id: number): Promise<TaxReturn | undefined> {
-    return this.taxReturns.get(id);
+    const result = await db.select().from(taxReturns).where(eq(taxReturns.id, id));
+    return result[0];
   }
   
   async getAllTaxReturns(): Promise<TaxReturn[]> {
-    return Array.from(this.taxReturns.values());
+    return await db.select().from(taxReturns);
   }
   
   async getCurrentTaxReturn(): Promise<TaxReturn | undefined> {
-    // Get the most recent tax return
-    const allReturns = Array.from(this.taxReturns.values());
-    return allReturns.sort((a, b) => {
-      return new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime();
-    })[0];
+    const result = await db.select().from(taxReturns).orderBy(desc(taxReturns.updatedAt)).limit(1);
+    return result[0];
   }
   
   async createTaxReturn(insertTaxReturn: InsertTaxReturn): Promise<TaxReturn> {
-    const id = this.taxReturnIdCounter++;
-    const taxReturn: TaxReturn = { 
-      ...insertTaxReturn, 
-      id,
-      // Ensure the date strings are properly formatted
+    const result = await db.insert(taxReturns).values({
+      ...insertTaxReturn,
       createdAt: insertTaxReturn.createdAt || new Date().toISOString(),
       updatedAt: insertTaxReturn.updatedAt || new Date().toISOString()
-    };
-    this.taxReturns.set(id, taxReturn);
-    return taxReturn;
+    }).returning();
+    return result[0];
   }
   
   async updateTaxReturn(id: number, taxReturnUpdate: Partial<TaxReturn>): Promise<TaxReturn> {
-    const existingTaxReturn = this.taxReturns.get(id);
-    if (!existingTaxReturn) {
+    const result = await db.update(taxReturns)
+      .set({
+        ...taxReturnUpdate,
+        updatedAt: new Date().toISOString()
+      })
+      .where(eq(taxReturns.id, id))
+      .returning();
+    
+    if (result.length === 0) {
       throw new Error(`Tax return with ID ${id} not found`);
     }
     
-    const updatedTaxReturn: TaxReturn = {
-      ...existingTaxReturn,
-      ...taxReturnUpdate,
-      updatedAt: new Date().toISOString()
-    };
-    
-    this.taxReturns.set(id, updatedTaxReturn);
-    return updatedTaxReturn;
+    return result[0];
   }
   
   async deleteTaxReturn(id: number): Promise<void> {
-    this.taxReturns.delete(id);
+    await db.delete(taxReturns).where(eq(taxReturns.id, id));
   }
 }
 
@@ -455,4 +421,4 @@ export class DatabaseStorage implements IStorage {
 
 // 데이터베이스 스토리지 사용
 // 데이터베이스 연결 문제로 인해 메모리 스토리지 사용
-export const storage = new MemStorage();
+export const storage = new DbStorage();

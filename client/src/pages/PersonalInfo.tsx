@@ -699,7 +699,7 @@ const PersonalInfo: React.FC = () => {
                             </div>
                             <Select
                               onValueChange={field.onChange}
-                              defaultValue={field.value}
+                              defaultValue={field.value || "single"}
                             >
                               <FormControl>
                                 <SelectTrigger>

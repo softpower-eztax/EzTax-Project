@@ -98,46 +98,21 @@ const Header: React.FC = () => {
                 size="sm"
                 className="text-primary-dark hover:text-primary flex items-center text-sm"
                 onClick={async () => {
-                  // 신고상태확인 전에 현재 폼 데이터를 직접 캡처하여 저장
+                  // TaxContext에서 현재 personalInfo 가져오기 (더 안정적)
                   try {
-                    // 현재 개인정보 폼에서 직접 데이터 수집
-                    const formData = {
-                      firstName: (document.querySelector('input[name="firstName"]') as HTMLInputElement)?.value || '',
-                      lastName: (document.querySelector('input[name="lastName"]') as HTMLInputElement)?.value || '',
-                      middleInitial: (document.querySelector('input[name="middleInitial"]') as HTMLInputElement)?.value || '',
-                      ssn: (document.querySelector('input[name="ssn"]') as HTMLInputElement)?.value || '',
-                      dateOfBirth: (document.querySelector('input[name="dateOfBirth"]') as HTMLInputElement)?.value || '',
-                      email: (document.querySelector('input[name="email"]') as HTMLInputElement)?.value || '',
-                      phone: (document.querySelector('input[name="phone"]') as HTMLInputElement)?.value || '',
-                      address1: (document.querySelector('input[name="address1"]') as HTMLInputElement)?.value || '',
-                      address2: (document.querySelector('input[name="address2"]') as HTMLInputElement)?.value || '',
-                      city: (document.querySelector('input[name="city"]') as HTMLInputElement)?.value || '',
-                      state: (document.querySelector('input[name="state"]') as HTMLInputElement)?.value || '',
-                      zipCode: (document.querySelector('input[name="zipCode"]') as HTMLInputElement)?.value || '',
-                      filingStatus: (document.querySelector('select[name="filingStatus"]') as HTMLSelectElement)?.value as any || 'single',
-                      isDisabled: (document.querySelector('input[name="isDisabled"]') as HTMLInputElement)?.checked || false,
-                      isNonresidentAlien: (document.querySelector('input[name="isNonresidentAlien"]') as HTMLInputElement)?.checked || false,
-                      dependents: []
-                    };
-
-                    console.log("Filing Status 확인 전 폼 데이터 캡처:", formData);
+                    const currentPersonalInfo = taxData.personalInfo;
+                    console.log("Filing Status 확인 전 TaxContext 데이터:", currentPersonalInfo);
                     
-                    // 데이터가 있는지 확인
-                    const hasData = formData.firstName || formData.lastName || formData.ssn;
-                    
-                    if (hasData) {
+                    if (currentPersonalInfo && (currentPersonalInfo.firstName || currentPersonalInfo.lastName || currentPersonalInfo.ssn)) {
                       // localStorage에 저장 (강제 덮어쓰기)
-                      localStorage.setItem('tempPersonalInfo', JSON.stringify(formData));
-                      console.log("tempPersonalInfo localStorage에 저장됨:", formData);
-                      
-                      // TaxContext 업데이트
-                      updateTaxData({ personalInfo: formData });
+                      localStorage.setItem('tempPersonalInfo', JSON.stringify(currentPersonalInfo));
+                      console.log("tempPersonalInfo localStorage에 저장됨:", currentPersonalInfo);
                       
                       // 서버에 저장
                       await saveTaxReturn();
                       console.log("Filing Status 확인 전 자동 저장 완료");
                     } else {
-                      console.log("입력된 데이터가 없어서 저장하지 않음");
+                      console.log("TaxContext에 개인정보 없음, localStorage 확인 없이 진행");
                     }
                     
                     navigate('/filing-status-checker');

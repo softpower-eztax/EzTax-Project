@@ -199,17 +199,44 @@ const PersonalInfo: React.FC = () => {
           }
         }
         
-        // Filing Status만 별도로 저장된 경우 처리
-        if (!finalData && savedFilingStatus) {
+        // Filing Status만 별도로 저장된 경우 처리 (현재 폼 데이터 보존)
+        if (savedFilingStatus) {
           try {
             const parsedFilingStatus = JSON.parse(savedFilingStatus);
             console.log("PersonalInfo - Filing Status만 복원:", parsedFilingStatus);
-            // 현재 폼 데이터에 filing status만 적용
+            // 현재 폼 데이터를 가져와서 filing status만 업데이트
             const currentFormData = form.getValues();
-            finalData = {
-              ...currentFormData,
-              filingStatus: parsedFilingStatus.filingStatus
-            };
+            const hasExistingData = currentFormData.firstName || currentFormData.lastName || currentFormData.ssn;
+            
+            if (hasExistingData) {
+              // 기존 데이터가 있으면 filing status만 업데이트
+              finalData = {
+                ...currentFormData,
+                filingStatus: parsedFilingStatus.filingStatus
+              };
+              console.log("PersonalInfo - 기존 폼 데이터와 Filing Status 병합:", finalData);
+            } else if (!finalData) {
+              // 기존 데이터가 없고 다른 소스에서도 데이터가 없는 경우
+              finalData = {
+                firstName: "",
+                middleInitial: "",
+                lastName: "",
+                ssn: "",
+                dateOfBirth: "",
+                email: "",
+                phone: "",
+                address1: "",
+                address2: "",
+                city: "",
+                state: "",
+                zipCode: "",
+                filingStatus: parsedFilingStatus.filingStatus,
+                isDisabled: false,
+                isNonresidentAlien: false,
+                dependents: [],
+                spouseInfo: undefined
+              };
+            }
             localStorage.removeItem('tempFilingStatus');
           } catch (error) {
             console.error("Failed to parse saved filing status:", error);

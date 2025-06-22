@@ -244,11 +244,12 @@ const PersonalInfo: React.FC = () => {
           }
         }
         
+        // DISABLED: TaxContext loading was overriding Filing Status Checker selections
         // localStorage에 데이터가 없으면 TaxContext 데이터 사용
-        if (!finalData && taxData.personalInfo) {
-          finalData = taxData.personalInfo;
-          console.log("PersonalInfo - TaxContext에서 개인정보 로드");
-        }
+        // if (!finalData && taxData.personalInfo) {
+        //   finalData = taxData.personalInfo;
+        //   console.log("PersonalInfo - TaxContext에서 개인정보 로드");
+        // }
         
         if (finalData) {
           form.reset(finalData);
@@ -354,20 +355,21 @@ const PersonalInfo: React.FC = () => {
   }, [taxData.personalInfo?.filingStatus]);
 
   // Additional watch for external form updates to ensure spouse fields appear
-  useEffect(() => {
-    if (taxData.personalInfo) {
-      const currentFormValues = form.getValues();
-      const hasChanges = Object.keys(taxData.personalInfo).some(key => 
-        taxData.personalInfo[key as keyof typeof taxData.personalInfo] !== currentFormValues[key as keyof typeof currentFormValues]
-      );
+  // DISABLED: This was causing the Filing Status Checker selection to be overridden
+  // useEffect(() => {
+  //   if (taxData.personalInfo) {
+  //     const currentFormValues = form.getValues();
+  //     const hasChanges = Object.keys(taxData.personalInfo).some(key => 
+  //       taxData.personalInfo[key as keyof typeof taxData.personalInfo] !== currentFormValues[key as keyof typeof currentFormValues]
+  //     );
       
-      if (hasChanges) {
-        console.log("PersonalInfo - Syncing form with TaxContext data");
-        form.reset(taxData.personalInfo);
-        setRenderKey(prev => prev + 1);
-      }
-    }
-  }, [taxData.personalInfo]);
+  //     if (hasChanges) {
+  //       console.log("PersonalInfo - Syncing form with TaxContext data");
+  //       form.reset(taxData.personalInfo);
+  //       setRenderKey(prev => prev + 1);
+  //     }
+  //   }
+  // }, [taxData.personalInfo]);
   
   // Watch all form values and auto-save to TaxContext as user types
   const watchedValues = form.watch();

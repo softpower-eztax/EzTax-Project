@@ -21,7 +21,7 @@ import {
 const Header: React.FC = () => {
   const { toast } = useToast();
   const [location, navigate] = useLocation();
-  const { saveTaxReturn, resetToZero, updateTaxData } = useTaxContext();
+  const { taxData, saveTaxReturn, resetToZero, updateTaxData } = useTaxContext();
   const { user, logoutMutation } = useAuth();
   const [isResetting, setIsResetting] = useState(false);
 
@@ -98,21 +98,48 @@ const Header: React.FC = () => {
                 size="sm"
                 className="text-primary-dark hover:text-primary flex items-center text-sm"
                 onClick={async () => {
-                  // TaxContext에서 현재 personalInfo 가져오기 (더 안정적)
+                  // 현재 폼에서 데이터를 직접 읽어서 저장 (가장 최신 상태)
                   try {
+                    // 현재 TaxContext 데이터 확인
                     const currentPersonalInfo = taxData.personalInfo;
                     console.log("Filing Status 확인 전 TaxContext 데이터:", currentPersonalInfo);
                     
-                    if (currentPersonalInfo && (currentPersonalInfo.firstName || currentPersonalInfo.lastName || currentPersonalInfo.ssn)) {
+                    // 폼에서 직접 최신 데이터 가져오기 (TaxContext가 업데이트되지 않은 경우 대비)
+                    const formInputs = {
+                      firstName: (document.querySelector('input[name="firstName"]') as HTMLInputElement)?.value || currentPersonalInfo?.firstName || '',
+                      lastName: (document.querySelector('input[name="lastName"]') as HTMLInputElement)?.value || currentPersonalInfo?.lastName || '',
+                      middleInitial: (document.querySelector('input[name="middleInitial"]') as HTMLInputElement)?.value || currentPersonalInfo?.middleInitial || '',
+                      ssn: (document.querySelector('input[name="ssn"]') as HTMLInputElement)?.value || currentPersonalInfo?.ssn || '',
+                      dateOfBirth: (document.querySelector('input[name="dateOfBirth"]') as HTMLInputElement)?.value || currentPersonalInfo?.dateOfBirth || '',
+                      email: (document.querySelector('input[name="email"]') as HTMLInputElement)?.value || currentPersonalInfo?.email || '',
+                      phone: (document.querySelector('input[name="phone"]') as HTMLInputElement)?.value || currentPersonalInfo?.phone || '',
+                      address1: (document.querySelector('input[name="address1"]') as HTMLInputElement)?.value || currentPersonalInfo?.address1 || '',
+                      address2: (document.querySelector('input[name="address2"]') as HTMLInputElement)?.value || currentPersonalInfo?.address2 || '',
+                      city: (document.querySelector('input[name="city"]') as HTMLInputElement)?.value || currentPersonalInfo?.city || '',
+                      state: (document.querySelector('select[name="state"]') as HTMLSelectElement)?.value || currentPersonalInfo?.state || '',
+                      zipCode: (document.querySelector('input[name="zipCode"]') as HTMLInputElement)?.value || currentPersonalInfo?.zipCode || '',
+                      filingStatus: (document.querySelector('select[name="filingStatus"]') as HTMLSelectElement)?.value as any || currentPersonalInfo?.filingStatus || 'single',
+                      isDisabled: (document.querySelector('input[name="isDisabled"]') as HTMLInputElement)?.checked || currentPersonalInfo?.isDisabled || false,
+                      isNonresidentAlien: (document.querySelector('input[name="isNonresidentAlien"]') as HTMLInputElement)?.checked || currentPersonalInfo?.isNonresidentAlien || false,
+                      dependents: currentPersonalInfo?.dependents || []
+                    };
+                    
+                    console.log("Filing Status 확인 전 최종 폼 데이터:", formInputs);
+                    
+                    // 데이터가 있으면 저장
+                    if (formInputs.firstName || formInputs.lastName || formInputs.ssn) {
                       // localStorage에 저장 (강제 덮어쓰기)
-                      localStorage.setItem('tempPersonalInfo', JSON.stringify(currentPersonalInfo));
-                      console.log("tempPersonalInfo localStorage에 저장됨:", currentPersonalInfo);
+                      localStorage.setItem('tempPersonalInfo', JSON.stringify(formInputs));
+                      console.log("tempPersonalInfo localStorage에 저장됨:", formInputs);
+                      
+                      // TaxContext도 업데이트
+                      updateTaxData({ personalInfo: formInputs });
                       
                       // 서버에 저장
                       await saveTaxReturn();
                       console.log("Filing Status 확인 전 자동 저장 완료");
                     } else {
-                      console.log("TaxContext에 개인정보 없음, localStorage 확인 없이 진행");
+                      console.log("입력된 데이터가 없어서 저장하지 않음");
                     }
                     
                     navigate('/filing-status-checker');

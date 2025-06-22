@@ -178,69 +178,58 @@ const PersonalInfo: React.FC = () => {
           }
         }
         
-        // TaxContext에서 로드된 데이터가 현재 사용자 것인지 확인
-        if (taxData.personalInfo) {
-          console.log("PersonalInfo - TaxContext에서 개인정보 로드");
-          form.reset(taxData.personalInfo);
-          setSavedValues(taxData.personalInfo);
-        } else {
-          // localStorage에서 임시 데이터 복원 시도
-          const savedFormData = localStorage.getItem('tempPersonalInfo');
-          if (savedFormData) {
-            try {
-              const parsedData = JSON.parse(savedFormData);
+        // localStorage 우선 확인 (Filing Status 복귀 시 데이터 보존)
+        const savedFormData = localStorage.getItem('tempPersonalInfo');
+        let finalData = null;
+        
+        if (savedFormData) {
+          try {
+            const parsedData = JSON.parse(savedFormData);
+            // localStorage 데이터가 실제 입력된 데이터인지 확인
+            const hasRealData = parsedData.firstName || parsedData.lastName || parsedData.ssn;
+            if (hasRealData) {
+              finalData = parsedData;
               console.log("PersonalInfo - localStorage에서 폼 데이터 복원:", parsedData);
-              form.reset(parsedData);
-              setSavedValues(parsedData);
-            } catch (error) {
-              console.error("Failed to parse saved form data:", error);
-              // 파싱 실패 시만 빈 폼으로 시작
-              console.log("PersonalInfo - 개인정보 없음, 빈 폼으로 시작");
-              form.reset({
-                firstName: "",
-                middleInitial: "",
-                lastName: "",
-                ssn: "",
-                dateOfBirth: "",
-                email: "",
-                phone: "",
-                address1: "",
-                address2: "",
-                city: "",
-                state: "",
-                zipCode: "",
-                filingStatus: "single",
-                isDisabled: false,
-                isNonresidentAlien: false,
-                dependents: [],
-                spouseInfo: undefined
-              });
-              setSavedValues(null);
+              // 사용 후 정리 (한번만 복원)
+              localStorage.removeItem('tempPersonalInfo');
             }
-          } else {
-            // localStorage에도 데이터가 없으면 빈 폼으로 시작
-            console.log("PersonalInfo - 개인정보 없음, 빈 폼으로 시작");
-            form.reset({
-              firstName: "",
-              middleInitial: "",
-              lastName: "",
-              ssn: "",
-              dateOfBirth: "",
-              email: "",
-              phone: "",
-              address1: "",
-              address2: "",
-              city: "",
-              state: "",
-              zipCode: "",
-              filingStatus: "single",
-              isDisabled: false,
-              isNonresidentAlien: false,
-              dependents: [],
-              spouseInfo: undefined
-            });
-            setSavedValues(null);
+          } catch (error) {
+            console.error("Failed to parse saved form data:", error);
           }
+        }
+        
+        // localStorage에 데이터가 없으면 TaxContext 데이터 사용
+        if (!finalData && taxData.personalInfo) {
+          finalData = taxData.personalInfo;
+          console.log("PersonalInfo - TaxContext에서 개인정보 로드");
+        }
+        
+        if (finalData) {
+          form.reset(finalData);
+          setSavedValues(finalData);
+        } else {
+          // 모든 소스에 데이터가 없으면 빈 폼으로 시작
+          console.log("PersonalInfo - 개인정보 없음, 빈 폼으로 시작");
+          form.reset({
+            firstName: "",
+            middleInitial: "",
+            lastName: "",
+            ssn: "",
+            dateOfBirth: "",
+            email: "",
+            phone: "",
+            address1: "",
+            address2: "",
+            city: "",
+            state: "",
+            zipCode: "",
+            filingStatus: "single",
+            isDisabled: false,
+            isNonresidentAlien: false,
+            dependents: [],
+            spouseInfo: undefined
+          });
+          setSavedValues(null);
         }
       } catch (error) {
         console.error("PersonalInfo - 데이터 로드 오류:", error);

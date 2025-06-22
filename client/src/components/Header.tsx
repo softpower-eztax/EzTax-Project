@@ -122,15 +122,23 @@ const Header: React.FC = () => {
 
                     console.log("Filing Status 확인 전 폼 데이터 캡처:", formData);
                     
-                    // localStorage에 저장
-                    localStorage.setItem('tempPersonalInfo', JSON.stringify(formData));
+                    // 데이터가 있는지 확인
+                    const hasData = formData.firstName || formData.lastName || formData.ssn;
                     
-                    // TaxContext 업데이트
-                    updateTaxData({ personalInfo: formData });
-                    
-                    // 서버에 저장
-                    await saveTaxReturn();
-                    console.log("Filing Status 확인 전 자동 저장 완료");
+                    if (hasData) {
+                      // localStorage에 저장 (강제 덮어쓰기)
+                      localStorage.setItem('tempPersonalInfo', JSON.stringify(formData));
+                      console.log("tempPersonalInfo localStorage에 저장됨:", formData);
+                      
+                      // TaxContext 업데이트
+                      updateTaxData({ personalInfo: formData });
+                      
+                      // 서버에 저장
+                      await saveTaxReturn();
+                      console.log("Filing Status 확인 전 자동 저장 완료");
+                    } else {
+                      console.log("입력된 데이터가 없어서 저장하지 않음");
+                    }
                     
                     navigate('/filing-status-checker');
                   } catch (error) {

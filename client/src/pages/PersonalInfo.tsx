@@ -327,21 +327,47 @@ const PersonalInfo: React.FC = () => {
   
   // Force component re-render when filing status changes (especially from Filing Status Checker)
   const [renderKey, setRenderKey] = useState(0);
+  const [showSpouseInfo, setShowSpouseInfo] = useState(false);
   
   // Debug: Log filing status changes and force re-render
   useEffect(() => {
     console.log("Current filing status:", filingStatus);
+    const shouldShowSpouse = filingStatus === 'married_joint' || filingStatus === 'married_separate';
+    setShowSpouseInfo(shouldShowSpouse);
     setRenderKey(prev => prev + 1); // Force re-render to ensure spouse fields appear
+    console.log("PersonalInfo - Should show spouse info:", shouldShowSpouse);
   }, [filingStatus]);
 
   // Watch for changes from TaxContext (from Filing Status Checker) and update form
   useEffect(() => {
     if (taxData.personalInfo?.filingStatus && taxData.personalInfo.filingStatus !== form.getValues('filingStatus')) {
       console.log("PersonalInfo - Filing status updated from TaxContext:", taxData.personalInfo.filingStatus);
-      form.setValue('filingStatus', taxData.personalInfo.filingStatus);
+      form.setValue('filingStatus', taxData.personalInfo.filingStatus, { shouldValidate: true, shouldTouch: true });
+      
+      // Also update spouse info state directly
+      const shouldShowSpouse = taxData.personalInfo.filingStatus === 'married_joint' || taxData.personalInfo.filingStatus === 'married_separate';
+      setShowSpouseInfo(shouldShowSpouse);
+      console.log("PersonalInfo - Force updating spouse info visibility:", shouldShowSpouse);
+      
       setRenderKey(prev => prev + 1); // Force re-render
     }
   }, [taxData.personalInfo?.filingStatus]);
+
+  // Additional watch for external form updates to ensure spouse fields appear
+  useEffect(() => {
+    if (taxData.personalInfo) {
+      const currentFormValues = form.getValues();
+      const hasChanges = Object.keys(taxData.personalInfo).some(key => 
+        taxData.personalInfo[key as keyof typeof taxData.personalInfo] !== currentFormValues[key as keyof typeof currentFormValues]
+      );
+      
+      if (hasChanges) {
+        console.log("PersonalInfo - Syncing form with TaxContext data");
+        form.reset(taxData.personalInfo);
+        setRenderKey(prev => prev + 1);
+      }
+    }
+  }, [taxData.personalInfo]);
   
   // Watch all form values and auto-save to TaxContext as user types
   const watchedValues = form.watch();
@@ -783,8 +809,8 @@ const PersonalInfo: React.FC = () => {
                   </div>
                   
                   {/* Spouse Information - Only shows when filing status is married_joint */}
-                  {/* Debug: Current filing status: {filingStatus} */}
-                  {(filingStatus === 'married_joint' || filingStatus === 'married_separate') && (
+                  {/* Debug: Current filing status: {filingStatus}, showSpouseInfo: {showSpouseInfo} */}
+                  {(showSpouseInfo || filingStatus === 'married_joint' || filingStatus === 'married_separate') && (
                     <>
                       <Separator className="my-6" />
                       <div className="mb-6" key={`spouse-info-${renderKey}`}>

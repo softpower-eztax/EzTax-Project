@@ -265,6 +265,15 @@ const PersonalInfo: React.FC = () => {
     if (taxData.personalInfo && Object.keys(taxData.personalInfo).length > 0) {
       const currentFormData = form.getValues();
       
+      // 현재 폼에 실제 입력된 데이터가 있는지 확인
+      const hasCurrentData = currentFormData.firstName || currentFormData.lastName || currentFormData.ssn;
+      
+      // 현재 폼에 데이터가 있으면 서버 데이터로 덮어쓰지 않음
+      if (hasCurrentData) {
+        console.log("PersonalInfo - 현재 폼에 데이터 존재, 서버 데이터 무시");
+        return;
+      }
+      
       // 현재 폼에 있는 데이터를 우선하고, 없는 필드만 서버 데이터로 채움
       const mergedData = {
         ...taxData.personalInfo,  // 서버 데이터를 기본으로

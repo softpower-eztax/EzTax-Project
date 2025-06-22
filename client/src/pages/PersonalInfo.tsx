@@ -650,6 +650,48 @@ const PersonalInfo: React.FC = () => {
                       />
                     </div>
                     
+                    {/* 저장 버튼 - Filing Status 섹션 바로 위에 배치 */}
+                    <div className="flex justify-center my-6">
+                      <Button 
+                        variant="outline" 
+                        size="lg"
+                        className="text-green-600 hover:text-green-700 border-green-300 hover:border-green-400 flex items-center px-6 py-2"
+                        onClick={async () => {
+                          try {
+                            const values = form.getValues();
+                            console.log("저장 버튼 클릭 - 현재 값:", values);
+                            
+                            // 로컬 상태 업데이트
+                            setSavedValues(values);
+                            
+                            // 컨텍스트 업데이트
+                            updateTaxData({ personalInfo: values });
+                            
+                            // 로컬 스토리지에 저장
+                            localStorage.setItem('personalInfo', JSON.stringify(values));
+                            
+                            // 서버에 저장
+                            await saveTaxReturn();
+                            
+                            toast({
+                              title: "저장 완료",
+                              description: "개인정보가 성공적으로 저장되었습니다.",
+                            });
+                          } catch (error) {
+                            console.error("저장 실패:", error);
+                            toast({
+                              title: "저장 실패",
+                              description: "저장 중 오류가 발생했습니다. 다시 시도해주세요.",
+                              variant: "destructive",
+                            });
+                          }
+                        }}
+                      >
+                        <Save className="h-4 w-4 mr-2" />
+                        진행상황 저장
+                      </Button>
+                    </div>
+                    
                     <div className="mt-4">
                       <FormField
                         control={form.control}
@@ -1234,48 +1276,6 @@ const PersonalInfo: React.FC = () => {
                   </div>
                 </form>
               </Form>
-              
-              {/* 저장 버튼 추가 */}
-              <div className="flex justify-center mb-6">
-                <Button 
-                  variant="outline" 
-                  size="lg"
-                  className="text-green-600 hover:text-green-700 border-green-300 hover:border-green-400 flex items-center px-8 py-2"
-                  onClick={async () => {
-                    try {
-                      const values = form.getValues();
-                      console.log("저장 버튼 클릭 - 현재 값:", values);
-                      
-                      // 로컬 상태 업데이트
-                      setSavedValues(values);
-                      
-                      // 컨텍스트 업데이트
-                      updateTaxData({ personalInfo: values });
-                      
-                      // 로컬 스토리지에 저장
-                      localStorage.setItem('personalInfo', JSON.stringify(values));
-                      
-                      // 서버에 저장
-                      await saveTaxReturn();
-                      
-                      toast({
-                        title: "저장 완료",
-                        description: "개인정보가 성공적으로 저장되었습니다.",
-                      });
-                    } catch (error) {
-                      console.error("저장 실패:", error);
-                      toast({
-                        title: "저장 실패",
-                        description: "저장 중 오류가 발생했습니다. 다시 시도해주세요.",
-                        variant: "destructive",
-                      });
-                    }
-                  }}
-                >
-                  <Save className="h-5 w-5 mr-2" />
-                  진행상황 저장
-                </Button>
-              </div>
 
               <StepNavigation
                 prevStep="/"

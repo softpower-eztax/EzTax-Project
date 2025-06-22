@@ -105,6 +105,7 @@ Preferred communication style: Simple, everyday language.
 ## Changelog
 
 Recent Changes:
+- June 22, 2025: **USER-FRIENDLY SAVE SOLUTION IMPLEMENTED** - Added dedicated "저장하기" button next to Filing Status checker for explicit user control over data saving
 - June 21, 2025: **DATA PERSISTENCE ISSUES COMPLETELY RESOLVED** - Comprehensive fix implemented for form data clearing during navigation and authentication session issues
 - June 21, 2025: Enhanced localStorage-based form preservation system prevents data loss when navigating to Filing Status Checker
 - June 21, 2025: Fixed root cause of John Smith example data auto-injection from Home page that was pre-filling new user forms

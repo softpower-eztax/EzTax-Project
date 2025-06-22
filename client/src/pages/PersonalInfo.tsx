@@ -325,10 +325,23 @@ const PersonalInfo: React.FC = () => {
   // Watch filing status to show spouse info when 'married_joint' is selected
   const filingStatus = form.watch('filingStatus');
   
-  // Debug: Log filing status changes
+  // Force component re-render when filing status changes (especially from Filing Status Checker)
+  const [renderKey, setRenderKey] = useState(0);
+  
+  // Debug: Log filing status changes and force re-render
   useEffect(() => {
     console.log("Current filing status:", filingStatus);
+    setRenderKey(prev => prev + 1); // Force re-render to ensure spouse fields appear
   }, [filingStatus]);
+
+  // Watch for changes from TaxContext (from Filing Status Checker) and update form
+  useEffect(() => {
+    if (taxData.personalInfo?.filingStatus && taxData.personalInfo.filingStatus !== form.getValues('filingStatus')) {
+      console.log("PersonalInfo - Filing status updated from TaxContext:", taxData.personalInfo.filingStatus);
+      form.setValue('filingStatus', taxData.personalInfo.filingStatus);
+      setRenderKey(prev => prev + 1); // Force re-render
+    }
+  }, [taxData.personalInfo?.filingStatus]);
   
   // Watch all form values and auto-save to TaxContext as user types
   const watchedValues = form.watch();
@@ -770,10 +783,11 @@ const PersonalInfo: React.FC = () => {
                   </div>
                   
                   {/* Spouse Information - Only shows when filing status is married_joint */}
+                  {/* Debug: Current filing status: {filingStatus} */}
                   {(filingStatus === 'married_joint' || filingStatus === 'married_separate') && (
                     <>
                       <Separator className="my-6" />
-                      <div className="mb-6">
+                      <div className="mb-6" key={`spouse-info-${renderKey}`}>
                         <h3 className="text-lg font-heading font-semibold mb-4">배우자 정보(Spouse Information)</h3>
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                           <FormField

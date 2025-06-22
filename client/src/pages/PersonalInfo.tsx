@@ -351,6 +351,11 @@ const PersonalInfo: React.FC = () => {
   // Watch filing status to show spouse info when 'married_joint' is selected
   const filingStatus = form.watch('filingStatus');
   
+  // Debug: Log filing status changes
+  useEffect(() => {
+    console.log("Current filing status:", filingStatus);
+  }, [filingStatus]);
+  
   // Watch all form values and auto-save to TaxContext as user types
   const watchedValues = form.watch();
   
@@ -791,7 +796,7 @@ const PersonalInfo: React.FC = () => {
                   </div>
                   
                   {/* Spouse Information - Only shows when filing status is married_joint */}
-                  {filingStatus === 'married_joint' && (
+                  {(filingStatus === 'married_joint' || filingStatus === 'married_separate') && (
                     <>
                       <Separator className="my-6" />
                       <div className="mb-6">

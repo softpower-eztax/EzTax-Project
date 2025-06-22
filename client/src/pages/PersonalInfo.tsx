@@ -184,28 +184,63 @@ const PersonalInfo: React.FC = () => {
           form.reset(taxData.personalInfo);
           setSavedValues(taxData.personalInfo);
         } else {
-          // 개인정보가 없으면 빈 폼으로 시작
-          console.log("PersonalInfo - 개인정보 없음, 빈 폼으로 시작");
-          form.reset({
-            firstName: "",
-            middleInitial: "",
-            lastName: "",
-            ssn: "",
-            dateOfBirth: "",
-            email: "",
-            phone: "",
-            address1: "",
-            address2: "",
-            city: "",
-            state: "",
-            zipCode: "",
-            filingStatus: "single",
-            isDisabled: false,
-            isNonresidentAlien: false,
-            dependents: [],
-            spouseInfo: undefined
-          });
-          setSavedValues(null);
+          // localStorage에서 임시 데이터 복원 시도
+          const savedFormData = localStorage.getItem('tempPersonalInfo');
+          if (savedFormData) {
+            try {
+              const parsedData = JSON.parse(savedFormData);
+              console.log("PersonalInfo - localStorage에서 폼 데이터 복원:", parsedData);
+              form.reset(parsedData);
+              setSavedValues(parsedData);
+            } catch (error) {
+              console.error("Failed to parse saved form data:", error);
+              // 파싱 실패 시만 빈 폼으로 시작
+              console.log("PersonalInfo - 개인정보 없음, 빈 폼으로 시작");
+              form.reset({
+                firstName: "",
+                middleInitial: "",
+                lastName: "",
+                ssn: "",
+                dateOfBirth: "",
+                email: "",
+                phone: "",
+                address1: "",
+                address2: "",
+                city: "",
+                state: "",
+                zipCode: "",
+                filingStatus: "single",
+                isDisabled: false,
+                isNonresidentAlien: false,
+                dependents: [],
+                spouseInfo: undefined
+              });
+              setSavedValues(null);
+            }
+          } else {
+            // localStorage에도 데이터가 없으면 빈 폼으로 시작
+            console.log("PersonalInfo - 개인정보 없음, 빈 폼으로 시작");
+            form.reset({
+              firstName: "",
+              middleInitial: "",
+              lastName: "",
+              ssn: "",
+              dateOfBirth: "",
+              email: "",
+              phone: "",
+              address1: "",
+              address2: "",
+              city: "",
+              state: "",
+              zipCode: "",
+              filingStatus: "single",
+              isDisabled: false,
+              isNonresidentAlien: false,
+              dependents: [],
+              spouseInfo: undefined
+            });
+            setSavedValues(null);
+          }
         }
       } catch (error) {
         console.error("PersonalInfo - 데이터 로드 오류:", error);
@@ -304,18 +339,11 @@ const PersonalInfo: React.FC = () => {
     }
   }, []);
 
-  // Clean up localStorage when component unmounts (user navigates away successfully)
-  useEffect(() => {
-    return () => {
-      // Only clean up if form has been successfully saved
-      const formData = form.getValues();
-      const hasCompleteData = formData.firstName && formData.lastName && formData.ssn && formData.dateOfBirth;
-      if (hasCompleteData) {
-        localStorage.removeItem('tempPersonalInfo');
-        console.log("PersonalInfo - Cleaned up temporary localStorage data");
-      }
-    };
-  }, []);
+  // Clean up localStorage only when explicitly needed (not on every unmount)
+  const cleanupLocalStorage = () => {
+    localStorage.removeItem('tempPersonalInfo');
+    console.log("PersonalInfo - Cleaned up temporary localStorage data");
+  };
 
   const { fields, append, remove } = useFieldArray({
     control: form.control,

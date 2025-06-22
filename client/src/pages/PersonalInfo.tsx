@@ -169,15 +169,16 @@ const PersonalInfo: React.FC = () => {
           }
         });
         
-        if (taxResponse.ok) {
-          const serverData = await taxResponse.json();
-          if (serverData.personalInfo) {
-            console.log("PersonalInfo - 서버에서 최신 개인정보 로드:", serverData.personalInfo);
-            form.reset(serverData.personalInfo);
-            setSavedValues(serverData.personalInfo);
-            return;
-          }
-        }
+        // DISABLED: This server data loading was overriding Filing Status Checker selections
+        // if (taxResponse.ok) {
+        //   const serverData = await taxResponse.json();
+        //   if (serverData.personalInfo) {
+        //     console.log("PersonalInfo - 서버에서 최신 개인정보 로드:", serverData.personalInfo);
+        //     form.reset(serverData.personalInfo);
+        //     setSavedValues(serverData.personalInfo);
+        //     return;
+        //   }
+        // }
         
         // localStorage 우선 확인 (Filing Status 복귀 시 데이터 보존)
         const savedFormData = localStorage.getItem('tempPersonalInfo');
@@ -339,20 +340,21 @@ const PersonalInfo: React.FC = () => {
     console.log("PersonalInfo - Should show spouse info:", shouldShowSpouse);
   }, [filingStatus]);
 
+  // DISABLED: TaxContext effect was causing server data to override Filing Status Checker selections
   // Watch for changes from TaxContext (from Filing Status Checker) and update form
-  useEffect(() => {
-    if (taxData.personalInfo?.filingStatus && taxData.personalInfo.filingStatus !== form.getValues('filingStatus')) {
-      console.log("PersonalInfo - Filing status updated from TaxContext:", taxData.personalInfo.filingStatus);
-      form.setValue('filingStatus', taxData.personalInfo.filingStatus, { shouldValidate: true, shouldTouch: true });
+  // useEffect(() => {
+  //   if (taxData.personalInfo?.filingStatus && taxData.personalInfo.filingStatus !== form.getValues('filingStatus')) {
+  //     console.log("PersonalInfo - Filing status updated from TaxContext:", taxData.personalInfo.filingStatus);
+  //     form.setValue('filingStatus', taxData.personalInfo.filingStatus, { shouldValidate: true, shouldTouch: true });
       
-      // Also update spouse info state directly
-      const shouldShowSpouse = taxData.personalInfo.filingStatus === 'married_joint' || taxData.personalInfo.filingStatus === 'married_separate';
-      setShowSpouseInfo(shouldShowSpouse);
-      console.log("PersonalInfo - Force updating spouse info visibility:", shouldShowSpouse);
+  //     // Also update spouse info state directly
+  //     const shouldShowSpouse = taxData.personalInfo.filingStatus === 'married_joint' || taxData.personalInfo.filingStatus === 'married_separate';
+  //     setShowSpouseInfo(shouldShowSpouse);
+  //     console.log("PersonalInfo - Force updating spouse info visibility:", shouldShowSpouse);
       
-      setRenderKey(prev => prev + 1); // Force re-render
-    }
-  }, [taxData.personalInfo?.filingStatus]);
+  //     setRenderKey(prev => prev + 1); // Force re-render
+  //   }
+  // }, [taxData.personalInfo?.filingStatus]);
 
   // Additional watch for external form updates to ensure spouse fields appear
   // DISABLED: This was causing the Filing Status Checker selection to be overridden

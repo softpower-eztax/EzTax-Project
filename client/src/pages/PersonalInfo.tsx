@@ -180,6 +180,7 @@ const PersonalInfo: React.FC = () => {
         
         // localStorage 우선 확인 (Filing Status 복귀 시 데이터 보존)
         const savedFormData = localStorage.getItem('tempPersonalInfo');
+        const savedFilingStatus = localStorage.getItem('tempFilingStatus');
         let finalData = null;
         
         if (savedFormData) {
@@ -195,6 +196,23 @@ const PersonalInfo: React.FC = () => {
             }
           } catch (error) {
             console.error("Failed to parse saved form data:", error);
+          }
+        }
+        
+        // Filing Status만 별도로 저장된 경우 처리
+        if (!finalData && savedFilingStatus) {
+          try {
+            const parsedFilingStatus = JSON.parse(savedFilingStatus);
+            console.log("PersonalInfo - Filing Status만 복원:", parsedFilingStatus);
+            // 현재 폼 데이터에 filing status만 적용
+            const currentFormData = form.getValues();
+            finalData = {
+              ...currentFormData,
+              filingStatus: parsedFilingStatus.filingStatus
+            };
+            localStorage.removeItem('tempFilingStatus');
+          } catch (error) {
+            console.error("Failed to parse saved filing status:", error);
           }
         }
         

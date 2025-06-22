@@ -187,26 +187,11 @@ export default function FilingStatusChecker() {
         localStorage.setItem('tempPersonalInfo', JSON.stringify(preservedData));
         console.log("FilingStatusChecker - 데이터 보존하며 filingStatus 업데이트:", preservedData);
       } else {
-        // 새 personalInfo 객체 생성
-        const newPersonalInfo: PersonalInformation = {
-          firstName: "",
-          lastName: "",
-          ssn: "",
-          dateOfBirth: "",
-          email: "",
-          phone: "",
-          address1: "",
-          address2: "",
-          city: "",
-          state: "",
-          zipCode: "",
-          filingStatus: result,
-          isDisabled: false,
-          isNonresidentAlien: false,
-          dependents: []
-        };
-        
-        updateTaxData({ personalInfo: newPersonalInfo });
+        // 빈 personalInfo 객체를 서버에 저장하지 않고, filingStatus만 업데이트
+        console.log("FilingStatusChecker - 기존 데이터 없음, filingStatus만 로컬 저장");
+        // localStorage에 filingStatus만 저장
+        const filingStatusOnly = { filingStatus: result };
+        localStorage.setItem('tempFilingStatus', JSON.stringify(filingStatusOnly));
       }
       
       setLocation('/personal-info');

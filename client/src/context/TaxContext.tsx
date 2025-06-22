@@ -378,16 +378,40 @@ export const TaxProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       setIsLoading(true);
       console.log("서버 저장 시작 - 현재 taxData:", taxData);
       
+      // CRITICAL: Preserve current form data from localStorage before saving
+      let dataToSave = { ...taxData };
+      
+      // Check for current Personal Info form data in localStorage
+      const savedFormData = localStorage.getItem('tempPersonalInfo');
+      if (savedFormData) {
+        try {
+          const parsedFormData = JSON.parse(savedFormData);
+          console.log("SaveTaxReturn - 현재 폼 데이터 보존:", parsedFormData);
+          
+          // Merge current form data with existing taxData
+          dataToSave = {
+            ...dataToSave,
+            personalInfo: {
+              ...dataToSave.personalInfo,
+              ...parsedFormData
+            }
+          };
+          console.log("SaveTaxReturn - 병합된 데이터:", dataToSave);
+        } catch (error) {
+          console.error("SaveTaxReturn - localStorage 파싱 오류:", error);
+        }
+      }
+      
       const method = taxData.id ? 'PUT' : 'POST';
       const url = taxData.id ? `/api/tax-return/${taxData.id}` : '/api/tax-return';
       
       // Prepare data for server - ensure required fields are present
-      const dataToSave = {
-        ...taxData,
+      dataToSave = {
+        ...dataToSave,
         // Don't set userId here - let server handle it from authentication
-        taxYear: taxData.taxYear || new Date().getFullYear(),
-        status: taxData.status || 'in_progress',
-        createdAt: taxData.createdAt || new Date().toISOString(),
+        taxYear: dataToSave.taxYear || new Date().getFullYear(),
+        status: dataToSave.status || 'in_progress',
+        createdAt: dataToSave.createdAt || new Date().toISOString(),
         updatedAt: new Date().toISOString()
       };
       
@@ -398,20 +422,17 @@ export const TaxProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       });
       
       if (response.ok) {
-        // 서버에서 받은 데이터 그대로 상태 업데이트하는 대신 ID만 업데이트
-        // 이렇게 하면 서버 응답이 클라이언트의 현재 상태를 덮어쓰지 않음
         const serverResponse = await response.json();
         console.log("서버 응답:", serverResponse);
         
-        // ID는 업데이트하되 다른 데이터는 현재 상태 유지
-        if (!taxData.id && serverResponse.id) {
-          setTaxData(prevData => ({
-            ...prevData,
-            id: serverResponse.id
-          }));
-        }
+        // Update TaxContext state with the merged data (including any localStorage form data)
+        setTaxData(prevData => ({
+          ...dataToSave, // Use the merged data that includes localStorage form data
+          id: serverResponse.id || prevData.id,
+          updatedAt: serverResponse.updatedAt || dataToSave.updatedAt
+        }));
         
-        console.log("서버 저장 완료 - 현재 상태 유지됨");
+        console.log("서버 저장 완료 - 폼 데이터 포함하여 상태 업데이트됨");
         return serverResponse;
       }
     } catch (error) {

@@ -36,6 +36,7 @@ const PersonalInfo: React.FC = () => {
   
   // 로컬 상태 관리 (폼과 로컬스토리지 간 동기화)
   const [savedValues, setSavedValues] = useState<PersonalInformation | null>(null);
+  const [userIsChangingStatus, setUserIsChangingStatus] = useState(false);
   
   // 예시 데이터 채우기 함수
   const fillWithDummyData = () => {
@@ -305,41 +306,14 @@ const PersonalInfo: React.FC = () => {
     loadUserData();
   }, []); // 빈 의존성 배열로 변경하여 컴포넌트 마운트 시에만 실행
 
-  // taxData.personalInfo가 변경될 때만 폼 업데이트 (데이터 보존) - 현재 폼 값 우선 보존
-  useEffect(() => {
-    if (taxData.personalInfo && Object.keys(taxData.personalInfo).length > 0) {
-      const currentFormData = form.getValues();
-      
-      // 현재 폼에 실제 입력된 데이터가 있는지 확인
-      const hasCurrentData = currentFormData.firstName || currentFormData.lastName || currentFormData.ssn;
-      
-      // 현재 폼에 데이터가 있으면 서버 데이터로 덮어쓰지 않음
-      if (hasCurrentData) {
-        console.log("PersonalInfo - 현재 폼에 데이터 존재, 서버 데이터 무시");
-        return;
-      }
-      
-      // 현재 폼에 있는 데이터를 우선하고, 없는 필드만 서버 데이터로 채움
-      const mergedData = {
-        ...taxData.personalInfo,  // 서버 데이터를 기본으로
-        ...Object.fromEntries(    // 현재 폼에서 값이 있는 필드들만 덮어씀
-          Object.entries(currentFormData).filter(([_, value]) => 
-            value !== "" && value !== null && value !== undefined
-          )
-        )
-      };
-      
-      // SSN과 dateOfBirth가 현재 폼에 있으면 절대 지우지 않음
-      if (currentFormData.ssn) mergedData.ssn = currentFormData.ssn;
-      if (currentFormData.dateOfBirth) mergedData.dateOfBirth = currentFormData.dateOfBirth;
-      if (currentFormData.firstName) mergedData.firstName = currentFormData.firstName;
-      if (currentFormData.lastName) mergedData.lastName = currentFormData.lastName;
-      
-      console.log("PersonalInfo - 폼 값 보존 데이터 업데이트:", mergedData);
-      form.reset(mergedData);
-      setSavedValues(mergedData);
-    }
-  }, [taxData.personalInfo]);
+  // TEMPORARILY DISABLED: taxData.personalInfo useEffect was overriding user's filing status changes
+  // This was preventing spouse information fields from appearing when selecting married filing status
+  // TODO: Need to implement proper data loading that respects user's active form changes
+  // useEffect(() => {
+  //   if (taxData.personalInfo && Object.keys(taxData.personalInfo).length > 0) {
+  //     // ... data loading logic that interferes with filing status changes
+  //   }
+  // }, [taxData.personalInfo]);
 
   // Disable zod validation to avoid form validation errors
   const form = useForm<PersonalInformation>({

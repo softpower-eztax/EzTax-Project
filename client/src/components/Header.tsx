@@ -97,7 +97,18 @@ const Header: React.FC = () => {
                 variant="outline" 
                 size="sm"
                 className="text-primary-dark hover:text-primary flex items-center text-sm"
-                onClick={() => navigate('/filing-status-checker')}
+                onClick={async () => {
+                  // 신고상태확인 전에 자동으로 진행상황 저장
+                  try {
+                    await saveTaxReturn();
+                    console.log("Filing Status 확인 전 자동 저장 완료");
+                    navigate('/filing-status-checker');
+                  } catch (error) {
+                    console.error("자동 저장 실패:", error);
+                    // 저장 실패해도 페이지 이동은 허용
+                    navigate('/filing-status-checker');
+                  }
+                }}
               >
                 <ClipboardCheck className="h-4 w-4 mr-1" />
                 Filing Status 확인

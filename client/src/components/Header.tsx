@@ -93,17 +93,6 @@ const Header: React.FC = () => {
               
 
               
-              {/* 저장 버튼 추가 */}
-              <Button 
-                variant="outline" 
-                size="sm"
-                className="text-green-600 hover:text-green-700 border-green-300 hover:border-green-400 flex items-center text-sm"
-                onClick={handleSaveProgress}
-              >
-                <Save className="h-4 w-4 mr-1" />
-                저장하기
-              </Button>
-              
               <Button 
                 variant="outline" 
                 size="sm"

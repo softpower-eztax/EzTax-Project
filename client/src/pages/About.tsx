@@ -186,6 +186,7 @@ export default function About() {
                   <ul className="text-sm text-blue-700 space-y-2">
                     <li>• 미국 개인 및 사업자 세무 상담</li>
                     <li>• 자산관리 및 은퇴 플랜 최적화</li>
+                    <li>• 투자전략수립, 자산운용</li>
                     <li>• 고액자산가 맞춤 절세 전략</li>
                     <li>• 해외자산 및 글로벌 세무 규정 대응</li>
                     <li>• 투자수익 대비 실효세율 분석</li>

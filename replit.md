@@ -107,7 +107,7 @@ Preferred communication style: Simple, everyday language.
 Recent Changes:
 - June 22, 2025: **FILING STATUS DEFAULT SET TO "SINGLE"** - Personal Info form now defaults to "미혼(Single)" filing status for better user experience
 - June 22, 2025: **SPOUSE INFORMATION DISPLAY FIXED** - Successfully disabled server data override, Filing Status Checker now properly triggers spouse fields to appear
-- June 22, 2025: **SOCIAL SECURITY CALCULATION ENHANCED** - Clarified field as monthly benefit amount with estimation guidance and fixed calculation logic
+- June 22, 2025: **SOCIAL SECURITY CALCULATOR IMPLEMENTED** - Added detailed scenario-based calculator with working years, salary history, and claiming age considerations plus simplified PIA formula
 - June 22, 2025: **EXPERT PROFILE ENHANCED** - Added educational background (University of Pennsylvania Economics, Yonsei University MBA) and investment strategy specialty to About page and retirement-score page
 - June 22, 2025: **CRITICAL DATA LOSS ISSUE FIXED** - "진행상황저장" button now preserves current form data from localStorage before saving to prevent data loss
 - June 22, 2025: **USER-FRIENDLY SAVE SOLUTION IMPLEMENTED** - Added dedicated "저장하기" button next to Filing Status checker for explicit user control over data saving

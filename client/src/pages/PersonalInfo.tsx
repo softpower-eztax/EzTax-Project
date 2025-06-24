@@ -681,6 +681,55 @@ const PersonalInfo: React.FC = () => {
                       />
                     </div>
                     
+                    {/* 연락처 정보 */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                      <FormField
+                        control={form.control}
+                        name="email"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>이메일 주소 (Email Address)</FormLabel>
+                            <FormControl>
+                              <Input 
+                                {...field}
+                                type="email"
+                                placeholder="example@email.com"
+                                onBlur={handleFormBlur}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      
+                      <FormField
+                        control={form.control}
+                        name="phone"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>전화번호 (Phone Number)</FormLabel>
+                            <FormControl>
+                              <Input 
+                                {...field}
+                                type="tel"
+                                placeholder="XXX-XXX-XXXX"
+                                onChange={(e) => {
+                                  const formatted = formatPhone(e.target.value);
+                                  field.onChange(formatted);
+                                }}
+                                onBlur={handleFormBlur}
+                                maxLength={12}
+                              />
+                            </FormControl>
+                            <FormDescription>
+                              Format: XXX-XXX-XXXX
+                            </FormDescription>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                    
                     {/* 저장 버튼 - Filing Status 섹션 바로 위에 배치 */}
                     <div className="flex justify-center my-6">
                       <Button 

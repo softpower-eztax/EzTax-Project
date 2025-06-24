@@ -181,17 +181,10 @@ export default function AuthPage() {
                     </span>
                   </div>
                   
-                  <Button 
-                    variant="outline" 
-                    className="w-full" 
-                    type="button"
-                    onClick={() => window.location.href = "/auth/google"}
-                  >
-                    <div className="flex items-center">
-                      <FcGoogle className="mr-2 h-5 w-5" />
-                      Google로 로그인(Sign in with Google)
-                    </div>
-                  </Button>
+                  <div className="p-3 bg-yellow-50 border border-yellow-200 rounded-lg text-sm text-yellow-800">
+                    <strong>Google 로그인 일시 중단</strong><br />
+                    현재 Google OAuth 설정 문제로 Google 로그인을 사용할 수 없습니다. 일반 로그인으로 계정을 만들어 사용하거나 비회원으로 시작하세요.
+                  </div>
                 </CardFooter>
               </form>
             </TabsContent>

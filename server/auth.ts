@@ -96,7 +96,7 @@ export function setupAuth(app: Express) {
     console.log('Google OAuth 설정 중:', { 
       clientID: clientID ? `${clientID.substring(0, 20)}...` : 'NOT SET',
       clientSecret: clientSecret ? 'SET' : 'NOT SET',
-      callbackURL: "https://3e18f96e-0fbf-4af6-b766-cfbae9f2437b-00-17nnd6cbvtwuy.janeway.replit.dev/auth/google/callback"
+      callbackURL: "https://web-data-pro-kloombergtv.replit.app/auth/google/callback"
     });
     
     passport.use(

@@ -38,58 +38,7 @@ const PersonalInfo: React.FC = () => {
   const [savedValues, setSavedValues] = useState<PersonalInformation | null>(null);
   const [userIsChangingStatus, setUserIsChangingStatus] = useState(false);
   
-  // 예시 데이터 채우기 함수
-  const fillWithDummyData = () => {
-    const dummyData: PersonalInformation = {
-      firstName: "John",
-      middleInitial: "A",
-      lastName: "Smith",
-      ssn: "123-45-6789",
-      dateOfBirth: "1980-01-15",
-      email: "john.smith@example.com",
-      phone: "555-123-4567",
-      address1: "1234 Maple Street",
-      address2: "Suite 100",
-      city: "New York",
-      state: "NY",
-      zipCode: "10001",
-      filingStatus: "married_joint",
-      isDisabled: false,
-      isNonresidentAlien: false,
-      dependents: [
-        {
-          firstName: "Michael",
-          lastName: "Smith",
-          ssn: "111-22-3333",
-          relationship: "Son",
-          dateOfBirth: "2010-03-12",
-          isDisabled: false,
-          isNonresidentAlien: false,
-          isQualifyingChild: true
-        }
-      ],
-      spouseInfo: {
-        firstName: "Jane",
-        middleInitial: "B",
-        lastName: "Smith",
-        ssn: "987-65-4321",
-        dateOfBirth: "1982-05-20",
-        isDisabled: false,
-        isNonresidentAlien: false
-      }
-    };
-    
-    form.reset(dummyData);
-    setSavedValues(dummyData);
-    
-    // TaxContext에도 예시 데이터 적용
-    updateTaxData({ personalInfo: dummyData });
-    
-    toast({
-      title: "예시 데이터 적용 완료",
-      description: "개인 정보가 예시 데이터로 채워졌습니다.",
-    });
-  };
+
   
   // 새 사용자용 빈 기본값
   const emptyDefaults: PersonalInformation = {
@@ -575,17 +524,6 @@ const PersonalInfo: React.FC = () => {
               
               <Form {...form}>
                 <form onSubmit={(e) => { e.preventDefault(); }}>
-                  <div className="flex justify-between items-center mb-4">
-                    <Button
-                      type="button"
-                      onClick={() => fillWithDummyData()}
-                      variant="outline"
-                      className="mb-4 bg-blue-50 border-blue-200 text-blue-700 hover:bg-blue-100 hover:border-blue-300 font-semibold"
-                    >
-                      <ClipboardCheck className="w-4 h-4 mr-2" />
-                      예시 데이터 채우기
-                    </Button>
-                  </div>
                   
                   {/* Basic Information */}
                   <div className="mb-6">

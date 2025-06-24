@@ -95,7 +95,7 @@ export function setupAuth(app: Express) {
     
     console.log('Google OAuth 설정 중:', { 
       clientID: clientID ? `${clientID.substring(0, 20)}...` : 'NOT SET',
-      clientSecret: clientSecret ? 'SET' : 'NOT SET',
+      clientSecret: clientSecret ? `${clientSecret.substring(0, 10)}...` : 'NOT SET',
       callbackURL: "https://web-data-pro-kloombergtv.replit.app/auth/google/callback"
     });
     
@@ -112,7 +112,8 @@ export function setupAuth(app: Express) {
             console.log('Google OAuth 콜백 처리 중:', {
               profileId: profile.id,
               displayName: profile.displayName,
-              email: profile.emails?.[0]?.value
+              email: profile.emails?.[0]?.value,
+              accessToken: accessToken ? 'RECEIVED' : 'MISSING'
             });
             
             // 구글 ID로 사용자 확인
@@ -266,6 +267,17 @@ export function setupAuth(app: Express) {
       res.redirect("/?google_login=success");
     }
   );
+
+  // Google OAuth 오류 처리
+  app.use('/auth/google/callback', (err: any, req: any, res: any, next: any) => {
+    console.error('Google OAuth 오류:', err);
+    console.error('오류 상세:', {
+      message: err.message,
+      stack: err.stack,
+      name: err.name
+    });
+    res.redirect('/auth?error=google_oauth_error');
+  });
 
   app.get("/api/user", (req, res) => {
     if (!req.isAuthenticated()) return res.sendStatus(401);

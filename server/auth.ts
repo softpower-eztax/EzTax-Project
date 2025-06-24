@@ -103,9 +103,7 @@ export function setupAuth(app: Express) {
         {
           clientID: clientID,
           clientSecret: clientSecret,
-          callbackURL: process.env.NODE_ENV === 'production' ? 
-            "https://web-data-pro-kloombergtv.replit.app/auth/google/callback" : 
-            "https://3e18f96e-0fbf-4af6-b766-cfbae9f2437b-00-17nnd6cbvtwuy.janeway.replit.dev/auth/google/callback",
+          callbackURL: "https://3e18f96e-0fbf-4af6-b766-cfbae9f2437b-00-17nnd6cbvtwuy.janeway.replit.dev/auth/google/callback",
           proxy: true
         },
         async (accessToken, refreshToken, profile, done) => {

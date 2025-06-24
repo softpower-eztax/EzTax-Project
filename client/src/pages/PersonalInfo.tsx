@@ -169,16 +169,25 @@ const PersonalInfo: React.FC = () => {
           }
         });
         
-        // DISABLED: This server data loading was overriding Filing Status Checker selections
-        // if (taxResponse.ok) {
-        //   const serverData = await taxResponse.json();
-        //   if (serverData.personalInfo) {
-        //     console.log("PersonalInfo - 서버에서 최신 개인정보 로드:", serverData.personalInfo);
-        //     form.reset(serverData.personalInfo);
-        //     setSavedValues(serverData.personalInfo);
-        //     return;
-        //   }
-        // }
+        // 서버에서 저장된 데이터 로드 (localStorage 데이터가 없을 때만)
+        if (taxResponse.ok) {
+          const serverData = await taxResponse.json();
+          if (serverData.personalInfo) {
+            console.log("PersonalInfo - 서버에서 개인정보 데이터 확인됨:", serverData.personalInfo);
+            
+            // localStorage에 임시 데이터가 있는지 먼저 확인
+            const savedFormData = localStorage.getItem('tempPersonalInfo');
+            const savedFilingStatus = localStorage.getItem('tempFilingStatus');
+            
+            if (!savedFormData && !savedFilingStatus) {
+              // localStorage에 임시 데이터가 없으면 서버 데이터 사용
+              console.log("PersonalInfo - 서버에서 최신 개인정보 로드:", serverData.personalInfo);
+              form.reset(serverData.personalInfo);
+              setSavedValues(serverData.personalInfo);
+              return;
+            }
+          }
+        }
         
         // localStorage 우선 확인 (Filing Status 복귀 시 데이터 보존)
         const savedFormData = localStorage.getItem('tempPersonalInfo');
@@ -529,8 +538,8 @@ const PersonalInfo: React.FC = () => {
     // 컨텍스트 업데이트
     updateTaxData({ personalInfo: currentValues });
     
-    // 로컬 스토리지에 저장
-    localStorage.setItem('personalInfo', JSON.stringify(currentValues));
+    // 로컬 스토리지에 저장 (일관된 키 사용)
+    localStorage.setItem('tempPersonalInfo', JSON.stringify(currentValues));
     
     // 서버에 저장
     saveTaxReturn().then(() => {
@@ -1316,8 +1325,15 @@ const PersonalInfo: React.FC = () => {
                     // 컨텍스트 업데이트
                     updateTaxData({ personalInfo: values });
                     
-                    // 로컬 스토리지에 저장
-                    localStorage.setItem('personalInfo', JSON.stringify(values));
+                    // 로컬 스토리지에 저장 (일관된 키 사용)
+                    localStorage.setItem('tempPersonalInfo', JSON.stringify(values));
+                    
+                    // 서버에도 즉시 저장
+                    saveTaxReturn().then(() => {
+                      console.log("저장다음단계 - 서버 저장 완료");
+                    }).catch(error => {
+                      console.error("저장다음단계 - 서버 저장 실패:", error);
+                    });
                     
                     return true;
                   } catch (error) {

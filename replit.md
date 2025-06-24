@@ -107,6 +107,7 @@ Preferred communication style: Simple, everyday language.
 Recent Changes:
 - June 22, 2025: **FILING STATUS DEFAULT SET TO "SINGLE"** - Personal Info form now defaults to "미혼(Single)" filing status for better user experience
 - June 22, 2025: **SPOUSE INFORMATION DISPLAY FIXED** - Successfully disabled server data override, Filing Status Checker now properly triggers spouse fields to appear
+- June 22, 2025: **DATA PERSISTENCE FIXED** - Resolved Personal Information data loss issue by fixing localStorage key inconsistency and adding server-side persistence to navigation flow
 - June 22, 2025: **RETIREMENT EXPENSE CLARIFICATION** - Changed "은퇴 후 예상 생활비" field to clearly indicate monthly expenses with updated calculation logic
 - June 22, 2025: **SOCIAL SECURITY CALCULATOR IMPLEMENTED** - Added detailed scenario-based calculator with working years, salary history, and claiming age considerations plus simplified PIA formula
 - June 22, 2025: **EXPERT PROFILE ENHANCED** - Added educational background (University of Pennsylvania Economics, Yonsei University MBA) and investment strategy specialty to About page and retirement-score page

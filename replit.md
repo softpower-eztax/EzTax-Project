@@ -108,6 +108,7 @@ Recent Changes:
 - June 22, 2025: **FILING STATUS DEFAULT SET TO "SINGLE"** - Personal Info form now defaults to "미혼(Single)" filing status for better user experience
 - June 22, 2025: **SPOUSE INFORMATION DISPLAY FIXED** - Successfully disabled server data override, Filing Status Checker now properly triggers spouse fields to appear
 - June 22, 2025: **PERSONAL INFO FORM ENHANCED** - Added email, phone, and complete address fields positioned above save button for comprehensive contact and location information collection
+- June 22, 2025: **GOOGLE OAUTH CONFIGURATION IMPROVED** - Enhanced Google login with environment variable support, dynamic callback URLs, and better error handling
 - June 22, 2025: **EXAMPLE DATA FUNCTIONALITY REMOVED** - Eliminated example data filling feature from Personal Info page for cleaner user experience
 - June 22, 2025: **SPOUSE ADDRESS FUNCTIONALITY ADDED** - Implemented "위의주소와 다름" checkbox for spouse with different address, showing conditional address fields
 - June 22, 2025: **DUPLICATE FIELDS REMOVED** - Cleaned up Personal Info form by removing duplicate contact and address fields from spouse section

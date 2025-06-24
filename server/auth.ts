@@ -75,29 +75,53 @@ export function setupAuth(app: Express) {
   
   // 구글 OAuth 인증 전략
   try {
-    // JSON 파일에서 Google 클라이언트 정보 읽기
-    const clientSecretPath = path.join(process.cwd(), 'client-secret.json');
-    const clientSecretContent = fs.readFileSync(clientSecretPath, 'utf-8');
-    const clientSecretJson = JSON.parse(clientSecretContent);
+    // 환경변수에서 우선 확인, 없으면 JSON 파일 사용
+    let clientID = process.env.GOOGLE_CLIENT_ID;
+    let clientSecret = process.env.GOOGLE_CLIENT_SECRET;
     
-    const clientID = clientSecretJson.web.client_id;
-    const clientSecret = clientSecretJson.web.client_secret;
+    if (!clientID || !clientSecret) {
+      // JSON 파일에서 Google 클라이언트 정보 읽기
+      const clientSecretPath = path.join(process.cwd(), 'client-secret.json');
+      const clientSecretContent = fs.readFileSync(clientSecretPath, 'utf-8');
+      const clientSecretJson = JSON.parse(clientSecretContent);
+      
+      clientID = clientSecretJson.web.client_id;
+      clientSecret = clientSecretJson.web.client_secret;
+    }
+    
+    if (!clientID || !clientSecret) {
+      throw new Error('Google OAuth credentials not found');
+    }
+    
+    console.log('Google OAuth 설정 중:', { 
+      clientID: clientID ? `${clientID.substring(0, 20)}...` : 'NOT SET',
+      clientSecret: clientSecret ? 'SET' : 'NOT SET'
+    });
     
     passport.use(
       new GoogleStrategy(
         {
           clientID: clientID,
           clientSecret: clientSecret,
-          callbackURL: "https://3e18f96e-0fbf-4af6-b766-cfbae9f2437b-00-17nnd6cbvtwuy.janeway.replit.dev/auth/google/callback",
+          callbackURL: process.env.NODE_ENV === 'production' ? 
+            "https://web-data-pro-kloombergtv.replit.app/auth/google/callback" : 
+            "https://3e18f96e-0fbf-4af6-b766-cfbae9f2437b-00-17nnd6cbvtwuy.janeway.replit.dev/auth/google/callback",
           proxy: true
         },
         async (accessToken, refreshToken, profile, done) => {
           try {
+            console.log('Google OAuth 콜백 처리 중:', {
+              profileId: profile.id,
+              displayName: profile.displayName,
+              email: profile.emails?.[0]?.value
+            });
+            
             // 구글 ID로 사용자 확인
             let user = await storage.getUserByGoogleId(profile.id);
             
             // 사용자가 없으면 새로 생성
             if (!user) {
+              console.log('새 Google 사용자 생성 중...');
               // 고유한 사용자명 생성
               const username = `google_${profile.id}`;
               // 이메일 가져오기 (있을 경우)
@@ -113,10 +137,15 @@ export function setupAuth(app: Express) {
                 email: email || "",
                 displayName: profile.displayName || username,
               });
+              
+              console.log('새 Google 사용자 생성 완료:', user.username);
+            } else {
+              console.log('기존 Google 사용자 로그인:', user.username);
             }
             
             return done(null, user);
           } catch (error) {
+            console.error('Google OAuth 처리 중 오류:', error);
             return done(error);
           }
         }
@@ -221,17 +250,18 @@ export function setupAuth(app: Express) {
     "/auth/google/callback",
     (req, res, next) => {
       console.log("구글 콜백 받음: ", req.url);
+      console.log("Query params:", req.query);
       next();
     },
     passport.authenticate("google", { 
-      failureRedirect: "/auth",
+      failureRedirect: "/auth?error=google_auth_failed",
       failureMessage: true,
       successMessage: true
     }),
     (req, res) => {
       // 인증 성공 시 홈페이지로 리다이렉트
-      console.log("구글 인증 성공");
-      res.redirect("/");
+      console.log("구글 인증 성공, 사용자:", req.user?.username);
+      res.redirect("/?google_login=success");
     }
   );
 

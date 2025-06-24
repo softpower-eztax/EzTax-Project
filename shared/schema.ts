@@ -75,6 +75,12 @@ export interface SpouseInformation {
   dateOfBirth: string;
   isDisabled: boolean;
   isNonresidentAlien: boolean;
+  differentAddress?: boolean;
+  address1?: string;
+  address2?: string;
+  city?: string;
+  state?: string;
+  zipCode?: string;
 }
 
 export interface PersonalInformation {

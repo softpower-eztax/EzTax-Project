@@ -730,6 +730,105 @@ const PersonalInfo: React.FC = () => {
                       />
                     </div>
                     
+                    {/* 주소 정보 */}
+                    <div className="space-y-4 mt-4">
+                      <h3 className="text-sm font-medium text-gray-700">주소 정보 (Address Information)</h3>
+                      
+                      <FormField
+                        control={form.control}
+                        name="address1"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>주소 1 (Address Line 1)</FormLabel>
+                            <FormControl>
+                              <Input 
+                                {...field}
+                                placeholder="123 Main Street"
+                                onBlur={handleFormBlur}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      
+                      <FormField
+                        control={form.control}
+                        name="address2"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>주소 2 (Address Line 2) - 선택사항</FormLabel>
+                            <FormControl>
+                              <Input 
+                                {...field}
+                                placeholder="Apt 4B, Suite 100"
+                                onBlur={handleFormBlur}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <FormField
+                          control={form.control}
+                          name="city"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>도시 (City)</FormLabel>
+                              <FormControl>
+                                <Input 
+                                  {...field}
+                                  placeholder="New York"
+                                  onBlur={handleFormBlur}
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        
+                        <FormField
+                          control={form.control}
+                          name="state"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>주 (State)</FormLabel>
+                              <FormControl>
+                                <Input 
+                                  {...field}
+                                  placeholder="NY"
+                                  maxLength={2}
+                                  onBlur={handleFormBlur}
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        
+                        <FormField
+                          control={form.control}
+                          name="zipCode"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>우편번호 (ZIP Code)</FormLabel>
+                              <FormControl>
+                                <Input 
+                                  {...field}
+                                  placeholder="10001"
+                                  maxLength={10}
+                                  onBlur={handleFormBlur}
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+                    </div>
+                    
                     {/* 저장 버튼 - Filing Status 섹션 바로 위에 배치 */}
                     <div className="flex justify-center my-6">
                       <Button 
@@ -1012,136 +1111,146 @@ const PersonalInfo: React.FC = () => {
                               </FormItem>
                             )}
                           />
+                          
+                          {/* Spouse Address Option */}
+                          <FormField
+                            control={form.control}
+                            name="spouseInfo.differentAddress"
+                            render={({ field }) => (
+                              <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                                <FormControl>
+                                  <input
+                                    type="checkbox"
+                                    checked={field.value || false}
+                                    onChange={(e) => {
+                                      field.onChange(e.target.checked);
+                                      if (!e.target.checked) {
+                                        // Clear spouse address fields when unchecked
+                                        const currentSpouseInfo = form.getValues("spouseInfo");
+                                        if (currentSpouseInfo) {
+                                          form.setValue("spouseInfo", {
+                                            ...currentSpouseInfo,
+                                            address1: "",
+                                            address2: "",
+                                            city: "",
+                                            state: "",
+                                            zipCode: ""
+                                          });
+                                        }
+                                      }
+                                    }}
+                                    className="h-4 w-4 mt-1"
+                                  />
+                                </FormControl>
+                                <div className="space-y-1 leading-none">
+                                  <FormLabel>위의주소와 다름 (Different from taxpayer address)</FormLabel>
+                                  <FormDescription className="text-xs">
+                                    배우자가 납세자와 다른 주소에 거주하는 경우 체크하세요.
+                                  </FormDescription>
+                                </div>
+                              </FormItem>
+                            )}
+                          />
                         </div>
+                        
+                        {/* Spouse Address Fields - Only show when differentAddress is true */}
+                        {form.watch("spouseInfo.differentAddress") === true && (
+                          <div className="mt-4 space-y-4">
+                            <h4 className="text-sm font-medium text-gray-700">배우자 주소 (Spouse Address)</h4>
+                            
+                            <FormField
+                              control={form.control}
+                              name="spouseInfo.address1"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>주소 1 (Address Line 1)</FormLabel>
+                                  <FormControl>
+                                    <Input 
+                                      {...field}
+                                      placeholder="123 Main Street"
+                                    />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                            
+                            <FormField
+                              control={form.control}
+                              name="spouseInfo.address2"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>주소 2 (Address Line 2) - 선택사항</FormLabel>
+                                  <FormControl>
+                                    <Input 
+                                      {...field}
+                                      placeholder="Apt 4B, Suite 100"
+                                    />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                            
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                              <FormField
+                                control={form.control}
+                                name="spouseInfo.city"
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormLabel>도시 (City)</FormLabel>
+                                    <FormControl>
+                                      <Input 
+                                        {...field}
+                                        placeholder="New York"
+                                      />
+                                    </FormControl>
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+                              
+                              <FormField
+                                control={form.control}
+                                name="spouseInfo.state"
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormLabel>주 (State)</FormLabel>
+                                    <FormControl>
+                                      <Input 
+                                        {...field}
+                                        placeholder="NY"
+                                        maxLength={2}
+                                      />
+                                    </FormControl>
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+                              
+                              <FormField
+                                control={form.control}
+                                name="spouseInfo.zipCode"
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormLabel>우편번호 (ZIP Code)</FormLabel>
+                                    <FormControl>
+                                      <Input 
+                                        {...field}
+                                        placeholder="10001"
+                                        maxLength={10}
+                                      />
+                                    </FormControl>
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+                            </div>
+                          </div>
+                        )}
                       </div>
                     </>
                   )}
-                  
-                  <Separator className="my-6" />
-                  
-                  {/* Contact Information */}
-                  <div className="mb-6">
-                    <h3 className="text-lg font-heading font-semibold mb-4">연락처 정보</h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <FormField
-                        control={form.control}
-                        name="email"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>이메일 주소</FormLabel>
-                            <FormControl>
-                              <Input {...field} type="email" />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      
-                      <FormField
-                        control={form.control}
-                        name="phone"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>전화번호</FormLabel>
-                            <FormControl>
-                              <Input 
-                                {...field} 
-                                placeholder="XXX-XXX-XXXX"
-                                onChange={(e) => {
-                                  const formatted = formatPhone(e.target.value);
-                                  field.onChange(formatted);
-                                }}
-                                maxLength={12}
-                              />
-                            </FormControl>
-                            <FormDescription>
-                              Format: XXX-XXX-XXXX
-                            </FormDescription>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-                  </div>
-                  
-                  <Separator className="my-6" />
-                  
-                  {/* Address */}
-                  <div className="mb-6">
-                    <h3 className="text-lg font-heading font-semibold mb-4">집 주소</h3>
-                    
-                    <FormField
-                      control={form.control}
-                      name="address1"
-                      render={({ field }) => (
-                        <FormItem className="mb-4">
-                          <FormLabel>Street Address</FormLabel>
-                          <FormControl>
-                            <Input {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    
-                    <FormField
-                      control={form.control}
-                      name="address2"
-                      render={({ field }) => (
-                        <FormItem className="mb-4">
-                          <FormLabel>Apartment, Suite, etc. (optional)</FormLabel>
-                          <FormControl>
-                            <Input {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                      <FormField
-                        control={form.control}
-                        name="city"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>City</FormLabel>
-                            <FormControl>
-                              <Input {...field} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      
-                      <FormField
-                        control={form.control}
-                        name="state"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>State</FormLabel>
-                            <FormControl>
-                              <Input {...field} maxLength={2} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      
-                      <FormField
-                        control={form.control}
-                        name="zipCode"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>ZIP Code</FormLabel>
-                            <FormControl>
-                              <Input {...field} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-                  </div>
                   
                   <Separator className="my-6" />
                   

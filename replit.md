@@ -107,6 +107,8 @@ Preferred communication style: Simple, everyday language.
 Recent Changes:
 - June 22, 2025: **FILING STATUS DEFAULT SET TO "SINGLE"** - Personal Info form now defaults to "미혼(Single)" filing status for better user experience
 - June 22, 2025: **SPOUSE INFORMATION DISPLAY FIXED** - Successfully disabled server data override, Filing Status Checker now properly triggers spouse fields to appear
+- June 22, 2025: **PERSONAL INFO FORM ENHANCED** - Added email, phone, and complete address fields positioned above save button for comprehensive contact and location information collection
+- June 22, 2025: **DUPLICATE FIELDS REMOVED** - Cleaned up Personal Info form by removing duplicate contact and address fields from spouse section
 - June 22, 2025: **UI CLEANUP** - Removed unnecessary "종합 은퇴 준비 진단 (무료)" button from Social Security calculator for cleaner interface
 - June 22, 2025: **FOOTER NAVIGATION UPDATED** - Replaced "세금 계산기" with "Social Security 계산기" and linked to retirement score page with comprehensive calculator
 - June 22, 2025: **DATA PERSISTENCE FIXED** - Resolved Personal Information data loss issue by fixing localStorage key inconsistency and adding server-side persistence to navigation flow

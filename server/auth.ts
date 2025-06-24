@@ -95,7 +95,8 @@ export function setupAuth(app: Express) {
     
     console.log('Google OAuth 설정 중:', { 
       clientID: clientID ? `${clientID.substring(0, 20)}...` : 'NOT SET',
-      clientSecret: clientSecret ? 'SET' : 'NOT SET'
+      clientSecret: clientSecret ? 'SET' : 'NOT SET',
+      callbackURL: "https://3e18f96e-0fbf-4af6-b766-cfbae9f2437b-00-17nnd6cbvtwuy.janeway.replit.dev/auth/google/callback"
     });
     
     passport.use(
@@ -236,6 +237,9 @@ export function setupAuth(app: Express) {
     "/auth/google",
     (req, res, next) => {
       console.log("구글 인증 요청 받음: ", req.url);
+      console.log("요청 호스트:", req.get('host'));
+      console.log("프로토콜:", req.protocol);
+      console.log("전체 URL:", `${req.protocol}://${req.get('host')}${req.originalUrl}`);
       next();
     },
     passport.authenticate("google", { 

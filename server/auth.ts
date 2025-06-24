@@ -104,7 +104,7 @@ export function setupAuth(app: Express) {
         {
           clientID: clientID,
           clientSecret: clientSecret,
-          callbackURL: "https://3e18f96e-0fbf-4af6-b766-cfbae9f2437b-00-17nnd6cbvtwuy.janeway.replit.dev/auth/google/callback",
+          callbackURL: "https://web-data-pro-kloombergtv.replit.app/auth/google/callback",
           proxy: true
         },
         async (accessToken, refreshToken, profile, done) => {

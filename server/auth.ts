@@ -96,7 +96,9 @@ export function setupAuth(app: Express) {
     console.log('Google OAuth 설정 중:', { 
       clientID: clientID ? `${clientID.substring(0, 20)}...` : 'NOT SET',
       clientSecret: clientSecret ? `${clientSecret.substring(0, 10)}...` : 'NOT SET',
-      callbackURL: "https://3e18f96e-0fbf-4af6-b766-cfbae9f2437b-00-17nnd6cbvtwuy.janeway.replit.dev/auth/google/callback"
+      callbackURL: process.env.NODE_ENV === 'production' 
+        ? "https://web-data-pro-kloombergtv.replit.app/auth/google/callback"
+        : "https://3e18f96e-0fbf-4af6-b766-cfbae9f2437b-00-17nnd6cbvtwuy.janeway.replit.dev/auth/google/callback"
     });
     
     passport.use(
@@ -104,7 +106,7 @@ export function setupAuth(app: Express) {
         {
           clientID: clientID,
           clientSecret: clientSecret,
-          callbackURL: "https://3e18f96e-0fbf-4af6-b766-cfbae9f2437b-00-17nnd6cbvtwuy.janeway.replit.dev/auth/google/callback",
+          callbackURL: "https://web-data-pro-kloombergtv.replit.app/auth/google/callback",
           proxy: true
         },
         async (accessToken, refreshToken, profile, done) => {
@@ -237,10 +239,16 @@ export function setupAuth(app: Express) {
   app.get(
     "/auth/google",
     (req, res, next) => {
+      const callbackURL = process.env.NODE_ENV === 'production' 
+        ? "https://web-data-pro-kloombergtv.replit.app/auth/google/callback"
+        : "https://3e18f96e-0fbf-4af6-b766-cfbae9f2437b-00-17nnd6cbvtwuy.janeway.replit.dev/auth/google/callback";
+      
       console.log("구글 인증 요청 받음: ", req.url);
       console.log("요청 호스트:", req.get('host'));
       console.log("프로토콜:", req.protocol);
       console.log("전체 URL:", `${req.protocol}://${req.get('host')}${req.originalUrl}`);
+      console.log("사용할 콜백 URL:", callbackURL);
+      console.log("NODE_ENV:", process.env.NODE_ENV);
       next();
     },
     passport.authenticate("google", { 
@@ -274,7 +282,10 @@ export function setupAuth(app: Express) {
     console.error('오류 상세:', {
       message: err.message,
       stack: err.stack,
-      name: err.name
+      name: err.name,
+      redirectUri: req.query.redirect_uri || 'not provided',
+      originalUrl: req.originalUrl,
+      host: req.get('host')
     });
     res.redirect('/auth?error=google_oauth_error');
   });

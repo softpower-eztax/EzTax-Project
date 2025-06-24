@@ -287,24 +287,7 @@ export default function AuthPage() {
                     )}
                   </Button>
                   
-                  <div className="relative w-full flex items-center justify-center">
-                    <Separator className="w-full" />
-                    <span className="absolute bg-white px-2 text-xs text-muted-foreground">
-                      또는(OR)
-                    </span>
-                  </div>
-                  
-                  <Button 
-                    variant="outline" 
-                    className="w-full" 
-                    type="button"
-                    onClick={() => window.location.href = "/auth/google"}
-                  >
-                    <div className="flex items-center">
-                      <FcGoogle className="mr-2 h-5 w-5" />
-                      Google로 회원가입(Sign up with Google)
-                    </div>
-                  </Button>
+
                 </CardFooter>
               </form>
             </TabsContent>

@@ -105,7 +105,7 @@ Preferred communication style: Simple, everyday language.
 ## Changelog
 
 Recent Changes:
-- June 24, 2025: **GOOGLE OAUTH TEMPORARILY DISABLED** - Due to persistent redirect_uri_mismatch errors, Google login temporarily disabled; users can use regular login/signup or guest access
+- June 24, 2025: **GOOGLE OAUTH REMOVED** - Removed Google login functionality and associated UI elements for cleaner authentication experience, users can use regular login/signup or guest access
 - June 22, 2025: **FILING STATUS DEFAULT SET TO "SINGLE"** - Personal Info form now defaults to "미혼(Single)" filing status for better user experience
 - June 22, 2025: **SPOUSE INFORMATION DISPLAY FIXED** - Successfully disabled server data override, Filing Status Checker now properly triggers spouse fields to appear
 - June 22, 2025: **PERSONAL INFO FORM ENHANCED** - Added email, phone, and complete address fields positioned above save button for comprehensive contact and location information collection

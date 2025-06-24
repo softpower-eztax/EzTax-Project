@@ -174,17 +174,7 @@ export default function AuthPage() {
                     )}
                   </Button>
                   
-                  <div className="relative w-full flex items-center justify-center">
-                    <Separator className="w-full" />
-                    <span className="absolute bg-white px-2 text-xs text-muted-foreground">
-                      또는(OR)
-                    </span>
-                  </div>
-                  
-                  <div className="p-3 bg-yellow-50 border border-yellow-200 rounded-lg text-sm text-yellow-800">
-                    <strong>Google 로그인 일시 중단</strong><br />
-                    현재 Google OAuth 설정 문제로 Google 로그인을 사용할 수 없습니다. 일반 로그인으로 계정을 만들어 사용하거나 비회원으로 시작하세요.
-                  </div>
+
                 </CardFooter>
               </form>
             </TabsContent>

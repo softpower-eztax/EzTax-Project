@@ -105,6 +105,7 @@ Preferred communication style: Simple, everyday language.
 ## Changelog
 
 Recent Changes:
+- June 24, 2025: **CAPITAL GAINS DATE INPUT FIXED** - Resolved date input issue in Capital Gains Calculator by properly handling string vs number field types in form input processing
 - June 24, 2025: **HOMEPAGE BUTTON WIDTH UNIFIED** - Set equal width for both '세금시뮬레이터' and '은퇴준비상태진단' buttons for consistent visual layout
 - June 24, 2025: **PASSWORD SECURITY ENHANCED** - Implemented strong password requirements for registration: minimum 8 characters, uppercase letter, and special characters ($, *, !, #) with validation messages
 - June 24, 2025: **HOMEPAGE BUTTON LAYOUT SIMPLIFIED** - Removed login/signup buttons, kept only '세금시뮬레이터' and '은퇴준비상태진단' buttons side by side for cleaner navigation

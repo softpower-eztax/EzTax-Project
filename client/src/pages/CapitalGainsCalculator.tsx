@@ -133,9 +133,20 @@ export default function CapitalGainsCalculator() {
   // 입력 필드 변경 처리
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
+    
+    let processedValue: string | number = value;
+    
+    // 문자열 필드들
+    if (name === 'description' || name === 'purchaseDate' || name === 'saleDate') {
+      processedValue = value;
+    } else {
+      // 숫자 필드들 (buyPrice, sellPrice, quantity)
+      processedValue = value === '' ? 0 : Number(value);
+    }
+    
     setNewTransaction(prev => ({
       ...prev,
-      [name]: name === 'description' ? value : Number(value)
+      [name]: processedValue
     }));
   };
   

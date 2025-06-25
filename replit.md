@@ -105,6 +105,7 @@ Preferred communication style: Simple, everyday language.
 ## Changelog
 
 Recent Changes:
+- June 24, 2025: **EXPERT PROFILE ENHANCED** - Added '미 Midwest 대학 회계학 교수' to expert career history in retirement consultation section
 - June 24, 2025: **RETIREMENT COST EXAMPLE UPDATED** - Changed retirement planning default values from $60,000 to $5,000 for monthly living expenses to prevent user confusion about annual vs monthly costs
 - June 24, 2025: **GOOGLE OAUTH COMPLETELY REMOVED** - Removed Google login/signup buttons from both login and register tabs due to persistent redirect_uri_mismatch issues, users can use regular authentication or guest access
 - June 22, 2025: **FILING STATUS DEFAULT SET TO "SINGLE"** - Personal Info form now defaults to "미혼(Single)" filing status for better user experience

@@ -105,6 +105,7 @@ Preferred communication style: Simple, everyday language.
 ## Changelog
 
 Recent Changes:
+- June 25, 2025: **INCOME PAGE SAVE BUTTON ADDED** - Added "진행상황저장" button above "기타 소득" section for convenient progress saving during income data entry
 - June 25, 2025: **HOMEPAGE BUTTON TEXT SIZE UNIFIED** - Made all homepage buttons use font-bold class and size="lg" attribute to match "지금 시작하기" button text weight and size for consistent visual appearance
 - June 24, 2025: **CAPITAL GAINS DATE INPUT FIXED** - Resolved date input issue in Capital Gains Calculator by properly handling string vs number field types in form input processing
 - June 24, 2025: **HOMEPAGE BUTTON WIDTH UNIFIED** - Set equal width for both '세금시뮬레이터' and '은퇴준비상태진단' buttons for consistent visual layout

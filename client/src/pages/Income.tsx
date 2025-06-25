@@ -482,6 +482,34 @@ const IncomePage: React.FC = () => {
                       />
                     </div>
                     
+                    {/* 진행상황저장 버튼 */}
+                    <div className="mt-6 mb-4 flex justify-center">
+                      <Button
+                        variant="outline"
+                        onClick={async () => {
+                          try {
+                            await saveTaxReturn();
+                            toast({
+                              title: "진행상황 저장 완료",
+                              description: "소득 정보가 성공적으로 저장되었습니다."
+                            });
+                          } catch (error) {
+                            toast({
+                              title: "저장 실패", 
+                              description: "저장 중 오류가 발생했습니다.",
+                              variant: "destructive"
+                            });
+                          }
+                        }}
+                        className="bg-green-50 border-green-300 text-green-700 hover:bg-green-100"
+                      >
+                        <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
+                        </svg>
+                        진행상황저장
+                      </Button>
+                    </div>
+
                     <div className="mt-6 mb-6">
                     <div className="flex justify-between items-center mb-4">
                       <h3 className="text-lg font-semibold">기타 소득 (Unearned Income etc.)</h3>

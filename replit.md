@@ -105,6 +105,7 @@ Preferred communication style: Simple, everyday language.
 ## Changelog
 
 Recent Changes:
+- June 24, 2025: **PASSWORD SECURITY ENHANCED** - Implemented strong password requirements for registration: minimum 8 characters, uppercase letter, and special characters ($, *, !, #) with validation messages
 - June 24, 2025: **HOMEPAGE BUTTON LAYOUT SIMPLIFIED** - Removed login/signup buttons, kept only '세금시뮬레이터' and '은퇴준비상태진단' buttons side by side for cleaner navigation
 - June 24, 2025: **EXPERT PROFILE ENHANCED** - Added '미 Midwest 대학 회계학 교수' to expert career history in retirement consultation section
 - June 24, 2025: **RETIREMENT COST EXAMPLE UPDATED** - Changed retirement planning default values from $60,000 to $5,000 for monthly living expenses to prevent user confusion about annual vs monthly costs

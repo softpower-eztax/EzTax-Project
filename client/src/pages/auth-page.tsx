@@ -14,9 +14,16 @@ import { Loader2, User, Mail, Lock, LogIn, UserPlus } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { FcGoogle } from "react-icons/fc";
 
+// Strong password validation function
+const passwordSchema = z.string()
+  .min(8, "비밀번호는 최소 8자 이상이어야 합니다(Password must be at least 8 characters)")
+  .regex(/[A-Z]/, "대문자가 포함되어야 합니다(Must contain uppercase letter)")
+  .regex(/[$*!#]/, "특수기호($, *, !, #) 중 하나가 포함되어야 합니다(Must contain special character: $, *, !, #)");
+
 // Extend the insertUserSchema to include password confirmation
 const registerSchema = insertUserSchema.extend({
-  passwordConfirm: z.string().min(6, "비밀번호는 최소 6자 이상이어야 합니다(Password must be at least 6 characters)"),
+  password: passwordSchema,
+  passwordConfirm: z.string(),
 }).refine(
   (data) => data.password === data.passwordConfirm,
   {
@@ -239,6 +246,9 @@ export default function AuthPage() {
                         {...registerForm.register("password")}
                       />
                     </div>
+                    <p className="text-xs text-muted-foreground">
+                      최소 8자, 대문자, 특수기호($, *, !, #) 포함 필수
+                    </p>
                     {registerForm.formState.errors.password && (
                       <p className="text-sm text-destructive">
                         {registerForm.formState.errors.password.message}

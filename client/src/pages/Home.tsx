@@ -27,17 +27,18 @@ const Home: React.FC = () => {
           EzTax는 단순히 올해 세금을 정리하는 것에 그치지 않고,<br />
           당신의 평생 세금+은퇴 전략을 함께 설계합니다.
         </p> */}
-        <div className="flex flex-col md:flex-row items-center justify-center gap-6 mb-8">
-          <p className="text-xl text-gray-dark">
-            세금시뮬레이터로 간단하게 계산하시고 노후준비도 진단하세요.
-          </p>
+        <p className="text-xl text-gray-dark mb-8 text-center">
+          세금시뮬레이터로 간단하게 계산하시고 노후준비도 진단하세요.
+        </p>
+        
+        <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button 
                   size="lg" 
                   variant="secondary"
-                  className="bg-green-500 hover:bg-green-600 text-white"
+                  className="bg-green-500 hover:bg-green-600 text-white font-semibold"
                   onClick={() => navigate('/personal-info')}
                 >
                   세금시뮬레이터(Tax Simulator)
@@ -48,44 +49,15 @@ const Home: React.FC = () => {
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
-        </div>
-        {user ? (
+          
           <Button 
             size="lg" 
-            className="bg-primary hover:bg-primary-dark text-white font-bold"
-            onClick={() => navigate('/personal-info')}
+            className="bg-primary hover:bg-primary-dark text-white font-semibold"
+            onClick={() => navigate('/retirement-score')}
           >
-            2025년 세금 보고 시작하기
+            은퇴준비상태진단
           </Button>
-        ) : (
-          <>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button 
-                size="lg" 
-                className="bg-blue-50 border-blue-200 text-blue-700 hover:bg-blue-100 hover:border-blue-300 font-semibold border"
-                onClick={() => navigate('/auth')}
-              >
-                로그인하고 시작하기(Login and Start)
-              </Button>
-              <Button 
-                size="lg" 
-                variant="outline"
-                className="border-primary text-primary hover:bg-primary/10"
-                onClick={() => navigate('/auth')}
-              >
-                계정 만들기(Create Account)
-              </Button>
-              <Button 
-                size="lg" 
-                className="bg-primary hover:bg-primary-dark text-white font-semibold"
-                onClick={() => navigate('/retirement-score')}
-              >
-                은퇴준비상태진단
-              </Button>
-            </div>
-
-          </>
-        )}
+        </div>
       </section>
 
       <section className="mb-12">

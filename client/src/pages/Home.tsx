@@ -141,6 +141,7 @@ const Home: React.FC = () => {
           </CardContent>
           <CardFooter className="flex flex-col sm:flex-row gap-4">
             <Button 
+              size="lg"
               className="w-full bg-primary hover:bg-primary-dark text-white font-bold"
               onClick={() => user ? navigate('/personal-info') : navigate('/auth')}
             >
@@ -148,7 +149,7 @@ const Home: React.FC = () => {
             </Button>
             <Button 
               size="lg"
-              className="w-full bg-green-500 hover:bg-green-600 text-white font-bold text-lg py-4"
+              className="w-full bg-green-500 hover:bg-green-600 text-white font-bold"
               onClick={() => navigate('/personal-info')}
             >
               세금시뮬레이터(Tax Simulator)

@@ -38,7 +38,7 @@ const Home: React.FC = () => {
                 <Button 
                   size="lg" 
                   variant="secondary"
-                  className="bg-green-500 hover:bg-green-600 text-white font-semibold w-full sm:w-64"
+                  className="bg-green-500 hover:bg-green-600 text-white font-bold w-full sm:w-64"
                   onClick={() => navigate('/personal-info')}
                 >
                   세금시뮬레이터(Tax Simulator)
@@ -52,7 +52,7 @@ const Home: React.FC = () => {
           
           <Button 
             size="lg" 
-            className="bg-primary hover:bg-primary-dark text-white font-semibold w-full sm:w-64"
+            className="bg-primary hover:bg-primary-dark text-white font-bold w-full sm:w-64"
             onClick={() => navigate('/retirement-score')}
           >
             은퇴준비상태진단

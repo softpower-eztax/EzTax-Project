@@ -72,7 +72,7 @@ const Home: React.FC = () => {
               <CardTitle className="text-lg">간편한 절차</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-gray-dark">세금 신고의 각 단계를 차례대로 안내해 드립니다.</p>
+              <p className="text-gray-dark">한국인의 의식흐름에 적절한 계산방식으로 안내해드립니다.</p>
             </CardContent>
           </Card>
           

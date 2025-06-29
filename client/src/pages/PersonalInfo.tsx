@@ -507,6 +507,70 @@ const PersonalInfo: React.FC = () => {
     });
   };
 
+  // Sample Data 입력 처리
+  const handleSampleData = () => {
+    const sampleData: PersonalInformation = {
+      firstName: 'John',
+      middleInitial: 'M',
+      lastName: 'Smith',
+      ssn: '123-45-6789',
+      dateOfBirth: '1985-03-15',
+      email: 'john.smith@email.com',
+      phone: '555-123-4567',
+      address1: '123 Main Street',
+      address2: 'Apt 2B',
+      city: 'Anytown',
+      state: 'CA',
+      zipCode: '90210',
+      filingStatus: 'married_joint',
+      isDisabled: false,
+      isNonresidentAlien: false,
+      dependents: [
+        {
+          firstName: 'Emily',
+          lastName: 'Smith',
+          ssn: '987-65-4321',
+          dateOfBirth: '2010-07-20',
+          relationship: 'child',
+          isDisabled: false,
+          isNonresidentAlien: false,
+          isQualifyingChild: true
+        }
+      ],
+      spouseInfo: {
+        firstName: 'Jane',
+        lastName: 'Smith',
+        ssn: '111-22-3333',
+        dateOfBirth: '1987-12-08',
+        differentAddress: false,
+        address1: '',
+        address2: '',
+        city: '',
+        state: '',
+        zipCode: '',
+        isDisabled: false,
+        isNonresidentAlien: false
+      }
+    };
+    
+    // 폼에 샘플 데이터 입력
+    form.reset(sampleData);
+    
+    // 로컬 상태 업데이트
+    setSavedValues(sampleData);
+    
+    // 컨텍스트 업데이트
+    updateTaxData({ personalInfo: sampleData });
+    
+    // 로컬 스토리지에 저장
+    localStorage.setItem('tempPersonalInfo', JSON.stringify(sampleData));
+    
+    toast({
+      title: "샘플 데이터 입력 완료",
+      description: "예시 개인정보가 입력되었습니다.",
+    });
+  };
+
   return (
     <div className="max-w-5xl mx-auto">
       <div className="mb-8">
@@ -520,7 +584,18 @@ const PersonalInfo: React.FC = () => {
         <div className="w-full">
           <Card className="mb-6">
             <CardContent className="pt-6">
-              <h2 className="text-2xl font-heading font-semibold text-primary-dark mb-6">개인 정보 (Personal Information)</h2>
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-2xl font-heading font-semibold text-primary-dark">개인 정보 (Personal Information)</h2>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={handleSampleData}
+                  className="bg-blue-50 border-blue-300 text-blue-700 hover:bg-blue-100"
+                >
+                  <ClipboardCheck className="w-4 h-4 mr-2" />
+                  Sample Data
+                </Button>
+              </div>
               
               <Form {...form}>
                 <form onSubmit={(e) => { e.preventDefault(); }}>

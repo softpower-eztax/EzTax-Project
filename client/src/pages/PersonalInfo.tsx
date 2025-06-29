@@ -375,13 +375,20 @@ const PersonalInfo: React.FC = () => {
         const parsedData = JSON.parse(savedFormData);
         console.log("PersonalInfo - Restoring saved form data from localStorage:", parsedData);
         form.reset(parsedData);
+        
+        // 부양가족 필드 배열도 명시적으로 업데이트
+        if (parsedData.dependents && Array.isArray(parsedData.dependents)) {
+          replace(parsedData.dependents);
+          console.log("PersonalInfo - localStorage 복원 시 부양가족 필드 배열 업데이트:", parsedData.dependents);
+        }
+        
         // Update TaxContext with restored data
         updateTaxData({ personalInfo: parsedData });
       } catch (error) {
         console.error("Failed to parse saved form data:", error);
       }
     }
-  }, []);
+  }, [replace]);
 
   // Clean up localStorage only when explicitly needed (not on every unmount)
   const cleanupLocalStorage = () => {
@@ -389,10 +396,22 @@ const PersonalInfo: React.FC = () => {
     console.log("PersonalInfo - Cleaned up temporary localStorage data");
   };
 
-  const { fields, append, remove } = useFieldArray({
+  const { fields, append, remove, replace } = useFieldArray({
     control: form.control,
     name: 'dependents'
   });
+
+  // Watch for dependents changes and update field array
+  const dependentsValue = form.watch('dependents');
+  useEffect(() => {
+    if (dependentsValue && Array.isArray(dependentsValue) && dependentsValue.length > 0) {
+      // Only replace if the field array doesn't match the form values
+      if (fields.length !== dependentsValue.length) {
+        console.log("PersonalInfo - Updating field array with dependents:", dependentsValue);
+        replace(dependentsValue);
+      }
+    }
+  }, [dependentsValue, fields.length, replace]);
 
   const onSubmit = (data: PersonalInformation) => {
     // Make sure all values are properly processed before updating the tax data
@@ -584,6 +603,10 @@ const PersonalInfo: React.FC = () => {
     form.reset(sampleData);
     console.log("Sample Data - 폼 리셋 완료");
     
+    // 부양가족 필드 배열 명시적 업데이트
+    replace(sampleData.dependents || []);
+    console.log("Sample Data - 부양가족 필드 배열 업데이트 완료");
+    
     // 로컬 상태 업데이트  
     setSavedValues(sampleData);
     
@@ -594,7 +617,7 @@ const PersonalInfo: React.FC = () => {
     // 토스트 알림
     toast({
       title: "샘플 데이터 입력 완료",
-      description: "John & Jane Smith 가족 정보가 입력되었습니다.",
+      description: "John & Jane Smith 가족 정보가 입력되었습니다 (부양가족 1명 포함).",
     });
     
     console.log("Sample Data 입력 프로세스 완료");

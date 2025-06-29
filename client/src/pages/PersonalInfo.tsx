@@ -32,7 +32,7 @@ const relationshipOptions = [
 const PersonalInfo: React.FC = () => {
   const { taxData, updateTaxData, saveTaxReturn } = useTaxContext();
   const { toast } = useToast();
-  const [, navigate] = useLocation();
+  const [location, navigate] = useLocation();
 
   // 로컬 상태 관리 (폼과 로컬스토리지 간 동기화)
   const [savedValues, setSavedValues] = useState<PersonalInformation | null>(null);
@@ -943,8 +943,7 @@ const PersonalInfo: React.FC = () => {
                                   window.location.href = '/filing-status-checker';
                                 }}
                               >
-                                <ClipboardCheck classNameRemoving Dummy Data button from the PersonalInfo component.```text
- ="h-4 w-4 mr-1 text-sky-700" />
+                                <ClipboardCheck className="h-4 w-4 mr-1 text-sky-700" />
                                 <span className="font-semibold">신고 상태 확인</span>
                               </Button>
                             </div>

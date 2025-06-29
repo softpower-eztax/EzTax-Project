@@ -145,7 +145,7 @@ const Home: React.FC = () => {
               className="w-full bg-primary hover:bg-primary-dark text-white font-bold"
               onClick={() => user ? navigate('/personal-info') : navigate('/auth')}
             >
-              {user ? '지금 시작하기' : '로그인하고 시작하기(Login to Start)'}
+              {user ? '지금 시작하기' : '로그인하고 시작하기(준비중)'}
             </Button>
             <Button 
               size="lg"

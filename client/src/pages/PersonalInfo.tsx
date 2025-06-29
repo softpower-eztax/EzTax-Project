@@ -632,6 +632,15 @@ const PersonalInfo: React.FC = () => {
             <CardContent className="pt-6">
               <div className="flex justify-between items-center mb-6">
                 <h2 className="text-2xl font-heading font-semibold text-primary-dark">개인 정보 (Personal Information)</h2>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleSampleData}
+                  className="bg-blue-50 border-blue-200 text-blue-700 hover:bg-blue-100"
+                >
+                  <ClipboardCheck className="h-4 w-4 mr-2" />
+                  샘플 데이터
+                </Button>
               </div>
 
               <Form {...form}>

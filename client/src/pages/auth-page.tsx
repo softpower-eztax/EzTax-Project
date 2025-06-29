@@ -111,9 +111,8 @@ export default function AuthPage() {
           </CardHeader>
 
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="grid w-full grid-cols-2">
+            <TabsList className="grid w-full grid-cols-1">
               <TabsTrigger value="login">로그인(Login)</TabsTrigger>
-              <TabsTrigger value="register">회원가입(Register)</TabsTrigger>
             </TabsList>
 
             {/* Login Form */}

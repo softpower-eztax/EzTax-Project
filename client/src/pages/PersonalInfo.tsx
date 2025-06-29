@@ -68,6 +68,13 @@ const PersonalInfo: React.FC = () => {
   useEffect(() => {
     const loadUserData = async () => {
       try {
+        // Sample Data가 이미 있다면 로딩을 건너뛰기
+        const existingSampleData = localStorage.getItem('tempPersonalInfo');
+        if (existingSampleData) {
+          console.log("PersonalInfo - Sample Data 존재, 초기 로딩 건너뛰기");
+          return;
+        }
+        
         // 모든 로컬 저장소 데이터 먼저 정리
         localStorage.removeItem('personalInfo');
         
@@ -81,7 +88,21 @@ const PersonalInfo: React.FC = () => {
         });
         
         if (!userResponse.ok) {
-          // 비인증 사용자 - 완전 초기화
+          // 비인증 사용자 - localStorage에 데이터가 있는지 먼저 확인
+          const savedData = localStorage.getItem('tempPersonalInfo');
+          if (savedData) {
+            try {
+              const parsedData = JSON.parse(savedData);
+              console.log("PersonalInfo - 비인증 사용자: localStorage에서 데이터 복원");
+              form.reset(parsedData);
+              setSavedValues(parsedData);
+              return;
+            } catch (error) {
+              console.error("Failed to parse saved data:", error);
+            }
+          }
+          
+          // localStorage에 데이터가 없으면 완전 초기화
           console.log("PersonalInfo - 비인증 사용자: 완전 초기화");
           form.reset({
             firstName: "",
@@ -508,7 +529,7 @@ const PersonalInfo: React.FC = () => {
   };
 
   // Sample Data 입력 처리
-  const handleSampleData = () => {
+  const handleSampleData = async () => {
     const sampleData: PersonalInformation = {
       firstName: 'John',
       middleInitial: 'M',
@@ -553,22 +574,30 @@ const PersonalInfo: React.FC = () => {
       }
     };
     
+    console.log("Sample Data 버튼 클릭 - 데이터 입력 시작");
+    
+    // 로컬 스토리지에 먼저 저장 (data loading logic이 덮어쓰지 않도록)
+    localStorage.setItem('tempPersonalInfo', JSON.stringify(sampleData));
+    console.log("Sample Data - localStorage에 저장 완료");
+    
     // 폼에 샘플 데이터 입력
     form.reset(sampleData);
+    console.log("Sample Data - 폼 리셋 완료");
     
-    // 로컬 상태 업데이트
+    // 로컬 상태 업데이트  
     setSavedValues(sampleData);
     
     // 컨텍스트 업데이트
     updateTaxData({ personalInfo: sampleData });
+    console.log("Sample Data - 컨텍스트 업데이트 완료");
     
-    // 로컬 스토리지에 저장
-    localStorage.setItem('tempPersonalInfo', JSON.stringify(sampleData));
-    
+    // 토스트 알림
     toast({
       title: "샘플 데이터 입력 완료",
-      description: "예시 개인정보가 입력되었습니다.",
+      description: "John & Jane Smith 가족 정보가 입력되었습니다.",
     });
+    
+    console.log("Sample Data 입력 프로세스 완료");
   };
 
   return (

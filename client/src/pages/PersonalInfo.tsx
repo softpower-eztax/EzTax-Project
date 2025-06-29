@@ -630,13 +630,19 @@ const PersonalInfo: React.FC = () => {
         <div className="w-full">
           <Card className="mb-6">
             <CardContent className="pt-6">
-              <div className="flex justify-between items-center mb-6">
-                <h2 className="text-2xl font-heading font-semibold text-primary-dark">개인 정보 (Personal Information)</h2>
+              <div className="flex justify-between items-start mb-6">
+                <div className="flex-1">
+                  <h2 className="text-2xl font-heading font-semibold text-primary-dark mb-2">개인 정보 (Personal Information)</h2>
+                  <div className="bg-blue-50 p-3 rounded-md border border-blue-200 text-sm text-blue-800">
+                    <p className="font-medium">💡 개인정보 보호 안내</p>
+                    <p className="mt-1">시뮬레이션시 개인정보보호를 위해 샘플데이터를 사용하시는게 좋습니다. 단 정확한 결과를 위해 생년월일 정보와 거주 State 정보는 정확하게 입력하세요.</p>
+                  </div>
+                </div>
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={handleSampleData}
-                  className="bg-blue-50 border-blue-200 text-blue-700 hover:bg-blue-100"
+                  className="bg-blue-50 border-blue-200 text-blue-700 hover:bg-blue-100 ml-4 flex-shrink-0"
                 >
                   <ClipboardCheck className="h-4 w-4 mr-2" />
                   샘플 데이터

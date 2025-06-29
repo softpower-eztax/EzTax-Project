@@ -3,14 +3,21 @@ import { execSync } from 'child_process';
 import fs from 'fs';
 import path from 'path';
 
-console.log('Building production application...');
+console.log('🚀 Building production application...');
 
-// Step 1: Build frontend with Vite
-console.log('1. Building frontend...');
+// Step 1: Clean dist directory
+console.log('1️⃣ Cleaning dist directory...');
+if (fs.existsSync('dist')) {
+  fs.rmSync('dist', { recursive: true, force: true });
+}
+fs.mkdirSync('dist', { recursive: true });
+
+// Step 2: Build frontend with Vite
+console.log('2️⃣ Building frontend...');
 execSync('npx vite build', { stdio: 'inherit' });
 
-// Step 2: Build backend with esbuild, excluding Vite dependencies
-console.log('2. Building backend...');
+// Step 3: Build backend with esbuild using production entry point
+console.log('3️⃣ Building backend server...');
 
 const result = await build({
   entryPoints: ['server/index-production.ts'],
@@ -20,55 +27,35 @@ const result = await build({
   format: 'esm',
   outfile: 'dist/index.js',
   external: [
-    // Exclude Vite and related dependencies from bundle
-    'vite',
-    '@vitejs/*',
-    'rollup',
-    'esbuild',
-    // Keep Node.js built-ins external
-    'fs',
-    'path',
-    'http',
-    'https',
-    'crypto',
-    'os',
-    'url',
-    'querystring',
-    'stream',
-    'util',
-    'events',
-    'buffer',
-    'child_process',
-    // Keep database and other runtime dependencies external
+    // Node.js built-ins
+    'fs', 'path', 'http', 'https', 'crypto', 'os', 'url', 'querystring', 
+    'stream', 'util', 'events', 'buffer', 'child_process', 'net', 'tls',
+    // Production dependencies (will be installed via package.json)
     '@neondatabase/serverless',
-    'pg',
-    'drizzle-orm',
-    'express',
-    'passport',
-    'nodemailer',
-    'stripe',
-    'ws'
+    'pg', 'drizzle-orm', 'drizzle-zod', 'zod',
+    'express', 'express-session', 'connect-pg-simple',
+    'passport', 'passport-local', 'passport-google-oauth20',
+    'nodemailer', 'stripe', '@paypal/paypal-server-sdk',
+    'ws', 'openai', 'jspdf', 'date-fns'
   ],
   packages: 'external',
   banner: {
-    js: `
-// Production build - Vite dependencies excluded
+    js: `// Production Server Entry Point
 import { createRequire } from 'module';
 const require = createRequire(import.meta.url);
 const __filename = new URL(import.meta.url).pathname;
-const __dirname = path.dirname(__filename);
-`
+const __dirname = path.dirname(__filename);`
   },
   define: {
     'process.env.NODE_ENV': '"production"'
   },
-  minify: false, // Keep readable for debugging
-  sourcemap: true,
-  metafile: true,
+  minify: true,
+  sourcemap: false,
+  metafile: true
 });
 
-// Step 3: Create a package.json for production dependencies
-console.log('3. Creating production package.json...');
+// Step 4: Create production package.json
+console.log('4️⃣ Creating production package.json...');
 
 const originalPackage = JSON.parse(fs.readFileSync('package.json', 'utf8'));
 
@@ -81,7 +68,6 @@ const productionPackage = {
     start: "NODE_ENV=production node index.js"
   },
   dependencies: {
-    // Only include runtime dependencies, exclude dev tools
     "@neondatabase/serverless": originalPackage.dependencies["@neondatabase/serverless"],
     "express": originalPackage.dependencies["express"],
     "express-session": originalPackage.dependencies["express-session"],
@@ -94,7 +80,6 @@ const productionPackage = {
     "zod": originalPackage.dependencies["zod"],
     "nodemailer": originalPackage.dependencies["nodemailer"],
     "stripe": originalPackage.dependencies["stripe"],
-    "@stripe/stripe-js": originalPackage.dependencies["@stripe/stripe-js"],
     "@paypal/paypal-server-sdk": originalPackage.dependencies["@paypal/paypal-server-sdk"],
     "ws": originalPackage.dependencies["ws"],
     "openai": originalPackage.dependencies["openai"],
@@ -105,16 +90,30 @@ const productionPackage = {
 
 fs.writeFileSync('dist/package.json', JSON.stringify(productionPackage, null, 2));
 
-console.log('4. Build complete!');
-console.log('Build analysis:', result.metafile);
+// Step 5: Verify build output
+console.log('5️⃣ Verifying build output...');
+
+const requiredFiles = ['dist/index.js', 'dist/package.json', 'dist/public/index.html'];
+const missingFiles = requiredFiles.filter(file => !fs.existsSync(file));
+
+if (missingFiles.length > 0) {
+  console.error('❌ Missing required files:', missingFiles);
+  process.exit(1);
+}
+
+console.log('✅ Production build completed successfully!');
+console.log('📁 Build output:');
+console.log('   - dist/index.js (server entry point)');
+console.log('   - dist/package.json (production dependencies)');
+console.log('   - dist/public/ (frontend assets)');
 
 if (result.errors?.length > 0) {
-  console.error('Build errors:', result.errors);
+  console.error('❌ Build errors:', result.errors);
   process.exit(1);
 }
 
 if (result.warnings?.length > 0) {
-  console.warn('Build warnings:', result.warnings);
+  console.warn('⚠️ Build warnings:', result.warnings);
 }
 
-console.log('Production build ready in ./dist/');
+console.log('🎉 Ready for deployment!');

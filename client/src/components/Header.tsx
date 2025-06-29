@@ -147,17 +147,7 @@ const Header: React.FC = () => {
                 <span>로그아웃(Logout)</span>
               </Button>
             </div>
-          ) : (
-            <Button 
-              variant="outline" 
-              size="sm"
-              className="text-primary-dark hover:text-primary flex items-center text-sm"
-              onClick={handleLogin}
-            >
-              <LogIn className="h-4 w-4 mr-1" />
-              <span>로그인(Login)</span>
-            </Button>
-          )}
+          ) : null}
         </div>
       </div>
     </header>

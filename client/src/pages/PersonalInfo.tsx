@@ -767,8 +767,8 @@ const PersonalInfo: React.FC = () => {
                       </div>
                     </div>
                     
-                    {/* 저장 버튼 - Filing Status 섹션 바로 위에 배치 */}
-                    <div className="flex justify-center my-6">
+                    {/* 저장 버튼과 더미 데이터 버튼 - Filing Status 섹션 바로 위에 배치 */}
+                    <div className="flex justify-center gap-4 my-6">
                       <Button 
                         variant="outline" 
                         size="lg"
@@ -806,6 +806,66 @@ const PersonalInfo: React.FC = () => {
                       >
                         <Save className="h-4 w-4 mr-2" />
                         진행상황 저장
+                      </Button>
+
+                      <Button 
+                        variant="outline" 
+                        size="lg"
+                        className="text-blue-600 hover:text-blue-700 border-blue-300 hover:border-blue-400 flex items-center px-6 py-2"
+                        onClick={() => {
+                          const dummyData: PersonalInformation = {
+                            firstName: "홍길동",
+                            middleInitial: "M",
+                            lastName: "김",
+                            ssn: "123-45-6789",
+                            dateOfBirth: "1985-03-15",
+                            email: "hong.kim@example.com",
+                            phone: "555-123-4567",
+                            address1: "123 Main Street",
+                            address2: "Apt 4B",
+                            city: "New York",
+                            state: "NY",
+                            zipCode: "10001",
+                            filingStatus: "married_joint",
+                            isDisabled: false,
+                            isNonresidentAlien: false,
+                            dependents: [
+                              {
+                                firstName: "민수",
+                                lastName: "김",
+                                ssn: "987-65-4321",
+                                relationship: "child",
+                                dateOfBirth: "2010-08-20",
+                                isDisabled: false,
+                                isNonresidentAlien: false,
+                                isQualifyingChild: true
+                              }
+                            ],
+                            spouseInfo: {
+                              firstName: "영희",
+                              middleInitial: "S",
+                              lastName: "김",
+                              ssn: "456-78-9123",
+                              dateOfBirth: "1987-11-22",
+                              isDisabled: false,
+                              isNonresidentAlien: false,
+                              differentAddress: false
+                            }
+                          };
+                          
+                          console.log("더미 데이터 로드:", dummyData);
+                          form.reset(dummyData);
+                          setSavedValues(dummyData);
+                          updateTaxData({ personalInfo: dummyData });
+                          
+                          toast({
+                            title: "더미 데이터 로드 완료",
+                            description: "예시 개인정보 데이터가 입력되었습니다.",
+                          });
+                        }}
+                      >
+                        <ClipboardCheck className="h-4 w-4 mr-2" />
+                        Dummy Data
                       </Button>
                     </div>
                     

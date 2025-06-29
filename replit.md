@@ -105,7 +105,7 @@ Preferred communication style: Simple, everyday language.
 ## Changelog
 
 Recent Changes:
-- June 26, 2025: **PERSONAL INFO SAMPLE DATA BUTTON RESTORED** - Added Sample Data button to Personal Info page header with comprehensive example data including John & Jane Smith family details, fixed data persistence issues preventing button functionality
+- June 26, 2025: **PERSONAL INFO SAMPLE DATA BUTTON FULLY OPERATIONAL** - Added Sample Data button to Personal Info page header with comprehensive example data including John & Jane Smith family details, fixed data persistence issues and useFieldArray synchronization to properly display dependent Emily Smith on screen
 - June 25, 2025: **INCOME PAGE SAVE BUTTON ADDED** - Added "진행상황저장" button above "기타 소득" section for convenient progress saving during income data entry
 - June 25, 2025: **HOMEPAGE BUTTON TEXT SIZE UNIFIED** - Made all homepage buttons use font-bold class and size="lg" attribute to match "지금 시작하기" button text weight and size for consistent visual appearance
 - June 24, 2025: **CAPITAL GAINS DATE INPUT FIXED** - Resolved date input issue in Capital Gains Calculator by properly handling string vs number field types in form input processing

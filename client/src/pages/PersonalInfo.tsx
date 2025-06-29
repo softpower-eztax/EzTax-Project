@@ -376,19 +376,13 @@ const PersonalInfo: React.FC = () => {
         console.log("PersonalInfo - Restoring saved form data from localStorage:", parsedData);
         form.reset(parsedData);
         
-        // 부양가족 필드 배열도 명시적으로 업데이트
-        if (parsedData.dependents && Array.isArray(parsedData.dependents)) {
-          replace(parsedData.dependents);
-          console.log("PersonalInfo - localStorage 복원 시 부양가족 필드 배열 업데이트:", parsedData.dependents);
-        }
-        
         // Update TaxContext with restored data
         updateTaxData({ personalInfo: parsedData });
       } catch (error) {
         console.error("Failed to parse saved form data:", error);
       }
     }
-  }, [replace]);
+  }, []);
 
   // Clean up localStorage only when explicitly needed (not on every unmount)
   const cleanupLocalStorage = () => {

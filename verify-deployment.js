@@ -1,67 +1,75 @@
 #!/usr/bin/env node
 import fs from 'fs';
-import { execSync } from 'child_process';
+import path from 'path';
 
-console.log('🔍 DEPLOYMENT VERIFICATION');
+console.log('🔍 Deployment Verification Checklist');
+console.log('=====================================');
 
-// Check required files exist
-const requiredFiles = [
-  'dist/index.js',
-  'dist/package.json', 
-  'dist/public/index.html'
-];
+let allChecks = true;
 
-console.log('1️⃣ Checking required files...');
-let allFilesExist = true;
-for (const file of requiredFiles) {
-  if (fs.existsSync(file)) {
-    const size = fs.statSync(file).size;
-    console.log(`   ✅ ${file} (${Math.round(size/1024)}KB)`);
+// Check 1: dist/index.js exists
+if (fs.existsSync('dist/index.js')) {
+  const stats = fs.statSync('dist/index.js');
+  console.log(`✅ dist/index.js exists (${Math.round(stats.size / 1024)}KB)`);
+} else {
+  console.log('❌ dist/index.js missing');
+  allChecks = false;
+}
+
+// Check 2: dist/package.json exists with correct start script
+if (fs.existsSync('dist/package.json')) {
+  const pkg = JSON.parse(fs.readFileSync('dist/package.json', 'utf8'));
+  if (pkg.scripts && pkg.scripts.start === 'NODE_ENV=production node index.js') {
+    console.log('✅ dist/package.json has correct start script');
   } else {
-    console.log(`   ❌ ${file} - MISSING`);
-    allFilesExist = false;
+    console.log('❌ dist/package.json missing or incorrect start script');
+    allChecks = false;
+  }
+} else {
+  console.log('❌ dist/package.json missing');
+  allChecks = false;
+}
+
+// Check 3: Server listens on 0.0.0.0
+const serverContent = fs.readFileSync('server/index-production.ts', 'utf8');
+if (serverContent.includes('0.0.0.0')) {
+  console.log('✅ Server configured to listen on 0.0.0.0');
+} else {
+  console.log('❌ Server not configured for 0.0.0.0');
+  allChecks = false;
+}
+
+// Check 4: Production dependencies only
+if (fs.existsSync('dist/package.json')) {
+  const pkg = JSON.parse(fs.readFileSync('dist/package.json', 'utf8'));
+  const devDeps = ['vite', '@vitejs/plugin-react', 'tsx', 'typescript'];
+  const hasDevDeps = devDeps.some(dep => pkg.dependencies && pkg.dependencies[dep]);
+  if (!hasDevDeps) {
+    console.log('✅ Production package.json excludes dev dependencies');
+  } else {
+    console.log('❌ Production package.json includes dev dependencies');
+    allChecks = false;
   }
 }
 
-if (!allFilesExist) {
-  console.log('❌ DEPLOYMENT INCOMPLETE - Running build...');
-  execSync('node build-deployment-fix.js', { stdio: 'inherit' });
+// Check 5: Essential runtime dependencies included
+if (fs.existsSync('dist/package.json')) {
+  const pkg = JSON.parse(fs.readFileSync('dist/package.json', 'utf8'));
+  const required = ['express', 'drizzle-orm', '@neondatabase/serverless'];
+  const missing = required.filter(dep => !pkg.dependencies[dep]);
+  if (missing.length === 0) {
+    console.log('✅ All essential runtime dependencies included');
+  } else {
+    console.log(`❌ Missing dependencies: ${missing.join(', ')}`);
+    allChecks = false;
+  }
 }
 
-// Verify server bundle size
-const indexJsSize = fs.statSync('dist/index.js').size;
-if (indexJsSize < 10000) {
-  console.log('❌ Server bundle too small - may be corrupted');
-  process.exit(1);
-}
-
-// Check production package.json
-const prodPkg = JSON.parse(fs.readFileSync('dist/package.json', 'utf8'));
-if (!prodPkg.scripts.start || !prodPkg.main) {
-  console.log('❌ Production package.json missing required fields');
-  process.exit(1);
-}
-
-console.log('2️⃣ Verifying package.json configuration...');
-console.log(`   ✅ Main entry: ${prodPkg.main}`);
-console.log(`   ✅ Start script: ${prodPkg.scripts.start}`);
-console.log(`   ✅ Dependencies: ${Object.keys(prodPkg.dependencies).length} packages`);
-
-console.log('3️⃣ Checking .replit deployment configuration...');
-const replitConfig = fs.readFileSync('.replit', 'utf8');
-if (replitConfig.includes('build = ["npm", "run", "build"]') && 
-    replitConfig.includes('run = ["npm", "run", "start"]')) {
-  console.log('   ✅ .replit deployment configuration correct');
+console.log('=====================================');
+if (allChecks) {
+  console.log('🎉 ALL DEPLOYMENT CHECKS PASSED');
+  console.log('   Ready for Replit deployment!');
 } else {
-  console.log('   ⚠️ .replit may need deployment configuration update');
+  console.log('⚠️  Some deployment checks failed');
+  process.exit(1);
 }
-
-console.log('');
-console.log('✅ DEPLOYMENT VERIFICATION COMPLETE');
-console.log('📦 Ready for Replit deployment with:');
-console.log('   • Build command: npm run build');
-console.log('   • Start command: npm run start'); 
-console.log('   • Server port: 5000');
-console.log('   • Host binding: 0.0.0.0');
-console.log('');
-console.log('🚀 All deployment requirements satisfied!');

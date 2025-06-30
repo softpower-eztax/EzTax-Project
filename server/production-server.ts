@@ -6,16 +6,14 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
-
-// Environment setup
 const NODE_ENV = process.env.NODE_ENV || 'production';
 const PORT = parseInt(process.env.PORT) || 5000;
 
-console.log('🌟 Starting EzTax Production Server');
+console.log('🌟 EzTax Production Server Starting');
 console.log('   Environment:', NODE_ENV);
 console.log('   Port:', PORT);
 
-// Health check endpoint
+// Health endpoint
 app.get('/health', (req, res) => {
   res.json({ 
     status: 'healthy', 
@@ -25,20 +23,19 @@ app.get('/health', (req, res) => {
   });
 });
 
-// API routes placeholder
+// API routes
 app.get('/api/*', (req, res) => {
   res.json({ 
     message: 'EzTax API Server Running',
     endpoint: req.path,
-    method: req.method,
     timestamp: new Date().toISOString()
   });
 });
 
-// Serve static files from public directory
+// Static files
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Catch-all handler for frontend routes
+// Catch-all for SPA
 app.get('*', (req, res) => {
   const indexPath = path.join(__dirname, 'public', 'index.html');
   if (fs.existsSync(indexPath)) {
@@ -47,71 +44,61 @@ app.get('*', (req, res) => {
     res.send(`<!DOCTYPE html>
 <html>
 <head>
-  <title>EzTax - Production Server</title>
+  <title>EzTax Production Server</title>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
-    body { font-family: Arial, sans-serif; text-align: center; padding: 50px; }
+    body { font-family: system-ui, sans-serif; text-align: center; padding: 50px; }
     .container { max-width: 600px; margin: 0 auto; }
     h1 { color: #2d3748; }
     .status { color: #38a169; font-weight: 600; margin: 20px 0; }
-    .info { color: #4a5568; margin: 10px 0; }
   </style>
 </head>
 <body>
   <div class="container">
     <h1>🌟 EzTax Production Server</h1>
     <div class="status">✅ Server Running Successfully</div>
-    <div class="info">Port: ${PORT}</div>
-    <div class="info">Environment: ${NODE_ENV}</div>
-    <div class="info">Time: ${new Date().toLocaleString()}</div>
-    <p><a href="/health">Health Check</a> | <a href="/api/status">API Status</a></p>
+    <p>Port: ${PORT} | Environment: ${NODE_ENV}</p>
+    <p>Time: ${new Date().toLocaleString()}</p>
+    <p><a href="/health">Health Check</a></p>
   </div>
 </body>
 </html>`);
   }
 });
 
-// Error handling middleware
+// Error handling
 app.use((err, req, res, next) => {
   console.error('Server error:', err);
-  res.status(500).json({ 
-    error: 'Internal server error',
-    timestamp: new Date().toISOString()
-  });
+  res.status(500).json({ error: 'Internal server error' });
 });
 
-// Start server with proper error handling to prevent crash loops
+// Start server - bind to 0.0.0.0 for Replit deployment
 const server = app.listen(PORT, '0.0.0.0', () => {
-  console.log('✅ EzTax Production Server successfully started');
+  console.log('✅ EzTax Production Server started successfully');
   console.log('   URL: http://0.0.0.0:' + PORT);
-  console.log('   Health: http://0.0.0.0:' + PORT + '/health');
   console.log('   Ready for deployment!');
 });
 
-// Graceful shutdown handling
+// Graceful shutdown
 process.on('SIGTERM', () => {
-  console.log('SIGTERM received, shutting down gracefully...');
-  server.close(() => {
-    console.log('Process terminated');
-  });
+  console.log('Shutting down gracefully...');
+  server.close(() => process.exit(0));
 });
 
 process.on('SIGINT', () => {
-  console.log('SIGINT received, shutting down gracefully...');
-  server.close(() => {
-    console.log('Process terminated');
-  });
+  console.log('Shutting down gracefully...');
+  server.close(() => process.exit(0));
 });
 
-// Uncaught exception handler to prevent crashes
+// Prevent crash loops
 process.on('uncaughtException', (err) => {
   console.error('Uncaught Exception:', err);
   process.exit(1);
 });
 
-process.on('unhandledRejection', (reason, promise) => {
-  console.error('Unhandled Rejection at:', promise, 'reason:', reason);
+process.on('unhandledRejection', (reason) => {
+  console.error('Unhandled Rejection:', reason);
   process.exit(1);
 });
 

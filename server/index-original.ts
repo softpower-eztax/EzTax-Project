@@ -53,13 +53,26 @@ app.use((req, res, next) => {
 
   // Setup authentication first
   setupAuth(app);
-  log("인증 설정 완료");
+  log("구글 로그인 설정 완료");
   
   const server = await registerRoutes(app);
 
-  // Use production static file serving (no Vite)
-  serveStaticProduction(app);
-  log("Production static file serving setup complete");
+  // Setup development or production environment
+  if (process.env.NODE_ENV === "development") {
+    // Only import Vite in development
+    try {
+      const viteModule = await import("./vite");
+      await viteModule.setupVite(app, server);
+      log("Development server with Vite setup complete");
+    } catch (error) {
+      log(`Failed to setup Vite: ${error}`);
+      serveStaticProduction(app);
+    }
+  } else {
+    // Use production static file serving
+    serveStaticProduction(app);
+    log("Production static file serving setup complete");
+  }
 
   // Global error handler - must be last middleware
   app.use((err: any, req: Request, res: Response, _next: NextFunction) => {
@@ -69,19 +82,24 @@ app.use((req, res, next) => {
     log(`Error ${status} on ${req.method} ${req.path}: ${message}`);
     
     // Don't expose sensitive error details in production
-    const responseMessage = status === 500 ? "서버 오류가 발생했습니다" : message;
+    const responseMessage = process.env.NODE_ENV === "production" 
+      ? (status === 500 ? "서버 오류가 발생했습니다" : message)
+      : message;
     
     if (!res.headersSent) {
       res.status(status).json({ 
-        message: responseMessage
+        message: responseMessage,
+        ...(process.env.NODE_ENV === "development" && { stack: err.stack })
       });
     }
   });
 
-  // Start server - use PORT from environment or default to 5000
-  const port = parseInt(process.env.PORT || '5000', 10);
+  // Start server on port 5000
+  const port = 5000;
   server.listen(port, "0.0.0.0", () => {
-    log(`Production server running on port ${port}`);
-    log(`Environment: ${process.env.NODE_ENV || 'production'}`);
+    log(`serving on port ${port}`);
+    log(`Direct access: https://${process.env.REPLIT_DEV_DOMAIN || '3e18f96e-0fbf-4af6-b766-cfbae9f2437b-00-17nnd6cbvtwuy.janeway.replit.dev'}`);
+    log(`Local access: http://localhost:${port}`);
+    log(`Local development file: file://${process.cwd()}/local-dev.html`);
   });
 })();

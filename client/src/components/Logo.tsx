@@ -12,6 +12,9 @@ const Logo: React.FC<LogoProps> = ({ theme = 'light' }) => {
         <div className={`mr-2 ${theme === 'light' ? 'bg-primary text-white' : 'bg-white text-primary'} font-heading font-bold text-xl px-3 py-1 rounded`}>
           EzTax
         </div>
+        <span className={`text-sm font-medium ${theme === 'light' ? 'text-gray-600' : 'text-gray-300'}`}>
+          Less Tax, More Wealth
+        </span>
       </div>
     </Link>
   );

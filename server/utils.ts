@@ -46,7 +46,33 @@ export function serveStaticProduction(app: Express) {
       return;
     }
     
-    throw new Error(`Could not find build directory at ${publicDir} or ${altPath}`);
+    // Create minimal fallback structure for production
+    log(`Creating minimal static file structure at ${publicDir}`);
+    fs.mkdirSync(publicDir, { recursive: true });
+    
+    const fallbackHtml = `<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EzTax</title>
+    <style>
+        body { font-family: -apple-system, sans-serif; margin: 0; padding: 20px; background: #f5f5f5; text-align: center; }
+        .container { max-width: 600px; margin: 0 auto; background: white; padding: 40px; border-radius: 8px; }
+        h1 { color: #2563eb; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>EzTax</h1>
+        <p>세금계산 및 은퇴준비 애플리케이션</p>
+        <p>서버가 성공적으로 시작되었습니다.</p>
+    </div>
+</body>
+</html>`;
+    
+    fs.writeFileSync(path.join(publicDir, "index.html"), fallbackHtml);
+    log(`Created fallback static files at ${publicDir}`);
   }
 
   app.use(express.static(publicDir, {

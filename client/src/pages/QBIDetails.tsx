@@ -88,21 +88,31 @@ export default function QBIDetails() {
     
     const totalQBI = totalScheduleC + totalPartnership + totalSCorp + values.reitDividends + values.ptpIncome;
 
+    // SSTB(전문서비스업) 확인
+    const hasSST = values.scheduleC.some(business => business.isSST) ||
+                   values.partnershipK1.some(k1 => k1.isSST) ||
+                   values.sCorporationK1.some(k1 => k1.isSST);
+    
     // QBI 공제 계산
     let qbiDeduction = 0;
     
     if (totalQBI > 0) {
-      // 기본 20% 공제
-      const basicDeduction = totalQBI * 0.20;
-      
-      // 과세소득의 20% 한도
-      const taxableIncomeLimit = taxableIncome * 0.20;
-      
-      if (agi <= threshold) {
-        // 소득 한도 이하: 20% 또는 과세소득의 20% 중 작은 값
-        qbiDeduction = Math.min(basicDeduction, taxableIncomeLimit);
+      // SSTB는 소득 한도 초과시 QBI 공제 불가
+      if (hasSST && agi > threshold) {
+        console.log('SSTB 사업으로 소득 한도 초과 - QBI 공제 불가');
+        qbiDeduction = 0;
       } else {
-        // 소득 한도 초과: W-2 임금/자산 기준 제한 적용 (간소화)
+        // 기본 20% 공제
+        const basicDeduction = totalQBI * 0.20;
+        
+        // 과세소득의 20% 한도
+        const taxableIncomeLimit = taxableIncome * 0.20;
+        
+        if (agi <= threshold) {
+          // 소득 한도 이하: 20% 또는 과세소득의 20% 중 작은 값
+          qbiDeduction = Math.min(basicDeduction, taxableIncomeLimit);
+        } else {
+          // 소득 한도 초과: W-2 임금/자산 기준 제한 적용 (간소화)
         const totalW2Wages = values.scheduleC.reduce((sum, business) => sum + business.w2Wages, 0) +
                             values.partnershipK1.reduce((sum, k1) => sum + k1.w2Wages, 0) +
                             values.sCorporationK1.reduce((sum, k1) => sum + k1.w2Wages, 0);
@@ -117,8 +127,9 @@ export default function QBIDetails() {
           totalW2Wages * 0.25 + totalQualifiedProperty * 0.025
         );
         
-        const limitedDeduction = Math.min(totalQBI * 0.20, wageLimit);
-        qbiDeduction = Math.min(limitedDeduction, taxableIncomeLimit);
+          const limitedDeduction = Math.min(totalQBI * 0.20, wageLimit);
+          qbiDeduction = Math.min(limitedDeduction, taxableIncomeLimit);
+        }
       }
     }
 
@@ -328,8 +339,8 @@ export default function QBIDetails() {
                           </FormControl>
                           <div className="space-y-1 leading-none">
                             <FormLabel>SSTB 해당 여부</FormLabel>
-                            <div className="text-xs text-gray-500">
-                              전문서비스업(법률, 회계, 의료, 컨설팅 등)
+                            <div className="text-xs text-red-500">
+                              전문서비스업(법률, 회계, 의료, 컨설팅 등) - QBI 공제 제한 적용
                             </div>
                           </div>
                         </FormItem>
@@ -427,7 +438,8 @@ export default function QBIDetails() {
                     <p className="text-yellow-700">
                       • 2024년 소득 한도: 단독 $191,950, 부부합산 $383,900<br/>
                       • 한도 초과시 W-2 급여 및 적격자산 기준 제한 적용<br/>
-                      • 전문서비스업(SSTB)은 추가 제한 적용
+                      • <strong>전문서비스업(SSTB): 소득 한도 초과시 QBI 공제 불가</strong><br/>
+                      • SSTB: 법률, 회계, 의료, 컨설팅, 금융서비스, 운동선수, 연예인 등
                     </p>
                   </div>
                 </div>

@@ -281,11 +281,12 @@ export function calculateQBIDeduction(
   taxableIncome: number,
   filingStatus: FilingStatus,
   w2Wages: number = 0,
-  qualifiedProperty: number = 0
+  qualifiedProperty: number = 0,
+  isSST: boolean = false
 ): number {
   if (qbiIncome <= 0) return 0;
 
-  // 2024年 QBI 소득 한도
+  // 2024년 QBI 소득 한도
   const thresholds = {
     single: 191950,
     married_joint: 383900,
@@ -295,6 +296,13 @@ export function calculateQBIDeduction(
   };
 
   const threshold = thresholds[filingStatus] || 191950;
+
+  // SSTB (전문서비스업) 제한 확인
+  if (isSST && adjustedGrossIncome > threshold) {
+    // SSTB는 소득 한도 초과시 QBI 공제 불가
+    console.log('SSTB 사업으로 소득 한도 초과 - QBI 공제 불가');
+    return 0;
+  }
 
   // 기본 20% 공제
   const basicDeduction = qbiIncome * 0.20;

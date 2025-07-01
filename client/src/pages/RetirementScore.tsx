@@ -162,19 +162,32 @@ export default function RetirementScoreStepByStep() {
   // 모든 단계가 완료되었는지 확인
   const allStepsCompleted = completedSteps.every(step => step === true);
 
-  // Social Security 계산 함수
+  // Social Security 계산 함수 (SSA.gov 기준)
   const calculateSocialSecurity = () => {
-    const workingYears = Math.min(35, ssRetireAge - ssStartAge); // 최대 35년만 계산
+    const workingYears = Math.min(35, ssRetireAge - ssStartAge);
     const annualEarnings = ssAvgSalary * 12;
     
-    // 2024년 기준 bend points ($1,174, $7,078)
+    // 최소 10년(40분기) 납부 필요
+    if (workingYears < 10) {
+      return 0;
+    }
+    
+    // 2024년 기준 bend points ($1,174, $7,078) - 월 기준
     const bendPoint1 = 1174;
     const bendPoint2 = 7078;
     
-    // AIME 계산 - 최고 35년의 평균
-    const aime = workingYears >= 35 ? annualEarnings / 12 : (annualEarnings * workingYears) / (35 * 12);
+    // AIME 계산: 최고 35년 소득의 월평균 (인덱싱 적용 안함, 단순화)
+    // 실제로는 과거 소득을 현재 가치로 인덱싱하지만 여기서는 단순화
+    let totalIndexedEarnings = 0;
+    for (let i = 0; i < 35; i++) {
+      if (i < workingYears) {
+        totalIndexedEarnings += annualEarnings;
+      }
+      // 35년 미만 근무시 나머지는 0으로 계산
+    }
+    const aime = totalIndexedEarnings / (35 * 12);
     
-    // PIA 계산 (Primary Insurance Amount)
+    // PIA 계산 (Primary Insurance Amount) - 2024년 공식
     let pia = 0;
     if (aime <= bendPoint1) {
       pia = aime * 0.9;
@@ -185,35 +198,28 @@ export default function RetirementScoreStepByStep() {
     }
     
     // 수령 시작 나이에 따른 조정
-    const fullRetirementAge = 67;
+    const fullRetirementAge = 67; // 1960년 이후 출생자 기준
     let adjustmentFactor = 1.0;
     
     if (ssClaimAge < fullRetirementAge) {
-      const monthsEarly = (fullRetirementAge - ssClaimAge) * 12;
       // 조기수령 감액: 처음 36개월은 월 5/9%, 그 이후는 월 5/12%
+      const monthsEarly = (fullRetirementAge - ssClaimAge) * 12;
       if (monthsEarly <= 36) {
-        adjustmentFactor = 1 - (monthsEarly * 5/9 / 100);
+        adjustmentFactor = 1 - (monthsEarly * (5/9) / 100);
       } else {
-        adjustmentFactor = 1 - (36 * 5/9 / 100) - ((monthsEarly - 36) * 5/12 / 100);
+        const firstReduction = 36 * (5/9) / 100;
+        const additionalReduction = (monthsEarly - 36) * (5/12) / 100;
+        adjustmentFactor = 1 - firstReduction - additionalReduction;
       }
-      adjustmentFactor = Math.max(0.75, adjustmentFactor);
+      adjustmentFactor = Math.max(0.75, adjustmentFactor); // 최대 25% 감액
     } else if (ssClaimAge > fullRetirementAge) {
+      // 연기수령 증액: 월 2/3% (연 8%)
       const monthsDelay = (ssClaimAge - fullRetirementAge) * 12;
-      adjustmentFactor = 1 + (monthsDelay * 8/12 / 100); // 연기수령 증액: 월 2/3%
-      adjustmentFactor = Math.min(1.32, adjustmentFactor);
+      adjustmentFactor = 1 + (monthsDelay * (2/3) / 100);
+      adjustmentFactor = Math.min(1.32, adjustmentFactor); // 최대 32% 증액 (70세까지)
     }
     
-    const finalBenefit = pia * adjustmentFactor;
-    
-    // 근무년수가 부족한 경우 추가 감액
-    if (workingYears < 10) {
-      return 0; // 10년 미만 근무시 수령 불가
-    } else if (workingYears < 35) {
-      const yearsFactor = workingYears / 35;
-      return Math.round(finalBenefit * yearsFactor);
-    }
-    
-    return Math.round(finalBenefit);
+    return Math.round(pia * adjustmentFactor);
   };
 
   // 은퇴 점수 계산
@@ -743,13 +749,27 @@ export default function RetirementScoreStepByStep() {
                                 예상 월 수령액: ${calculateSocialSecurity()}
                               </h4>
                               <div className="text-sm text-gray-600 space-y-1">
-                                <div>• 근무년수: {Math.min(35, ssRetireAge - ssStartAge)}년 (최대 35년)</div>
-                                <div>• 연간 소득: ${(ssAvgSalary * 12).toLocaleString()}</div>
-                                <div>• AIME: ${Math.round((Math.min(35, ssRetireAge - ssStartAge) >= 35 ? (ssAvgSalary * 12) / 12 : ((ssAvgSalary * 12) * Math.min(35, ssRetireAge - ssStartAge)) / (35 * 12))).toLocaleString()}</div>
-                                <div>• 수령 조정: {ssClaimAge === 67 ? '정상' : ssClaimAge < 67 ? '조기수령' : '연기수령'}</div>
-                                {Math.min(35, ssRetireAge - ssStartAge) < 10 && (
-                                  <div className="text-red-600 font-medium">⚠️ 10년 미만 납부로 수령 불가</div>
-                                )}
+                                {(() => {
+                                  const workingYears = Math.min(35, ssRetireAge - ssStartAge);
+                                  const annualEarnings = ssAvgSalary * 12;
+                                  const totalIndexedEarnings = workingYears * annualEarnings;
+                                  const aime = totalIndexedEarnings / (35 * 12);
+                                  
+                                  return (
+                                    <>
+                                      <div>• 근무년수: {workingYears}년 / 35년</div>
+                                      <div>• 연간 소득: ${annualEarnings.toLocaleString()}</div>
+                                      <div>• AIME (35년 평균 월소득): ${Math.round(aime).toLocaleString()}</div>
+                                      <div>• 수령 조정: {ssClaimAge === 67 ? '정상(FRA)' : ssClaimAge < 67 ? `조기수령(${67-ssClaimAge}년 빠름)` : `연기수령(${ssClaimAge-67}년 늦음)`}</div>
+                                      {workingYears < 10 && (
+                                        <div className="text-red-600 font-medium">⚠️ 10년 미만 납부로 수령 불가</div>
+                                      )}
+                                      {workingYears >= 10 && workingYears < 35 && (
+                                        <div className="text-orange-600 font-medium">⚠️ 35년 미만 근무로 혜택 감소</div>
+                                      )}
+                                    </>
+                                  );
+                                })()}
                               </div>
                             </div>
                             

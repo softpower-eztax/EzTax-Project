@@ -187,6 +187,7 @@ export interface TaxCredits {
   llcCredit: number;
   retirementSavingsCredit: number;
   foreignTaxCredit: number;
+  earnedIncomeCredit: number;
   otherCredits: number;
   otherCreditItems?: OtherCreditItem[];
   totalCredits: number;

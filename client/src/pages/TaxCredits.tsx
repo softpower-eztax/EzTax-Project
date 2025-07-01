@@ -27,6 +27,7 @@ const TaxCreditsPage: React.FC = () => {
     childDependentCareCredit: number;
     educationCredits: number;
     retirementSavingsCredit: number;
+    earnedIncomeCredit: number;
     otherCredits: number;
     totalCredits: number;
   }
@@ -36,6 +37,7 @@ const TaxCreditsPage: React.FC = () => {
     childDependentCareCredit: 0,
     educationCredits: 0,
     retirementSavingsCredit: 0,
+    earnedIncomeCredit: 0,
     otherCredits: 0,
     totalCredits: 0,
     ...(taxData.taxCredits || {})
@@ -47,6 +49,7 @@ const TaxCreditsPage: React.FC = () => {
     childDependentCareCredit: z.number().default(0),
     educationCredits: z.number().default(0),
     retirementSavingsCredit: z.number().default(0),
+    earnedIncomeCredit: z.number().default(0),
     otherCredits: z.number().default(0),
     totalCredits: z.number().default(0)
   });
@@ -72,6 +75,7 @@ const TaxCreditsPage: React.FC = () => {
         Number(value.childDependentCareCredit || 0) +
         Number(value.educationCredits || 0) +
         Number(value.retirementSavingsCredit || 0) +
+        Number(value.earnedIncomeCredit || 0) +
         Number(value.otherCredits || 0);
         
       form.setValue('totalCredits', total);
@@ -79,6 +83,42 @@ const TaxCreditsPage: React.FC = () => {
     
     return () => subscription.unsubscribe();
   }, [form]);
+
+  // Helper function to calculate EIC eligibility and get income limits
+  const getEICLimits = () => {
+    const filingStatus = taxData.personalInfo?.filingStatus || 'single';
+    const qualifyingChildren = taxData.personalInfo?.dependents?.filter(dep => dep.isQualifyingChild)?.length || 0;
+    
+    // Determine if married filing jointly
+    const isMarriedJoint = filingStatus === 'married_joint';
+    
+    // Define income limits based on filing status and qualifying children
+    const limits = {
+      single: {
+        0: 18591,
+        1: 49084,
+        2: 55768,
+        3: 59899
+      },
+      marriedJoint: {
+        0: 25511,
+        1: 56004,
+        2: 62688,
+        3: 66819
+      }
+    };
+    
+    const childrenCount = Math.min(qualifyingChildren, 3);
+    const applicableLimits = isMarriedJoint ? limits.marriedJoint : limits.single;
+    
+    return {
+      incomeLimit: applicableLimits[childrenCount as keyof typeof applicableLimits],
+      qualifyingChildren: childrenCount,
+      isEligible: true // We'll let user determine eligibility based on their income
+    };
+  };
+
+  const eicInfo = getEICLimits();
 
   const onSubmit = (data: TaxCredits) => {
     updateTaxData({ taxCredits: data });
@@ -318,6 +358,74 @@ const TaxCreditsPage: React.FC = () => {
                     </div>
                   </div>
 
+                  {/* Earned Income Credit */}
+                  <div className="mb-6 border-b border-gray-light pb-6">
+                    <div className="flex items-center mb-3">
+                      <h4 className="font-semibold">근로소득공제 (Earned Income Credit)</h4>
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Info className="h-4 w-4 text-gray-dark ml-2 cursor-help" />
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p className="w-64">
+                              근로소득세액공제(EIC)는 중저소득 근로자 가족을 위한 환급 가능한 세액공제입니다.
+                              (The Earned Income Credit is a refundable tax credit for low to moderate income working families.)
+                            </p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    </div>
+                    
+                    <div className="bg-blue-50 border border-blue-200 rounded-md p-3 mb-4 text-sm">
+                      <h5 className="font-medium text-blue-900 mb-2">2025년 소득 한도액 (2025 Income Limits)</h5>
+                      <div className="text-blue-800">
+                        <p className="mb-1">
+                          <strong>적격 자녀 수: {eicInfo.qualifyingChildren}명</strong>
+                        </p>
+                        <p className="mb-1">
+                          <strong>최대 소득 한도:</strong> ${eicInfo.incomeLimit.toLocaleString()}
+                        </p>
+                        <p className="text-xs mt-2">
+                          근로소득과 조정총소득(AGI) 모두 위 한도액 미만이어야 합니다.
+                          (Both earned income and AGI must be less than the limit above.)
+                        </p>
+                      </div>
+                    </div>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <FormField
+                        control={form.control}
+                        name="earnedIncomeCredit"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>근로소득공제액 (Earned Income Credit Amount)</FormLabel>
+                            <FormControl>
+                              <div className="relative">
+                                <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-dark">$</span>
+                                <Input 
+                                  {...field} 
+                                  placeholder="0.00"
+                                  className="pl-8"
+                                  value={field.value || ''}
+                                  onChange={(e) => {
+                                    const formatted = formatCurrency(e.target.value);
+                                    field.onChange(Number(formatted));
+                                  }}
+                                />
+                              </div>
+                            </FormControl>
+                            <FormDescription>
+                              IRS Publication 596을 참조하여 정확한 공제액을 계산하거나 세무 소프트웨어를 사용하세요.
+                              (Refer to IRS Publication 596 for exact credit calculation or use tax software.)
+                            </FormDescription>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                  </div>
+
                   {/* Other Credits */}
                   <div className="mb-6">
                     <div className="flex items-center mb-3">
@@ -379,6 +487,7 @@ const TaxCreditsPage: React.FC = () => {
                           childDependentCareCredit: 0,
                           educationCredits: 0,
                           retirementSavingsCredit: 0,
+                          earnedIncomeCredit: 0,
                           otherCredits: 0,
                           totalCredits: 0
                         });

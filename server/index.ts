@@ -55,9 +55,19 @@ app.use((req, res, next) => {
   setupAuth(app);
   log("구글 로그인 설정 완료");
   
-  // Add a fallback route for the root path
-  app.get('/', (req, res) => {
-    res.send(`
+  const server = await registerRoutes(app);
+
+  // Setup development or production environment
+  if (app.get("env") === "development") {
+    await setupVite(app, server);
+  } else {
+    serveStatic(app);
+  }
+
+  // Add a fallback route for the root path AFTER vite setup
+  app.get('*', (req, res) => {
+    if (req.path === '/' || req.path === '/index.html') {
+      res.send(`
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -69,7 +79,7 @@ app.use((req, res, next) => {
 <body class="min-h-screen bg-gray-50">
     <div class="container mx-auto px-4 py-8">
         <div class="text-center">
-            <h1 class="text-4xl md:text-5xl font-bold text-blue-600 mb-4">EzTax</h1>
+            <h1 class="text-4xl md:text-5xl font-bold text-blue-600 mb-4">EzTax ✅</h1>
             <p class="text-xl md:text-2xl font-bold text-gray-700 mb-2">세상쉬운 세금계산 세상귀한 노후준비</p>
             <p class="text-lg md:text-xl text-gray-600 mb-8" style="font-family: Georgia, serif;">Less Tax, More Wealth</p>
             <p class="text-lg text-gray-700 mb-8">세금시뮬레이터로 간단하게 계산하시고 노후준비도 진단하세요.</p>
@@ -125,17 +135,11 @@ app.use((req, res, next) => {
     </div>
 </body>
 </html>
-    `);
+      `);
+    } else {
+      res.status(404).send('Page not found');
+    }
   });
-
-  const server = await registerRoutes(app);
-
-  // Setup development or production environment
-  if (app.get("env") === "development") {
-    await setupVite(app, server);
-  } else {
-    serveStatic(app);
-  }
 
   // Global error handler - must be last middleware
   app.use((err: any, req: Request, res: Response, _next: NextFunction) => {

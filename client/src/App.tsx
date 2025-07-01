@@ -27,6 +27,7 @@ import NotFound from "@/pages/not-found";
 import AuthPage from "@/pages/auth-page";
 import DataTester from "@/pages/DataTester";
 import CapitalGainsCalculator from "@/pages/CapitalGainsCalculator";
+import QBIDetails from "@/pages/QBIDetails";
 import PremiumFeatures from "@/pages/PremiumFeatures";
 import Payment from "@/pages/Payment";
 import FilingStatusChecker from "@/pages/FilingStatusChecker";
@@ -42,6 +43,7 @@ function Router() {
       <Route path="/auth" component={AuthPage} />
       <ProtectedRoute path="/personal-info" component={PersonalInfo} />
       <ProtectedRoute path="/income" component={IncomePage} />
+      <ProtectedRoute path="/qbi-details" component={QBIDetails} />
       <ProtectedRoute path="/capital-gains" component={CapitalGainsCalculator} />
       <ProtectedRoute path="/premium-features" component={PremiumFeatures} />
       <ProtectedRoute path="/payment" component={Payment} />

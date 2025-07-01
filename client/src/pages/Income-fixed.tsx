@@ -580,6 +580,73 @@ export default function IncomePage() {
                   </div>
                   
                   <div className="mt-8">
+                    <h3 className="text-lg font-semibold mb-4">사업소득 (Business Income)</h3>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <FormField
+                        control={form.control}
+                        name="businessIncome"
+                        render={({ field }) => (
+                          <FormItem className="flex flex-col justify-center h-full">
+                            <div className="flex justify-between items-center mb-1">
+                              <div className="flex items-center gap-1">
+                                <FormLabel>사업 순소득 (Schedule C Net Profit)</FormLabel>
+                                <div className="tooltip">
+                                  <InfoIcon className="h-4 w-4 text-gray-dark" />
+                                  <span className="tooltip-text">Net profit from business operations (Schedule C)</span>
+                                </div>
+                              </div>
+                              <Button
+                                type="button"
+                                variant="outline"
+                                size="sm"
+                                onClick={() => setLocation('/qbi-details')}
+                                className="text-xs flex items-center gap-1"
+                              >
+                                <Calculator className="h-3 w-3" />
+                                <span>QBI 계산기</span>
+                              </Button>
+                            </div>
+                            <FormControl>
+                              <Input
+                                type="number"
+                                step="0.01"
+                                min="0"
+                                placeholder="사업 순소득 금액"
+                                value={field.value === 0 ? '' : field.value}
+                                onChange={(e) => {
+                                  field.onChange(parseFloat(e.target.value) || 0);
+                                }}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                            <div className="text-xs text-gray-500 mt-1">
+                              Schedule C, K-1, REIT 배당금 등 QBI 적격 소득
+                            </div>
+                          </FormItem>
+                        )}
+                      />
+                      
+                      <div className="border rounded-md p-4 bg-green-50/50">
+                        <p className="text-sm font-medium text-green-800 mb-2">QBI 공제 (Section 199A)</p>
+                        <p className="text-xs text-green-700 mb-3">
+                          적격 사업소득의 최대 20% 공제 가능. 소득 한도 및 사업 유형에 따라 제한됩니다.
+                        </p>
+                        <div className="text-sm space-y-1">
+                          <div className="flex justify-between">
+                            <span>2024년 한도 (단독):</span>
+                            <span className="font-medium">$191,950</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span>2024년 한도 (부부합산):</span>
+                            <span className="font-medium">$383,900</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="mt-8">
                     <h3 className="text-lg font-semibold mb-4">비근로소득 (Unearned Income)</h3>
                     
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

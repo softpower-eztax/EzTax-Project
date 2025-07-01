@@ -274,6 +274,54 @@ export function calculateChildTaxCredit(
   return Math.round(creditAmount * 100) / 100;
 }
 
+// QBI Deduction Calculation (Section 199A)
+export function calculateQBIDeduction(
+  qbiIncome: number,
+  adjustedGrossIncome: number,
+  taxableIncome: number,
+  filingStatus: FilingStatus,
+  w2Wages: number = 0,
+  qualifiedProperty: number = 0
+): number {
+  if (qbiIncome <= 0) return 0;
+
+  // 2024年 QBI 소득 한도
+  const thresholds = {
+    single: 191950,
+    married_joint: 383900,
+    married_separate: 191950,
+    head_of_household: 191950,
+    qualifying_widow: 383900
+  };
+
+  const threshold = thresholds[filingStatus] || 191950;
+
+  // 기본 20% 공제
+  const basicDeduction = qbiIncome * 0.20;
+  
+  // 과세소득의 20% 한도
+  const taxableIncomeLimit = taxableIncome * 0.20;
+  
+  let qbiDeduction = 0;
+  
+  if (adjustedGrossIncome <= threshold) {
+    // 소득 한도 이하: 20% 또는 과세소득의 20% 중 작은 값
+    qbiDeduction = Math.min(basicDeduction, taxableIncomeLimit);
+  } else {
+    // 소득 한도 초과: W-2 임금/자산 기준 제한 적용
+    // W-2 임금 제한: W-2 임금의 50% 또는 W-2 임금의 25% + 적격자산의 2.5% 중 큰 값
+    const wageLimit = Math.max(
+      w2Wages * 0.50,
+      w2Wages * 0.25 + qualifiedProperty * 0.025
+    );
+    
+    const limitedDeduction = Math.min(basicDeduction, wageLimit);
+    qbiDeduction = Math.min(limitedDeduction, taxableIncomeLimit);
+  }
+
+  return Math.max(0, Math.round(qbiDeduction));
+}
+
 // Calculate the Retirement Savings Credit based on contributions and income
 export function calculateRetirementSavingsCredit(
   retirementContributions: number,

@@ -115,6 +115,35 @@ export interface AdditionalAdjustmentItem {
   description?: string;
 }
 
+export interface QualifiedBusinessIncome {
+  scheduleC: {
+    businessName: string;
+    businessCode: string; // NAICS code
+    netProfit: number;
+    w2Wages: number;
+    qualifiedProperty: number;
+    isSSTE?: boolean; // Specified Service Trade or Business
+  }[];
+  partnershipK1: {
+    partnershipName: string;
+    qbiIncome: number;
+    w2Wages: number;
+    qualifiedProperty: number;
+    isSSTE?: boolean;
+  }[];
+  sCorporationK1: {
+    corporationName: string;
+    qbiIncome: number;
+    w2Wages: number;
+    qualifiedProperty: number;
+    isSSTE?: boolean;
+  }[];
+  reitDividends: number;
+  ptpIncome: number; // Publicly Traded Partnership
+  totalQBI: number;
+  qbiDeduction: number;
+}
+
 export interface Income {
   wages: number;
   otherEarnedIncome: number;
@@ -128,6 +157,7 @@ export interface Income {
   otherIncome: number;
   additionalIncomeItems?: AdditionalIncomeItem[];
   additionalAdjustmentItems?: AdditionalAdjustmentItem[];
+  qbi?: QualifiedBusinessIncome;
   totalIncome: number;
   adjustments: {
     studentLoanInterest: number;

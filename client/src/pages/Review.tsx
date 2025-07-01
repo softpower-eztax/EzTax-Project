@@ -129,7 +129,7 @@ const Review: React.FC = () => {
       <ProgressTracker currentStep={6} />
 
       <div className="flex flex-col md:flex-row gap-6">
-        <div className="flex-grow">
+        <div className="flex-grow max-w-4xl">
           <Card className="mb-6">
             <CardContent className="pt-6">
               <h2 className="text-2xl font-heading font-semibold text-primary-dark mb-6">검토 및 계산(Review & Calculate)</h2>

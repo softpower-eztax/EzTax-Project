@@ -533,44 +533,45 @@ const PersonalInfo: React.FC = () => {
                         variant="outline"
                         size="sm"
                         onClick={() => {
-                          // 모든 필드를 순차적으로 설정
-                          const fieldsToSet = {
-                            firstName: "John",
-                            lastName: "Smith", 
-                            middleInitial: "M",
-                            ssn: "123-45-6789",
-                            dateOfBirth: "1980-05-15",
-                            email: "john.smith@email.com",
-                            phone: "555-123-4567",
-                            address1: "123 Main Street",
-                            address2: "Apt 2B",
-                            city: "New York",
-                            state: "NY",
-                            zipCode: "10001",
-                            filingStatus: "single"
+                          // DOM 요소를 직접 조작하여 입력값 설정
+                          const inputs = document.querySelectorAll('input[name]');
+                          const sampleData: Record<string, string> = {
+                            'firstName': 'John',
+                            'lastName': 'Smith',
+                            'middleInitial': 'M',
+                            'ssn': '123-45-6789',
+                            'dateOfBirth': '1980-05-15',
+                            'email': 'john.smith@email.com',
+                            'phone': '555-123-4567',
+                            'address1': '123 Main Street',
+                            'address2': 'Apt 2B',
+                            'city': 'New York',
+                            'state': 'NY',
+                            'zipCode': '10001'
                           };
                           
-                          // 각 필드를 개별적으로 설정하고 트리거
-                          Object.entries(fieldsToSet).forEach(([key, value]) => {
-                            form.setValue(key as any, value);
-                            form.trigger(key as any);
+                          // 각 input 요소에 직접 값 설정
+                          inputs.forEach((input: any) => {
+                            const name = input.getAttribute('name');
+                            if (name && sampleData[name]) {
+                              input.value = sampleData[name];
+                              // 변경 이벤트 트리거
+                              input.dispatchEvent(new Event('input', { bubbles: true }));
+                              input.dispatchEvent(new Event('change', { bubbles: true }));
+                            }
                           });
                           
-                          // 체크박스 필드들
-                          form.setValue("isDisabled", false);
-                          form.setValue("isNonresidentAlien", false);
-                          form.trigger("isDisabled");
-                          form.trigger("isNonresidentAlien");
+                          // select 요소 처리 (Filing Status)
+                          const filingStatusSelect = document.querySelector('[name="filingStatus"]');
+                          if (filingStatusSelect) {
+                            // React Hook Form의 setValue 사용
+                            form.setValue('filingStatus', 'single');
+                          }
                           
-                          // 의존성 배열
-                          form.setValue("dependents", []);
-                          
-                          // 폼 상태 강제 업데이트
-                          setTimeout(() => {
-                            Object.entries(fieldsToSet).forEach(([key, value]) => {
-                              form.setValue(key as any, value, { shouldValidate: true, shouldDirty: true });
-                            });
-                          }, 50);
+                          // 체크박스 초기화
+                          form.setValue('isDisabled', false);
+                          form.setValue('isNonresidentAlien', false);
+                          form.setValue('dependents', []);
                           
                           toast({
                             title: "예시 데이터 입력됨",

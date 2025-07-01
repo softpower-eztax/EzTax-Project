@@ -1,13 +1,10 @@
 import { createRoot } from "react-dom/client";
 import App from "./App";
 import "./index.css";
+import { TaxProvider } from "./context/TaxContext";
 
-console.log("main.tsx is executing!");
-const rootElement = document.getElementById("root");
-console.log("Root element:", rootElement);
-
-if (rootElement) {
-  createRoot(rootElement).render(<App />);
-} else {
-  console.error("Root element not found!");
-}
+createRoot(document.getElementById("root")!).render(
+  <TaxProvider>
+    <App />
+  </TaxProvider>
+);

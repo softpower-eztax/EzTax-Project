@@ -434,13 +434,34 @@ export default function QBIDetails() {
                 <div className="flex items-start gap-2">
                   <InfoIcon className="h-5 w-5 text-yellow-600 mt-0.5" />
                   <div className="text-sm">
-                    <p className="font-medium text-yellow-800 mb-1">QBI 공제 한도</p>
-                    <p className="text-yellow-700">
-                      • 2024년 소득 한도: 단독 $191,950, 부부합산 $383,900<br/>
-                      • 한도 초과시 W-2 급여 및 적격자산 기준 제한 적용<br/>
-                      • <strong>전문서비스업(SSTB): 소득 한도 초과시 QBI 공제 불가</strong><br/>
-                      • SSTB: 법률, 회계, 의료, 컨설팅, 금융서비스, 운동선수, 연예인 등
-                    </p>
+                    <p className="font-medium text-yellow-800 mb-2">QBI 공제 한도 (2024년 기준)</p>
+                    <div className="text-yellow-700 space-y-3">
+                      <div>
+                        <p className="font-medium mb-1">일반 사업:</p>
+                        <p>• 단독/세대주: $191,950 초과시 W-2 급여/자산 제한 적용<br/>
+                        • 부부합산: $383,900 초과시 W-2 급여/자산 제한 적용</p>
+                      </div>
+                      
+                      <div>
+                        <p className="font-medium mb-1">전문서비스업(SSTB) 제한:</p>
+                        <div className="bg-white rounded border p-2">
+                          <div className="grid grid-cols-3 gap-2 text-xs">
+                            <div className="font-medium">신고 상태</div>
+                            <div className="font-medium text-center">공제 축소 시작</div>
+                            <div className="font-medium text-center">완전 배제</div>
+                            
+                            <div>Single / HOH</div>
+                            <div className="text-center">$191,950</div>
+                            <div className="text-center">$241,950</div>
+                            
+                            <div>MFJ (부부합산)</div>
+                            <div className="text-center">$383,900</div>
+                            <div className="text-center">$483,900</div>
+                          </div>
+                        </div>
+                        <p className="mt-1 text-xs">SSTB: 법률, 회계, 의료, 컨설팅, 금융서비스, 운동선수, 연예인 등</p>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>

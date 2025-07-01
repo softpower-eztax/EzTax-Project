@@ -295,13 +295,39 @@ export function calculateQBIDeduction(
     qualifying_widow: 383900
   };
 
+  // SSTB 완전 배제 한도 (2024년)
+  const sstbExclusionThresholds = {
+    single: 241950,
+    married_joint: 483900,
+    married_separate: 241950,
+    head_of_household: 241950,
+    qualifying_widow: 483900
+  };
+
   const threshold = thresholds[filingStatus] || 191950;
+  const exclusionThreshold = sstbExclusionThresholds[filingStatus] || 241950;
 
   // SSTB (전문서비스업) 제한 확인
-  if (isSST && adjustedGrossIncome > threshold) {
-    // SSTB는 소득 한도 초과시 QBI 공제 불가
-    console.log('SSTB 사업으로 소득 한도 초과 - QBI 공제 불가');
-    return 0;
+  if (isSST) {
+    if (adjustedGrossIncome >= exclusionThreshold) {
+      // SSTB 완전 배제 구간: QBI 공제 완전히 불가
+      console.log('SSTB 사업으로 완전 배제 구간 - QBI 공제 불가');
+      return 0;
+    } else if (adjustedGrossIncome > threshold) {
+      // SSTB 축소 구간: 단계적 축소 적용
+      const phaseOutRange = exclusionThreshold - threshold;
+      const excessIncome = adjustedGrossIncome - threshold;
+      const phaseOutRatio = excessIncome / phaseOutRange;
+      
+      console.log(`SSTB 사업 단계적 축소 적용: ${(phaseOutRatio * 100).toFixed(1)}% 축소`);
+      
+      // 기본 계산 후 단계적 축소 적용
+      const basicDeduction = qbiIncome * 0.20;
+      const taxableIncomeLimit = taxableIncome * 0.20;
+      const baseQBIDeduction = Math.min(basicDeduction, taxableIncomeLimit);
+      
+      return Math.round(baseQBIDeduction * (1 - phaseOutRatio));
+    }
   }
 
   // 기본 20% 공제

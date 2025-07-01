@@ -222,23 +222,23 @@ const TaxCredits3Page: React.FC = () => {
     
     console.log("EIC 계산 파라미터:", { agi, earnedIncome, filingStatus, qualifyingChildren });
     
-    // EIC 계산 로직 (2025년 기준)
+    // EIC 계산 로직 (2024년 기준)
     const limits = {
       0: { // 자녀 없음
-        single: { phaseInLimit: 8260, phaseOutStart: 10030, phaseOutEnd: 18591, maxCredit: 632 },
-        married: { phaseInLimit: 8260, phaseOutStart: 16000, phaseOutEnd: 25511, maxCredit: 632 }
+        single: { phaseInLimit: 8040, phaseOutStart: 9760, phaseOutEnd: 17640, maxCredit: 600 },
+        married: { phaseInLimit: 8040, phaseOutStart: 15560, phaseOutEnd: 24210, maxCredit: 600 }
       },
       1: { // 자녀 1명
-        single: { phaseInLimit: 11750, phaseOutStart: 28120, phaseOutEnd: 45529, maxCredit: 4213 },
-        married: { phaseInLimit: 11750, phaseOutStart: 34120, phaseOutEnd: 52449, maxCredit: 4213 }
+        single: { phaseInLimit: 11490, phaseOutStart: 27380, phaseOutEnd: 43492, maxCredit: 3995 },
+        married: { phaseInLimit: 11490, phaseOutStart: 33180, phaseOutEnd: 49622, maxCredit: 3995 }
       },
       2: { // 자녀 2명
-        single: { phaseInLimit: 11750, phaseOutStart: 28120, phaseOutEnd: 51567, maxCredit: 6960 },
-        married: { phaseInLimit: 11750, phaseOutStart: 34120, phaseOutEnd: 58487, maxCredit: 6960 }
+        single: { phaseInLimit: 11490, phaseOutStart: 27380, phaseOutEnd: 49399, maxCredit: 6604 },
+        married: { phaseInLimit: 11490, phaseOutStart: 33180, phaseOutEnd: 55529, maxCredit: 6604 }
       },
       3: { // 자녀 3명 이상
-        single: { phaseInLimit: 11750, phaseOutStart: 28120, phaseOutEnd: 55529, maxCredit: 7830 },
-        married: { phaseInLimit: 11750, phaseOutStart: 34120, phaseOutEnd: 62449, maxCredit: 7830 }
+        single: { phaseInLimit: 11490, phaseOutStart: 27380, phaseOutEnd: 53057, maxCredit: 7430 },
+        married: { phaseInLimit: 11490, phaseOutStart: 33180, phaseOutEnd: 59187, maxCredit: 7430 }
       }
     };
 

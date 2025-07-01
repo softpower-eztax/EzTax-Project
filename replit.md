@@ -105,7 +105,7 @@ Preferred communication style: Simple, everyday language.
 ## Changelog
 
 Recent Changes:
-- July 1, 2025: **EARNED INCOME CREDIT AUTO-CALCULATION IMPLEMENTED** - Added comprehensive automatic EIC calculation with "자동 계산" button based on 2025 IRS tables, includes phase-in/plateau/phase-out calculations, AGI thresholds, and qualifying children count (0-3+) for all filing statuses
+- July 1, 2025: **EARNED INCOME CREDIT AUTO-CALCULATION IMPLEMENTED** - Added comprehensive automatic EIC calculation with "자동 계산" button based on 2024 IRS tables, includes phase-in/plateau/phase-out calculations, AGI thresholds, and qualifying children count (0-3+) for all filing statuses
 - July 1, 2025: **EARNED INCOME CREDIT FIELD ADDED** - Implemented comprehensive Earned Income Credit field in tax-credits page with dynamic income thresholds based on filing status and qualifying children count, includes 2025 IRS limits for single/married filing jointly
 - July 1, 2025: **SOCIAL SECURITY DISCLAIMER NOTICE ADDED** - Added prominent warning message directing users to SSA.gov for official benefit calculations, clarifying that calculator provides approximate estimates only
 - July 1, 2025: **SOCIAL SECURITY INPUT/OUTPUT LOGIC FIXED** - Corrected annual salary input handling (was treating as monthly), updated default values, and added clear placeholder text for realistic benefit calculations

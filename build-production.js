@@ -13,7 +13,7 @@ execSync('npx vite build', { stdio: 'inherit' });
 console.log('2. Building backend...');
 
 const result = await build({
-  entryPoints: ['server/index-production.ts'],
+  entryPoints: ['server/index.ts'],
   bundle: true,
   platform: 'node',
   target: 'node18',

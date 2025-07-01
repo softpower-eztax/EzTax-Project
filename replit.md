@@ -105,7 +105,6 @@ Preferred communication style: Simple, everyday language.
 ## Changelog
 
 Recent Changes:
-- June 29, 2025: **VITE DEPENDENCY DEPLOYMENT ISSUE COMPLETELY RESOLVED** - Fixed critical production deployment failure by creating separate production server entry point (server/index-production.ts) that excludes Vite dependencies, implemented conditional Vite imports only in development, created optimized build process with esbuild excluding Vite/dev dependencies, added production static file serving without Vite middleware, and created comprehensive deployment optimization with build scripts - production bundle reduced from 40MB+ to 26KB server bundle
 - June 29, 2025: **DEPLOYMENT OPTIMIZATION COMPLETED** - Significantly reduced deployment time by cleaning up 608MB node_modules, removing 30+ test/demo HTML files, creating .dockerignore and .replitignore for build exclusions, and optimizing file structure for faster builds
 - June 26, 2025: **PERSONAL INFO SAMPLE DATA BUTTON FULLY OPERATIONAL** - Added Sample Data button to Personal Info page header with comprehensive example data including John & Jane Smith family details, fixed data persistence issues and useFieldArray synchronization to properly display dependent Emily Smith on screen
 - June 25, 2025: **INCOME PAGE SAVE BUTTON ADDED** - Added "진행상황저장" button above "기타 소득" section for convenient progress saving during income data entry

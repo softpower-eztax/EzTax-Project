@@ -3,7 +3,7 @@ import { useLocation } from 'wouter';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { File, FileText, Clock, Shield, ArrowRightLeft } from 'lucide-react';
+import { File, FileText, Clock, Shield } from 'lucide-react';
 import { useTaxContext } from '@/context/TaxContext';
 import { useAuth } from '@/hooks/use-auth';
 
@@ -38,10 +38,10 @@ const Home: React.FC = () => {
                 <Button 
                   size="lg" 
                   variant="secondary"
-                  className="bg-green-500 hover:bg-green-600 text-white font-bold w-full sm:w-48"
+                  className="bg-green-500 hover:bg-green-600 text-white font-bold w-full sm:w-64"
                   onClick={() => navigate('/personal-info')}
                 >
-                  세금시뮬레이터
+                  세금시뮬레이터(Tax Simulator)
                 </Button>
               </TooltipTrigger>
               <TooltipContent>
@@ -52,19 +52,10 @@ const Home: React.FC = () => {
           
           <Button 
             size="lg" 
-            className="bg-primary hover:bg-primary-dark text-white font-bold w-full sm:w-48"
+            className="bg-primary hover:bg-primary-dark text-white font-bold w-full sm:w-64"
             onClick={() => navigate('/retirement-score')}
           >
             은퇴준비상태진단
-          </Button>
-          
-          <Button 
-            size="lg" 
-            className="bg-blue-500 hover:bg-blue-600 text-white font-bold w-full sm:w-48"
-            onClick={() => navigate('/currency-converter')}
-          >
-            <ArrowRightLeft className="mr-2 h-5 w-5" />
-            환율변환기
           </Button>
         </div>
       </section>

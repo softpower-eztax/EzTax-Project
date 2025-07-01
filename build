@@ -1,5 +1,0 @@
-#!/bin/bash
-# Wrapper script for deployment build
-echo "🚀 Starting deployment build..."
-node build-deploy.js
-echo "✅ Deployment build completed"

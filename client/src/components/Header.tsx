@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import Logo from './Logo';
 import { useToast } from "@/hooks/use-toast";
-import { HelpCircle, Save, LogIn, LogOut, User, RefreshCcw, ClipboardCheck, Shield, ArrowRightLeft } from 'lucide-react';
+import { HelpCircle, Save, LogIn, LogOut, User, RefreshCcw, ClipboardCheck, Shield } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useLocation } from 'wouter';
 import { useTaxContext } from '@/context/TaxContext';
@@ -101,16 +101,6 @@ const Header: React.FC = () => {
               >
                 <ClipboardCheck className="h-4 w-4 mr-1" />
                 Filing Status 확인
-              </Button>
-              
-              <Button 
-                variant="outline" 
-                size="sm"
-                className="text-primary-dark hover:text-primary flex items-center text-sm"
-                onClick={() => navigate('/currency-converter')}
-              >
-                <ArrowRightLeft className="h-4 w-4 mr-1" />
-                환율변환기
               </Button>
               
               <Button 

@@ -30,7 +30,6 @@ import CapitalGainsCalculator from "@/pages/CapitalGainsCalculator";
 import PremiumFeatures from "@/pages/PremiumFeatures";
 import Payment from "@/pages/Payment";
 import FilingStatusChecker from "@/pages/FilingStatusChecker";
-import CurrencyConverter from "@/pages/CurrencyConverter";
 import { AuthProvider } from "@/hooks/use-auth";
 import { ProtectedRoute } from "@/lib/protected-route";
 import { TaxProvider } from "@/context/TaxContext";
@@ -59,7 +58,6 @@ function Router() {
       <ProtectedRoute path="/review" component={Review} />
       <ProtectedRoute path="/tax-saving-advice" component={TaxSavingAdvice} />
       <ProtectedRoute path="/pricing" component={PricingPage} />
-      <Route path="/currency-converter" component={CurrencyConverter} />
       <ProtectedRoute path="/admin" component={AdminPanel} />
       <Route path="/application" component={ApplicationForm} />
       <ProtectedRoute path="/test-data" component={DataTester} />

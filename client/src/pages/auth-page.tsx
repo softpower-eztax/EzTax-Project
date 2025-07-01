@@ -309,7 +309,7 @@ export default function AuthPage() {
       <div className="w-full max-w-md p-4 mt-8 md:mt-0">
         <div className="text-center md:text-left">
           <h1 className="text-3xl md:text-4xl font-bold mb-4 text-primary">
-            쉽고 빠른 세금 계산(Easy and Fast Tax Calculation)
+            쉽고 빠른 세금 계산(Easy and Fast Calculation)
           </h1>
           <p className="text-lg text-gray-600 mb-6">
             EzTax와 함께 세금 신고를 간편하게. 로그인하고 쉽게 세금을 관리하세요.

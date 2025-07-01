@@ -362,18 +362,28 @@ export default function IncomePage() {
       Number(form.watch('wages') || 0) +
       Number(form.watch('otherEarnedIncome') || 0);
       
-    // 비근로소득 계산 (이미지에 표시된 필드만 포함)
+    // QBI 사업소득 확인
+    const qbiBusinessIncome = taxData.income?.qbi?.totalQBI || 0;
+    const currentBusinessIncome = Number(form.watch('businessIncome') || 0);
+    const effectiveBusinessIncome = qbiBusinessIncome > 0 ? qbiBusinessIncome : currentBusinessIncome;
+    
+    // 비근로소득 계산 (사업소득 포함)
     const unearnedIncomeTotal =
       Number(form.watch('interestIncome') || 0) +
       Number(form.watch('dividends') || 0) +
+      effectiveBusinessIncome +
       Number(form.watch('capitalGains') || 0) +
       Number(form.watch('rentalIncome') || 0);
       
-    // 사용하지 않는 필드들은 0으로 설정 (capitalGains 제외 - 업로드 기능을 위해)
-    form.setValue('businessIncome', 0);
+    // 사용하지 않는 필드들은 0으로 설정 (businessIncome과 capitalGains 제외)
     form.setValue('retirementIncome', 0);
     form.setValue('unemploymentIncome', 0);
     form.setValue('otherIncome', 0);
+    
+    // QBI 사업소득이 있으면 businessIncome 필드 업데이트
+    if (qbiBusinessIncome > 0 && Math.abs(currentBusinessIncome - qbiBusinessIncome) > 0.01) {
+      form.setValue('businessIncome', qbiBusinessIncome);
+    }
     
     // 기타소득 계산 (사용자 직접 입력값)
     const userOtherIncome = Number(form.watch('otherIncome') || 0);
@@ -707,6 +717,11 @@ export default function IncomePage() {
                                   const newValue = parseFloat(e.target.value) || 0;
                                   console.log('사업소득 필드 수동 변경:', newValue);
                                   field.onChange(newValue);
+                                  
+                                  // 사업소득 변경시 즉시 총소득 재계산
+                                  setTimeout(() => {
+                                    calculateTotals();
+                                  }, 50);
                                 }}
                               />
                             </FormControl>

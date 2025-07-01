@@ -1,6 +1,7 @@
 import React from 'react';
 
 const Home: React.FC = () => {
+  console.log("Home component is rendering!");
   return (
     <div className="max-w-5xl mx-auto p-8">
       <div className="text-center">

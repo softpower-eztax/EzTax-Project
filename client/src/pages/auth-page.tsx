@@ -321,8 +321,8 @@ export default function AuthPage() {
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-primary"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3H14Z"></path><path d="M7 22V11"></path><path d="M3 15h4"></path><path d="M3 18h4"></path><path d="M3 11h4"></path></svg>
               </div>
               <div>
-                <h3 className="font-semibold">편리한 세금 신고(Convenient Tax Filing)</h3>
-                <p className="text-sm text-gray-600">간편한 단계별 접근 방식으로 세금 신고(Step-by-step approach to tax filing)</p>
+                <h3 className="font-semibold">편리한 세금 계산(Convenient Tax Calculation)</h3>
+                <p className="text-sm text-gray-600">간편한 단계별 접근 방식으로 세금 계산(Step-by-step approach to tax calculation)</p>
               </div>
             </div>
             <div className="flex items-start">

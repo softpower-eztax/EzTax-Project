@@ -545,7 +545,7 @@ const TaxCredits3Page: React.FC = () => {
                   <div className="mb-6 border-b border-gray-light pb-6">
                     <h4 className="font-semibold mb-3">자녀 및 부양가족 관련 세액공제</h4>
                     
-                    <div className="grid grid-cols-1 gap-4 mb-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                       <div className="space-y-4">
                         <FormField
                           control={form.control}
@@ -744,7 +744,7 @@ const TaxCredits3Page: React.FC = () => {
                               )}
                             </div>
                             
-                            <div className="grid grid-cols-1 gap-4 mb-2">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-2">
                               <FormField
                                 control={form.control}
                                 name={`careProviders.${index}.name`}
@@ -868,7 +868,7 @@ const TaxCredits3Page: React.FC = () => {
                       </TooltipProvider>
                     </div>
                     
-                    <div className="grid grid-cols-1 gap-4 mb-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                       <FormField
                         control={form.control}
                         name="aotcCredit"
@@ -984,7 +984,7 @@ const TaxCredits3Page: React.FC = () => {
                     {/* 은퇴 기여금 입력 필드들 - 체크박스 선택 시에만 표시 */}
                     {showRetirementFields && (
                       <div className="mb-4 p-4 border border-gray-100 rounded-md bg-gray-50">
-                        <div className="grid grid-cols-1 gap-4">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                           <FormField
                             control={form.control}
                             name="retirementContributions.traditionalIRA"
@@ -1036,7 +1036,7 @@ const TaxCredits3Page: React.FC = () => {
                           />
                         </div>
                         
-                        <div className="grid grid-cols-1 gap-4 mb-4">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                           <FormField
                             control={form.control}
                             name="retirementContributions.plan401k"
@@ -1088,7 +1088,7 @@ const TaxCredits3Page: React.FC = () => {
                           />
                         </div>
 
-                        <div className="grid grid-cols-1 gap-4 mb-4">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                           <FormField
                             control={form.control}
                             name="retirementContributions.plan457"
@@ -1140,7 +1140,7 @@ const TaxCredits3Page: React.FC = () => {
                           />
                         </div>
 
-                        <div className="grid grid-cols-1 gap-4 mb-4">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                           <FormField
                             control={form.control}
                             name="retirementContributions.sepIRA"
@@ -1192,7 +1192,7 @@ const TaxCredits3Page: React.FC = () => {
                           />
                         </div>
 
-                        <div className="grid grid-cols-1 gap-4 mb-4">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                           <FormField
                             control={form.control}
                             name="retirementContributions.tsp"
@@ -1244,7 +1244,7 @@ const TaxCredits3Page: React.FC = () => {
                           />
                         </div>
 
-                        <div className="grid grid-cols-1 gap-4 mb-4">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                           <FormField
                             control={form.control}
                             name="retirementContributions.totalContributions"
@@ -1517,7 +1517,7 @@ const TaxCredits3Page: React.FC = () => {
                               </Button>
                             </div>
                             
-                            <div className="grid grid-cols-1 gap-4 mb-2">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-2">
                               <FormField
                                 control={form.control}
                                 name={`otherCreditItems.${index}.type`}

@@ -144,21 +144,29 @@ const CurrencyConverter: React.FC = () => {
   const fetchExchangeRates = async () => {
     setIsLoading(true);
     try {
-      // Simulate API call delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      const response = await fetch('/api/exchange-rates');
+      const data = await response.json();
       
-      // In production, replace with actual API call
+      if (data.success) {
+        setExchangeRates(data.rates);
+        setLastUpdated(new Date(data.timestamp).toLocaleString('ko-KR'));
+        
+        toast({
+          title: "환율 정보 업데이트됨",
+          description: "최신 환율 정보를 가져왔습니다.",
+        });
+      } else {
+        throw new Error(data.error || 'Failed to fetch exchange rates');
+      }
+    } catch (error) {
+      console.error('Error fetching exchange rates:', error);
+      // Fallback to mock data if API fails
       setExchangeRates(mockExchangeRates);
       setLastUpdated(new Date().toLocaleString('ko-KR'));
       
       toast({
-        title: "환율 정보 업데이트됨",
-        description: "최신 환율 정보를 가져왔습니다.",
-      });
-    } catch (error) {
-      toast({
         title: "환율 정보 오류",
-        description: "환율 정보를 가져오는데 실패했습니다.",
+        description: "환율 정보를 가져오는데 실패했습니다. 기본 데이터를 사용합니다.",
         variant: "destructive",
       });
     } finally {

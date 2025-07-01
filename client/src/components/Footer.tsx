@@ -24,6 +24,7 @@ const Footer: React.FC = () => {
               <ul className="space-y-2 text-sm text-gray-light">
                 <li><Link href="#"><div className="hover:text-white cursor-pointer">세금 가이드</div></Link></li>
                 <li><Link href="/retirement-score"><div className="hover:text-white cursor-pointer">Social Security 계산기</div></Link></li>
+                <li><Link href="/currency-converter"><div className="hover:text-white cursor-pointer">환율 변환기</div></Link></li>
                 <li><Link href="#"><div className="hover:text-white cursor-pointer">고객 지원 센터</div></Link></li>
                 <li><Link href="#"><div className="hover:text-white cursor-pointer">블로그</div></Link></li>
               </ul>

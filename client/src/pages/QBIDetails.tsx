@@ -91,13 +91,41 @@ export default function QBIDetails() {
     const income = taxData.income || {};
     const wages = income.wages || 0;
     const businessIncome = income.businessIncome || 0;
-    const totalIncome = income.totalIncome || wages + businessIncome;
+    const otherIncome = (income.interestIncome || 0) + (income.dividends || 0) + 
+                       (income.capitalGains || 0) + (income.rentalIncome || 0) + 
+                       (income.retirementIncome || 0) + (income.otherIncome || 0);
+    
+    // totalIncome이 있으면 사용, 없으면 개별 항목 합계
+    const totalIncome = income.totalIncome || (wages + businessIncome + otherIncome);
     const adjustments = income.adjustments?.studentLoanInterest || 0;
     const agi = Math.max(0, totalIncome - adjustments);
     
-    // 표준공제 적용 (QBI 계산시 임시값 사용)
+    console.log('소득 데이터 상세:', { 
+      wages, 
+      businessIncome, 
+      otherIncome, 
+      totalIncome, 
+      adjustments, 
+      agi,
+      incomeObject: income 
+    });
+    
+    // QBI 공제 한도 계산을 위한 과세소득 (QBI 공제 전 기준)
+    // 실제로는 표준공제 또는 항목별공제 후, QBI 공제 전 소득을 사용
     const standardDeduction = filingStatus === 'married_joint' ? 29200 : 14600;
-    const taxableIncome = Math.max(0, agi - standardDeduction);
+    
+    // QBI 공제 한도는 과세소득의 20%이지만, QBI 공제 전 과세소득 기준
+    // 만약 표준공제 후 과세소득이 음수라면 QBI 공제도 0이 되어야 함
+    let taxableIncomeBeforeQBI = Math.max(0, agi - standardDeduction);
+    
+    // 하지만 QBI가 있는 경우 최소한의 과세소득 확보 가능
+    // AGI에서 QBI를 제외한 소득이 표준공제보다 적더라도 QBI 자체로 과세소득 생성 가능
+    if (taxableIncomeBeforeQBI === 0 && agi > 0) {
+      // QBI가 있으면 AGI 자체를 과세소득 계산 기준으로 사용
+      taxableIncomeBeforeQBI = agi;
+    }
+    
+    const taxableIncome = taxableIncomeBeforeQBI;
     
     console.log('QBI 계산용 소득 데이터:', { totalIncome, agi, taxableIncome, income });
 

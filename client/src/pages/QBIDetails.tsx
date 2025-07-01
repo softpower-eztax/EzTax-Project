@@ -203,18 +203,33 @@ export default function QBIDetails() {
   };
 
   const onSubmit = (data: QBIFormData) => {
+    console.log('QBI 저장 시작:', data);
+    
     // Income 데이터에 QBI 정보 저장
     const currentIncome = taxData.income || {};
+    console.log('현재 Income 데이터:', currentIncome);
+    
+    // 기존 Income 필드들을 모두 포함하여 업데이트
     const updatedIncome = {
-      ...currentIncome,
-      qbi: data,
-      businessIncome: data.totalQBI,
-      // totalIncome 재계산
+      wages: currentIncome.wages || 0,
+      otherEarnedIncome: currentIncome.otherEarnedIncome || 0,
+      interestIncome: currentIncome.interestIncome || 0,
+      dividends: currentIncome.dividends || 0,
+      businessIncome: data.totalQBI, // QBI에서 가져온 사업소득
+      capitalGains: currentIncome.capitalGains || 0,
+      rentalIncome: currentIncome.rentalIncome || 0,
+      retirementIncome: currentIncome.retirementIncome || 0,
+      unemploymentIncome: currentIncome.unemploymentIncome || 0,
+      otherIncome: currentIncome.otherIncome || 0,
+      additionalIncomeItems: currentIncome.additionalIncomeItems || [],
       totalIncome: (currentIncome.wages || 0) + data.totalQBI + (currentIncome.otherEarnedIncome || 0) + (currentIncome.interestIncome || 0) + (currentIncome.dividends || 0) + (currentIncome.capitalGains || 0) + (currentIncome.rentalIncome || 0) + (currentIncome.retirementIncome || 0) + (currentIncome.unemploymentIncome || 0) + (currentIncome.otherIncome || 0),
-      // adjustedGrossIncome 재계산
-      adjustedGrossIncome: (currentIncome.wages || 0) + data.totalQBI + (currentIncome.otherEarnedIncome || 0) + (currentIncome.interestIncome || 0) + (currentIncome.dividends || 0) + (currentIncome.capitalGains || 0) + (currentIncome.rentalIncome || 0) + (currentIncome.retirementIncome || 0) + (currentIncome.unemploymentIncome || 0) + (currentIncome.otherIncome || 0) - ((currentIncome.adjustments?.studentLoanInterest || 0) + (currentIncome.adjustments?.retirementContributions || 0) + (currentIncome.adjustments?.otherAdjustments || 0))
+      adjustments: currentIncome.adjustments || { studentLoanInterest: 0, retirementContributions: 0, otherAdjustments: 0 },
+      adjustedGrossIncome: (currentIncome.wages || 0) + data.totalQBI + (currentIncome.otherEarnedIncome || 0) + (currentIncome.interestIncome || 0) + (currentIncome.dividends || 0) + (currentIncome.capitalGains || 0) + (currentIncome.rentalIncome || 0) + (currentIncome.retirementIncome || 0) + (currentIncome.unemploymentIncome || 0) + (currentIncome.otherIncome || 0) - ((currentIncome.adjustments?.studentLoanInterest || 0) + (currentIncome.adjustments?.retirementContributions || 0) + (currentIncome.adjustments?.otherAdjustments || 0)),
+      additionalAdjustmentItems: currentIncome.additionalAdjustmentItems || [],
+      qbi: data
     };
 
+    console.log('업데이트될 Income 데이터:', updatedIncome);
     updateTaxData({ income: updatedIncome });
     
     toast({

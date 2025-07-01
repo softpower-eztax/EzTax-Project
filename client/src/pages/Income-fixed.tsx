@@ -196,32 +196,53 @@ export default function IncomePage() {
   
   // QBI 데이터에서 businessIncome 자동 업데이트
   useEffect(() => {
-    if (taxData.income?.qbi?.totalQBI) {
-      const qbiBusinessIncome = taxData.income.qbi.totalQBI;
-      console.log('QBI에서 businessIncome 자동 로드:', qbiBusinessIncome);
-      form.setValue('businessIncome', qbiBusinessIncome);
+    const qbiTotalIncome = taxData.income?.qbi?.totalQBI;
+    if (qbiTotalIncome && qbiTotalIncome > 0) {
+      console.log('QBI에서 businessIncome 자동 로드:', qbiTotalIncome);
       
-      // 총소득 재계산
-      const formValues = form.getValues();
-      const newTotalIncome = 
-        Number(formValues.wages || 0) +
-        Number(formValues.otherEarnedIncome || 0) +
-        Number(qbiBusinessIncome || 0) +
-        Number(formValues.interestIncome || 0) +
-        Number(formValues.dividends || 0) +
-        Number(formValues.capitalGains || 0) +
-        Number(formValues.rentalIncome || 0) +
-        Number(formValues.retirementIncome || 0) +
-        Number(formValues.unemploymentIncome || 0) +
-        Number(formValues.otherIncome || 0);
+      // 폼 필드 강제 업데이트
+      form.setValue('businessIncome', qbiTotalIncome, { 
+        shouldValidate: true, 
+        shouldDirty: true 
+      });
       
-      form.setValue('totalIncome', newTotalIncome);
-      form.setValue('adjustedGrossIncome', newTotalIncome - 
-        ((formValues.adjustments?.studentLoanInterest || 0) + 
-         (formValues.adjustments?.retirementContributions || 0) + 
-         (formValues.adjustments?.otherAdjustments || 0)));
+      // 총소득 재계산 및 강제 업데이트
+      setTimeout(() => {
+        const formValues = form.getValues();
+        console.log('폼 값 확인:', formValues);
+        
+        const newTotalIncome = 
+          Number(formValues.wages || 0) +
+          Number(formValues.otherEarnedIncome || 0) +
+          Number(qbiTotalIncome || 0) +
+          Number(formValues.interestIncome || 0) +
+          Number(formValues.dividends || 0) +
+          Number(formValues.capitalGains || 0) +
+          Number(formValues.rentalIncome || 0) +
+          Number(formValues.retirementIncome || 0) +
+          Number(formValues.unemploymentIncome || 0) +
+          Number(formValues.otherIncome || 0);
+        
+        console.log('새로운 총소득 계산:', newTotalIncome);
+        form.setValue('totalIncome', newTotalIncome, { 
+          shouldValidate: true, 
+          shouldDirty: true 
+        });
+        
+        const adjustments = (formValues.adjustments?.studentLoanInterest || 0) + 
+                           (formValues.adjustments?.retirementContributions || 0) + 
+                           (formValues.adjustments?.otherAdjustments || 0);
+        
+        form.setValue('adjustedGrossIncome', newTotalIncome - adjustments, { 
+          shouldValidate: true, 
+          shouldDirty: true 
+        });
+        
+        // 강제 리렌더링
+        form.trigger();
+      }, 100);
     }
-  }, [taxData.income?.qbi?.totalQBI]);
+  }, [taxData.income?.qbi, form]);
 
   // taxData가 변경될 때마다 추가 소득 항목과 조정 항목을 업데이트
   useEffect(() => {

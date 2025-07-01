@@ -103,21 +103,7 @@ const Header: React.FC = () => {
                 Filing Status 확인
               </Button>
               
-              <Button 
-                variant="outline" 
-                size="sm"
-                className="text-primary-dark hover:text-primary flex items-center text-sm"
-                onClick={() => {
-                  toast({
-                    title: "도움말 및 지원",
-                    description: "지원 팀은 월요일부터 금요일까지 오전 9시부터 오후 5시(동부 시간)까지 support@eztax.com에서 이용 가능합니다.",
-                  });
-                }}
-              >
-                <HelpCircle className="h-4 w-4 mr-1" />
-                도움말
-              </Button>
-            </>
+              </>
           )}
           
           {user ? (

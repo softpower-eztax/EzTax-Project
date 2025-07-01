@@ -233,8 +233,12 @@ export default function FilingStatusChecker() {
             </Alert>
 
             <div className="mt-6 flex gap-4">
-              <Button onClick={handleApplyResult} className="flex-1">
-                이 신고 상태 적용하기
+              <Button 
+                onClick={() => setLocation('/personal-info')}
+                className="flex-1 flex items-center gap-2"
+              >
+                <ArrowLeft className="h-4 w-4" />
+                개인정보 페이지로 돌아가기
               </Button>
               <Button variant="outline" onClick={handleStartOver} className="flex-1">
                 다시 시작하기

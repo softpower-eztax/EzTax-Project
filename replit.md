@@ -105,6 +105,7 @@ Preferred communication style: Simple, everyday language.
 ## Changelog
 
 Recent Changes:
+- July 1, 2025: **FILING STATUS CHECKER NAVIGATION IMPROVED** - Added "개인정보 페이지로 돌아가기" button to results page alongside "다시 시작하기" for better user navigation flow
 - July 1, 2025: **PERSONAL INFO SAMPLE DATA BUTTON COMPLETELY FIXED** - Implemented DOM-based approach to directly populate form fields, bypassing React Hook Form state management issues that were preventing field updates
 - June 25, 2025: **INCOME PAGE SAVE BUTTON ADDED** - Added "진행상황저장" button above "기타 소득" section for convenient progress saving during income data entry
 - June 25, 2025: **HOMEPAGE BUTTON TEXT SIZE UNIFIED** - Made all homepage buttons use font-bold class and size="lg" attribute to match "지금 시작하기" button text weight and size for consistent visual appearance

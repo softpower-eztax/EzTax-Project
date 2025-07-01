@@ -527,7 +527,57 @@ const PersonalInfo: React.FC = () => {
                   
                   {/* Basic Information */}
                   <div className="mb-6">
-                    <h3 className="text-lg font-heading font-semibold mb-4">기본 정보</h3>
+                    <div className="flex justify-between items-center mb-4">
+                      <h3 className="text-lg font-heading font-semibold">기본 정보</h3>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          const sampleData = {
+                            firstName: "John",
+                            lastName: "Smith",
+                            middleInitial: "M",
+                            ssn: "123-45-6789",
+                            dateOfBirth: "1980-05-15",
+                            email: "john.smith@email.com",
+                            phone: "555-123-4567",
+                            address1: "123 Main Street",
+                            address2: "Apt 2B",
+                            city: "New York",
+                            state: "NY",
+                            zipCode: "10001",
+                            filingStatus: "single",
+                            isDisabled: false,
+                            isNonresidentAlien: false,
+                            dependents: [],
+                            spouseInfo: {
+                              firstName: "",
+                              lastName: "",
+                              middleInitial: "",
+                              ssn: "",
+                              dateOfBirth: "",
+                              isDisabled: false,
+                              differentAddress: false,
+                              address1: "",
+                              address2: "",
+                              city: "",
+                              state: "",
+                              zipCode: ""
+                            }
+                          };
+                          
+                          form.reset(sampleData);
+                          
+                          toast({
+                            title: "예시 데이터 입력됨",
+                            description: "샘플 개인정보가 입력되었습니다."
+                          });
+                        }}
+                        className="bg-blue-50 border-blue-300 text-blue-700 hover:bg-blue-100"
+                      >
+                        예시 데이터
+                      </Button>
+                    </div>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                       <FormField
                         control={form.control}

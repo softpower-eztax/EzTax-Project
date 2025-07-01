@@ -216,9 +216,24 @@ const TaxCredits3Page: React.FC = () => {
     const agi = taxData.income?.adjustedGrossIncome || 0;
     const earnedIncome = (taxData.income?.wages || 0) + (taxData.income?.otherEarnedIncome || 0);
     const filingStatus = taxData.personalInfo?.filingStatus || 'single';
-    const qualifyingChildren = taxData.personalInfo?.dependents?.filter(d => 
-      d.relationship === 'child' && d.isQualifyingChild
-    )?.length || 0;
+    // EIC 적격자녀 수 계산 (17세 미만만 해당)
+    const qualifyingChildren = taxData.personalInfo?.dependents?.filter(dependent => {
+      if (dependent.relationship !== 'child') return false;
+      
+      // 나이 계산 (2024년 말 기준)
+      const birthDate = new Date(dependent.dateOfBirth);
+      const taxYearEnd = new Date('2024-12-31');
+      let age = taxYearEnd.getFullYear() - birthDate.getFullYear();
+      const monthDiff = taxYearEnd.getMonth() - birthDate.getMonth();
+      if (monthDiff < 0 || (monthDiff === 0 && taxYearEnd.getDate() < birthDate.getDate())) {
+        age--;
+      }
+      
+      console.log(`EIC 적격자녀 확인 - ${dependent.firstName}: ${age}세, 적격 여부: ${age < 17}`);
+      
+      // 17세 미만만 EIC 적격자녀
+      return age < 17;
+    })?.length || 0;
     
     console.log("EIC 계산 파라미터:", { agi, earnedIncome, filingStatus, qualifyingChildren });
     

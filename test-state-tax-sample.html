@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>State Tax Test - Sample Data</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .test-section { border: 1px solid #ddd; padding: 15px; margin: 10px 0; border-radius: 5px; }
+        .result { background: #f0f8ff; padding: 10px; margin: 5px 0; }
+        .success { background: #e8f5e8; color: green; }
+        .info { background: #fff3cd; color: #856404; }
+    </style>
+</head>
+<body>
+    <h1>State Tax Functionality Test</h1>
+    
+    <div class="test-section">
+        <h3>Test Scenario: California Resident</h3>
+        <div class="info">
+            <strong>Sample Taxpayer Profile:</strong><br>
+            Name: Sarah Johnson<br>
+            State: California<br>
+            Filing Status: Single<br>
+            Annual Salary: $85,000<br>
+            Other Income: $1,700 (interest + dividends)<br>
+            Federal AGI: $79,200 (after $7,500 in adjustments)<br>
+            State Withholding: $3,200
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h3>Expected State Tax Calculation</h3>
+        <div class="result">
+            <strong>California Tax Calculation:</strong><br>
+            • State AGI: $79,200 (starts with Federal AGI)<br>
+            • Standard Deduction: $5,202 (CA single filer 2024)<br>
+            • State Taxable Income: ~$74,000<br>
+            • CA Tax Rate: Progressive 1%-13.3%<br>
+            • Estimated State Tax: ~$3,400<br>
+            • State Withholding: $3,200<br>
+            • Expected Balance Due: ~$200
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h3>Application Workflow Test</h3>
+        <div class="result">
+            <strong>Steps to Test:</strong><br>
+            1. Navigate to Personal Information → Enter CA as state<br>
+            2. Income page → Enter $85,000 wages, $1,700 other income<br>
+            3. Adjustments → Enter $7,500 total adjustments<br>
+            4. Deductions → Select standard deduction<br>
+            5. Tax Credits → Default values<br>
+            6. Additional Tax → Default values<br>
+            7. State Tax → Enter $3,200 state withholding<br>
+            8. Review → Verify state tax appears with calculations
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h3>Verification Points</h3>
+        <div class="success">
+            <strong>State Tax Integration Checklist:</strong><br>
+            ✓ State Tax page appears after Additional Tax<br>
+            ✓ State selection populated from Personal Info<br>
+            ✓ Federal tax data automatically used as input<br>
+            ✓ State-specific tax brackets applied correctly<br>
+            ✓ Withholding input affects refund/owed calculation<br>
+            ✓ Results display in Review page with proper formatting<br>
+            ✓ Navigation flow: Additional Tax → State Tax → Review
+        </div>
+    </div>
+
+    <script>
+        // Simulate testing the actual application
+        console.log("State Tax Test Scenario:");
+        console.log("1. CA resident with $79,200 Federal AGI");
+        console.log("2. Expected state taxable income: ~$74,000"); 
+        console.log("3. CA progressive rates should apply");
+        console.log("4. $3,200 withholding vs calculated tax");
+        console.log("5. Should show balance due or refund");
+        
+        // The actual testing would happen in the live application
+        document.querySelector('.test-section:last-child .success').innerHTML += 
+            '<br><br><em>Test this scenario in the live application at /personal-info</em>';
+    </script>
+</body>
+</html>

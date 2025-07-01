@@ -111,8 +111,9 @@ export default function AuthPage() {
           </CardHeader>
 
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="grid w-full grid-cols-1">
+            <TabsList className="grid w-full grid-cols-2">
               <TabsTrigger value="login">로그인(Login)</TabsTrigger>
+              <TabsTrigger value="register">회원가입(Register)</TabsTrigger>
             </TabsList>
 
             {/* Login Form */}
@@ -304,7 +305,47 @@ export default function AuthPage() {
         </Card>
       </div>
 
-      
+      {/* Right Column - Hero Content */}
+      <div className="w-full max-w-md p-4 mt-8 md:mt-0">
+        <div className="text-center md:text-left">
+          <h1 className="text-3xl md:text-4xl font-bold mb-4 text-primary">
+            쉽고 빠른 세금 신고(Easy and Fast Tax Filing)
+          </h1>
+          <p className="text-lg text-gray-600 mb-6">
+            EzTax와 함께 세금 신고를 간편하게. 로그인하고 쉽게 세금을 관리하세요.
+            (Make tax filing simple with EzTax. Login and manage your taxes with ease.)
+          </p>
+          <div className="space-y-4">
+            <div className="flex items-start">
+              <div className="bg-primary/10 p-3 rounded-full mr-4">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-primary"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3H14Z"></path><path d="M7 22V11"></path><path d="M3 15h4"></path><path d="M3 18h4"></path><path d="M3 11h4"></path></svg>
+              </div>
+              <div>
+                <h3 className="font-semibold">편리한 세금 신고(Convenient Tax Filing)</h3>
+                <p className="text-sm text-gray-600">간편한 단계별 접근 방식으로 세금 신고(Step-by-step approach to tax filing)</p>
+              </div>
+            </div>
+            <div className="flex items-start">
+              <div className="bg-primary/10 p-3 rounded-full mr-4">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-primary"><path d="M18 11V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0"></path><path d="M14 10V4a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v2"></path><path d="M10 10.5V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v8"></path><path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15"></path></svg>
+              </div>
+              <div>
+                <h3 className="font-semibold">맞춤형 세금 조언(Personalized Tax Advice)</h3>
+                <p className="text-sm text-gray-600">귀하의 상황에 맞는 세금 전략(Tax strategies tailored to your situation)</p>
+              </div>
+            </div>
+            <div className="flex items-start">
+              <div className="bg-primary/10 p-3 rounded-full mr-4">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-primary"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+              </div>
+              <div>
+                <h3 className="font-semibold">안전한 데이터 보호(Secure Data Protection)</h3>
+                <p className="text-sm text-gray-600">모든 개인 정보는 안전하게 암호화(All personal information securely encrypted)</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

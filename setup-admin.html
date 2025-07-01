@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Setup - EzTax</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #1976d2;
+            text-align: center;
+        }
+        button {
+            background-color: #1976d2;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+            margin: 10px 0;
+        }
+        button:hover {
+            background-color: #1565c0;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 4px;
+            background-color: #f0f0f0;
+        }
+        .success {
+            background-color: #e8f5e8;
+            color: #2e7d32;
+        }
+        .error {
+            background-color: #ffeaea;
+            color: #d32f2f;
+        }
+        .info {
+            background-color: #e3f2fd;
+            color: #1976d2;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>EzTax 관리자 계정 설정</h1>
+        
+        <div class="info">
+            <strong>사용 방법:</strong><br>
+            1. "관리자 계정 생성" 버튼을 클릭하세요<br>
+            2. 생성 완료 후 메인 사이트로 이동하여 로그인하세요<br>
+            3. 사용자명: admin, 비밀번호: admin
+        </div>
+
+        <button onclick="setupAdmin()">관리자 계정 생성</button>
+        <button onclick="testLogin()">로그인 테스트</button>
+        <button onclick="checkUsers()">사용자 목록 확인</button>
+        <button onclick="goToMain()">메인 사이트로 이동</button>
+
+        <div id="result"></div>
+    </div>
+
+    <script>
+        async function setupAdmin() {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = '관리자 계정을 생성하는 중...';
+            
+            try {
+                const response = await fetch('/api/setup-admin', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({})
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok && data.success) {
+                    resultDiv.className = 'result success';
+                    resultDiv.innerHTML = `
+                        <strong>성공!</strong><br>
+                        ${data.message}<br>
+                        사용자명: admin<br>
+                        비밀번호: admin<br><br>
+                        이제 메인 사이트에서 로그인할 수 있습니다.
+                    `;
+                } else {
+                    resultDiv.className = 'result error';
+                    resultDiv.innerHTML = `오류: ${data.message || '관리자 계정 생성 실패'}`;
+                }
+            } catch (error) {
+                resultDiv.className = 'result error';
+                resultDiv.innerHTML = `네트워크 오류: ${error.message}`;
+            }
+        }
+
+        async function testLogin() {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = '로그인을 테스트하는 중...';
+            
+            try {
+                const response = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        username: 'admin',
+                        password: 'admin'
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    resultDiv.className = 'result success';
+                    resultDiv.innerHTML = `
+                        <strong>로그인 성공!</strong><br>
+                        사용자: ${data.username}<br>
+                        관리자 패널에 접근할 수 있습니다.
+                    `;
+                } else {
+                    resultDiv.className = 'result error';
+                    resultDiv.innerHTML = `로그인 실패: ${data.message || '인증 오류'}`;
+                }
+            } catch (error) {
+                resultDiv.className = 'result error';
+                resultDiv.innerHTML = `네트워크 오류: ${error.message}`;
+            }
+        }
+
+        async function checkUsers() {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = '사용자 목록을 확인하는 중...';
+            
+            try {
+                const response = await fetch('/api/test-login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        username: 'admin',
+                        password: 'admin'
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    resultDiv.className = 'result success';
+                    resultDiv.innerHTML = `
+                        <strong>사용자 정보:</strong><br>
+                        ${data.success ? '사용자 발견' : '사용자 없음'}<br>
+                        ${data.allUsers ? `전체 사용자: ${data.allUsers.map(u => u.username).join(', ')}` : ''}<br>
+                        ${data.userId ? `사용자 ID: ${data.userId}` : ''}<br>
+                        ${data.hasPassword ? `비밀번호 설정됨 (길이: ${data.passwordLength})` : '비밀번호 없음'}
+                    `;
+                } else {
+                    resultDiv.className = 'result error';
+                    resultDiv.innerHTML = `오류: ${data.message}`;
+                }
+            } catch (error) {
+                resultDiv.className = 'result error';
+                resultDiv.innerHTML = `네트워크 오류: ${error.message}`;
+            }
+        }
+
+        function goToMain() {
+            window.location.href = '/';
+        }
+    </script>
+</body>
+</html>

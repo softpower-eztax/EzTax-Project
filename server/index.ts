@@ -1,8 +1,8 @@
 import express, { type Request, type Response, type NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupAuth } from "./auth";
+import { setupVite, serveStatic, log } from "./vite";
 import { storage } from "./storage";
-import { log, serveStaticProduction } from "./utils";
 
 const app = express();
 app.use(express.json());
@@ -58,20 +58,10 @@ app.use((req, res, next) => {
   const server = await registerRoutes(app);
 
   // Setup development or production environment
-  if (process.env.NODE_ENV === "development") {
-    // Only import Vite in development
-    try {
-      const viteModule = await import("./vite");
-      await viteModule.setupVite(app, server);
-      log("Development server with Vite setup complete");
-    } catch (error) {
-      log(`Failed to setup Vite: ${error}`);
-      serveStaticProduction(app);
-    }
+  if (app.get("env") === "development") {
+    await setupVite(app, server);
   } else {
-    // Use production static file serving
-    serveStaticProduction(app);
-    log("Production static file serving setup complete");
+    serveStatic(app);
   }
 
   // Global error handler - must be last middleware

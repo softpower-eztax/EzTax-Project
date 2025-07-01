@@ -19,6 +19,7 @@ import StateTax from "@/pages/StateTax";
 import Review from "@/pages/Review";
 import TaxSavingAdvice from "@/pages/TaxSavingAdvice";
 import RetirementScore from "@/pages/RetirementScore";
+import RetirementScoreStepByStep from "@/pages/RetirementScoreStepByStep";
 import PricingPage from "@/pages/PricingPage";
 import ApplicationForm from "@/pages/ApplicationForm";
 import About from "@/pages/About";
@@ -54,7 +55,8 @@ function Router() {
       <ProtectedRoute path="/tax-credits" component={TaxCredits} />
       <ProtectedRoute path="/additional-tax" component={AdditionalTax} />
       <ProtectedRoute path="/state-tax" component={StateTax} />
-      <ProtectedRoute path="/retirement-score" component={RetirementScore} />
+      <ProtectedRoute path="/retirement-score" component={RetirementScoreStepByStep} />
+      <ProtectedRoute path="/retirement-score-old" component={RetirementScore} />
       <ProtectedRoute path="/review" component={Review} />
       <ProtectedRoute path="/tax-saving-advice" component={TaxSavingAdvice} />
       <ProtectedRoute path="/pricing" component={PricingPage} />

@@ -194,6 +194,35 @@ export default function IncomePage() {
   const [additionalIncomeItems, setAdditionalIncomeItems] = useState<AdditionalIncomeItem[]>([]);
   const [additionalAdjustmentItems, setAdditionalAdjustmentItems] = useState<AdditionalAdjustmentItem[]>([]);
   
+  // QBI 데이터에서 businessIncome 자동 업데이트
+  useEffect(() => {
+    if (taxData.income?.qbi?.totalQBI) {
+      const qbiBusinessIncome = taxData.income.qbi.totalQBI;
+      console.log('QBI에서 businessIncome 자동 로드:', qbiBusinessIncome);
+      form.setValue('businessIncome', qbiBusinessIncome);
+      
+      // 총소득 재계산
+      const formValues = form.getValues();
+      const newTotalIncome = 
+        Number(formValues.wages || 0) +
+        Number(formValues.otherEarnedIncome || 0) +
+        Number(qbiBusinessIncome || 0) +
+        Number(formValues.interestIncome || 0) +
+        Number(formValues.dividends || 0) +
+        Number(formValues.capitalGains || 0) +
+        Number(formValues.rentalIncome || 0) +
+        Number(formValues.retirementIncome || 0) +
+        Number(formValues.unemploymentIncome || 0) +
+        Number(formValues.otherIncome || 0);
+      
+      form.setValue('totalIncome', newTotalIncome);
+      form.setValue('adjustedGrossIncome', newTotalIncome - 
+        ((formValues.adjustments?.studentLoanInterest || 0) + 
+         (formValues.adjustments?.retirementContributions || 0) + 
+         (formValues.adjustments?.otherAdjustments || 0)));
+    }
+  }, [taxData.income?.qbi?.totalQBI]);
+
   // taxData가 변경될 때마다 추가 소득 항목과 조정 항목을 업데이트
   useEffect(() => {
     if (taxData.income?.additionalIncomeItems) {

@@ -541,7 +541,7 @@ export default function IncomePage() {
   };
 
   return (
-    <div>
+    <div className="max-w-5xl mx-auto">
       <div className="mb-8">
         <ProgressTracker currentStep={2} />
       </div>

@@ -120,7 +120,7 @@ const Review: React.FC = () => {
   };
   
   return (
-    <div className="max-w-4xl mx-auto px-4">
+    <div>
       <div className="mb-8">
         <h1 className="text-3xl font-heading font-bold text-primary-dark mb-2">2025년 세금 신고(Your 2025 Tax Return)</h1>
         <p className="text-gray-dark">정보를 검토하고 세금 신고서를 제출하세요.(Review your information and submit your tax return.)</p>

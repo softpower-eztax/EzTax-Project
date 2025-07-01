@@ -143,6 +143,37 @@ export default function IncomePage() {
     resolver: zodResolver(incomeSchema),
     defaultValues,
   });
+
+  // taxData 변경 감지하여 QBI 데이터 적용
+  useEffect(() => {
+    // taxData가 로드되고 QBI 데이터가 있을 때만 실행
+    if (taxData.id && taxData.income?.qbi?.totalQBI) {
+      const qbiTotalIncome = taxData.income.qbi.totalQBI;
+      const currentBusinessIncome = form.getValues('businessIncome');
+      
+      console.log('taxData 로드 완료 - QBI 데이터 적용:', {
+        taxDataId: taxData.id,
+        qbiTotalIncome,
+        currentBusinessIncome
+      });
+      
+      // QBI 값과 현재 값이 다를 때만 업데이트
+      if (Math.abs(currentBusinessIncome - qbiTotalIncome) > 0.01) {
+        console.log('QBI → businessIncome 자동 업데이트:', qbiTotalIncome);
+        
+        form.setValue('businessIncome', qbiTotalIncome, { 
+          shouldValidate: true, 
+          shouldDirty: true,
+          shouldTouch: true
+        });
+        
+        // 총소득 재계산
+        setTimeout(() => {
+          calculateTotals();
+        }, 50);
+      }
+    }
+  }, [taxData.id, taxData.income?.qbi?.totalQBI]); // taxData.id와 QBI 데이터 변경 감지
   
   // 총소득과 조정 총소득을 계산하는 함수
   // 심플하게 합계만 리턴하는 함수로 변경
@@ -210,7 +241,7 @@ export default function IncomePage() {
     const qbiData = taxData.income?.qbi;
     const qbiTotalIncome = qbiData?.totalQBI;
     
-    console.log('QBI 자동 로드 체크:', { qbiData, qbiTotalIncome });
+    console.log('QBI 자동 로드 체크 (useEffect):', { qbiData, qbiTotalIncome });
     
     if (qbiTotalIncome && qbiTotalIncome > 0) {
       console.log('QBI에서 businessIncome 자동 로드 시작:', qbiTotalIncome);
@@ -219,9 +250,9 @@ export default function IncomePage() {
       const currentBusinessIncome = form.getValues('businessIncome');
       console.log('현재 businessIncome 값:', currentBusinessIncome);
       
-      // QBI 값과 다르면 업데이트
-      if (currentBusinessIncome !== qbiTotalIncome) {
-        console.log('businessIncome 업데이트 필요 - QBI:', qbiTotalIncome, '현재:', currentBusinessIncome);
+      // QBI 값과 다르면 업데이트 (허용 오차 고려)
+      if (Math.abs(currentBusinessIncome - qbiTotalIncome) > 0.01) {
+        console.log('businessIncome 강제 업데이트:', { from: currentBusinessIncome, to: qbiTotalIncome });
         
         // 폼 필드 강제 업데이트
         form.setValue('businessIncome', qbiTotalIncome, { 
@@ -230,8 +261,11 @@ export default function IncomePage() {
           shouldTouch: true
         });
         
-        // 총소득 재계산
-        calculateTotals();
+        // 강제 리렌더링을 위한 setTimeout
+        setTimeout(() => {
+          form.trigger('businessIncome');
+          calculateTotals();
+        }, 50);
       }
     }
   }, [taxData.income?.qbi?.totalQBI, taxData.id]); // taxData.id 추가로 데이터 변경 감지
@@ -655,9 +689,24 @@ export default function IncomePage() {
                                 step="0.01"
                                 min="0"
                                 placeholder="사업 순소득 금액"
-                                value={field.value === 0 ? '' : field.value}
+                                value={(() => {
+                                  // QBI 데이터가 있으면 우선 사용
+                                  const qbiValue = taxData.income?.qbi?.totalQBI || 0;
+                                  const fieldValue = field.value || 0;
+                                  const displayValue = qbiValue > 0 ? qbiValue : fieldValue;
+                                  
+                                  console.log('사업소득 필드 값 표시:', {
+                                    qbiValue,
+                                    fieldValue,
+                                    displayValue
+                                  });
+                                  
+                                  return displayValue === 0 ? '' : displayValue;
+                                })()}
                                 onChange={(e) => {
-                                  field.onChange(parseFloat(e.target.value) || 0);
+                                  const newValue = parseFloat(e.target.value) || 0;
+                                  console.log('사업소득 필드 수동 변경:', newValue);
+                                  field.onChange(newValue);
                                 }}
                               />
                             </FormControl>

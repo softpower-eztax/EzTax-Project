@@ -533,39 +533,44 @@ const PersonalInfo: React.FC = () => {
                         variant="outline"
                         size="sm"
                         onClick={() => {
-                          // 개별 필드 설정
-                          form.setValue("firstName", "John");
-                          form.setValue("lastName", "Smith");
-                          form.setValue("middleInitial", "M");
-                          form.setValue("ssn", "123-45-6789");
-                          form.setValue("dateOfBirth", "1980-05-15");
-                          form.setValue("email", "john.smith@email.com");
-                          form.setValue("phone", "555-123-4567");
-                          form.setValue("address1", "123 Main Street");
-                          form.setValue("address2", "Apt 2B");
-                          form.setValue("city", "New York");
-                          form.setValue("state", "NY");
-                          form.setValue("zipCode", "10001");
-                          form.setValue("filingStatus", "single");
+                          // 모든 필드를 순차적으로 설정
+                          const fieldsToSet = {
+                            firstName: "John",
+                            lastName: "Smith", 
+                            middleInitial: "M",
+                            ssn: "123-45-6789",
+                            dateOfBirth: "1980-05-15",
+                            email: "john.smith@email.com",
+                            phone: "555-123-4567",
+                            address1: "123 Main Street",
+                            address2: "Apt 2B",
+                            city: "New York",
+                            state: "NY",
+                            zipCode: "10001",
+                            filingStatus: "single"
+                          };
+                          
+                          // 각 필드를 개별적으로 설정하고 트리거
+                          Object.entries(fieldsToSet).forEach(([key, value]) => {
+                            form.setValue(key as any, value);
+                            form.trigger(key as any);
+                          });
+                          
+                          // 체크박스 필드들
                           form.setValue("isDisabled", false);
                           form.setValue("isNonresidentAlien", false);
+                          form.trigger("isDisabled");
+                          form.trigger("isNonresidentAlien");
                           
-                          // 배우자 정보 초기화
-                          form.setValue("spouseInfo.firstName", "");
-                          form.setValue("spouseInfo.lastName", "");
-                          form.setValue("spouseInfo.middleInitial", "");
-                          form.setValue("spouseInfo.ssn", "");
-                          form.setValue("spouseInfo.dateOfBirth", "");
-                          form.setValue("spouseInfo.isDisabled", false);
-                          form.setValue("spouseInfo.differentAddress", false);
-                          form.setValue("spouseInfo.address1", "");
-                          form.setValue("spouseInfo.address2", "");
-                          form.setValue("spouseInfo.city", "");
-                          form.setValue("spouseInfo.state", "");
-                          form.setValue("spouseInfo.zipCode", "");
-                          
-                          // dependents 배열 초기화
+                          // 의존성 배열
                           form.setValue("dependents", []);
+                          
+                          // 폼 상태 강제 업데이트
+                          setTimeout(() => {
+                            Object.entries(fieldsToSet).forEach(([key, value]) => {
+                              form.setValue(key as any, value, { shouldValidate: true, shouldDirty: true });
+                            });
+                          }, 50);
                           
                           toast({
                             title: "예시 데이터 입력됨",

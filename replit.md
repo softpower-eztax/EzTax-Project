@@ -105,6 +105,8 @@ Preferred communication style: Simple, everyday language.
 ## Changelog
 
 Recent Changes:
+- July 1, 2025: **TAX YEAR STANDARDIZED TO 2024** - Updated all tax calculations to use 2024 tax year instead of 2025, including Child Tax Credit eligibility (17세 미만), Credit for Other Dependents (17세 이상), and EIC calculations with proper age verification logic
+- July 1, 2025: **CHILD TAX CREDIT ELIGIBILITY LOGIC CORRECTED** - Fixed Child Tax Credit calculation to properly identify eligible children under 17 years old (Seojin Jee, born 2008, 16 years old qualifies for Child Tax Credit, not Credit for Other Dependents) with accurate 2024 year-end age calculation
 - July 1, 2025: **EARNED INCOME CREDIT AUTO-CALCULATION IMPLEMENTED** - Added comprehensive automatic EIC calculation with "자동 계산" button based on 2024 IRS tables, includes phase-in/plateau/phase-out calculations, AGI thresholds, and qualifying children count (0-3+) for all filing statuses
 - July 1, 2025: **EARNED INCOME CREDIT FIELD ADDED** - Implemented comprehensive Earned Income Credit field in tax-credits page with dynamic income thresholds based on filing status and qualifying children count, includes 2025 IRS limits for single/married filing jointly
 - July 1, 2025: **SOCIAL SECURITY DISCLAIMER NOTICE ADDED** - Added prominent warning message directing users to SSA.gov for official benefit calculations, clarifying that calculator provides approximate estimates only

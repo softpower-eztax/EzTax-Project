@@ -149,28 +149,57 @@ const CHILD_DEPENDENT_CARE_CREDIT = {
 
 // Check if a dependent is eligible for the Child Tax Credit
 function isEligibleForChildTaxCredit(dependent: Dependent): boolean {
-  // Must be under 17 at the end of the tax year
+  // Must be under 17 at the end of the tax year (2024년 기준)
   const birthDate = new Date(dependent.dateOfBirth);
-  const taxYearEnd = new Date('2025-12-31'); // Use the appropriate tax year
-  const age = taxYearEnd.getFullYear() - birthDate.getFullYear();
+  const taxYearEnd = new Date('2024-12-31'); // 2024년 기준
   
-  // Basic age check
-  if (age >= 17) return false;
+  // 더 정확한 나이 계산
+  let age = taxYearEnd.getFullYear() - birthDate.getFullYear();
+  const monthDiff = taxYearEnd.getMonth() - birthDate.getMonth();
+  if (monthDiff < 0 || (monthDiff === 0 && taxYearEnd.getDate() < birthDate.getDate())) {
+    age--;
+  }
   
-  // For now, assume all dependents under 17 are eligible
-  // In the future, we can add more criteria when isQualifyingChild is properly implemented in all dependents
-  return dependent.isQualifyingChild !== undefined ? dependent.isQualifyingChild : true;
+  console.log(`Child Tax Credit 자격 확인 - ${dependent.firstName}: 생년월일 ${dependent.dateOfBirth}, 2024년 말 나이: ${age}세`);
+  
+  // Basic age check - 17세 미만
+  if (age >= 17) {
+    console.log(`${dependent.firstName}: 17세 이상이므로 Child Tax Credit 부적격`);
+    return false;
+  }
+  
+  console.log(`${dependent.firstName}: ${age}세로 Child Tax Credit 적격`);
+  return true;
 }
 
 // Check if a dependent is eligible for the Credit for Other Dependents
 function isEligibleForCreditForOtherDependents(dependent: Dependent): boolean {
-  // Must NOT be eligible for Child Tax Credit
-  if (isEligibleForChildTaxCredit(dependent)) return false;
+  // Must NOT be eligible for Child Tax Credit (17세 이상 또는 다른 사유로 부적격)
+  if (isEligibleForChildTaxCredit(dependent)) {
+    console.log(`${dependent.firstName}: Child Tax Credit 대상이므로 Credit for Other Dependents 부적격`);
+    return false;
+  }
   
-  // Must be a qualifying dependent
-  // For now, we'll assume all dependents who aren't eligible for Child Tax Credit are eligible for COD
-  // This can be expanded with additional criteria as needed
-  return true;
+  // 나이 확인 (2024년 기준)
+  const birthDate = new Date(dependent.dateOfBirth);
+  const taxYearEnd = new Date('2024-12-31');
+  
+  let age = taxYearEnd.getFullYear() - birthDate.getFullYear();
+  const monthDiff = taxYearEnd.getMonth() - birthDate.getMonth();
+  if (monthDiff < 0 || (monthDiff === 0 && taxYearEnd.getDate() < birthDate.getDate())) {
+    age--;
+  }
+  
+  console.log(`Credit for Other Dependents 자격 확인 - ${dependent.firstName}: 생년월일 ${dependent.dateOfBirth}, 2024년 말 나이: ${age}세`);
+  
+  // 17세 이상의 부양가족이면 기타 부양가족 공제 대상
+  if (age >= 17) {
+    console.log(`${dependent.firstName}: ${age}세로 Credit for Other Dependents 적격`);
+    return true;
+  }
+  
+  console.log(`${dependent.firstName}: ${age}세로 Credit for Other Dependents 부적격`);
+  return false;
 }
 
 // Calculate the Credit for Other Dependents based on dependents and income

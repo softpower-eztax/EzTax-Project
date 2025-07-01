@@ -373,15 +373,30 @@ const TaxCredits3Page: React.FC = () => {
       return;
     }
     
-    // 적격 자녀가 아닌 부양가족 필터링
-    const otherDependents = dependents.filter(dependent => 
-      !dependent.isQualifyingChild && !dependent.isNonresidentAlien
-    );
+    // 기타 부양가족 공제 대상 필터링 (나이 기준으로 정확히 판단)
+    const otherDependents = dependents.filter(dependent => {
+      // calculateCreditForOtherDependents 함수 내부의 isEligibleForCreditForOtherDependents 로직 사용
+      // 17세 이상이고 Child Tax Credit 대상이 아닌 부양가족
+      const birthDate = new Date(dependent.dateOfBirth);
+      const taxYearEnd = new Date('2024-12-31');
+      let age = taxYearEnd.getFullYear() - birthDate.getFullYear();
+      const monthDiff = taxYearEnd.getMonth() - birthDate.getMonth();
+      if (monthDiff < 0 || (monthDiff === 0 && taxYearEnd.getDate() < birthDate.getDate())) {
+        age--;
+      }
+      
+      console.log(`기타 부양가족 공제 대상 확인 - ${dependent.firstName}: ${age}세`);
+      
+      // 17세 이상이면 기타 부양가족 공제 대상
+      return age >= 17 && !dependent.isNonresidentAlien;
+    });
+    
+    console.log(`기타 부양가족 공제 대상자 수: ${otherDependents.length}`);
     
     if (otherDependents.length === 0) {
       toast({
         title: "계산할 수 없습니다",
-        description: "적격 자녀가 아닌 부양가족이 없습니다.",
+        description: "17세 이상의 부양가족이 없습니다. (기타 부양가족 공제는 17세 이상 부양가족에게만 적용됩니다)",
         variant: "destructive"
       });
       return;

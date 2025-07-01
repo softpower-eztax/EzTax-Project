@@ -8,7 +8,6 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import ProgressTracker from '@/components/ProgressTracker';
-import TaxSummary from '@/components/TaxSummary';
 import StepNavigation from '@/components/StepNavigation';
 import { useTaxContext } from '@/context/TaxContext';
 import { Info } from 'lucide-react';
@@ -141,8 +140,8 @@ const TaxCreditsPage: React.FC = () => {
 
       <ProgressTracker currentStep={4} />
 
-      <div className="flex flex-col md:flex-row gap-6">
-        <div className="flex-grow">
+      <div className="flex flex-col">
+        <div className="w-full">
           <Card className="mb-6">
             <CardContent className="pt-6">
               <h2 className="text-2xl font-heading font-semibold text-primary-dark mb-6">세금공제 (Tax Credits)</h2>
@@ -553,8 +552,6 @@ const TaxCreditsPage: React.FC = () => {
             </CardContent>
           </Card>
         </div>
-        
-        <TaxSummary />
       </div>
     </div>
   );

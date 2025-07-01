@@ -76,7 +76,7 @@ function App() {
           <TooltipProvider>
             <div className="flex flex-col min-h-screen">
               <Header />
-              <main className="container mx-auto px-4 py-8 flex-grow">
+              <main className="py-8 flex-grow">
                 <Router />
               </main>
               <Footer />

@@ -69,6 +69,8 @@ interface TaxCreditsFormData extends TaxCredits {
   careProviders: CareProvider[]; // 돌봄 제공자 정보
 }
 
+
+
 // 기본값 설정
 const defaultRetirementContributions: RetirementContributions = {
   traditionalIRA: 0,
@@ -209,6 +211,89 @@ const TaxCredits3Page: React.FC = () => {
     setTimeout(() => calculateRetirementCredit(), 100);
   };
   
+  // EIC 자동 계산 함수 (컴포넌트용)
+  const calculateEarnedIncomeCredit = () => {
+    const agi = taxData.income?.adjustedGrossIncome || 0;
+    const earnedIncome = (taxData.income?.wages || 0) + (taxData.income?.otherEarnedIncome || 0);
+    const filingStatus = taxData.personalInfo?.filingStatus || 'single';
+    const qualifyingChildren = taxData.personalInfo?.dependents?.filter(d => 
+      d.relationship === 'child' && d.isQualifyingChild
+    )?.length || 0;
+    
+    console.log("EIC 계산 파라미터:", { agi, earnedIncome, filingStatus, qualifyingChildren });
+    
+    // EIC 계산 로직 (2025년 기준)
+    const limits = {
+      0: { // 자녀 없음
+        single: { phaseInLimit: 8260, phaseOutStart: 10030, phaseOutEnd: 18591, maxCredit: 632 },
+        married: { phaseInLimit: 8260, phaseOutStart: 16000, phaseOutEnd: 25511, maxCredit: 632 }
+      },
+      1: { // 자녀 1명
+        single: { phaseInLimit: 11750, phaseOutStart: 28120, phaseOutEnd: 45529, maxCredit: 4213 },
+        married: { phaseInLimit: 11750, phaseOutStart: 34120, phaseOutEnd: 52449, maxCredit: 4213 }
+      },
+      2: { // 자녀 2명
+        single: { phaseInLimit: 11750, phaseOutStart: 28120, phaseOutEnd: 51567, maxCredit: 6960 },
+        married: { phaseInLimit: 11750, phaseOutStart: 34120, phaseOutEnd: 58487, maxCredit: 6960 }
+      },
+      3: { // 자녀 3명 이상
+        single: { phaseInLimit: 11750, phaseOutStart: 28120, phaseOutEnd: 55529, maxCredit: 7830 },
+        married: { phaseInLimit: 11750, phaseOutStart: 34120, phaseOutEnd: 62449, maxCredit: 7830 }
+      }
+    };
+
+    // 자녀 수 정규화 (3명 이상은 3으로 처리)
+    const childrenCount = Math.min(qualifyingChildren, 3);
+    
+    // 파일링 상태 정규화
+    const isMarried = filingStatus === 'married_joint';
+    const statusKey = isMarried ? 'married' : 'single';
+    
+    // 해당 자녀 수와 파일링 상태에 맞는 한도 가져오기
+    const limit = limits[childrenCount as keyof typeof limits][statusKey as keyof typeof limits[0]];
+    
+    // 소득이 한도를 초과하면 공제 불가
+    if (agi > limit.phaseOutEnd) {
+      console.log("소득이 한도 초과, EIC = 0");
+      return 0;
+    }
+    
+    // 근로소득이 AGI보다 낮으면 근로소득 기준으로 계산
+    const incomeForCalculation = Math.min(earnedIncome, agi);
+    
+    let credit = 0;
+    
+    // Phase-in 구간 (소득 증가에 따라 공제액 증가)
+    if (incomeForCalculation <= limit.phaseInLimit) {
+      if (childrenCount === 0) {
+        credit = incomeForCalculation * 0.0765; // 7.65% rate for no children
+      } else if (childrenCount === 1) {
+        credit = incomeForCalculation * 0.34; // 34% rate for 1 child
+      } else if (childrenCount === 2) {
+        credit = incomeForCalculation * 0.40; // 40% rate for 2 children
+      } else {
+        credit = incomeForCalculation * 0.45; // 45% rate for 3+ children
+      }
+    }
+    // Plateau 구간 (최대 공제액)
+    else if (incomeForCalculation <= limit.phaseOutStart) {
+      credit = limit.maxCredit;
+    }
+    // Phase-out 구간 (소득 증가에 따라 공제액 감소)
+    else {
+      const phaseOutIncome = agi - limit.phaseOutStart;
+      const phaseOutRate = childrenCount === 0 ? 0.0765 : 0.2106; // 7.65% for no children, 21.06% for children
+      
+      credit = limit.maxCredit - (phaseOutIncome * phaseOutRate);
+    }
+    
+    // 최소값 0, 최대값은 해당 한도의 최대 공제액
+    const calculatedEIC = Math.max(0, Math.min(Math.round(credit), limit.maxCredit));
+    
+    console.log("계산된 EIC:", calculatedEIC);
+    return calculatedEIC;
+  };
+
   // 은퇴저축공제 자동 계산
   const calculateRetirementCredit = () => {
     const values = form.getValues();
@@ -1305,7 +1390,22 @@ const TaxCredits3Page: React.FC = () => {
                         name="earnedIncomeCredit"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>근로소득공제액 (Earned Income Credit Amount)</FormLabel>
+                            <div className="flex items-center justify-between">
+                              <FormLabel>근로소득공제액 (Earned Income Credit Amount)</FormLabel>
+                              <Button
+                                type="button"
+                                variant="outline"
+                                size="sm"
+                                onClick={() => {
+                                  const calculatedEIC = calculateEarnedIncomeCredit();
+                                  field.onChange(calculatedEIC);
+                                  setPendingChanges(true);
+                                }}
+                                className="text-blue-600 hover:text-blue-700 border-blue-300 hover:border-blue-400"
+                              >
+                                자동 계산
+                              </Button>
+                            </div>
                             <FormControl>
                               <div className="relative">
                                 <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-dark">$</span>
@@ -1322,7 +1422,7 @@ const TaxCredits3Page: React.FC = () => {
                               </div>
                             </FormControl>
                             <FormDescription className="text-sm text-gray-600">
-                              {taxData.personalInfo?.filingStatus === 'marriedFilingJointly' 
+                              {taxData.personalInfo?.filingStatus === 'married_joint' 
                                 ? `합산신고 기준 소득한도: ${
                                     (taxData.personalInfo.dependents?.filter(d => d.relationship === 'child')?.length || 0) === 0 ? '$25,511' :
                                     (taxData.personalInfo.dependents?.filter(d => d.relationship === 'child')?.length || 0) === 1 ? '$52,449' :
@@ -1336,6 +1436,8 @@ const TaxCredits3Page: React.FC = () => {
                                     '$55,529'
                                   }`
                               }
+                              <br />
+                              <span className="text-xs text-blue-600">현재 AGI: ${(taxData.income?.adjustedGrossIncome || 0).toLocaleString()}</span>
                             </FormDescription>
                             <FormMessage />
                           </FormItem>

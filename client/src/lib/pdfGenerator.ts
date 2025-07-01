@@ -52,193 +52,248 @@ const formatFilingStatus = (status: string | undefined): string => {
 
 // Function to add Form 1040 header
 const add1040Header = (doc: jsPDF, taxYear: number): void => {
-  // Form 1040 Title
-  doc.setFontSize(16);
-  doc.setFont('helvetica', 'bold');
-  doc.setTextColor(0, 0, 0);
-  doc.text('Form 1040', 15, 20);
-  doc.setFontSize(12);
-  doc.text(`U.S. Individual Income Tax Return`, 15, 27);
-  
-  // Tax Year
-  doc.setFontSize(14);
-  doc.text(`For the year ${taxYear}, or tax year beginning _____, ${taxYear}, ending _____, ${taxYear + 1}`, 15, 35);
-  
-  // OMB and Form info (right side)
-  doc.setFontSize(10);
-  doc.text('OMB No. 1545-0074', 150, 20);
-  doc.text('Department of the Treasury', 150, 25);
-  doc.text('Internal Revenue Service', 150, 30);
-  
   // Form border
   doc.setDrawColor(0, 0, 0);
+  doc.setLineWidth(1);
   doc.rect(10, 10, 190, 277);
+  
+  // Form 1040 Title and header layout
+  doc.setFontSize(14);
+  doc.setFont('helvetica', 'bold');
+  doc.setTextColor(0, 0, 0);
+  doc.text('Form', 15, 20);
+  doc.setFontSize(20);
+  doc.text('1040', 40, 20);
+  
+  doc.setFontSize(12);
+  doc.setFont('helvetica', 'normal');
+  doc.text('U.S. Individual Income Tax Return', 80, 20);
+  doc.setFontSize(10);
+  doc.text(`${taxYear}`, 180, 20);
+  
+  // Department info (right side)
+  doc.setFontSize(8);
+  doc.text('Department of the Treasury—Internal Revenue Service', 110, 27);
+  
+  // OMB number (top right)
+  doc.setFontSize(8);
+  doc.text('OMB No. 1545-0074', 160, 15);
+  
+  // IRS Use Only box (top right corner)
+  doc.rect(140, 10, 60, 20);
+  doc.setFontSize(7);
+  doc.text('IRS Use Only—Do not write or staple in this space.', 142, 18);
+  
+  // Tax Year line
+  doc.setFontSize(9);
+  doc.text(`For the year Jan. 1–Dec. 31, ${taxYear}, or other tax year beginning`, 15, 35);
+  doc.text(`, ${taxYear}, ending`, 120, 35);
+  doc.text(`, 20__`, 160, 35);
+  doc.text('See separate instructions.', 15, 40);
   
   // Section divider
   doc.setDrawColor(0, 0, 0);
-  doc.line(10, 40, 200, 40);
+  doc.line(10, 45, 200, 45);
 };
 
 // Generate Form 1040 filing information section
 const add1040FilingInfo = (doc: jsPDF, personalInfo: PersonalInformation | undefined, yPosition: number): number => {
   if (!personalInfo) return yPosition;
   
-  // Filing Status Section
-  doc.setFontSize(11);
+  // Filing Status Section with box
+  doc.setFontSize(10);
   doc.setFont('helvetica', 'bold');
   doc.text('Filing Status', 15, yPosition);
+  yPosition += 3;
+  
+  // Filing status box
+  doc.setDrawColor(0, 0, 0);
+  doc.rect(15, yPosition, 60, 30);
   yPosition += 8;
   
-  doc.setFontSize(10);
+  doc.setFontSize(8);
   doc.setFont('helvetica', 'normal');
+  doc.text('Check only one box.', 17, yPosition);
+  yPosition += 5;
   
-  // Filing status checkboxes
+  // Filing status checkboxes in compact layout
   const filingStatuses = [
     { key: 'single', label: 'Single' },
-    { key: 'married_joint', label: 'Married filing jointly' },
-    { key: 'married_separate', label: 'Married filing separately' },
-    { key: 'head_of_household', label: 'Head of household' },
-    { key: 'qualifying_widow', label: 'Qualifying widow(er)' }
+    { key: 'married_joint', label: 'Married filing jointly (even if only one had income)' },
+    { key: 'married_separate', label: 'Married filing separately (MFS)' },
+    { key: 'head_of_household', label: 'Head of household (HOH)' },
+    { key: 'qualifying_widow', label: 'Qualifying surviving spouse (QSS)' }
   ];
   
   filingStatuses.forEach((status, index) => {
     const isChecked = personalInfo.filingStatus === status.key;
     // Checkbox
-    doc.rect(15, yPosition - 3, 3, 3);
+    doc.rect(17, yPosition - 2, 2, 2);
     if (isChecked) {
-      doc.text('X', 16, yPosition - 1);
+      doc.setFont('helvetica', 'bold');
+      doc.text('X', 17.5, yPosition);
+      doc.setFont('helvetica', 'normal');
     }
-    doc.text(status.label, 20, yPosition);
-    yPosition += 5;
+    
+    // Adjust label length for form constraints
+    let label = status.label;
+    if (status.key === 'married_joint') label = 'Married filing jointly';
+    if (status.key === 'married_separate') label = 'Married filing separately';
+    if (status.key === 'head_of_household') label = 'Head of household';
+    if (status.key === 'qualifying_widow') label = 'Qualifying surviving spouse';
+    
+    doc.text(label, 21, yPosition);
+    yPosition += 4;
   });
   
-  yPosition += 5;
+  yPosition += 10;
   
-  // Name and address section
+  // Name and SSN section with proper Form 1040 layout
   doc.setFont('helvetica', 'bold');
-  doc.text('Your first name and middle initial', 15, yPosition);
-  doc.text('Last name', 100, yPosition);
-  doc.text('Your social security number', 150, yPosition);
-  yPosition += 5;
+  doc.setFontSize(7);
+  doc.text('Your first name and middle initial', 80, yPosition);
+  doc.text('Last name', 130, yPosition);
+  doc.text('Your social security number', 160, yPosition);
+  yPosition += 4;
+  
+  // Input lines for names and SSN
+  doc.setDrawColor(0, 0, 0);
+  doc.line(80, yPosition + 2, 125, yPosition + 2); // First name line
+  doc.line(130, yPosition + 2, 155, yPosition + 2); // Last name line
+  doc.line(160, yPosition + 2, 195, yPosition + 2); // SSN line
   
   doc.setFont('helvetica', 'normal');
+  doc.setFontSize(9);
   const firstName = `${personalInfo.firstName || ''} ${personalInfo.middleInitial || ''}`.trim();
-  doc.text(firstName, 15, yPosition);
-  doc.text(personalInfo.lastName || '', 100, yPosition);
-  doc.text(personalInfo.ssn || '', 150, yPosition);
-  yPosition += 8;
+  doc.text(firstName, 82, yPosition);
+  doc.text(personalInfo.lastName || '', 132, yPosition);
+  doc.text(personalInfo.ssn || '', 162, yPosition);
+  yPosition += 10;
   
   // Spouse information (if married)
   if (personalInfo.filingStatus === 'married_joint' && personalInfo.spouseInfo) {
     doc.setFont('helvetica', 'bold');
-    doc.text("If joint return, spouse's first name and middle initial", 15, yPosition);
-    doc.text('Last name', 100, yPosition);
-    doc.text("Spouse's social security number", 150, yPosition);
-    yPosition += 5;
+    doc.setFontSize(7);
+    doc.text("If joint return, spouse's first name and middle initial", 80, yPosition);
+    doc.text('Last name', 130, yPosition);
+    doc.text("Spouse's social security number", 160, yPosition);
+    yPosition += 4;
+    
+    // Spouse input lines
+    doc.line(80, yPosition + 2, 125, yPosition + 2);
+    doc.line(130, yPosition + 2, 155, yPosition + 2);
+    doc.line(160, yPosition + 2, 195, yPosition + 2);
     
     doc.setFont('helvetica', 'normal');
+    doc.setFontSize(9);
     const spouseFirstName = `${personalInfo.spouseInfo.firstName || ''} ${personalInfo.spouseInfo.middleInitial || ''}`.trim();
-    doc.text(spouseFirstName, 15, yPosition);
-    doc.text(personalInfo.spouseInfo.lastName || '', 100, yPosition);
-    doc.text(personalInfo.spouseInfo.ssn || '', 150, yPosition);
-    yPosition += 8;
+    doc.text(spouseFirstName, 82, yPosition);
+    doc.text(personalInfo.spouseInfo.lastName || '', 132, yPosition);
+    doc.text(personalInfo.spouseInfo.ssn || '', 162, yPosition);
+    yPosition += 10;
   }
   
-  // Address
+  // Address section with Form 1040 layout
   doc.setFont('helvetica', 'bold');
-  doc.text('Home address (number and street)', 15, yPosition);
-  yPosition += 5;
+  doc.setFontSize(7);
+  doc.text('Home address (number and street). If you have a P.O. box, see instructions.', 80, yPosition);
+  doc.text('Apt. no.', 175, yPosition);
+  yPosition += 4;
+  
+  doc.line(80, yPosition + 2, 170, yPosition + 2); // Address line
+  doc.line(175, yPosition + 2, 195, yPosition + 2); // Apt line
+  
   doc.setFont('helvetica', 'normal');
+  doc.setFontSize(9);
   const address = `${personalInfo.address1 || ''} ${personalInfo.address2 || ''}`.trim();
-  doc.text(address, 15, yPosition);
-  yPosition += 8;
+  doc.text(address, 82, yPosition);
+  yPosition += 10;
   
   doc.setFont('helvetica', 'bold');
-  doc.text('City, town, or post office', 15, yPosition);
-  doc.text('State', 100, yPosition);
-  doc.text('ZIP code', 150, yPosition);
-  yPosition += 5;
+  doc.setFontSize(7);
+  doc.text('City, town, or post office. If you have a foreign address, also complete spaces below.', 80, yPosition);
+  doc.text('State', 150, yPosition);
+  doc.text('ZIP code', 170, yPosition);
+  yPosition += 4;
+  
+  doc.line(80, yPosition + 2, 145, yPosition + 2); // City line
+  doc.line(150, yPosition + 2, 165, yPosition + 2); // State line
+  doc.line(170, yPosition + 2, 195, yPosition + 2); // ZIP line
+  
   doc.setFont('helvetica', 'normal');
-  doc.text(personalInfo.city || '', 15, yPosition);
-  doc.text(personalInfo.state || '', 100, yPosition);
-  doc.text(personalInfo.zipCode || '', 150, yPosition);
-  yPosition += 10;
+  doc.setFontSize(9);
+  doc.text(personalInfo.city || '', 82, yPosition);
+  doc.text(personalInfo.state || '', 152, yPosition);
+  doc.text(personalInfo.zipCode || '', 172, yPosition);
+  yPosition += 15;
   
   return yPosition;
 };
 
-// Generate Form 1040 Income section (Lines 1-9)
+// Generate Form 1040 Income section (Lines 1-11)
 const add1040IncomeSection = (doc: jsPDF, income: any, yPosition: number): number => {
-  doc.setFontSize(11);
+  doc.setFontSize(10);
   doc.setFont('helvetica', 'bold');
   doc.text('Income', 15, yPosition);
   yPosition += 8;
   
-  doc.setFontSize(10);
+  doc.setFontSize(8);
   doc.setFont('helvetica', 'normal');
   
-  // Income lines with form structure
-  const addIncomeLine = (lineNum: string, description: string, amount: number) => {
+  // Income lines with official Form 1040 structure
+  const addIncomeLine = (lineNum: string, description: string, amount: number, hasSubLines = false) => {
     doc.text(`${lineNum}`, 15, yPosition);
     doc.text(description, 25, yPosition);
-    doc.text(formatCurrency(amount), 160, yPosition);
-    yPosition += 6;
+    // Right-align amount
+    const amountText = formatCurrency(amount);
+    const textWidth = doc.getTextWidth(amountText);
+    doc.text(amountText, 185 - textWidth, yPosition);
+    yPosition += 5;
   };
   
   if (income) {
-    addIncomeLine('1a', 'Wages, salaries, tips, etc.', income.wages || 0);
-    addIncomeLine('2a', 'Tax-exempt interest', 0);
+    // Official Form 1040 2024 line structure
+    addIncomeLine('1z', 'Total amount from Form(s) W-2, box 1 (wages, salaries, tips, etc.)', income.wages || 0);
+    
+    // Create section break
+    yPosition += 3;
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(7);
+    doc.text('Attach Sch. B if required.', 15, yPosition);
+    yPosition += 4;
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(8);
+    
     addIncomeLine('2b', 'Taxable interest', income.interestIncome || 0);
-    addIncomeLine('3a', 'Qualified dividends', income.dividends || 0);
-    addIncomeLine('4a', 'IRA distributions', 0);
-    addIncomeLine('4b', 'Taxable amount', income.retirementIncome || 0);
-    addIncomeLine('5a', 'Pensions and annuities', 0);
-    addIncomeLine('6', 'Social security benefits', 0);
-    addIncomeLine('7', 'Capital gain or (loss)', income.capitalGains || 0);
-    addIncomeLine('8', 'Other income from Schedule 1, line 10', income.otherIncome || 0);
+    addIncomeLine('3b', 'Ordinary dividends', income.dividends || 0);
+    addIncomeLine('4b', 'IRA distributions - Taxable amount', income.retirementIncome || 0);
+    addIncomeLine('5b', 'Pensions and annuities - Taxable amount', 0);
+    addIncomeLine('6b', 'Social security benefits - Taxable amount', 0);
+    addIncomeLine('7', 'Capital gain or (loss). Attach Schedule D if required', income.capitalGains || 0);
+    addIncomeLine('8', 'Additional income from Schedule 1, line 10', income.businessIncome || 0);
+    
+    yPosition += 3;
+    // Total income line (bolded)
+    doc.setFont('helvetica', 'bold');
+    const totalIncome = (income.wages || 0) + (income.interestIncome || 0) + (income.dividends || 0) + 
+                       (income.retirementIncome || 0) + (income.capitalGains || 0) + (income.businessIncome || 0) + (income.otherIncome || 0);
+    addIncomeLine('9', 'Add lines 1z, 2b, 3b, 4b, 5b, 6b, 7, and 8. This is your total income', totalIncome);
+    
+    yPosition += 5;
+    doc.setFont('helvetica', 'bold');
+    doc.text('Adjusted Gross Income', 15, yPosition);
+    yPosition += 5;
+    doc.setFont('helvetica', 'normal');
+    
+    addIncomeLine('10', 'Adjustments to income from Schedule 1, line 26', 0);
+    doc.setFont('helvetica', 'bold');
+    addIncomeLine('11', 'Subtract line 10 from line 9. This is your adjusted gross income', income.adjustedGrossIncome || totalIncome);
   }
-  
-  yPosition += 5;
-  doc.setFont('helvetica', 'bold');
-  const totalIncome = income ? (income.totalIncome || 0) : 0;
-  doc.text('9', 15, yPosition);
-  doc.text('Add lines 1a, 2b, 3a, 4b, 5b, 6, 7, and 8. This is your total income', 25, yPosition);
-  doc.text(formatCurrency(totalIncome), 160, yPosition);
-  yPosition += 10;
   
   return yPosition;
 };
 
-// Generate Form 1040 Adjusted Gross Income section (Lines 10-11)
-const add1040AGISection = (doc: jsPDF, income: any, yPosition: number): number => {
-  doc.setFontSize(11);
-  doc.setFont('helvetica', 'bold');
-  doc.text('Adjusted Gross Income', 15, yPosition);
-  yPosition += 8;
-  
-  doc.setFontSize(10);
-  doc.setFont('helvetica', 'normal');
-  
-  const totalIncome = income ? (income.totalIncome || 0) : 0;
-  const adjustments = income && income.adjustments ? 
-    (income.adjustments.studentLoanInterest || 0) + 
-    (income.adjustments.retirementContributions || 0) + 
-    (income.adjustments.otherAdjustments || 0) : 0;
-  const agi = totalIncome - adjustments;
-  
-  doc.text('10', 15, yPosition);
-  doc.text('Adjustments to income from Schedule 1, line 26', 25, yPosition);
-  doc.text(formatCurrency(adjustments), 160, yPosition);
-  yPosition += 6;
-  
-  doc.setFont('helvetica', 'bold');
-  doc.text('11', 15, yPosition);
-  doc.text('Adjusted gross income. Subtract line 10 from line 9', 25, yPosition);
-  doc.text(formatCurrency(agi), 160, yPosition);
-  yPosition += 10;
-  
-  return yPosition;
-};
+// This function is removed as AGI is now included in the Income section
 
 // Generate Form 1040 Tax and Credits section (Lines 12-19)
 const add1040TaxSection = (doc: jsPDF, calculatedResults: CalculatedResults | undefined, deductions: Deductions | undefined, yPosition: number): number => {

@@ -78,8 +78,26 @@ app.use((req, res, next) => {
     }
   });
 
-  // Start server - use PORT from environment or default to 5000
+  // Start server - use PORT from environment or find available port
   const port = parseInt(process.env.PORT || '5000', 10);
+  
+  // Handle port conflicts gracefully
+  server.on('error', (err: any) => {
+    if (err.code === 'EADDRINUSE') {
+      log(`Port ${port} is busy, trying port ${port + 1}...`);
+      setTimeout(() => {
+        server.close();
+        server.listen(port + 1, "0.0.0.0", () => {
+          log(`Production server running on port ${port + 1}`);
+          log(`Environment: ${process.env.NODE_ENV || 'production'}`);
+        });
+      }, 1000);
+    } else {
+      log(`Server error: ${err.message}`);
+      throw err;
+    }
+  });
+
   server.listen(port, "0.0.0.0", () => {
     log(`Production server running on port ${port}`);
     log(`Environment: ${process.env.NODE_ENV || 'production'}`);

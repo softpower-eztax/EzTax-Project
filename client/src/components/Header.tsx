@@ -85,18 +85,6 @@ const Header: React.FC = () => {
                 variant="outline" 
                 size="sm"
                 className="text-primary-dark hover:text-primary flex items-center text-sm"
-                onClick={handleSaveProgress}
-              >
-                <Save className="h-4 w-4 mr-1" />
-                진행 상황 저장
-              </Button>
-              
-
-              
-              <Button 
-                variant="outline" 
-                size="sm"
-                className="text-primary-dark hover:text-primary flex items-center text-sm"
                 onClick={() => navigate('/filing-status-checker')}
               >
                 <ClipboardCheck className="h-4 w-4 mr-1" />

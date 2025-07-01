@@ -667,6 +667,9 @@ export function calculateTaxes(taxData: TaxData): CalculatedResults {
     }
   }
   
+  // Auto-calculate Earned Income Credit if applicable (기본값 0)
+  let calculatedEarnedIncomeCredit = 0;
+  
   // If there are tax credits in the data, use those values, otherwise use calculated ones
   const taxCredits = taxData.taxCredits || {
     childTaxCredit: calculatedChildTaxCredit,

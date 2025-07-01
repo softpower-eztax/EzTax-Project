@@ -58,9 +58,15 @@ app.use((req, res, next) => {
   const server = await registerRoutes(app);
 
   // Setup development or production environment
-  if (app.get("env") === "development") {
+  const env = app.get("env");
+  log(`Express environment: ${env}`);
+  log(`NODE_ENV: ${process.env.NODE_ENV}`);
+  
+  if (env === "development" || process.env.NODE_ENV === "development") {
+    log("Setting up Vite development server");
     await setupVite(app, server);
   } else {
+    log("Setting up static file serving");
     serveStatic(app);
   }
 

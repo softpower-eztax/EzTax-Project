@@ -105,6 +105,8 @@ Preferred communication style: Simple, everyday language.
 ## Changelog
 
 Recent Changes:
+- July 1, 2025: **QBI DEDUCTION PROPERLY INTEGRATED INTO TAX CALCULATION** - QBI deduction now correctly applied to taxable income calculation (AGI - Standard/Itemized Deductions - QBI Deduction) and displayed in Review page for accurate tax computation and reporting
+- July 1, 2025: **TOTAL INCOME CALCULATION FIXED TO INCLUDE BUSINESS INCOME** - Resolved issue where business income from QBI was displayed in field but not included in total income calculation, now properly adds QBI totalQBI to aggregate income totals
 - July 1, 2025: **QBI ↔ INCOME AUTOMATIC SYNC COMPLETELY FIXED** - Successfully implemented seamless data integration between QBI Details and Income pages with direct field value display, real-time data synchronization, and comprehensive debugging system ensuring QBI totalQBI automatically populates business income field
 - July 1, 2025: **EIC QUALIFYING CHILDREN CALCULATION CORRECTED** - Fixed EIC calculation to properly count only children under 17 years old as qualifying children (Seojin 17세 excluded, Yujun 14세 included), resulting in accurate EIC of $1,506 for 1 qualifying child instead of incorrect $4,115 for 2 children
 - July 1, 2025: **CREDIT FOR OTHER DEPENDENTS AUTO-CALCULATION FIXED** - Updated calculation logic to use age-based filtering instead of isQualifyingChild property, correctly identifying 17+ year old dependents (Seojin 17세) for $500 credit while excluding younger children already receiving Child Tax Credit

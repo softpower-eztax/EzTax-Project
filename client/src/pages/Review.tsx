@@ -263,6 +263,9 @@ const Review: React.FC = () => {
                     <Field label="소득 조정(Adjustments)" value={formatCurrency(calculatedResults.adjustments)} />
                     <Field label="조정 총소득(Adjusted Gross Income)" value={formatCurrency(calculatedResults.adjustedGrossIncome)} />
                     <Field label="공제액(Deductions)" value={formatCurrency(calculatedResults.deductions)} />
+                    {income.qbi?.qbiDeduction && income.qbi.qbiDeduction > 0 && (
+                      <Field label="QBI 공제(QBI Deduction)" value={formatCurrency(income.qbi.qbiDeduction)} />
+                    )}
                     <Field label="과세 소득(Taxable Income)" value={formatCurrency(calculatedResults.taxableIncome)} />
                   </div>
                   <div>

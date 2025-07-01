@@ -592,8 +592,11 @@ export function calculateTaxes(taxData: TaxData): CalculatedResults {
     result.deductions = taxData.deductions?.totalDeductions || 0;
   }
   
-  // Calculate taxable income
-  result.taxableIncome = Math.max(0, result.adjustedGrossIncome - result.deductions);
+  // Get QBI deduction if available
+  const qbiDeduction = taxData.income?.qbi?.qbiDeduction || 0;
+  
+  // Calculate taxable income (AGI - Standard/Itemized Deductions - QBI Deduction)
+  result.taxableIncome = Math.max(0, result.adjustedGrossIncome - result.deductions - qbiDeduction);
   
   // Calculate federal tax
   result.federalTax = calculateFederalTax(result.taxableIncome, filingStatus);

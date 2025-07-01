@@ -63,6 +63,25 @@ export default function QBIDetails() {
     }
   });
 
+  // QBI 데이터 로드
+  useEffect(() => {
+    if (taxData.income?.qbi) {
+      const qbiData = taxData.income.qbi;
+      console.log('기존 QBI 데이터 로드:', qbiData);
+      
+      // 기존 QBI 데이터로 폼 초기화
+      form.reset({
+        scheduleC: qbiData.scheduleC || [{ businessName: '', businessCode: '', netProfit: 0, w2Wages: 0, qualifiedProperty: 0, isSSTE: false }],
+        partnershipK1: qbiData.partnershipK1 || [],
+        sCorporationK1: qbiData.sCorporationK1 || [],
+        reitDividends: qbiData.reitDividends || 0,
+        ptpIncome: qbiData.ptpIncome || 0,
+        totalQBI: qbiData.totalQBI || 0,
+        qbiDeduction: qbiData.qbiDeduction || 0
+      });
+    }
+  }, [taxData.income?.qbi]);
+
   // QBI 자동 계산 함수
   const calculateQBI = () => {
     const values = form.getValues();

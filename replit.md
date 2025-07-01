@@ -105,6 +105,8 @@ Preferred communication style: Simple, everyday language.
 ## Changelog
 
 Recent Changes:
+- July 1, 2025: **SOCIAL SECURITY CALCULATOR RESTORED** - Re-integrated detailed Social Security calculator with PIA computation, age adjustment factors, and automatic form population in step-by-step retirement flow
+- July 1, 2025: **CALCULATION BUTTON ACTIVATION FIXED** - Resolved issue where final calculation button remained disabled, now activates when step 4 fields are completed
 - July 1, 2025: **RETIREMENT SCORE STEP-BY-STEP FLOW IMPLEMENTED** - Complete overhaul from tabbed interface to progressive 4-step journey (기본정보 → 재정상태 → 생활환경 → 투자성향) with validation, progress tracking, and comprehensive scoring system
 - July 1, 2025: **FILING STATUS CHECKER NAVIGATION IMPROVED** - Added "개인정보 페이지로 돌아가기" button to results page alongside "다시 시작하기" for better user navigation flow
 - July 1, 2025: **PERSONAL INFO SAMPLE DATA BUTTON COMPLETELY FIXED** - Implemented DOM-based approach to directly populate form fields, bypassing React Hook Form state management issues that were preventing field updates

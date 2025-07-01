@@ -71,6 +71,13 @@ export default function RetirementScoreStepByStep() {
   const [analysis, setAnalysis] = useState<RetirementAnalysis | null>(null);
   const [currentStep, setCurrentStep] = useState(0);
   const [completedSteps, setCompletedSteps] = useState<boolean[]>([false, false, false, false]);
+  const [showSSCalculator, setShowSSCalculator] = useState(false);
+  
+  // Social Security calculator state
+  const [ssStartAge, setSsStartAge] = useState(25);
+  const [ssRetireAge, setSsRetireAge] = useState(65);
+  const [ssAvgSalary, setSsAvgSalary] = useState(5000);
+  const [ssClaimAge, setSsClaimAge] = useState(67);
 
   const form = useForm<RetirementFormData>({
     resolver: zodResolver(retirementFormSchema),
@@ -154,6 +161,37 @@ export default function RetirementScoreStepByStep() {
 
   // 모든 단계가 완료되었는지 확인
   const allStepsCompleted = completedSteps.every(step => step === true);
+
+  // Social Security 계산 함수
+  const calculateSocialSecurity = () => {
+    const workingYears = ssRetireAge - ssStartAge;
+    const totalEarnings = ssAvgSalary * 12 * workingYears;
+    const avgIndexedEarnings = totalEarnings / (35 * 12); // 최고 35년 기준
+    
+    // 간단한 PIA 계산 (실제보다 단순화)
+    let pia = 0;
+    if (avgIndexedEarnings <= 1024) {
+      pia = avgIndexedEarnings * 0.9;
+    } else if (avgIndexedEarnings <= 6172) {
+      pia = 1024 * 0.9 + (avgIndexedEarnings - 1024) * 0.32;
+    } else {
+      pia = 1024 * 0.9 + (6172 - 1024) * 0.32 + (avgIndexedEarnings - 6172) * 0.15;
+    }
+    
+    // 수령 시작 나이에 따른 조정
+    const fullRetirementAge = 67;
+    let adjustmentFactor = 1.0;
+    
+    if (ssClaimAge < fullRetirementAge) {
+      const monthsEarly = (fullRetirementAge - ssClaimAge) * 12;
+      adjustmentFactor = Math.max(0.75, 1 - (monthsEarly * 0.0055)); // 조기수령 감액
+    } else if (ssClaimAge > fullRetirementAge) {
+      const monthsDelay = (ssClaimAge - fullRetirementAge) * 12;
+      adjustmentFactor = Math.min(1.32, 1 + (monthsDelay * 0.0067)); // 연기수령 증액
+    }
+    
+    return Math.round(pia * adjustmentFactor);
+  };
 
   // 은퇴 점수 계산
   const calculateRetirementScore = (data: RetirementFormData): RetirementAnalysis => {
@@ -590,18 +628,118 @@ export default function RetirementScoreStepByStep() {
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>예상 Social Security 연금 (월 수령액 $) *</FormLabel>
-                          <FormControl>
-                            <Input
-                              type="number"
-                              placeholder="월 예상 수령액 (예: 2000)"
-                              {...field}
-                              onChange={(e) => field.onChange(Number(e.target.value))}
-                            />
-                          </FormControl>
+                          <div className="flex gap-2">
+                            <FormControl>
+                              <Input
+                                type="number"
+                                placeholder="월 예상 수령액 (예: 2000)"
+                                {...field}
+                                onChange={(e) => field.onChange(Number(e.target.value))}
+                              />
+                            </FormControl>
+                            <Button
+                              type="button"
+                              variant="outline"
+                              onClick={() => setShowSSCalculator(!showSSCalculator)}
+                              className="flex items-center gap-1 whitespace-nowrap"
+                            >
+                              📊 상세 Social Security 계산기
+                            </Button>
+                          </div>
                           <FormMessage />
                         </FormItem>
                       )}
                     />
+
+                    {/* Social Security Calculator */}
+                    {showSSCalculator && (
+                      <div className="col-span-full">
+                        <Card className="bg-blue-50 border-blue-200">
+                          <CardHeader>
+                            <CardTitle className="flex items-center gap-2 text-blue-700">
+                              📊 상세 Social Security 계산기
+                            </CardTitle>
+                            <CardDescription>
+                              근무기간과 평균소득을 기반으로 예상 Social Security 연금을 계산합니다
+                            </CardDescription>
+                          </CardHeader>
+                          <CardContent className="space-y-4">
+                            <div className="grid grid-cols-2 gap-4">
+                              <div>
+                                <label className="block text-sm font-medium mb-2">
+                                  납부 시작 연령
+                                </label>
+                                <Input
+                                  type="number"
+                                  value={ssStartAge}
+                                  onChange={(e) => setSsStartAge(Number(e.target.value))}
+                                  min="18"
+                                  max="67"
+                                />
+                              </div>
+                              <div>
+                                <label className="block text-sm font-medium mb-2">
+                                  은퇴 연령
+                                </label>
+                                <Input
+                                  type="number"
+                                  value={ssRetireAge}
+                                  onChange={(e) => setSsRetireAge(Number(e.target.value))}
+                                  min="62"
+                                  max="70"
+                                />
+                              </div>
+                              <div>
+                                <label className="block text-sm font-medium mb-2">
+                                  연평균 연봉 ($)
+                                </label>
+                                <Input
+                                  type="number"
+                                  value={ssAvgSalary}
+                                  onChange={(e) => setSsAvgSalary(Number(e.target.value))}
+                                  min="0"
+                                  step="1000"
+                                />
+                              </div>
+                              <div>
+                                <label className="block text-sm font-medium mb-2">
+                                  수령 시작 연령
+                                </label>
+                                <Input
+                                  type="number"
+                                  value={ssClaimAge}
+                                  onChange={(e) => setSsClaimAge(Number(e.target.value))}
+                                  min="62"
+                                  max="70"
+                                />
+                              </div>
+                            </div>
+                            
+                            <div className="bg-white p-4 rounded-lg border">
+                              <h4 className="font-semibold text-lg mb-2">
+                                예상 월 수령액: ${calculateSocialSecurity()}
+                              </h4>
+                              <div className="text-sm text-gray-600 space-y-1">
+                                <div>• 근무년수: {ssRetireAge - ssStartAge}년</div>
+                                <div>• 수령 조정: {ssClaimAge === 67 ? '정상' : ssClaimAge < 67 ? '조기수령' : '연기수령'}</div>
+                              </div>
+                            </div>
+                            
+                            <Button
+                              type="button"
+                              onClick={() => {
+                                const calculatedAmount = calculateSocialSecurity();
+                                form.setValue('expectedSocialSecurityBenefit', calculatedAmount);
+                                setShowSSCalculator(false);
+                              }}
+                              className="w-full bg-blue-600 hover:bg-blue-700"
+                            >
+                              이 금액으로 적용
+                            </Button>
+                          </CardContent>
+                        </Card>
+                      </div>
+                    )}
                   </div>
                 </div>
               )}

@@ -262,6 +262,12 @@ export interface CalculatedResults {
   payments: number;
   refundAmount: number;
   amountOwed: number;
+  // Individual credit amounts for display
+  childTaxCredit?: number;
+  childDependentCareCredit?: number;
+  retirementSavingsCredit?: number;
+  creditForOtherDependents?: number;
+  earnedIncomeCredit?: number;
   // State Income Tax
   stateIncomeTax?: StateIncomeTax;
 }
@@ -416,6 +422,12 @@ export const calculatedResultsSchema = z.object({
   payments: z.number(),
   refundAmount: z.number(),
   amountOwed: z.number(),
+  // Individual credit amounts for display
+  childTaxCredit: z.number().optional(),
+  childDependentCareCredit: z.number().optional(),
+  retirementSavingsCredit: z.number().optional(),
+  creditForOtherDependents: z.number().optional(),
+  earnedIncomeCredit: z.number().optional(),
 });
 
 // Main TaxData interface

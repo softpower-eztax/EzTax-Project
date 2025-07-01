@@ -678,6 +678,13 @@ export function calculateTaxes(taxData: TaxData): CalculatedResults {
     totalCredits: calculatedChildTaxCredit + calculatedRetirementSavingsCredit + calculatedChildDependentCareCredit + calculatedCreditForOtherDependents
   };
   
+  // Store individual credit amounts in result for display purposes
+  result.childTaxCredit = calculatedChildTaxCredit;
+  result.childDependentCareCredit = calculatedChildDependentCareCredit;
+  result.retirementSavingsCredit = calculatedRetirementSavingsCredit;
+  result.creditForOtherDependents = calculatedCreditForOtherDependents;
+  result.earnedIncomeCredit = calculatedEarnedIncomeCredit;
+
   // If the user hasn't explicitly set tax credit values, use the calculated ones
   if (!taxData.taxCredits || 
       (taxData.taxCredits.childTaxCredit === 0 && 
@@ -690,6 +697,7 @@ export function calculateTaxes(taxData: TaxData): CalculatedResults {
       calculatedRetirementSavingsCredit +
       calculatedChildDependentCareCredit +
       calculatedCreditForOtherDependents +
+      calculatedEarnedIncomeCredit +
       (taxCredits.educationCredits || 0) +
       (taxCredits.foreignTaxCredit || 0)
     );

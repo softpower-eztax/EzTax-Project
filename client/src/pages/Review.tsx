@@ -226,14 +226,15 @@ const Review: React.FC = () => {
               <SectionSummary title="세액공제(Tax Credits)" editLink="/tax-credits">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <Field label="자녀 세액공제(Child Tax Credit)" value={formatCurrency(taxCredits.childTaxCredit)} />
-                    <Field label="자녀 및 부양가족 돌봄 공제(Child & Dependent Care Credit)" value={formatCurrency(taxCredits.childDependentCareCredit)} />
-                    <Field label="교육비 공제(Education Credits)" value={formatCurrency(taxCredits.educationCredits)} />
+                    <Field label="자녀 세액공제(Child Tax Credit)" value={formatCurrency(calculatedResults.childTaxCredit || taxCredits.childTaxCredit || 0)} />
+                    <Field label="자녀 및 부양가족 돌봄 공제(Child & Dependent Care Credit)" value={formatCurrency(calculatedResults.childDependentCareCredit || taxCredits.childDependentCareCredit || 0)} />
+                    <Field label="교육비 공제(Education Credits)" value={formatCurrency(taxCredits.educationCredits || 0)} />
                   </div>
                   <div>
-                    <Field label="은퇴 저축 공제(Retirement Savings Credit)" value={formatCurrency(taxCredits.retirementSavingsCredit)} />
-                    <Field label="기타 세액공제(Other Credits)" value={formatCurrency(taxCredits.otherCredits)} />
-                    <Field label="총 세액공제(Total Credits)" value={formatCurrency(taxCredits.totalCredits)} />
+                    <Field label="은퇴 저축 공제(Retirement Savings Credit)" value={formatCurrency(calculatedResults.retirementSavingsCredit || taxCredits.retirementSavingsCredit || 0)} />
+                    <Field label="기타 부양가족 공제(Credit for Other Dependents)" value={formatCurrency(calculatedResults.creditForOtherDependents || 0)} />
+                    <Field label="근로소득세액공제(Earned Income Credit)" value={formatCurrency(calculatedResults.earnedIncomeCredit || 0)} />
+                    <Field label="총 세액공제(Total Credits)" value={formatCurrency(calculatedResults.credits || 0)} />
                   </div>
                 </div>
               </SectionSummary>

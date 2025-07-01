@@ -533,40 +533,39 @@ const PersonalInfo: React.FC = () => {
                         variant="outline"
                         size="sm"
                         onClick={() => {
-                          const sampleData = {
-                            firstName: "John",
-                            lastName: "Smith",
-                            middleInitial: "M",
-                            ssn: "123-45-6789",
-                            dateOfBirth: "1980-05-15",
-                            email: "john.smith@email.com",
-                            phone: "555-123-4567",
-                            address1: "123 Main Street",
-                            address2: "Apt 2B",
-                            city: "New York",
-                            state: "NY",
-                            zipCode: "10001",
-                            filingStatus: "single",
-                            isDisabled: false,
-                            isNonresidentAlien: false,
-                            dependents: [],
-                            spouseInfo: {
-                              firstName: "",
-                              lastName: "",
-                              middleInitial: "",
-                              ssn: "",
-                              dateOfBirth: "",
-                              isDisabled: false,
-                              differentAddress: false,
-                              address1: "",
-                              address2: "",
-                              city: "",
-                              state: "",
-                              zipCode: ""
-                            }
-                          };
+                          // 개별 필드 설정
+                          form.setValue("firstName", "John");
+                          form.setValue("lastName", "Smith");
+                          form.setValue("middleInitial", "M");
+                          form.setValue("ssn", "123-45-6789");
+                          form.setValue("dateOfBirth", "1980-05-15");
+                          form.setValue("email", "john.smith@email.com");
+                          form.setValue("phone", "555-123-4567");
+                          form.setValue("address1", "123 Main Street");
+                          form.setValue("address2", "Apt 2B");
+                          form.setValue("city", "New York");
+                          form.setValue("state", "NY");
+                          form.setValue("zipCode", "10001");
+                          form.setValue("filingStatus", "single");
+                          form.setValue("isDisabled", false);
+                          form.setValue("isNonresidentAlien", false);
                           
-                          form.reset(sampleData);
+                          // 배우자 정보 초기화
+                          form.setValue("spouseInfo.firstName", "");
+                          form.setValue("spouseInfo.lastName", "");
+                          form.setValue("spouseInfo.middleInitial", "");
+                          form.setValue("spouseInfo.ssn", "");
+                          form.setValue("spouseInfo.dateOfBirth", "");
+                          form.setValue("spouseInfo.isDisabled", false);
+                          form.setValue("spouseInfo.differentAddress", false);
+                          form.setValue("spouseInfo.address1", "");
+                          form.setValue("spouseInfo.address2", "");
+                          form.setValue("spouseInfo.city", "");
+                          form.setValue("spouseInfo.state", "");
+                          form.setValue("spouseInfo.zipCode", "");
+                          
+                          // dependents 배열 초기화
+                          form.setValue("dependents", []);
                           
                           toast({
                             title: "예시 데이터 입력됨",

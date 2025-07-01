@@ -105,6 +105,7 @@ Preferred communication style: Simple, everyday language.
 ## Changelog
 
 Recent Changes:
+- July 1, 2025: **SOCIAL SECURITY DISCLAIMER NOTICE ADDED** - Added prominent warning message directing users to SSA.gov for official benefit calculations, clarifying that calculator provides approximate estimates only
 - July 1, 2025: **SOCIAL SECURITY INPUT/OUTPUT LOGIC FIXED** - Corrected annual salary input handling (was treating as monthly), updated default values, and added clear placeholder text for realistic benefit calculations
 - July 1, 2025: **SOCIAL SECURITY CALCULATOR FORMULA CORRECTED** - Updated calculation to match SSA.gov official formula with proper AIME calculation, 2024 bend points ($1,174, $7,078), and accurate early/delayed retirement adjustments for realistic benefit estimates
 - July 1, 2025: **SOCIAL SECURITY CALCULATOR RESTORED** - Re-integrated detailed Social Security calculator with PIA computation, age adjustment factors, and automatic form population in step-by-step retirement flow

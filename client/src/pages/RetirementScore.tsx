@@ -821,7 +821,7 @@ export default function RetirementScoreStepByStep() {
                   <Button 
                     type="button" 
                     onClick={() => onSubmit(form.getValues())}
-                    disabled={!allStepsCompleted || !validateCurrentStep()}
+                    disabled={!validateCurrentStep()}
                     className="flex items-center gap-2 bg-green-600 hover:bg-green-700"
                   >
                     <TargetIcon className="h-4 w-4" />

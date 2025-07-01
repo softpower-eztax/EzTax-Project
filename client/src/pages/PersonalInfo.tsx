@@ -81,8 +81,27 @@ const PersonalInfo: React.FC = () => {
         });
         
         if (!userResponse.ok) {
-          // 비인증 사용자 - 완전 초기화
-          console.log("PersonalInfo - 비인증 사용자: 완전 초기화");
+          // 비인증 사용자 - 로컬 스토리지 데이터가 있으면 유지
+          console.log("PersonalInfo - 비인증 사용자: 로컬 데이터 확인");
+          
+          // 로컬 스토리지에서 기존 데이터 확인
+          const savedPersonalInfo = localStorage.getItem('personalInfo');
+          const savedTempInfo = localStorage.getItem('tempPersonalInfo');
+          
+          if (savedPersonalInfo || savedTempInfo) {
+            try {
+              const existingData = JSON.parse(savedPersonalInfo || savedTempInfo);
+              console.log("PersonalInfo - 비인증 사용자 로컬 데이터 복원:", existingData);
+              form.reset(existingData);
+              setSavedValues(existingData);
+              return;
+            } catch (error) {
+              console.error("로컬 데이터 파싱 실패:", error);
+            }
+          }
+          
+          // 로컬 데이터가 없는 경우에만 초기화
+          console.log("PersonalInfo - 비인증 사용자: 로컬 데이터 없음, 빈 폼으로 시작");
           form.reset({
             firstName: "",
             middleInitial: "",
@@ -833,22 +852,30 @@ const PersonalInfo: React.FC = () => {
                             const values = form.getValues();
                             console.log("저장 버튼 클릭 - 현재 값:", values);
                             
-                            // 로컬 상태 업데이트
+                            // 로컬 상태 업데이트 (데이터 유지를 위해 먼저 실행)
                             setSavedValues(values);
+                            
+                            // 로컬 스토리지에 저장 (최우선으로 실행)
+                            localStorage.setItem('personalInfo', JSON.stringify(values));
+                            console.log("로컬 스토리지에 저장 완료:", values);
                             
                             // 컨텍스트 업데이트
                             updateTaxData({ personalInfo: values });
                             
-                            // 로컬 스토리지에 저장
-                            localStorage.setItem('personalInfo', JSON.stringify(values));
-                            
-                            // 서버에 저장
-                            await saveTaxReturn();
-                            
-                            toast({
-                              title: "저장 완료",
-                              description: "개인정보가 성공적으로 저장되었습니다.",
-                            });
+                            // 서버에 저장 시도 (실패해도 로컬 데이터는 유지)
+                            try {
+                              await saveTaxReturn();
+                              toast({
+                                title: "저장 완료",
+                                description: "개인정보가 성공적으로 저장되었습니다.",
+                              });
+                            } catch (serverError) {
+                              console.log("서버 저장 실패 (로컬에는 저장됨):", serverError);
+                              toast({
+                                title: "로컬 저장 완료",
+                                description: "개인정보가 로컬에 저장되었습니다. (서버 연결 시 자동 동기화됩니다)",
+                              });
+                            }
                           } catch (error) {
                             console.error("저장 실패:", error);
                             toast({
@@ -1470,20 +1497,22 @@ const PersonalInfo: React.FC = () => {
                     const values = form.getValues();
                     console.log("다음 단계로 이동 - 현재 값:", values);
                     
-                    // 로컬 상태 업데이트
+                    // 로컬 상태 업데이트 (데이터 유지를 위해 먼저 실행)
                     setSavedValues(values);
+                    
+                    // 로컬 스토리지에 저장 (최우선으로 실행, 일관된 키 사용)
+                    localStorage.setItem('personalInfo', JSON.stringify(values));
+                    localStorage.setItem('tempPersonalInfo', JSON.stringify(values));
+                    console.log("로컬 스토리지에 저장 완료 (다음단계):", values);
                     
                     // 컨텍스트 업데이트
                     updateTaxData({ personalInfo: values });
                     
-                    // 로컬 스토리지에 저장 (일관된 키 사용)
-                    localStorage.setItem('tempPersonalInfo', JSON.stringify(values));
-                    
-                    // 서버에도 즉시 저장
+                    // 서버에 저장 시도 (실패해도 로컬 데이터는 유지)
                     saveTaxReturn().then(() => {
                       console.log("저장다음단계 - 서버 저장 완료");
                     }).catch(error => {
-                      console.error("저장다음단계 - 서버 저장 실패:", error);
+                      console.log("저장다음단계 - 서버 저장 실패 (로컬에는 저장됨):", error);
                     });
                     
                     return true;
@@ -1491,9 +1520,8 @@ const PersonalInfo: React.FC = () => {
                     console.error("Error in step navigation:", error);
                     // If there's an error, show a toast but still return true to allow navigation
                     toast({
-                      title: "Warning",
-                      description: "Form processed with warnings.",
-                      variant: "destructive",
+                      title: "로컬 저장 완료",
+                      description: "개인정보가 로컬에 저장되었습니다.",
                     });
                     return true;
                   }

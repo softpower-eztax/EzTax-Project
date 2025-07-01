@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>은퇴 준비 진단 - 단계별 플로우</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .step-indicator {
+            transition: all 0.3s ease;
+        }
+        
+        .step-active {
+            background-color: #3b82f6;
+            color: white;
+        }
+        
+        .step-completed {
+            background-color: #10b981;
+            color: white;
+        }
+        
+        .step-pending {
+            background-color: #e5e7eb;
+            color: #6b7280;
+        }
+        
+        .slide-enter {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+        
+        .slide-enter-active {
+            transform: translateX(0);
+            opacity: 1;
+            transition: all 0.3s ease;
+        }
+        
+        .slide-exit {
+            transform: translateX(0);
+            opacity: 1;
+        }
+        
+        .slide-exit-active {
+            transform: translateX(-100%);
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <div class="container mx-auto p-6">
+        <h1 class="text-3xl font-bold text-center mb-8 text-gray-800">은퇴 준비 상태 진단</h1>
+        
+        <!-- Step Indicator -->
+        <div class="flex justify-center mb-8">
+            <div class="flex items-center space-x-4">
+                <div id="step1-indicator" class="step-indicator step-active w-10 h-10 rounded-full flex items-center justify-center font-semibold">1</div>
+                <div class="w-8 h-1 bg-gray-300"></div>
+                <div id="step2-indicator" class="step-indicator step-pending w-10 h-10 rounded-full flex items-center justify-center font-semibold">2</div>
+                <div class="w-8 h-1 bg-gray-300"></div>
+                <div id="step3-indicator" class="step-indicator step-pending w-10 h-10 rounded-full flex items-center justify-center font-semibold">3</div>
+                <div class="w-8 h-1 bg-gray-300"></div>
+                <div id="step4-indicator" class="step-indicator step-pending w-10 h-10 rounded-full flex items-center justify-center font-semibold">4</div>
+            </div>
+        </div>
+        
+        <!-- Step Titles -->
+        <div class="flex justify-center mb-8">
+            <div class="flex items-center space-x-12 text-sm">
+                <span class="text-blue-600 font-semibold">기본정보</span>
+                <span class="text-gray-500">재정상태</span>
+                <span class="text-gray-500">생활환경</span>
+                <span class="text-gray-500">투자성향</span>
+            </div>
+        </div>
+        
+        <!-- Progress Bar -->
+        <div class="w-full bg-gray-200 rounded-full h-2 mb-8">
+            <div id="progress-bar" class="bg-blue-600 h-2 rounded-full transition-all duration-300" style="width: 25%"></div>
+        </div>
+        
+        <!-- Step Content -->
+        <div class="max-w-2xl mx-auto bg-white rounded-lg shadow-md p-8">
+            
+            <!-- Step 1: Basic Info -->
+            <div id="step1" class="step-content">
+                <h2 class="text-xl font-bold mb-6">1단계: 기본정보</h2>
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium mb-2">현재 나이</label>
+                        <input type="number" id="age" placeholder="예: 45" class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-2">희망 은퇴 나이</label>
+                        <input type="number" id="retirementAge" placeholder="예: 65" class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-2">결혼 상태</label>
+                        <select id="maritalStatus" class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500">
+                            <option value="">선택하세요</option>
+                            <option value="married">기혼</option>
+                            <option value="single">미혼</option>
+                            <option value="divorced">이혼</option>
+                            <option value="widowed">사별</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-2">자녀 수</label>
+                        <input type="number" id="children" placeholder="예: 2" class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500">
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Step 2: Financial Status -->
+            <div id="step2" class="step-content hidden">
+                <h2 class="text-xl font-bold mb-6">2단계: 재정상태</h2>
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium mb-2">현재 연 소득 (달러)</label>
+                        <input type="number" id="currentIncome" placeholder="예: 80000" class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-2">현재 은퇴 저축액 (달러)</label>
+                        <input type="number" id="currentSavings" placeholder="예: 150000" class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-2">월 저축액 (달러)</label>
+                        <input type="number" id="monthlySavings" placeholder="예: 1000" class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-2">부채 총액 (달러)</label>
+                        <input type="number" id="totalDebt" placeholder="예: 50000" class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500">
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Step 3: Living Environment -->
+            <div id="step3" class="step-content hidden">
+                <h2 class="text-xl font-bold mb-6">3단계: 생활환경</h2>
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium mb-2">은퇴 후 희망 월 생활비 (달러)</label>
+                        <input type="number" id="monthlyExpenses" placeholder="예: 5000" class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-2">주택 소유 상태</label>
+                        <select id="homeOwnership" class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500">
+                            <option value="">선택하세요</option>
+                            <option value="own">자가</option>
+                            <option value="rent">임대</option>
+                            <option value="mortgage">모기지 상환 중</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-2">건강 상태</label>
+                        <select id="healthStatus" class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500">
+                            <option value="">선택하세요</option>
+                            <option value="excellent">매우 좋음</option>
+                            <option value="good">좋음</option>
+                            <option value="fair">보통</option>
+                            <option value="poor">나쁨</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Social Security 예상 수령액 (월, 달러)</label>
+                        <input type="number" id="socialSecurity" placeholder="예: 2000" class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500">
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Step 4: Investment Tendency -->
+            <div id="step4" class="step-content hidden">
+                <h2 class="text-xl font-bold mb-6">4단계: 투자성향</h2>
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium mb-2">투자 위험 성향</label>
+                        <select id="riskTolerance" class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500">
+                            <option value="">선택하세요</option>
+                            <option value="conservative">보수적 (안전 자산 위주)</option>
+                            <option value="moderate">중간 (균형 투자)</option>
+                            <option value="aggressive">적극적 (성장 위주)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-2">투자 경험</label>
+                        <select id="investmentExperience" class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500">
+                            <option value="">선택하세요</option>
+                            <option value="beginner">초보자 (1년 이하)</option>
+                            <option value="intermediate">중급자 (1-5년)</option>
+                            <option value="advanced">고급자 (5년 이상)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-2">현재 투자 포트폴리오</label>
+                        <select id="currentPortfolio" class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500">
+                            <option value="">선택하세요</option>
+                            <option value="none">투자하지 않음</option>
+                            <option value="savings">예적금만</option>
+                            <option value="mixed">주식/펀드 혼합</option>
+                            <option value="diverse">다양한 자산 분산</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-2">예상 투자 수익률 (%)</label>
+                        <input type="number" id="expectedReturn" placeholder="예: 7" step="0.1" class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500">
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Results -->
+            <div id="results" class="step-content hidden">
+                <h2 class="text-xl font-bold mb-6">종합 은퇴 준비 점수</h2>
+                <div class="text-center mb-8">
+                    <div class="inline-flex items-center justify-center w-32 h-32 rounded-full bg-blue-100 mb-4">
+                        <span id="final-score" class="text-4xl font-bold text-blue-600">85</span>
+                    </div>
+                    <p class="text-lg text-gray-600">당신의 은퇴 준비 점수입니다</p>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                    <div class="bg-green-50 p-4 rounded-lg">
+                        <h3 class="font-semibold text-green-800 mb-2">강점</h3>
+                        <ul id="strengths" class="text-green-600 space-y-1">
+                            <li>• 꾸준한 저축 습관</li>
+                            <li>• 적절한 투자 포트폴리오</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="bg-red-50 p-4 rounded-lg">
+                        <h3 class="font-semibold text-red-800 mb-2">개선점</h3>
+                        <ul id="concerns" class="text-red-600 space-y-1">
+                            <li>• 저축률 증가 필요</li>
+                            <li>• 부채 관리 개선</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="bg-blue-50 p-6 rounded-lg">
+                    <h3 class="font-semibold text-blue-800 mb-4">맞춤 추천사항</h3>
+                    <ul id="recommendations" class="text-blue-700 space-y-2">
+                        <li>• 월 저축액을 소득의 15%로 증가시키세요</li>
+                        <li>• 401(k) 매칭 혜택을 최대한 활용하세요</li>
+                        <li>• 다양한 자산 클래스로 포트폴리오를 분산하세요</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- Navigation Buttons -->
+            <div class="flex justify-between mt-8">
+                <button id="prev-btn" class="px-6 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition-colors hidden">이전</button>
+                <button id="next-btn" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors ml-auto">다음</button>
+                <button id="calculate-btn" class="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors ml-auto hidden">점수 계산</button>
+                <button id="restart-btn" class="px-6 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors ml-auto hidden">다시 시작</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentStep = 1;
+        const totalSteps = 4;
+        
+        function updateStepIndicators() {
+            for (let i = 1; i <= totalSteps; i++) {
+                const indicator = document.getElementById(`step${i}-indicator`);
+                if (i < currentStep) {
+                    indicator.className = 'step-indicator step-completed w-10 h-10 rounded-full flex items-center justify-center font-semibold';
+                } else if (i === currentStep) {
+                    indicator.className = 'step-indicator step-active w-10 h-10 rounded-full flex items-center justify-center font-semibold';
+                } else {
+                    indicator.className = 'step-indicator step-pending w-10 h-10 rounded-full flex items-center justify-center font-semibold';
+                }
+            }
+            
+            // Update progress bar
+            const progress = (currentStep / totalSteps) * 100;
+            document.getElementById('progress-bar').style.width = progress + '%';
+        }
+        
+        function showStep(step) {
+            // Hide all steps
+            document.querySelectorAll('.step-content').forEach(el => el.classList.add('hidden'));
+            
+            // Show current step
+            if (step <= totalSteps) {
+                document.getElementById(`step${step}`).classList.remove('hidden');
+            } else {
+                document.getElementById('results').classList.remove('hidden');
+            }
+            
+            // Update buttons
+            const prevBtn = document.getElementById('prev-btn');
+            const nextBtn = document.getElementById('next-btn');
+            const calculateBtn = document.getElementById('calculate-btn');
+            const restartBtn = document.getElementById('restart-btn');
+            
+            prevBtn.classList.toggle('hidden', step === 1);
+            nextBtn.classList.toggle('hidden', step === totalSteps || step > totalSteps);
+            calculateBtn.classList.toggle('hidden', step !== totalSteps);
+            restartBtn.classList.toggle('hidden', step <= totalSteps);
+        }
+        
+        function validateStep(step) {
+            const requiredFields = {
+                1: ['age', 'retirementAge', 'maritalStatus'],
+                2: ['currentIncome', 'currentSavings', 'monthlySavings'],
+                3: ['monthlyExpenses', 'homeOwnership', 'healthStatus'],
+                4: ['riskTolerance', 'investmentExperience', 'currentPortfolio', 'expectedReturn']
+            };
+            
+            const fields = requiredFields[step];
+            for (const field of fields) {
+                const element = document.getElementById(field);
+                if (!element.value.trim()) {
+                    element.classList.add('border-red-500');
+                    element.focus();
+                    return false;
+                } else {
+                    element.classList.remove('border-red-500');
+                }
+            }
+            return true;
+        }
+        
+        function calculateRetirementScore() {
+            // Simple scoring algorithm for demo
+            const age = parseInt(document.getElementById('age').value) || 0;
+            const retirementAge = parseInt(document.getElementById('retirementAge').value) || 65;
+            const currentIncome = parseInt(document.getElementById('currentIncome').value) || 0;
+            const currentSavings = parseInt(document.getElementById('currentSavings').value) || 0;
+            const monthlySavings = parseInt(document.getElementById('monthlySavings').value) || 0;
+            const monthlyExpenses = parseInt(document.getElementById('monthlyExpenses').value) || 0;
+            
+            const yearsToRetirement = retirementAge - age;
+            const savingsRate = currentIncome > 0 ? (monthlySavings * 12) / currentIncome : 0;
+            const replacementRate = currentIncome > 0 ? (monthlyExpenses * 12) / currentIncome : 0;
+            
+            let score = 50; // Base score
+            
+            // Age factor
+            if (yearsToRetirement > 20) score += 15;
+            else if (yearsToRetirement > 10) score += 10;
+            else score += 5;
+            
+            // Savings rate factor
+            if (savingsRate >= 0.15) score += 20;
+            else if (savingsRate >= 0.10) score += 15;
+            else if (savingsRate >= 0.05) score += 10;
+            
+            // Current savings factor
+            const targetSavings = currentIncome * yearsToRetirement * 0.1;
+            if (currentSavings >= targetSavings) score += 15;
+            else if (currentSavings >= targetSavings * 0.5) score += 10;
+            
+            score = Math.min(100, Math.max(0, score));
+            
+            document.getElementById('final-score').textContent = Math.round(score);
+            
+            // Update recommendations based on score
+            const recommendations = [];
+            const strengths = [];
+            const concerns = [];
+            
+            if (savingsRate >= 0.15) {
+                strengths.push('• 우수한 저축률을 유지하고 있습니다');
+            } else {
+                concerns.push('• 저축률을 소득의 15% 이상으로 증가시키세요');
+                recommendations.push('• 월 저축액을 ' + Math.round(currentIncome * 0.15 / 12) + '달러로 증가시키세요');
+            }
+            
+            if (yearsToRetirement > 15) {
+                strengths.push('• 은퇴까지 충분한 시간이 있습니다');
+            } else {
+                concerns.push('• 은퇴까지 시간이 부족합니다');
+                recommendations.push('• 적극적인 저축 및 투자 전략이 필요합니다');
+            }
+            
+            document.getElementById('strengths').innerHTML = strengths.join('\n');
+            document.getElementById('concerns').innerHTML = concerns.join('\n');
+            document.getElementById('recommendations').innerHTML = recommendations.join('\n');
+        }
+        
+        // Event listeners
+        document.getElementById('next-btn').addEventListener('click', () => {
+            if (validateStep(currentStep)) {
+                currentStep++;
+                updateStepIndicators();
+                showStep(currentStep);
+            }
+        });
+        
+        document.getElementById('prev-btn').addEventListener('click', () => {
+            currentStep--;
+            updateStepIndicators();
+            showStep(currentStep);
+        });
+        
+        document.getElementById('calculate-btn').addEventListener('click', () => {
+            if (validateStep(currentStep)) {
+                calculateRetirementScore();
+                currentStep++;
+                updateStepIndicators();
+                showStep(currentStep);
+            }
+        });
+        
+        document.getElementById('restart-btn').addEventListener('click', () => {
+            currentStep = 1;
+            updateStepIndicators();
+            showStep(currentStep);
+            // Reset form
+            document.querySelectorAll('input, select').forEach(el => {
+                el.value = '';
+                el.classList.remove('border-red-500');
+            });
+        });
+        
+        // Initialize
+        updateStepIndicators();
+        showStep(currentStep);
+    </script>
+</body>
+</html>

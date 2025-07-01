@@ -214,8 +214,28 @@ const TaxCredits3Page: React.FC = () => {
   // EIC 자동 계산 함수 (컴포넌트용)
   const calculateEarnedIncomeCredit = () => {
     const agi = taxData.income?.adjustedGrossIncome || 0;
-    const earnedIncome = (taxData.income?.wages || 0) + (taxData.income?.otherEarnedIncome || 0);
+    
+    // EIC를 위한 근로소득 계산 (사업소득도 포함)
+    const wages = taxData.income?.wages || 0;
+    const otherEarnedIncome = taxData.income?.otherEarnedIncome || 0;
+    const businessIncome = taxData.income?.businessIncome || 0; // 사업소득도 근로소득에 포함
+    
+    // 근로소득 = 급여 + 기타근로소득 + 사업소득 (양수인 경우만)
+    const earnedIncome = wages + otherEarnedIncome + Math.max(0, businessIncome);
+    
+    // 근로소득이 0이면 AGI를 근로소득으로 간주 (보수적 접근)
+    const effectiveEarnedIncome = earnedIncome > 0 ? earnedIncome : agi;
+    
     const filingStatus = taxData.personalInfo?.filingStatus || 'single';
+    
+    console.log("EIC 소득 계산 상세:", { 
+      wages, 
+      otherEarnedIncome, 
+      businessIncome, 
+      earnedIncome, 
+      effectiveEarnedIncome, 
+      agi 
+    });
     // EIC 적격자녀 수 계산 (17세 미만만 해당)
     const qualifyingChildren = taxData.personalInfo?.dependents?.filter(dependent => {
       if (dependent.relationship !== 'child') return false;
@@ -235,7 +255,7 @@ const TaxCredits3Page: React.FC = () => {
       return age < 17;
     })?.length || 0;
     
-    console.log("EIC 계산 파라미터:", { agi, earnedIncome, filingStatus, qualifyingChildren });
+    console.log("EIC 계산 파라미터:", { agi, earnedIncome: effectiveEarnedIncome, filingStatus, qualifyingChildren });
     
     // EIC 계산 로직 (2024년 기준)
     const limits = {
@@ -274,7 +294,7 @@ const TaxCredits3Page: React.FC = () => {
     }
     
     // 근로소득이 AGI보다 낮으면 근로소득 기준으로 계산
-    const incomeForCalculation = Math.min(earnedIncome, agi);
+    const incomeForCalculation = Math.min(effectiveEarnedIncome, agi);
     
     let credit = 0;
     

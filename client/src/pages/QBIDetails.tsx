@@ -95,10 +95,18 @@ export default function QBIDetails() {
                        (income.capitalGains || 0) + (income.rentalIncome || 0) + 
                        (income.retirementIncome || 0) + (income.otherIncome || 0);
     
-    // totalIncome이 있으면 사용, 없으면 개별 항목 합계
-    const totalIncome = income.totalIncome || (wages + businessIncome + otherIncome);
-    const adjustments = income.adjustments?.studentLoanInterest || 0;
-    const agi = Math.max(0, totalIncome - adjustments);
+    // totalIncome이 있으면 사용, 없으면 개별 항목 합계 또는 기본 AGI 사용
+    let totalIncome = income.totalIncome || (wages + businessIncome + otherIncome);
+    let adjustments = (income.adjustments?.studentLoanInterest || 0) + 
+                     (income.adjustments?.retirementContributions || 0) + 
+                     (income.adjustments?.otherAdjustments || 0);
+    
+    // 만약 계산된 소득이 0이면 조정총소득(AGI)에서 역산
+    if (totalIncome === 0 && income.adjustedGrossIncome) {
+      totalIncome = income.adjustedGrossIncome + adjustments;
+    }
+    
+    const agi = Math.max(0, income.adjustedGrossIncome || (totalIncome - adjustments));
     
     console.log('소득 데이터 상세:', { 
       wages, 

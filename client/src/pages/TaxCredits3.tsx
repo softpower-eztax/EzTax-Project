@@ -47,6 +47,7 @@ interface TaxCredits {
   llcCredit: number;
   retirementSavingsCredit: number;
   foreignTaxCredit: number;
+  earnedIncomeCredit: number;
   otherCredits: number;
   otherCreditItems?: OtherCreditItem[];
   totalCredits: number;
@@ -99,6 +100,7 @@ const defaultFormData: TaxCreditsFormData = {
   llcCredit: 0,
   retirementSavingsCredit: 0,
   foreignTaxCredit: 0,
+  earnedIncomeCredit: 0,
   otherCredits: 0,
   otherCreditItems: [],
   totalCredits: 0,
@@ -116,6 +118,7 @@ const formSchema = z.object({
   llcCredit: z.coerce.number().min(0).default(0),
   retirementSavingsCredit: z.coerce.number().min(0).default(0),
   foreignTaxCredit: z.coerce.number().min(0).default(0),
+  earnedIncomeCredit: z.coerce.number().min(0).default(0),
   otherCredits: z.coerce.number().min(0).default(0),
   otherCreditItems: z.array(
     z.object({
@@ -350,6 +353,7 @@ const TaxCredits3Page: React.FC = () => {
       (values.educationCredits || 0) +
       (values.retirementSavingsCredit || 0) +
       (values.foreignTaxCredit || 0) +
+      (values.earnedIncomeCredit || 0) +
       (values.otherCredits || 0) +
       otherItemsTotal;
     
@@ -377,11 +381,11 @@ const TaxCredits3Page: React.FC = () => {
         aotcCredit: formattedTaxCredits.aotcCredit,
         llcCredit: formattedTaxCredits.llcCredit,
         retirementSavingsCredit: formattedTaxCredits.retirementSavingsCredit,
+        foreignTaxCredit: formattedTaxCredits.foreignTaxCredit,
+        earnedIncomeCredit: formattedTaxCredits.earnedIncomeCredit,
         otherCredits: formattedTaxCredits.otherCredits,
         otherCreditItems: formattedTaxCredits.otherCreditItems,
-        totalCredits: formattedTaxCredits.totalCredits,
-        // 확장된 속성은 스프레드 연산자로 추가
-        ...(formattedTaxCredits as any) // 추가 속성을 포함
+        totalCredits: formattedTaxCredits.totalCredits
       },
       retirementContributions: formattedTaxCredits.retirementContributions
     });
@@ -1259,6 +1263,79 @@ const TaxCredits3Page: React.FC = () => {
                             </FormControl>
                             <FormDescription className="text-sm text-gray-600">
                               외국에서 납부한 소득세액을 입력하세요. $300 초과 시 Form 1116이 필요할 수 있습니다.
+                            </FormDescription>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                  </div>
+                  
+                  {/* 근로소득공제 (Earned Income Credit) */}
+                  <div className="mb-6 border-b border-gray-light pb-6">
+                    <div className="flex items-center gap-2 mb-3">
+                      <h4 className="font-semibold">근로소득공제 (Earned Income Credit)</h4>
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Info className="h-4 w-4 text-gray-dark cursor-help" />
+                          </TooltipTrigger>
+                          <TooltipContent side="right" className="max-w-md">
+                            <div className="space-y-2">
+                              <p className="font-medium">근로소득공제 (EIC) 안내</p>
+                              <div className="text-sm space-y-1">
+                                <p><strong>2025년 소득한도:</strong></p>
+                                <ul className="list-disc list-inside space-y-1 ml-2">
+                                  <li>• 자녀 없음: $18,591 (미혼) / $25,511 (합산신고)</li>
+                                  <li>• 자녀 1명: $45,529 (미혼) / $52,449 (합산신고)</li>
+                                  <li>• 자녀 2명: $51,567 (미혼) / $58,487 (합산신고)</li>
+                                  <li>• 자녀 3명+: $55,529 (미혼) / $62,449 (합산신고)</li>
+                                </ul>
+                                <p className="mt-2"><strong>참고:</strong> 투자소득은 $11,600 이하여야 함</p>
+                              </div>
+                            </div>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    </div>
+                    
+                    <div className="space-y-4">
+                      <FormField
+                        control={form.control}
+                        name="earnedIncomeCredit"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>근로소득공제액 (Earned Income Credit Amount)</FormLabel>
+                            <FormControl>
+                              <div className="relative">
+                                <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-dark">$</span>
+                                <Input 
+                                  placeholder="0.00"
+                                  className="pl-8"
+                                  value={field.value || ''}
+                                  onChange={(e) => {
+                                    const formatted = formatNumberInput(e.target.value);
+                                    field.onChange(formatted ? Number(formatted) : 0);
+                                    setPendingChanges(true);
+                                  }}
+                                />
+                              </div>
+                            </FormControl>
+                            <FormDescription className="text-sm text-gray-600">
+                              {taxData.personalInfo?.filingStatus === 'marriedFilingJointly' 
+                                ? `합산신고 기준 소득한도: ${
+                                    (taxData.personalInfo.dependents?.filter(d => d.relationship === 'child')?.length || 0) === 0 ? '$25,511' :
+                                    (taxData.personalInfo.dependents?.filter(d => d.relationship === 'child')?.length || 0) === 1 ? '$52,449' :
+                                    (taxData.personalInfo.dependents?.filter(d => d.relationship === 'child')?.length || 0) === 2 ? '$58,487' :
+                                    '$62,449'
+                                  }`
+                                : `미혼 기준 소득한도: ${
+                                    (taxData.personalInfo?.dependents?.filter(d => d.relationship === 'child')?.length || 0) === 0 ? '$18,591' :
+                                    (taxData.personalInfo?.dependents?.filter(d => d.relationship === 'child')?.length || 0) === 1 ? '$45,529' :
+                                    (taxData.personalInfo?.dependents?.filter(d => d.relationship === 'child')?.length || 0) === 2 ? '$51,567' :
+                                    '$55,529'
+                                  }`
+                              }
                             </FormDescription>
                             <FormMessage />
                           </FormItem>

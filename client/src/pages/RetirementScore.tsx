@@ -76,7 +76,7 @@ export default function RetirementScoreStepByStep() {
   // Social Security calculator state
   const [ssStartAge, setSsStartAge] = useState(25);
   const [ssRetireAge, setSsRetireAge] = useState(65);
-  const [ssAvgSalary, setSsAvgSalary] = useState(5000);
+  const [ssAvgSalary, setSsAvgSalary] = useState(80000);
   const [ssClaimAge, setSsClaimAge] = useState(67);
 
   const form = useForm<RetirementFormData>({
@@ -165,7 +165,7 @@ export default function RetirementScoreStepByStep() {
   // Social Security 계산 함수 (SSA.gov 기준)
   const calculateSocialSecurity = () => {
     const workingYears = Math.min(35, ssRetireAge - ssStartAge);
-    const annualEarnings = ssAvgSalary * 12;
+    const annualEarnings = ssAvgSalary; // 이미 연봉이므로 12를 곱하지 않음
     
     // 최소 10년(40분기) 납부 필요
     if (workingYears < 10) {
@@ -728,6 +728,7 @@ export default function RetirementScoreStepByStep() {
                                   onChange={(e) => setSsAvgSalary(Number(e.target.value))}
                                   min="0"
                                   step="1000"
+                                  placeholder="예: 80000 (연봉)"
                                 />
                               </div>
                               <div>
@@ -751,7 +752,7 @@ export default function RetirementScoreStepByStep() {
                               <div className="text-sm text-gray-600 space-y-1">
                                 {(() => {
                                   const workingYears = Math.min(35, ssRetireAge - ssStartAge);
-                                  const annualEarnings = ssAvgSalary * 12;
+                                  const annualEarnings = ssAvgSalary; // 이미 연봉
                                   const totalIndexedEarnings = workingYears * annualEarnings;
                                   const aime = totalIndexedEarnings / (35 * 12);
                                   

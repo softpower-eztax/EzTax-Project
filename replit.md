@@ -105,7 +105,7 @@ Preferred communication style: Simple, everyday language.
 ## Changelog
 
 Recent Changes:
-- July 1, 2025: **PAGE WIDTH CONSISTENCY ISSUE RESOLVED** - Fixed inconsistent page widths by removing App.tsx container constraints and applying uniform max-w-5xl mx-auto px-4 layout to both PersonalInfo and TaxCredits3 pages for consistent visual experience
+- July 1, 2025: **PAGE WIDTH LAYOUT OPTIMIZED** - Applied targeted width constraints (max-w-4xl) to Review page only for better readability while maintaining original layout for other pages to preserve form usability
 - July 1, 2025: **QBI DEDUCTION PROPERLY INTEGRATED INTO TAX CALCULATION** - QBI deduction now correctly applied to taxable income calculation (AGI - Standard/Itemized Deductions - QBI Deduction) and displayed in Review page for accurate tax computation and reporting
 - July 1, 2025: **TOTAL INCOME CALCULATION FIXED TO INCLUDE BUSINESS INCOME** - Resolved issue where business income from QBI was displayed in field but not included in total income calculation, now properly adds QBI totalQBI to aggregate income totals
 - July 1, 2025: **QBI ↔ INCOME AUTOMATIC SYNC COMPLETELY FIXED** - Successfully implemented seamless data integration between QBI Details and Income pages with direct field value display, real-time data synchronization, and comprehensive debugging system ensuring QBI totalQBI automatically populates business income field

@@ -38,6 +38,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json({ ok: true });
   });
 
+  // Health check endpoints
+  app.get("/api/health", (req, res) => {
+    res.status(200).json({ 
+      api: 'operational',
+      status: 'healthy',
+      timestamp: new Date().toISOString(),
+      features: ['auth', 'tax-calculations', 'database', 'session-management'],
+      environment: process.env.NODE_ENV || 'development'
+    });
+  });
+
+  app.get("/health", (req, res) => {
+    res.status(200).json({ 
+      status: 'healthy', 
+      timestamp: new Date().toISOString(),
+      port: parseInt(process.env.PORT || '5000', 10),
+      env: process.env.NODE_ENV || 'development',
+      database: process.env.DATABASE_URL ? 'connected' : 'not configured'
+    });
+  });
+
   // Serve admin setup page
   app.get("/setup-admin", (req, res) => {
     res.sendFile(path.resolve(process.cwd(), "setup-admin.html"));

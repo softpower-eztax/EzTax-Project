@@ -531,7 +531,7 @@ const TaxCredits3Page: React.FC = () => {
   };
   
   return (
-    <div className="container mx-auto py-6">
+    <div className="max-w-5xl mx-auto px-4 py-6">
       <ProgressTracker currentStep={4} />
       
       <Form {...form}>

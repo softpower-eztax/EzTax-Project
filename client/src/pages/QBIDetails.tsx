@@ -321,6 +321,10 @@ export default function QBIDetails() {
                               onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
                             />
                           </FormControl>
+                          <div className="text-xs text-blue-600 mt-1">
+                            💡 감가상각 대상 유형자산만 포함 (건물, 장비, 가구 등)<br/>
+                            ❌ 제외: 현금, 재고, 매출채권, 무형자산, 토지
+                          </div>
                           <FormMessage />
                         </FormItem>
                       )}

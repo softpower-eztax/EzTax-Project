@@ -290,6 +290,13 @@ const TaxCredits3Page: React.FC = () => {
     // 최소값 0, 최대값은 해당 한도의 최대 공제액
     const calculatedEIC = Math.max(0, Math.min(Math.round(credit), limit.maxCredit));
     
+    console.log("=== EIC 계산 세부 내역 ===");
+    console.log("사용된 한도:", limit);
+    console.log("계산용 소득:", incomeForCalculation);
+    console.log("소득 구간:", 
+      incomeForCalculation <= limit.phaseInLimit ? "Phase-in" :
+      incomeForCalculation <= limit.phaseOutStart ? "Plateau" : "Phase-out"
+    );
     console.log("계산된 EIC:", calculatedEIC);
     return calculatedEIC;
   };

@@ -295,86 +295,159 @@ const add1040IncomeSection = (doc: jsPDF, income: any, yPosition: number): numbe
 
 // This function is removed as AGI is now included in the Income section
 
-// Generate Form 1040 Tax and Credits section (Lines 12-19)
-const add1040TaxSection = (doc: jsPDF, calculatedResults: CalculatedResults | undefined, deductions: Deductions | undefined, yPosition: number): number => {
-  doc.setFontSize(11);
+// Generate Form 1040 Tax and Credits section (Lines 12-22)
+const add1040TaxSection = (doc: jsPDF, calculatedResults: CalculatedResults | undefined, deductions: Deductions | undefined, taxCredits: any, yPosition: number): number => {
+  doc.setFontSize(10);
   doc.setFont('helvetica', 'bold');
-  doc.text('Tax and Credits', 15, yPosition);
+  doc.text('Standard Deduction and Taxable Income', 15, yPosition);
   yPosition += 8;
   
-  doc.setFontSize(10);
+  doc.setFontSize(8);
   doc.setFont('helvetica', 'normal');
+  
+  const addTaxLine = (lineNum: string, description: string, amount: number) => {
+    doc.text(`${lineNum}`, 15, yPosition);
+    doc.text(description, 25, yPosition);
+    // Right-align amount
+    const amountText = formatCurrency(amount);
+    const textWidth = doc.getTextWidth(amountText);
+    doc.text(amountText, 185 - textWidth, yPosition);
+    yPosition += 5;
+  };
   
   if (calculatedResults) {
     // Standard/Itemized deduction
-    const deductionType = deductions?.useStandardDeduction ? 'Standard deduction' : 'Itemized deductions';
-    doc.text('12', 15, yPosition);
-    doc.text(`${deductionType}`, 25, yPosition);
-    doc.text(formatCurrency(calculatedResults.deductions || 0), 160, yPosition);
-    yPosition += 6;
+    const deductionType = deductions?.useStandardDeduction ? 'Standard deduction' : 'Itemized deductions from Schedule A';
+    addTaxLine('12', deductionType, calculatedResults.deductions || 0);
+    
+    // QBI deduction if applicable (check for QBI in tax credits or calculated results)
+    const qbiDeduction = (taxCredits as any)?.qbiDeduction || 0;
+    if (qbiDeduction > 0) {
+      addTaxLine('13', 'Qualified business income deduction', qbiDeduction);
+    }
     
     // Taxable income
     doc.setFont('helvetica', 'bold');
-    doc.text('15', 15, yPosition);
-    doc.text('Taxable income. Subtract line 12 from line 11', 25, yPosition);
-    doc.text(formatCurrency(calculatedResults.taxableIncome || 0), 160, yPosition);
-    yPosition += 6;
-    
+    addTaxLine('15', 'Taxable income. Subtract lines 12 and 13 from line 11', calculatedResults.taxableIncome || 0);
     doc.setFont('helvetica', 'normal');
-    // Tax
-    doc.text('16', 15, yPosition);
-    doc.text('Tax (see instructions)', 25, yPosition);
-    doc.text(formatCurrency(calculatedResults.federalTax || 0), 160, yPosition);
-    yPosition += 6;
     
-    // Credits
-    doc.text('19', 15, yPosition);
-    doc.text('Child tax credit and credit for other dependents', 25, yPosition);
-    doc.text(formatCurrency(calculatedResults.credits || 0), 160, yPosition);
-    yPosition += 6;
+    yPosition += 3;
+    doc.setFont('helvetica', 'bold');
+    doc.text('Tax', 15, yPosition);
+    yPosition += 5;
+    doc.setFont('helvetica', 'normal');
+    
+    // Tax calculation
+    addTaxLine('16', 'Tax (see instructions). Check if any from: a [ ] 8814 b [ ] 4972 c [ ] Other', calculatedResults.federalTax || 0);
+    
+    yPosition += 3;
+    doc.setFont('helvetica', 'bold');
+    doc.text('Credits', 15, yPosition);
+    yPosition += 5;
+    doc.setFont('helvetica', 'normal');
+    
+    // Credits section with detailed breakdown
+    const childTaxCredit = taxCredits?.childTaxCredit || 0;
+    const creditForOtherDependents = taxCredits?.creditForOtherDependents || 0;
+    const totalChildCredits = childTaxCredit + creditForOtherDependents;
+    
+    if (totalChildCredits > 0) {
+      addTaxLine('19', 'Child tax credit and credit for other dependents from Schedule 8812', totalChildCredits);
+    }
+    
+    // Other credits
+    if (taxCredits?.retirementSavingsCredit && taxCredits.retirementSavingsCredit > 0) {
+      addTaxLine('20d', 'Retirement savings contributions credit', taxCredits.retirementSavingsCredit);
+    }
+    
+    // Total credits
+    const totalCredits = totalChildCredits + (taxCredits?.retirementSavingsCredit || 0);
+    
+    if (totalCredits > 0) {
+      doc.setFont('helvetica', 'bold');
+      addTaxLine('21', 'Add lines 19 and 20d. These are your total credits', totalCredits);
+      doc.setFont('helvetica', 'normal');
+    }
     
     // Tax after credits
+    const taxAfterCredits = Math.max(0, (calculatedResults.federalTax || 0) - totalCredits);
+    yPosition += 3;
     doc.setFont('helvetica', 'bold');
-    doc.text('22', 15, yPosition);
-    doc.text('Subtract line 19 from line 16', 25, yPosition);
-    doc.text(formatCurrency(calculatedResults.taxDue || 0), 160, yPosition);
-    yPosition += 10;
+    addTaxLine('22', 'Subtract line 21 from line 16. If line 21 is more than line 16, enter -0-', taxAfterCredits);
+    doc.setFont('helvetica', 'normal');
   }
   
   return yPosition;
 };
 
 // Generate Form 1040 Payments section (Lines 25-33)
-const add1040PaymentsSection = (doc: jsPDF, calculatedResults: CalculatedResults | undefined, additionalTax: AdditionalTax | undefined, yPosition: number): number => {
-  doc.setFontSize(11);
+const add1040PaymentsSection = (doc: jsPDF, calculatedResults: CalculatedResults | undefined, additionalTax: AdditionalTax | undefined, taxCredits: any, yPosition: number): number => {
+  doc.setFontSize(10);
   doc.setFont('helvetica', 'bold');
-  doc.text('Payments', 15, yPosition);
+  doc.text('Other Taxes', 15, yPosition);
   yPosition += 8;
   
-  doc.setFontSize(10);
+  doc.setFontSize(8);
   doc.setFont('helvetica', 'normal');
   
+  const addPaymentLine = (lineNum: string, description: string, amount: number) => {
+    doc.text(`${lineNum}`, 15, yPosition);
+    doc.text(description, 25, yPosition);
+    // Right-align amount
+    const amountText = formatCurrency(amount);
+    const textWidth = doc.getTextWidth(amountText);
+    doc.text(amountText, 185 - textWidth, yPosition);
+    yPosition += 5;
+  };
+  
   if (calculatedResults) {
+    // Self-employment tax if applicable
+    const selfEmploymentTax = additionalTax?.selfEmploymentTax || 0;
+    if (selfEmploymentTax > 0) {
+      addPaymentLine('23', 'Self-employment tax. Attach Schedule SE', selfEmploymentTax);
+    }
+    
+    // Total tax (line 22 + other taxes)
+    const totalTax = (calculatedResults.taxDue || 0) + selfEmploymentTax;
+    if (totalTax > 0) {
+      doc.setFont('helvetica', 'bold');
+      addPaymentLine('24', 'Add lines 22 and 23. This is your total tax', totalTax);
+      doc.setFont('helvetica', 'normal');
+    }
+    
+    yPosition += 3;
+    doc.setFont('helvetica', 'bold');
+    doc.text('Payments', 15, yPosition);
+    yPosition += 5;
+    doc.setFont('helvetica', 'normal');
+    
     // Federal income tax withheld
-    doc.text('25a', 15, yPosition);
-    doc.text('Federal income tax withheld', 25, yPosition);
-    doc.text(formatCurrency(calculatedResults.payments || 0), 160, yPosition);
-    yPosition += 6;
+    addPaymentLine('25a', 'Federal income tax withheld from Forms W-2 and 1099', calculatedResults.payments || 0);
     
     // Estimated tax payments
     const estimatedPayments = additionalTax?.estimatedTaxPayments || 0;
-    doc.text('26', 15, yPosition);
-    doc.text('Estimated tax payments and amount applied from prior year', 25, yPosition);
-    doc.text(formatCurrency(estimatedPayments), 160, yPosition);
-    yPosition += 6;
+    if (estimatedPayments > 0) {
+      addPaymentLine('26', 'Estimated tax payments and amount applied from prior year', estimatedPayments);
+    }
+    
+    // Earned Income Credit if refundable
+    const eic = taxCredits?.earnedIncomeCredit || 0;
+    if (eic > 0) {
+      addPaymentLine('27a', 'Earned income credit (EIC)', eic);
+    }
+    
+    // Additional Child Tax Credit if applicable
+    const additionalChildTaxCredit = taxCredits?.additionalChildTaxCredit || 0;
+    if (additionalChildTaxCredit > 0) {
+      addPaymentLine('28', 'Additional child tax credit from Schedule 8812', additionalChildTaxCredit);
+    }
     
     // Total payments
-    const totalPayments = (calculatedResults.payments || 0) + estimatedPayments;
+    const totalPayments = (calculatedResults.payments || 0) + estimatedPayments + eic + additionalChildTaxCredit;
+    yPosition += 3;
     doc.setFont('helvetica', 'bold');
-    doc.text('33', 15, yPosition);
-    doc.text('Add lines 25a through 32. These are your total payments', 25, yPosition);
-    doc.text(formatCurrency(totalPayments), 160, yPosition);
-    yPosition += 10;
+    addPaymentLine('33', 'Add lines 25a through 32. These are your total payments', totalPayments);
+    doc.setFont('helvetica', 'normal');
   }
   
   return yPosition;
@@ -382,31 +455,48 @@ const add1040PaymentsSection = (doc: jsPDF, calculatedResults: CalculatedResults
 
 // Generate Form 1040 Refund or Amount Owed section (Lines 34-37)
 const add1040RefundOwedSection = (doc: jsPDF, calculatedResults: CalculatedResults | undefined, yPosition: number): number => {
-  doc.setFontSize(11);
+  doc.setFontSize(10);
   doc.setFont('helvetica', 'bold');
   doc.text('Refund', 15, yPosition);
   yPosition += 8;
   
-  doc.setFontSize(10);
+  doc.setFontSize(8);
+  doc.setFont('helvetica', 'normal');
+  
+  const addRefundLine = (lineNum: string, description: string, amount: number) => {
+    doc.text(`${lineNum}`, 15, yPosition);
+    doc.text(description, 25, yPosition);
+    // Right-align amount
+    const amountText = formatCurrency(amount);
+    const textWidth = doc.getTextWidth(amountText);
+    doc.text(amountText, 185 - textWidth, yPosition);
+    yPosition += 5;
+  };
   
   if (calculatedResults) {
     if (calculatedResults.refundAmount && calculatedResults.refundAmount > 0) {
       doc.setFont('helvetica', 'bold');
-      doc.text('34', 15, yPosition);
-      doc.text('If line 33 is more than line 22, subtract line 22 from line 33. This is the amount you overpaid', 25, yPosition);
-      doc.text(formatCurrency(calculatedResults.refundAmount), 160, yPosition);
-      yPosition += 6;
+      addRefundLine('34', 'If line 33 is more than line 24, subtract line 24 from line 33. This is the amount you overpaid', calculatedResults.refundAmount);
+      doc.setFont('helvetica', 'normal');
       
-      doc.text('35a', 15, yPosition);
-      doc.text('Amount of line 34 you want refunded to you', 25, yPosition);
-      doc.text(formatCurrency(calculatedResults.refundAmount), 160, yPosition);
-      yPosition += 10;
-    } else if (calculatedResults.amountOwed && calculatedResults.amountOwed > 0) {
+      addRefundLine('35a', 'Amount of line 34 you want refunded to you. If Form 8888 is attached, check here [ ]', calculatedResults.refundAmount);
+      
+      yPosition += 5;
       doc.setFont('helvetica', 'bold');
-      doc.text('37', 15, yPosition);
-      doc.text('Amount you owe. Subtract line 33 from line 22', 25, yPosition);
-      doc.text(formatCurrency(calculatedResults.amountOwed), 160, yPosition);
-      yPosition += 10;
+      doc.text('Amount You Owe', 15, yPosition);
+      yPosition += 5;
+    } else if (calculatedResults.amountOwed && calculatedResults.amountOwed > 0) {
+      yPosition += 5;
+      doc.setFont('helvetica', 'bold');
+      doc.text('Amount You Owe', 15, yPosition);
+      yPosition += 5;
+      doc.setFont('helvetica', 'normal');
+      
+      addRefundLine('37', 'Amount you owe. Subtract line 33 from line 24. For details on how to pay, see instructions', calculatedResults.amountOwed);
+      
+      // Estimated tax penalty if applicable
+      yPosition += 3;
+      addRefundLine('38', 'Estimated tax penalty (see instructions)', 0);
     }
   }
   
@@ -608,18 +698,10 @@ export const generateTaxFormPDF = (taxData: TaxData): jsPDF => {
     yPosition = 50;
   }
   
-  // Add AGI section
-  yPosition = add1040AGISection(doc, (taxData as any).income, yPosition);
-  
-  // Check if we need a new page
-  if (yPosition > 240) {
-    doc.addPage();
-    add1040Header(doc, taxData.taxYear);
-    yPosition = 50;
-  }
+  // AGI is now included in the income section, no separate function needed
   
   // Add tax and credits section
-  yPosition = add1040TaxSection(doc, taxData.calculatedResults, taxData.deductions, yPosition);
+  yPosition = add1040TaxSection(doc, taxData.calculatedResults, taxData.deductions, taxData.taxCredits, yPosition);
   
   // Check if we need a new page
   if (yPosition > 240) {
@@ -629,7 +711,7 @@ export const generateTaxFormPDF = (taxData: TaxData): jsPDF => {
   }
   
   // Add payments section
-  yPosition = add1040PaymentsSection(doc, taxData.calculatedResults, taxData.additionalTax, yPosition);
+  yPosition = add1040PaymentsSection(doc, taxData.calculatedResults, taxData.additionalTax, taxData.taxCredits, yPosition);
   
   // Check if we need a new page
   if (yPosition > 240) {

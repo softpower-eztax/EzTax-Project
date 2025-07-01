@@ -67,8 +67,20 @@ export default function QBIDetails() {
   const calculateQBI = () => {
     const values = form.getValues();
     const filingStatus = taxData.personalInfo?.filingStatus || 'single';
-    const agi = taxData.income?.adjustedGrossIncome || 0;
-    const taxableIncome = Math.max(0, agi - (taxData.deductions?.totalDeductions || 0));
+    
+    // Income 데이터에서 정확한 AGI 계산
+    const income = taxData.income || {};
+    const wages = income.wages || 0;
+    const businessIncome = income.businessIncome || 0;
+    const totalIncome = income.totalIncome || wages + businessIncome;
+    const adjustments = income.adjustments?.studentLoanInterest || 0;
+    const agi = Math.max(0, totalIncome - adjustments);
+    
+    // 표준공제 적용 (QBI 계산시 임시값 사용)
+    const standardDeduction = filingStatus === 'married_joint' ? 29200 : 14600;
+    const taxableIncome = Math.max(0, agi - standardDeduction);
+    
+    console.log('QBI 계산용 소득 데이터:', { totalIncome, agi, taxableIncome, income });
 
     // 2024년 QBI 한도
     const thresholds = {
@@ -173,10 +185,15 @@ export default function QBIDetails() {
 
   const onSubmit = (data: QBIFormData) => {
     // Income 데이터에 QBI 정보 저장
+    const currentIncome = taxData.income || {};
     const updatedIncome = {
-      ...taxData.income,
+      ...currentIncome,
       qbi: data,
-      businessIncome: data.totalQBI
+      businessIncome: data.totalQBI,
+      // totalIncome 재계산
+      totalIncome: (currentIncome.wages || 0) + data.totalQBI + (currentIncome.otherEarnedIncome || 0) + (currentIncome.interestIncome || 0) + (currentIncome.dividends || 0) + (currentIncome.capitalGains || 0) + (currentIncome.rentalIncome || 0) + (currentIncome.retirementIncome || 0) + (currentIncome.unemploymentIncome || 0) + (currentIncome.otherIncome || 0),
+      // adjustedGrossIncome 재계산
+      adjustedGrossIncome: (currentIncome.wages || 0) + data.totalQBI + (currentIncome.otherEarnedIncome || 0) + (currentIncome.interestIncome || 0) + (currentIncome.dividends || 0) + (currentIncome.capitalGains || 0) + (currentIncome.rentalIncome || 0) + (currentIncome.retirementIncome || 0) + (currentIncome.unemploymentIncome || 0) + (currentIncome.otherIncome || 0) - ((currentIncome.adjustments?.studentLoanInterest || 0) + (currentIncome.adjustments?.retirementContributions || 0) + (currentIncome.adjustments?.otherAdjustments || 0))
     };
 
     updateTaxData({ income: updatedIncome });

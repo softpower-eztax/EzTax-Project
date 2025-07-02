@@ -736,13 +736,13 @@ export default function CapitalGainsCalculator() {
                 <TableHeader>
                   <TableRow>
                     <TableHead className="w-[200px]">종목/자산 설명</TableHead>
-                    <TableHead className="text-right">매수가 ($)</TableHead>
-                    <TableHead className="text-right">매도가 ($)</TableHead>
+                    <TableHead className="text-right">Proceeds<br/><span className="text-xs text-gray-500">(매각금액)</span></TableHead>
+                    <TableHead className="text-right">Cost Basis<br/><span className="text-xs text-gray-500">(취득가)</span></TableHead>
                     <TableHead className="text-right">수량</TableHead>
-                    <TableHead className="text-center">구매일</TableHead>
-                    <TableHead className="text-center">판매일</TableHead>
+                    <TableHead className="text-center">취득일</TableHead>
+                    <TableHead className="text-center">매각일</TableHead>
                     <TableHead className="text-center">유형</TableHead>
-                    <TableHead className="text-right">이익/손실 ($)</TableHead>
+                    <TableHead className="text-right">Net Gain/Loss<br/><span className="text-xs text-gray-500">(자본이득/손실)</span></TableHead>
                     <TableHead className="w-[80px]">작업</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -750,8 +750,8 @@ export default function CapitalGainsCalculator() {
                   {transactions.map((transaction) => (
                     <TableRow key={`transaction-${transaction.id}-${Date.now()}`}>
                       <TableCell className="font-medium">{transaction.description}</TableCell>
-                      <TableCell className="text-right">${transaction.buyPrice.toLocaleString()}</TableCell>
-                      <TableCell className="text-right">${transaction.sellPrice.toLocaleString()}</TableCell>
+                      <TableCell className="text-right">${(transaction.sellPrice * transaction.quantity).toLocaleString()}</TableCell>
+                      <TableCell className="text-right">${(transaction.buyPrice * transaction.quantity).toLocaleString()}</TableCell>
                       <TableCell className="text-right">{transaction.quantity}</TableCell>
                       <TableCell className="text-center">{transaction.purchaseDate}</TableCell>
                       <TableCell className="text-center">{transaction.saleDate}</TableCell>
@@ -769,7 +769,7 @@ export default function CapitalGainsCalculator() {
                         "text-right font-medium",
                         transaction.profit > 0 ? "text-green-600" : "text-red-600"
                       )}>
-                        ${transaction.profit.toLocaleString()}
+                        {transaction.profit > 0 ? '+' : ''}${transaction.profit.toLocaleString()}
                       </TableCell>
                       <TableCell>
                         <Button
@@ -801,7 +801,7 @@ export default function CapitalGainsCalculator() {
                 />
               </div>
               <div>
-                <Label htmlFor="buyPrice">매수가 ($)</Label>
+                <Label htmlFor="buyPrice">Cost Basis (취득가) ($)</Label>
                 <Input
                   id="buyPrice"
                   name="buyPrice"
@@ -810,10 +810,11 @@ export default function CapitalGainsCalculator() {
                   step="0.01"
                   value={newTransaction.buyPrice || ''}
                   onChange={handleInputChange}
+                  placeholder="주당 취득가격"
                 />
               </div>
               <div>
-                <Label htmlFor="sellPrice">매도가 ($)</Label>
+                <Label htmlFor="sellPrice">Proceeds (매각가) ($)</Label>
                 <Input
                   id="sellPrice"
                   name="sellPrice"
@@ -822,6 +823,7 @@ export default function CapitalGainsCalculator() {
                   step="0.01"
                   value={newTransaction.sellPrice || ''}
                   onChange={handleInputChange}
+                  placeholder="주당 매각가격"
                 />
               </div>
               
@@ -838,7 +840,7 @@ export default function CapitalGainsCalculator() {
                 />
               </div>
               <div>
-                <Label htmlFor="purchaseDate">구매일</Label>
+                <Label htmlFor="purchaseDate">취득일 (Date Acquired)</Label>
                 <Input
                   id="purchaseDate"
                   name="purchaseDate"
@@ -848,7 +850,7 @@ export default function CapitalGainsCalculator() {
                 />
               </div>
               <div>
-                <Label htmlFor="saleDate">판매일</Label>
+                <Label htmlFor="saleDate">매각일 (Date Sold)</Label>
                 <Input
                   id="saleDate"
                   name="saleDate"

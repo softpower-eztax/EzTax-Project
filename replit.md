@@ -105,6 +105,7 @@ Preferred communication style: Simple, everyday language.
 ## Changelog
 
 Recent Changes:
+- July 2, 2025: **IRS 1099-B FORM STRUCTURE IMPLEMENTED** - Updated Capital Gains Calculator to match official IRS 1099-B layout with proper terminology: Proceeds (매각금액), Cost Basis (취득가), Date Acquired/Sold, Net Gain/Loss with total amounts instead of per-share prices for accurate tax reporting compliance
 - July 2, 2025: **CAPITAL GAINS CALCULATOR TRANSACTION DELETION COMPLETELY FIXED** - Implemented refreshKey-based forced re-rendering system to resolve React state update issues, ensuring transaction deletions are immediately reflected in UI with comprehensive debugging and strong re-rendering guarantees
 - July 1, 2025: **QBI DEDUCTION PROPERLY INTEGRATED INTO TAX CALCULATION** - QBI deduction now correctly applied to taxable income calculation (AGI - Standard/Itemized Deductions - QBI Deduction) and displayed in Review page for accurate tax computation and reporting
 - July 1, 2025: **TOTAL INCOME CALCULATION FIXED TO INCLUDE BUSINESS INCOME** - Resolved issue where business income from QBI was displayed in field but not included in total income calculation, now properly adds QBI totalQBI to aggregate income totals

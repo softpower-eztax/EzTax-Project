@@ -99,8 +99,8 @@ export default function CapitalGainsCalculator() {
   const [isUploading, setIsUploading] = useState<boolean>(false);
   const [uploadProgress, setUploadProgress] = useState<number>(0);
   
-  // 프리미엄 상태 관리 (실제로는 사용자 구독 정보에서 가져와야 함)
-  const [isPremium, setIsPremium] = useState<boolean>(false);
+  // 프리미엄 상태 관리 (모든 기능 오픈)
+  const [isPremium, setIsPremium] = useState<boolean>(true);
   
   // 프리미엄 기능 안내 다이얼로그 관리
   const [premiumDialogOpen, setPremiumDialogOpen] = useState<boolean>(false);
@@ -236,22 +236,13 @@ export default function CapitalGainsCalculator() {
     setLocation('/premium-features');
   };
   
-  // 프리미엄 기능 접근 체크
+  // 프리미엄 기능 접근 체크 (모든 기능 오픈)
   const checkPremiumAccess = (featureName: string) => {
-    if (isPremium) {
-      return true;
-    } else {
-      setPremiumDialogOpen(true);
-      return false;
-    }
+    return true; // 모든 기능 접근 가능
   };
 
   // 1099-B 파일 업로드 시뮬레이션
   const simulateFileUpload = () => {
-    // 프리미엄 기능 체크
-    if (!checkPremiumAccess('file-upload')) {
-      return;
-    }
     
     setIsUploading(true);
     setUploadProgress(0);
@@ -651,13 +642,6 @@ export default function CapitalGainsCalculator() {
                     최적화 분석 시작
                   </Button>
                 </CardFooter>
-                {!isPremium && (
-                  <div className="absolute inset-0 flex items-center justify-center bg-white/80 backdrop-blur-[1px] rounded-lg">
-                    <div className="bg-primary/10 p-2 rounded-full">
-                      <Lock className="h-5 w-5 text-primary" />
-                    </div>
-                  </div>
-                )}
               </Card>
               
               {/* 보고서 내보내기 */}
@@ -680,13 +664,6 @@ export default function CapitalGainsCalculator() {
                     보고서 생성
                   </Button>
                 </CardFooter>
-                {!isPremium && (
-                  <div className="absolute inset-0 flex items-center justify-center bg-white/80 backdrop-blur-[1px] rounded-lg">
-                    <div className="bg-primary/10 p-2 rounded-full">
-                      <Lock className="h-5 w-5 text-primary" />
-                    </div>
-                  </div>
-                )}
               </Card>
               
               {/* 업그레이드 버튼 */}

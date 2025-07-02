@@ -224,7 +224,13 @@ export default function CapitalGainsCalculator() {
   
   // 거래 삭제
   const removeTransaction = (id: number) => {
-    setTransactions(transactions.filter(transaction => transaction.id !== id));
+    console.log('삭제 요청된 거래 ID:', id);
+    console.log('현재 거래 목록:', transactions);
+    
+    const filteredTransactions = transactions.filter(transaction => transaction.id !== id);
+    console.log('삭제 후 거래 목록:', filteredTransactions);
+    
+    setTransactions(filteredTransactions);
     toast({
       title: "거래 삭제됨",
       description: "선택한 거래가 목록에서 제거되었습니다."
@@ -480,10 +486,8 @@ export default function CapitalGainsCalculator() {
                     </TableCell>
                     <TableCell>
                       <Button
-                        variant="ghost"
-                        size="sm"
                         onClick={() => removeTransaction(transaction.id)}
-                        className="text-red-500 hover:text-red-700 hover:bg-red-50"
+                        className="text-red-500 hover:text-red-700 hover:bg-red-50 bg-transparent border border-red-200 px-3 py-1 text-sm"
                       >
                         삭제
                       </Button>

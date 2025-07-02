@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useLocation } from 'wouter';
 import { useTaxContext } from '@/context/TaxContext';
 import { Income } from '@shared/schema';
@@ -48,42 +48,57 @@ export default function CapitalGainsCalculator() {
   const { taxData, updateTaxData } = useTaxContext();
   const { toast } = useToast();
   
-  // 초기 상태: 일부 예시 거래 데이터
-  const [transactions, setTransactions] = useState<Transaction[]>([
-    { 
-      id: 1, 
-      description: '테슬라 주식', 
-      buyPrice: 180, 
-      sellPrice: 220, 
-      quantity: 10, 
-      profit: 400,
-      purchaseDate: '2023-01-15',
-      saleDate: '2024-03-20',
-      isLongTerm: true  // 1년 이상 보유
-    },
-    { 
-      id: 2, 
-      description: '애플 주식', 
-      buyPrice: 140, 
-      sellPrice: 170, 
-      quantity: 15, 
-      profit: 450,
-      purchaseDate: '2024-01-10',
-      saleDate: '2024-04-15',
-      isLongTerm: false // 1년 미만 보유
-    },
-    { 
-      id: 3, 
-      description: '마이크로소프트 주식', 
-      buyPrice: 280, 
-      sellPrice: 310, 
-      quantity: 8, 
-      profit: 240,
-      purchaseDate: '2022-06-22',
-      saleDate: '2024-02-18',
-      isLongTerm: true  // 1년 이상 보유
-    },
-  ]);
+  // localStorage에서 거래 데이터 불러오기 또는 기본 샘플 데이터 사용
+  const [transactions, setTransactions] = useState<Transaction[]>(() => {
+    try {
+      const saved = localStorage.getItem('capitalGainsTransactions');
+      if (saved) {
+        console.log('localStorage에서 거래 데이터 로드:', JSON.parse(saved));
+        return JSON.parse(saved);
+      }
+    } catch (error) {
+      console.error('localStorage 데이터 로드 실패:', error);
+    }
+    
+    // 기본 샘플 데이터
+    const defaultTransactions = [
+      { 
+        id: 1, 
+        description: '테슬라 주식', 
+        buyPrice: 180, 
+        sellPrice: 220, 
+        quantity: 10, 
+        profit: 400,
+        purchaseDate: '2023-01-15',
+        saleDate: '2024-03-20',
+        isLongTerm: true
+      },
+      { 
+        id: 2, 
+        description: '애플 주식', 
+        buyPrice: 140, 
+        sellPrice: 170, 
+        quantity: 15, 
+        profit: 450,
+        purchaseDate: '2024-01-10',
+        saleDate: '2024-04-15',
+        isLongTerm: false
+      },
+      { 
+        id: 3, 
+        description: '마이크로소프트 주식', 
+        buyPrice: 280, 
+        sellPrice: 310, 
+        quantity: 8, 
+        profit: 240,
+        purchaseDate: '2022-06-22',
+        saleDate: '2024-02-18',
+        isLongTerm: true
+      }
+    ];
+    console.log('기본 샘플 데이터 사용:', defaultTransactions);
+    return defaultTransactions;
+  });
   
   // 새로운 거래 입력을 위한 상태
   const [newTransaction, setNewTransaction] = useState<Omit<Transaction, 'id' | 'profit' | 'isLongTerm'>>({
@@ -107,6 +122,16 @@ export default function CapitalGainsCalculator() {
   
   // 강제 리렌더링을 위한 상태
   const [refreshKey, setRefreshKey] = useState<number>(0);
+  
+  // transactions 변경 시 localStorage에 저장
+  useEffect(() => {
+    try {
+      localStorage.setItem('capitalGainsTransactions', JSON.stringify(transactions));
+      console.log('거래 데이터 localStorage에 저장:', transactions);
+    } catch (error) {
+      console.error('localStorage 저장 실패:', error);
+    }
+  }, [transactions]);
   
   // 장기/단기 자본 이득 및 세금 계산
   const longTermGains = transactions
@@ -233,18 +258,28 @@ export default function CapitalGainsCalculator() {
     console.log('삭제 요청된 거래 ID:', id);
     console.log('현재 거래 목록:', transactions);
     
-    setTransactions(prevTransactions => {
-      const filteredTransactions = prevTransactions.filter(transaction => transaction.id !== id);
-      console.log('삭제 후 거래 목록:', filteredTransactions);
+    // 즉시 새 배열 생성
+    const filteredTransactions = transactions.filter(transaction => transaction.id !== id);
+    console.log('삭제 후 거래 목록:', filteredTransactions);
+    
+    // 상태 업데이트를 강제로 실행
+    setTransactions(() => {
+      console.log('상태 업데이트 콜백 실행 - 새 배열:', filteredTransactions);
       return filteredTransactions;
     });
     
-    // 강제 리렌더링 트리거
-    setRefreshKey(prev => prev + 1);
+    // 강제 리렌더링 (여러 방법 동시 사용)
+    setRefreshKey(Date.now()); // 현재 시간으로 완전히 새로운 키
+    
+    // DOM 강제 업데이트
+    setTimeout(() => {
+      setRefreshKey(prev => prev + 1);
+      console.log('추가 강제 리렌더링 실행');
+    }, 10);
     
     toast({
       title: "거래 삭제됨",
-      description: `ID ${id} 거래가 목록에서 제거되었습니다.`
+      description: `ID ${id} 거래가 삭제되었습니다.`
     });
   };
   

@@ -5,6 +5,7 @@ import { Income } from '@shared/schema';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { Progress } from '@/components/ui/progress';
 import { useToast } from '@/hooks/use-toast';
 import { FileText, Calculator, ArrowLeft, Save, Download } from 'lucide-react';
 import {
@@ -28,7 +29,6 @@ import {
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { cn } from '@/lib/utils';
-import { Progress } from '@/components/ui/progress';
 
 // 거래 항목 인터페이스 정의
 interface Transaction {
@@ -241,13 +241,31 @@ export default function CapitalGainsCalculator() {
     return true; // 모든 기능 접근 가능
   };
 
-  // 1099-B 파일 업로드 시뮬레이션
-  const simulateFileUpload = () => {
+  // 파일 입력 참조
+  const fileInputRef = React.useRef<HTMLInputElement>(null);
+
+  // 파일 업로드 핸들러
+  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    
+    // 파일 타입 검증
+    const allowedTypes = ['.pdf', '.csv', '.xls', '.xlsx'];
+    const fileExtension = '.' + file.name.split('.').pop()?.toLowerCase();
+    
+    if (!allowedTypes.includes(fileExtension)) {
+      toast({
+        title: "지원하지 않는 파일 형식",
+        description: "PDF, CSV, XLS, XLSX 파일만 업로드 가능합니다.",
+        variant: "destructive"
+      });
+      return;
+    }
     
     setIsUploading(true);
     setUploadProgress(0);
     
-    // 업로드 진행 상황 시뮬레이션
+    // 파일 처리 시뮬레이션
     const interval = setInterval(() => {
       setUploadProgress(prev => {
         const newProgress = prev + 10;
@@ -255,7 +273,7 @@ export default function CapitalGainsCalculator() {
           clearInterval(interval);
           setIsUploading(false);
           
-          // 업로드 완료 후 예시 데이터 추가
+          // 파일 처리 완료 후 예시 데이터 추가
           const sampleTransactions: Transaction[] = [
             { 
               id: transactions.length + 1, 
@@ -296,13 +314,23 @@ export default function CapitalGainsCalculator() {
           
           toast({
             title: "1099-B 파일 처리 완료",
-            description: "파일에서 3개의 거래가 추출되었습니다.",
+            description: `${file.name}에서 3개의 거래가 추출되었습니다.`,
             duration: 5000
           });
+          
+          // 파일 입력 초기화
+          if (fileInputRef.current) {
+            fileInputRef.current.value = '';
+          }
         }
         return newProgress;
       });
     }, 200);
+  };
+
+  // 파일 선택 버튼 클릭 핸들러
+  const triggerFileUpload = () => {
+    fileInputRef.current?.click();
   };
   
   // 자본 이득 저장 및 수입 페이지로 이동
@@ -376,10 +404,19 @@ export default function CapitalGainsCalculator() {
               1099-B 파일을 업로드하면 거래 정보가 자동으로 추출됩니다.
             </p>
             <div className="flex items-center gap-3">
+              {/* 숨겨진 파일 입력 */}
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept=".pdf,.csv,.xls,.xlsx"
+                onChange={handleFileUpload}
+                className="hidden"
+              />
+              
               <Button
                 variant="outline"
                 size="sm"
-                onClick={simulateFileUpload}
+                onClick={triggerFileUpload}
                 disabled={isUploading}
                 className="flex items-center gap-2"
               >
@@ -393,6 +430,9 @@ export default function CapitalGainsCalculator() {
                 </div>
               )}
             </div>
+            <p className="text-xs text-gray-500 mt-2">
+              지원 형식: PDF, CSV, Excel (.xls, .xlsx) 파일
+            </p>
           </div>
           
           {/* 거래 목록 테이블 */}

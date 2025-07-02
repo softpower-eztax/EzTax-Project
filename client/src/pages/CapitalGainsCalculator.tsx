@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useLocation } from 'wouter';
 import { useTaxContext } from '@/context/TaxContext';
 import { Income } from '@shared/schema';
@@ -294,10 +294,10 @@ export default function CapitalGainsCalculator() {
   };
 
   // 파일 입력 참조
-  const fileInputRef = React.useRef<HTMLInputElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // 파일 업로드 핸들러
-  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileUpload = (event: any) => {
     const file = event.target.files?.[0];
     if (!file) return;
     

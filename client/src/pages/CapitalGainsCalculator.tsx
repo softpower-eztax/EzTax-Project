@@ -61,40 +61,127 @@ export default function CapitalGainsCalculator() {
       console.error('localStorage 데이터 로드 실패:', error);
     }
     
-    // 기본 샘플 데이터
+    // 기본 샘플 데이터 (더 현실적인 포트폴리오)
     const defaultTransactions = [
       { 
         id: 1, 
-        description: '테슬라 주식', 
-        buyPrice: 180, 
-        sellPrice: 220, 
-        quantity: 10, 
-        profit: 400,
-        purchaseDate: '2023-01-15',
-        saleDate: '2024-03-20',
-        isLongTerm: true
+        description: 'TSLA - Tesla Inc', 
+        buyPrice: 186.54, 
+        sellPrice: 243.18, 
+        quantity: 15, 
+        profit: 849.60,
+        purchaseDate: '2023-05-22',
+        saleDate: '2024-02-15',
+        isLongTerm: false,
+        washSaleLoss: 0
       },
       { 
         id: 2, 
-        description: '애플 주식', 
-        buyPrice: 140, 
-        sellPrice: 170, 
-        quantity: 15, 
-        profit: 450,
-        purchaseDate: '2024-01-10',
-        saleDate: '2024-04-15',
-        isLongTerm: false
+        description: 'AAPL - Apple Inc', 
+        buyPrice: 145.87, 
+        sellPrice: 192.53, 
+        quantity: 8, 
+        profit: 373.28,
+        purchaseDate: '2023-08-10',
+        saleDate: '2024-06-20',
+        isLongTerm: false,
+        washSaleLoss: 125.50
       },
       { 
         id: 3, 
-        description: '마이크로소프트 주식', 
-        buyPrice: 280, 
-        sellPrice: 310, 
+        description: 'NVDA - NVIDIA Corp', 
+        buyPrice: 210.33, 
+        sellPrice: 875.28, 
+        quantity: 5, 
+        profit: 3324.75,
+        purchaseDate: '2022-11-15',
+        saleDate: '2024-03-08',
+        isLongTerm: true,
+        washSaleLoss: 0
+      },
+      { 
+        id: 4, 
+        description: 'META - Meta Platforms Inc', 
+        buyPrice: 198.65, 
+        sellPrice: 487.23, 
+        quantity: 6, 
+        profit: 1731.48,
+        purchaseDate: '2023-02-14',
+        saleDate: '2024-07-18',
+        isLongTerm: true,
+        washSaleLoss: 0
+      },
+      { 
+        id: 5, 
+        description: 'MSFT - Microsoft Corp', 
+        buyPrice: 258.45, 
+        sellPrice: 412.73, 
         quantity: 8, 
-        profit: 240,
-        purchaseDate: '2022-06-22',
-        saleDate: '2024-02-18',
-        isLongTerm: true
+        profit: 1234.24,
+        purchaseDate: '2023-01-18',
+        saleDate: '2024-05-10',
+        isLongTerm: true,
+        washSaleLoss: 0
+      },
+      { 
+        id: 6, 
+        description: 'GOOGL - Alphabet Inc', 
+        buyPrice: 88.73, 
+        sellPrice: 165.42, 
+        quantity: 12, 
+        profit: 920.28,
+        purchaseDate: '2023-04-12',
+        saleDate: '2024-01-30',
+        isLongTerm: false,
+        washSaleLoss: 0
+      },
+      { 
+        id: 7, 
+        description: 'AMZN - Amazon.com Inc', 
+        buyPrice: 102.88, 
+        sellPrice: 178.25, 
+        quantity: 20, 
+        profit: 1507.40,
+        purchaseDate: '2023-09-05',
+        saleDate: '2024-04-22',
+        isLongTerm: false,
+        washSaleLoss: 0
+      },
+      { 
+        id: 8, 
+        description: 'SPY - SPDR S&P 500 ETF', 
+        buyPrice: 385.22, 
+        sellPrice: 532.18, 
+        quantity: 10, 
+        profit: 1469.60,
+        purchaseDate: '2022-10-28',
+        saleDate: '2024-06-15',
+        isLongTerm: true,
+        washSaleLoss: 0
+      },
+      { 
+        id: 9, 
+        description: 'GME - GameStop Corp', 
+        buyPrice: 22.15, 
+        sellPrice: 19.85, 
+        quantity: 25, 
+        profit: -57.50,
+        purchaseDate: '2023-09-08',
+        saleDate: '2024-04-12',
+        isLongTerm: false,
+        washSaleLoss: 45.75
+      },
+      { 
+        id: 10, 
+        description: 'COIN - Coinbase Global', 
+        buyPrice: 88.45, 
+        sellPrice: 245.67, 
+        quantity: 5, 
+        profit: 786.10,
+        purchaseDate: '2023-01-05',
+        saleDate: '2024-11-12',
+        isLongTerm: true,
+        washSaleLoss: 0
       }
     ];
     console.log('기본 샘플 데이터 사용:', defaultTransactions);
@@ -330,9 +417,10 @@ export default function CapitalGainsCalculator() {
     // 실제 1099-B 양식에서 흔히 볼 수 있는 거래 패턴으로 데이터 생성
     const transactions: Transaction[] = [];
     
-    // Robinhood 1099-B 특화 데이터
+    // Robinhood 1099-B 특화 데이터 (더 많은 종목)
     if (fileName.includes('robinhood')) {
       transactions.push(
+        // 대형 테크 주식들
         {
           id: Date.now() + Math.random(),
           description: 'TSLA - Tesla Inc',
@@ -368,10 +456,96 @@ export default function CapitalGainsCalculator() {
           saleDate: '2024-03-08',
           isLongTerm: true,
           washSaleLoss: 0
+        },
+        {
+          id: Date.now() + Math.random() + 3,
+          description: 'META - Meta Platforms Inc',
+          buyPrice: 198.65,
+          sellPrice: 487.23,
+          quantity: 6,
+          profit: 1731.48,
+          purchaseDate: '2023-02-14',
+          saleDate: '2024-07-18',
+          isLongTerm: true,
+          washSaleLoss: 0
+        },
+        {
+          id: Date.now() + Math.random() + 4,
+          description: 'GOOGL - Alphabet Inc',
+          buyPrice: 88.73,
+          sellPrice: 165.42,
+          quantity: 12,
+          profit: 920.28,
+          purchaseDate: '2023-04-12',
+          saleDate: '2024-01-30',
+          isLongTerm: false,
+          washSaleLoss: 0
+        },
+        {
+          id: Date.now() + Math.random() + 5,
+          description: 'MSFT - Microsoft Corp',
+          buyPrice: 258.45,
+          sellPrice: 412.73,
+          quantity: 8,
+          profit: 1234.24,
+          purchaseDate: '2023-01-18',
+          saleDate: '2024-05-10',
+          isLongTerm: true,
+          washSaleLoss: 0
+        },
+        // 인기 밈 주식들
+        {
+          id: Date.now() + Math.random() + 6,
+          description: 'AMC - AMC Entertainment',
+          buyPrice: 12.75,
+          sellPrice: 8.30,
+          quantity: 50,
+          profit: -222.50,
+          purchaseDate: '2023-06-15',
+          saleDate: '2024-03-22',
+          isLongTerm: false,
+          washSaleLoss: 0
+        },
+        {
+          id: Date.now() + Math.random() + 7,
+          description: 'GME - GameStop Corp',
+          buyPrice: 22.15,
+          sellPrice: 19.85,
+          quantity: 25,
+          profit: -57.50,
+          purchaseDate: '2023-09-08',
+          saleDate: '2024-04-12',
+          isLongTerm: false,
+          washSaleLoss: 45.75  // wash sale 손실
+        },
+        // ETF들
+        {
+          id: Date.now() + Math.random() + 8,
+          description: 'SPY - SPDR S&P 500 ETF',
+          buyPrice: 385.22,
+          sellPrice: 532.18,
+          quantity: 10,
+          profit: 1469.60,
+          purchaseDate: '2022-10-28',
+          saleDate: '2024-06-15',
+          isLongTerm: true,
+          washSaleLoss: 0
+        },
+        {
+          id: Date.now() + Math.random() + 9,
+          description: 'QQQ - Invesco QQQ Trust',
+          buyPrice: 255.87,
+          sellPrice: 425.33,
+          quantity: 7,
+          profit: 1186.22,
+          purchaseDate: '2023-03-10',
+          saleDate: '2024-08-05',
+          isLongTerm: true,
+          washSaleLoss: 0
         }
       );
     } else {
-      // 일반 브로커 거래 데이터
+      // 일반 브로커 거래 데이터 (더 다양한 종목)
       transactions.push(
         {
           id: Date.now() + Math.random(),
@@ -382,7 +556,8 @@ export default function CapitalGainsCalculator() {
           profit: 1851.36,
           purchaseDate: '2023-01-18',
           saleDate: '2024-05-10',
-          isLongTerm: true
+          isLongTerm: true,
+          washSaleLoss: 0
         },
         {
           id: Date.now() + Math.random() + 1,
@@ -393,24 +568,164 @@ export default function CapitalGainsCalculator() {
           profit: 1507.40,
           purchaseDate: '2023-09-05',
           saleDate: '2024-04-22',
-          isLongTerm: false
+          isLongTerm: false,
+          washSaleLoss: 0
+        },
+        {
+          id: Date.now() + Math.random() + 2,
+          description: 'NFLX - Netflix Inc',
+          buyPrice: 348.75,
+          sellPrice: 645.12,
+          quantity: 4,
+          profit: 1185.48,
+          purchaseDate: '2022-12-05',
+          saleDate: '2024-02-28',
+          isLongTerm: true,
+          washSaleLoss: 0
+        },
+        {
+          id: Date.now() + Math.random() + 3,
+          description: 'DIS - Walt Disney Co',
+          buyPrice: 95.23,
+          sellPrice: 112.47,
+          quantity: 15,
+          profit: 258.60,
+          purchaseDate: '2023-07-20',
+          saleDate: '2024-01-15',
+          isLongTerm: false,
+          washSaleLoss: 0
+        },
+        {
+          id: Date.now() + Math.random() + 4,
+          description: 'V - Visa Inc',
+          buyPrice: 185.44,
+          sellPrice: 275.82,
+          quantity: 8,
+          profit: 723.04,
+          purchaseDate: '2023-03-08',
+          saleDate: '2024-09-12',
+          isLongTerm: true,
+          washSaleLoss: 0
+        },
+        {
+          id: Date.now() + Math.random() + 5,
+          description: 'JPM - JPMorgan Chase',
+          buyPrice: 125.67,
+          sellPrice: 189.33,
+          quantity: 10,
+          profit: 636.60,
+          purchaseDate: '2023-05-15',
+          saleDate: '2024-07-08',
+          isLongTerm: true,
+          washSaleLoss: 0
         }
       );
     }
     
-    // 파일 크기가 큰 경우 추가 거래 데이터
-    if (file.size > 200000) { // 200KB 이상
-      transactions.push({
-        id: Date.now() + Math.random() + 3,
-        description: 'GOOGL - Alphabet Inc',
-        buyPrice: 88.73,
-        sellPrice: 165.42,
-        quantity: 7,
-        profit: 536.83,
-        purchaseDate: '2023-04-12',
-        saleDate: '2024-01-30',
-        isLongTerm: false
-      });
+    // 파일 크기가 큰 경우 추가 거래 데이터 (더 현실적인 포트폴리오)
+    if (file.size > 50000) { // 50KB 이상 - 더 낮은 임계값으로 더 많은 종목 추가
+      const additionalStocks = [
+        {
+          description: 'COST - Costco Wholesale',
+          buyPrice: 485.22,
+          sellPrice: 878.45,
+          quantity: 3,
+          profit: 1179.69,
+          purchaseDate: '2022-08-15',
+          saleDate: '2024-05-20',
+          isLongTerm: true,
+          washSaleLoss: 0
+        },
+        {
+          description: 'SHOP - Shopify Inc',
+          buyPrice: 65.44,
+          sellPrice: 89.12,
+          quantity: 18,
+          profit: 426.24,
+          purchaseDate: '2023-11-08',
+          saleDate: '2024-06-30',
+          isLongTerm: false,
+          washSaleLoss: 0
+        },
+        {
+          description: 'CRM - Salesforce Inc',
+          buyPrice: 142.88,
+          sellPrice: 268.75,
+          quantity: 9,
+          profit: 1132.83,
+          purchaseDate: '2023-02-22',
+          saleDate: '2024-08-15',
+          isLongTerm: true,
+          washSaleLoss: 0
+        },
+        {
+          description: 'UBER - Uber Technologies',
+          buyPrice: 28.75,
+          sellPrice: 72.18,
+          quantity: 22,
+          profit: 955.46,
+          purchaseDate: '2023-04-10',
+          saleDate: '2024-07-25',
+          isLongTerm: true,
+          washSaleLoss: 0
+        },
+        {
+          description: 'COIN - Coinbase Global',
+          buyPrice: 88.45,
+          sellPrice: 245.67,
+          quantity: 5,
+          profit: 786.10,
+          purchaseDate: '2023-01-05',
+          saleDate: '2024-11-12',
+          isLongTerm: true,
+          washSaleLoss: 0
+        },
+        {
+          description: 'ROKU - Roku Inc',
+          buyPrice: 62.33,
+          sellPrice: 45.12,
+          quantity: 14,
+          profit: -240.94,
+          purchaseDate: '2023-09-18',
+          saleDate: '2024-02-08',
+          isLongTerm: false,
+          washSaleLoss: 85.25  // wash sale 손실
+        },
+        {
+          description: 'PLTR - Palantir Technologies',
+          buyPrice: 15.44,
+          sellPrice: 39.88,
+          quantity: 35,
+          profit: 855.40,
+          purchaseDate: '2023-06-12',
+          saleDate: '2024-09-03',
+          isLongTerm: true,
+          washSaleLoss: 0
+        },
+        {
+          description: 'SQ - Block Inc',
+          buyPrice: 55.67,
+          sellPrice: 78.93,
+          quantity: 12,
+          profit: 279.12,
+          purchaseDate: '2023-08-25',
+          saleDate: '2024-04-18',
+          isLongTerm: false,
+          washSaleLoss: 0
+        }
+      ];
+
+      // 파일 크기에 따라 점진적으로 더 많은 종목 추가
+      let stocksToAdd = Math.min(additionalStocks.length, Math.floor(file.size / 25000)); // 25KB당 1개씩
+      
+      for (let i = 0; i < stocksToAdd; i++) {
+        const stock = additionalStocks[i];
+        transactions.push({
+          id: Date.now() + Math.random() + (10 + i),
+          ...stock,
+          isLongTerm: isLongTermInvestment(stock.purchaseDate, stock.saleDate)
+        });
+      }
     }
     
     // 장기/단기 투자 여부 재계산

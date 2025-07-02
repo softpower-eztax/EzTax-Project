@@ -227,13 +227,15 @@ export default function CapitalGainsCalculator() {
     console.log('삭제 요청된 거래 ID:', id);
     console.log('현재 거래 목록:', transactions);
     
-    const filteredTransactions = transactions.filter(transaction => transaction.id !== id);
-    console.log('삭제 후 거래 목록:', filteredTransactions);
+    setTransactions(prevTransactions => {
+      const filteredTransactions = prevTransactions.filter(transaction => transaction.id !== id);
+      console.log('삭제 후 거래 목록:', filteredTransactions);
+      return filteredTransactions;
+    });
     
-    setTransactions(filteredTransactions);
     toast({
       title: "거래 삭제됨",
-      description: "선택한 거래가 목록에서 제거되었습니다."
+      description: `ID ${id} 거래가 목록에서 제거되었습니다.`
     });
   };
   
@@ -443,59 +445,65 @@ export default function CapitalGainsCalculator() {
           
           {/* 거래 목록 테이블 */}
           <div className="mb-6">
-            <h3 className="text-lg font-medium mb-3">거래 목록</h3>
-            <Table>
-              <TableCaption>자본 이득 거래 내역</TableCaption>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="w-[200px]">종목/자산 설명</TableHead>
-                  <TableHead className="text-right">매수가 ($)</TableHead>
-                  <TableHead className="text-right">매도가 ($)</TableHead>
-                  <TableHead className="text-right">수량</TableHead>
-                  <TableHead className="text-center">구매일</TableHead>
-                  <TableHead className="text-center">판매일</TableHead>
-                  <TableHead className="text-center">유형</TableHead>
-                  <TableHead className="text-right">이익/손실 ($)</TableHead>
-                  <TableHead className="w-[80px]">작업</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {transactions.map((transaction) => (
-                  <TableRow key={transaction.id}>
-                    <TableCell className="font-medium">{transaction.description}</TableCell>
-                    <TableCell className="text-right">${transaction.buyPrice.toLocaleString()}</TableCell>
-                    <TableCell className="text-right">${transaction.sellPrice.toLocaleString()}</TableCell>
-                    <TableCell className="text-right">{transaction.quantity}</TableCell>
-                    <TableCell className="text-center">{transaction.purchaseDate}</TableCell>
-                    <TableCell className="text-center">{transaction.saleDate}</TableCell>
-                    <TableCell className="text-center">
-                      <span className={cn(
-                        "px-2 py-1 rounded-full text-xs font-medium",
-                        transaction.isLongTerm 
-                          ? "bg-green-100 text-green-800" 
-                          : "bg-amber-100 text-amber-800"
-                      )}>
-                        {transaction.isLongTerm ? '장기' : '단기'}
-                      </span>
-                    </TableCell>
-                    <TableCell className={cn(
-                      "text-right font-medium",
-                      transaction.profit > 0 ? "text-green-600" : "text-red-600"
-                    )}>
-                      ${transaction.profit.toLocaleString()}
-                    </TableCell>
-                    <TableCell>
-                      <Button
-                        onClick={() => removeTransaction(transaction.id)}
-                        className="text-red-500 hover:text-red-700 hover:bg-red-50 bg-transparent border border-red-200 px-3 py-1 text-sm"
-                      >
-                        삭제
-                      </Button>
-                    </TableCell>
+            <h3 className="text-lg font-medium mb-3">거래 목록 ({transactions.length}개)</h3>
+            {transactions.length === 0 ? (
+              <div className="text-center py-8 text-gray-500">
+                거래 내역이 없습니다. 새 거래를 추가하거나 1099-B 파일을 업로드하세요.
+              </div>
+            ) : (
+              <Table key={transactions.length}>
+                <TableCaption>자본 이득 거래 내역</TableCaption>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="w-[200px]">종목/자산 설명</TableHead>
+                    <TableHead className="text-right">매수가 ($)</TableHead>
+                    <TableHead className="text-right">매도가 ($)</TableHead>
+                    <TableHead className="text-right">수량</TableHead>
+                    <TableHead className="text-center">구매일</TableHead>
+                    <TableHead className="text-center">판매일</TableHead>
+                    <TableHead className="text-center">유형</TableHead>
+                    <TableHead className="text-right">이익/손실 ($)</TableHead>
+                    <TableHead className="w-[80px]">작업</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                </TableHeader>
+                <TableBody>
+                  {transactions.map((transaction) => (
+                    <TableRow key={`transaction-${transaction.id}-${Date.now()}`}>
+                      <TableCell className="font-medium">{transaction.description}</TableCell>
+                      <TableCell className="text-right">${transaction.buyPrice.toLocaleString()}</TableCell>
+                      <TableCell className="text-right">${transaction.sellPrice.toLocaleString()}</TableCell>
+                      <TableCell className="text-right">{transaction.quantity}</TableCell>
+                      <TableCell className="text-center">{transaction.purchaseDate}</TableCell>
+                      <TableCell className="text-center">{transaction.saleDate}</TableCell>
+                      <TableCell className="text-center">
+                        <span className={cn(
+                          "px-2 py-1 rounded-full text-xs font-medium",
+                          transaction.isLongTerm 
+                            ? "bg-green-100 text-green-800" 
+                            : "bg-amber-100 text-amber-800"
+                        )}>
+                          {transaction.isLongTerm ? '장기' : '단기'}
+                        </span>
+                      </TableCell>
+                      <TableCell className={cn(
+                        "text-right font-medium",
+                        transaction.profit > 0 ? "text-green-600" : "text-red-600"
+                      )}>
+                        ${transaction.profit.toLocaleString()}
+                      </TableCell>
+                      <TableCell>
+                        <Button
+                          onClick={() => removeTransaction(transaction.id)}
+                          className="text-red-500 hover:text-red-700 hover:bg-red-50 bg-transparent border border-red-200 px-3 py-1 text-sm"
+                        >
+                          삭제
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            )}
           </div>
           
           {/* 새 거래 추가 폼 */}

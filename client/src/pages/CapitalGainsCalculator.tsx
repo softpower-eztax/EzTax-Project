@@ -248,7 +248,8 @@ export default function CapitalGainsCalculator() {
       sellPrice: 0,
       quantity: 0,
       purchaseDate: '',
-      saleDate: ''
+      saleDate: '',
+      washSaleLoss: 0
     });
     
     toast({

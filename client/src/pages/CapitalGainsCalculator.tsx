@@ -105,6 +105,9 @@ export default function CapitalGainsCalculator() {
   // 프리미엄 기능 안내 다이얼로그 관리
   const [premiumDialogOpen, setPremiumDialogOpen] = useState<boolean>(false);
   
+  // 강제 리렌더링을 위한 상태
+  const [refreshKey, setRefreshKey] = useState<number>(0);
+  
   // 장기/단기 자본 이득 및 세금 계산
   const longTermGains = transactions
     .filter(t => t.isLongTerm && t.profit > 0)
@@ -206,6 +209,9 @@ export default function CapitalGainsCalculator() {
       isLongTerm 
     }]);
     
+    // 강제 리렌더링 트리거
+    setRefreshKey(prev => prev + 1);
+    
     // 입력 필드 초기화
     setNewTransaction({
       description: '',
@@ -232,6 +238,9 @@ export default function CapitalGainsCalculator() {
       console.log('삭제 후 거래 목록:', filteredTransactions);
       return filteredTransactions;
     });
+    
+    // 강제 리렌더링 트리거
+    setRefreshKey(prev => prev + 1);
     
     toast({
       title: "거래 삭제됨",
@@ -319,6 +328,9 @@ export default function CapitalGainsCalculator() {
           ];
           
           setTransactions(prev => [...prev, ...sampleTransactions]);
+          
+          // 강제 리렌더링 트리거
+          setRefreshKey(prev => prev + 1);
           
           toast({
             title: "1099-B 파일 처리 완료",
@@ -451,7 +463,7 @@ export default function CapitalGainsCalculator() {
                 거래 내역이 없습니다. 새 거래를 추가하거나 1099-B 파일을 업로드하세요.
               </div>
             ) : (
-              <Table key={transactions.length}>
+              <Table key={`table-${refreshKey}-${transactions.length}`}>
                 <TableCaption>자본 이득 거래 내역</TableCaption>
                 <TableHeader>
                   <TableRow>

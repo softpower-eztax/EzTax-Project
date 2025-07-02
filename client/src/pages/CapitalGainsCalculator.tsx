@@ -41,6 +41,7 @@ interface Transaction {
   purchaseDate: string; // 구매 날짜
   saleDate: string;     // 판매 날짜
   isLongTerm: boolean;  // 장기투자 여부
+  washSaleLoss?: number; // Wash Sale Loss Disallowed
 }
 
 export default function CapitalGainsCalculator() {
@@ -107,7 +108,8 @@ export default function CapitalGainsCalculator() {
     sellPrice: 0,
     quantity: 0,
     purchaseDate: '',
-    saleDate: ''
+    saleDate: '',
+    washSaleLoss: 0
   });
   
   // 업로드 상태 관리
@@ -339,7 +341,8 @@ export default function CapitalGainsCalculator() {
           profit: 849.60,
           purchaseDate: '2023-05-22',
           saleDate: '2024-02-15',
-          isLongTerm: false
+          isLongTerm: false,
+          washSaleLoss: 0
         },
         {
           id: Date.now() + Math.random() + 1,
@@ -350,7 +353,8 @@ export default function CapitalGainsCalculator() {
           profit: 373.28,
           purchaseDate: '2023-08-10',
           saleDate: '2024-06-20',
-          isLongTerm: false
+          isLongTerm: false,
+          washSaleLoss: 125.50  // 실제 wash sale이 있는 예시
         },
         {
           id: Date.now() + Math.random() + 2,
@@ -361,7 +365,8 @@ export default function CapitalGainsCalculator() {
           profit: 3324.75,
           purchaseDate: '2022-11-15',
           saleDate: '2024-03-08',
-          isLongTerm: true
+          isLongTerm: true,
+          washSaleLoss: 0
         }
       );
     } else {
@@ -735,9 +740,10 @@ export default function CapitalGainsCalculator() {
                 <TableCaption>자본 이득 거래 내역</TableCaption>
                 <TableHeader>
                   <TableRow>
-                    <TableHead className="w-[200px]">종목/자산 설명</TableHead>
+                    <TableHead className="w-[180px]">종목/자산 설명</TableHead>
                     <TableHead className="text-right">Proceeds<br/><span className="text-xs text-gray-500">(매각금액)</span></TableHead>
                     <TableHead className="text-right">Cost Basis<br/><span className="text-xs text-gray-500">(취득가)</span></TableHead>
+                    <TableHead className="text-right">Wash Sale Loss<br/><span className="text-xs text-gray-500">(불허손실)</span></TableHead>
                     <TableHead className="text-right">수량</TableHead>
                     <TableHead className="text-center">취득일</TableHead>
                     <TableHead className="text-center">매각일</TableHead>
@@ -752,6 +758,13 @@ export default function CapitalGainsCalculator() {
                       <TableCell className="font-medium">{transaction.description}</TableCell>
                       <TableCell className="text-right">${(transaction.sellPrice * transaction.quantity).toLocaleString()}</TableCell>
                       <TableCell className="text-right">${(transaction.buyPrice * transaction.quantity).toLocaleString()}</TableCell>
+                      <TableCell className="text-right">
+                        {transaction.washSaleLoss ? (
+                          <span className="text-red-600">${transaction.washSaleLoss.toLocaleString()}</span>
+                        ) : (
+                          <span className="text-gray-400">$0</span>
+                        )}
+                      </TableCell>
                       <TableCell className="text-right">{transaction.quantity}</TableCell>
                       <TableCell className="text-center">{transaction.purchaseDate}</TableCell>
                       <TableCell className="text-center">{transaction.saleDate}</TableCell>
@@ -857,6 +870,20 @@ export default function CapitalGainsCalculator() {
                   type="date"
                   value={newTransaction.saleDate}
                   onChange={handleInputChange}
+                />
+              </div>
+              
+              <div>
+                <Label htmlFor="washSaleLoss">Wash Sale Loss ($)</Label>
+                <Input
+                  id="washSaleLoss"
+                  name="washSaleLoss"
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  value={newTransaction.washSaleLoss || ''}
+                  onChange={handleInputChange}
+                  placeholder="0.00 (선택사항)"
                 />
               </div>
             </div>

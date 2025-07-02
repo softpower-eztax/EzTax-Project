@@ -123,15 +123,7 @@ export default function CapitalGainsCalculator() {
   // 강제 리렌더링을 위한 상태
   const [refreshKey, setRefreshKey] = useState<number>(0);
   
-  // transactions 변경 시 localStorage에 저장
-  useEffect(() => {
-    try {
-      localStorage.setItem('capitalGainsTransactions', JSON.stringify(transactions));
-      console.log('거래 데이터 localStorage에 저장:', transactions);
-    } catch (error) {
-      console.error('localStorage 저장 실패:', error);
-    }
-  }, [transactions]);
+  // transactions 변경 시 localStorage에 저장은 각 액션에서 직접 처리
   
   // 장기/단기 자본 이득 및 세금 계산
   const longTermGains = transactions
@@ -227,12 +219,22 @@ export default function CapitalGainsCalculator() {
     
     // 새 거래 추가
     const newId = transactions.length > 0 ? Math.max(...transactions.map(t => t.id)) + 1 : 1;
-    setTransactions([...transactions, { 
+    const updatedTransactions = [...transactions, { 
       ...newTransaction, 
       id: newId, 
       profit,
       isLongTerm 
-    }]);
+    }];
+    
+    // localStorage에 즉시 저장
+    try {
+      localStorage.setItem('capitalGainsTransactions', JSON.stringify(updatedTransactions));
+      console.log('새 거래 추가 후 localStorage에 저장:', updatedTransactions);
+    } catch (error) {
+      console.error('localStorage 저장 실패:', error);
+    }
+    
+    setTransactions(updatedTransactions);
     
     // 강제 리렌더링 트리거
     setRefreshKey(prev => prev + 1);
@@ -262,20 +264,19 @@ export default function CapitalGainsCalculator() {
     const filteredTransactions = transactions.filter(transaction => transaction.id !== id);
     console.log('삭제 후 거래 목록:', filteredTransactions);
     
-    // 상태 업데이트를 강제로 실행
-    setTransactions(() => {
-      console.log('상태 업데이트 콜백 실행 - 새 배열:', filteredTransactions);
-      return filteredTransactions;
-    });
+    // localStorage에 즉시 저장
+    try {
+      localStorage.setItem('capitalGainsTransactions', JSON.stringify(filteredTransactions));
+      console.log('삭제된 데이터 localStorage에 즉시 저장:', filteredTransactions);
+    } catch (error) {
+      console.error('localStorage 저장 실패:', error);
+    }
     
-    // 강제 리렌더링 (여러 방법 동시 사용)
-    setRefreshKey(Date.now()); // 현재 시간으로 완전히 새로운 키
+    // 상태 업데이트
+    setTransactions(filteredTransactions);
     
-    // DOM 강제 업데이트
-    setTimeout(() => {
-      setRefreshKey(prev => prev + 1);
-      console.log('추가 강제 리렌더링 실행');
-    }, 10);
+    // 강제 리렌더링
+    setRefreshKey(Date.now());
     
     toast({
       title: "거래 삭제됨",
@@ -362,7 +363,17 @@ export default function CapitalGainsCalculator() {
             }
           ];
           
-          setTransactions(prev => [...prev, ...sampleTransactions]);
+          const updatedTransactions = [...transactions, ...sampleTransactions];
+          
+          // localStorage에 즉시 저장
+          try {
+            localStorage.setItem('capitalGainsTransactions', JSON.stringify(updatedTransactions));
+            console.log('파일 업로드 후 localStorage에 저장:', updatedTransactions);
+          } catch (error) {
+            console.error('localStorage 저장 실패:', error);
+          }
+          
+          setTransactions(updatedTransactions);
           
           // 강제 리렌더링 트리거
           setRefreshKey(prev => prev + 1);

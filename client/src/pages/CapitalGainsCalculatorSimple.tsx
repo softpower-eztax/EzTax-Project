@@ -91,7 +91,15 @@ export default function CapitalGainsCalculatorSimple() {
       }));
 
       console.log('파싱된 거래 데이터:', newTransactions);
-      setTransactions(newTransactions);
+      console.log('현재 transactions 상태:', transactions.length);
+      
+      // 강제 상태 업데이트
+      setTransactions([]);
+      setTimeout(() => {
+        setTransactions(newTransactions);
+        console.log('상태 업데이트 완료:', newTransactions.length);
+      }, 100);
+      
       setUploadProgress(100);
 
       toast({

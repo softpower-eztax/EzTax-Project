@@ -153,9 +153,17 @@ def parse_transaction_lines(lines: List[str], start_idx: int, cusip: str, descri
         date_acquired = standardize_date(dates[0])
         date_sold = standardize_date(dates[1]) if len(dates) > 1 else date_acquired
         
-        # 일반적으로 proceeds가 cost_basis보다 큼
-        proceeds = max(amounts) if len(amounts) >= 2 else amounts[0]
-        cost_basis = min(amounts) if len(amounts) >= 2 and len(amounts) > 1 else amounts[0] * 0.8
+        # 실제 Robinhood PDF에서 proceeds와 cost_basis 정확하게 식별
+        # 일반적으로 proceeds > cost_basis이지만, 더 정확한 순서로 추출
+        amounts.sort(reverse=True)  # 큰 금액부터 정렬
+        
+        if len(amounts) >= 2:
+            # 가장 큰 금액을 proceeds로, 두 번째를 cost_basis로
+            proceeds = amounts[0]
+            cost_basis = amounts[1]
+        else:
+            proceeds = amounts[0] if amounts else 0
+            cost_basis = proceeds * 0.7  # 추정치 (보수적)
         
         return {
             "cusip": cusip,
@@ -348,14 +356,41 @@ def standardize_date(date_str: str) -> str:
     return date_str
 
 def parse_currency(currency_str: str) -> float:
-    """통화 문자열을 float로 변환"""
+    """통화 문자열을 float로 변환 - 개선된 버전"""
     if not currency_str:
         return 0.0
     
-    # $, 쉼표 제거하고 숫자만 추출
-    cleaned = re.sub(r'[^\d\.]', '', str(currency_str))
+    # 문자열로 변환
+    str_val = str(currency_str).strip()
+    
+    # 괄호 안의 음수 처리 (123.45) -> -123.45
+    is_negative = False
+    if str_val.startswith('(') and str_val.endswith(')'):
+        is_negative = True
+        str_val = str_val[1:-1]
+    
+    # $ 기호와 쉼표 제거
+    str_val = str_val.replace('$', '').replace(',', '')
+    
+    # 마이너스 기호 확인
+    if str_val.startswith('-'):
+        is_negative = True
+        str_val = str_val[1:]
+    
+    # 숫자와 소수점만 추출 (더 정확한 패턴)
+    number_match = re.search(r'(\d+(?:\.\d{1,2})?)', str_val)
+    if number_match:
+        try:
+            value = float(number_match.group(1))
+            return -value if is_negative else value
+        except ValueError:
+            pass
+    
+    # 백업: 기본 방식
+    cleaned = re.sub(r'[^\d\.]', '', str_val)
     try:
-        return float(cleaned) if cleaned else 0.0
+        value = float(cleaned) if cleaned else 0.0
+        return -value if is_negative else value
     except ValueError:
         return 0.0
 

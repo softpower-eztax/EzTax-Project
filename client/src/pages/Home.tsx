@@ -64,11 +64,14 @@ const Home: React.FC = () => {
           <Button
             variant="outline"
             size="lg"
-            className="bg-white hover:bg-gray-50 text-gray-800 border-2 border-gray-300 hover:border-gray-400 font-semibold px-6 py-3 flex items-center gap-2 transition-all duration-200"
+            className="bg-white hover:bg-gray-50 text-gray-800 border-2 border-gray-300 hover:border-gray-400 font-semibold px-6 py-3 flex items-center gap-3 transition-all duration-200"
             onClick={() => window.open('https://youtube.com/@EzTax-Tutorial', '_blank')}
           >
             <Play className="h-5 w-5 text-red-600" />
-            Watch Demo
+            <div className="flex flex-col items-start">
+              <span className="text-sm font-medium">EzTax 사용법 시청</span>
+              <span className="text-xs text-gray-600">Watch Demo</span>
+            </div>
           </Button>
         </div>
       </section>

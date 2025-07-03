@@ -90,13 +90,14 @@ export default function CapitalGainsCalculatorSimple() {
         washSaleLoss: tx.washSaleLoss || 0
       }));
 
+      console.log('파싱된 거래 데이터:', newTransactions);
       setTransactions(newTransactions);
       setUploadProgress(100);
 
       toast({
         title: "실제 PDF 파싱 완료",
-        description: `${parsedData.accountNumber} 계좌에서 ${newTransactions.length}개의 거래를 추출했습니다. 총 손익: $${parsedData.summary.totalNetGainLoss.toFixed(2)}`,
-        duration: 8000
+        description: `계좌에서 ${newTransactions.length}개의 거래를 추출했습니다. 총 손익: $${parsedData.summary.totalNetGainLoss.toFixed(2)}`,
+        duration: 5000
       });
 
     } catch (error) {
@@ -253,7 +254,7 @@ export default function CapitalGainsCalculatorSimple() {
                     <Button onClick={() => setLocation('/income')} className="flex-1">
                       세금 신고서에 추가
                     </Button>
-                    <Button variant="outline" onClick={() => setTransactions([])} className="flex-1">
+                    <Button onClick={() => setTransactions([])} className="flex-1">
                       데이터 초기화
                     </Button>
                   </div>

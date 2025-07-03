@@ -147,13 +147,22 @@ const Home: React.FC = () => {
             >
               {user ? '지금 시작하기' : '로그인하고 시작하기(Login to Start)'}
             </Button>
-            <Button 
-              size="lg"
-              className="w-full bg-green-500 hover:bg-green-600 text-white font-bold"
-              onClick={() => navigate('/personal-info')}
-            >
-              세금시뮬레이터(Tax Simulator)
-            </Button>
+            <div className="space-y-3">
+              <Button 
+                size="lg"
+                className="w-full bg-green-500 hover:bg-green-600 text-white font-bold"
+                onClick={() => navigate('/personal-info')}
+              >
+                세금시뮬레이터(Tax Simulator)
+              </Button>
+              <Button 
+                size="lg"
+                className="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold"
+                onClick={() => navigate('/capital-gains')}
+              >
+                1099-B 양도소득세 계산기
+              </Button>
+            </div>
           </CardFooter>
         </Card>
       </section>

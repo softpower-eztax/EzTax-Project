@@ -3,7 +3,7 @@ import { useLocation } from 'wouter';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
-import { Upload, FileText, Calculator, TrendingUp, ArrowRight } from 'lucide-react';
+import { Upload, FileText, Calculator, TrendingUp, ArrowRight, Plus } from 'lucide-react';
 import { useTaxContext } from '@/context/TaxContext';
 import { Income } from '@shared/schema';
 
@@ -52,6 +52,15 @@ export default function CapitalGainsCalculatorSimple() {
   const [uploadProgress, setUploadProgress] = useState(0);
   const [updateCounter, setUpdateCounter] = useState(0);
   const [showIndividualTransactions, setShowIndividualTransactions] = useState(false);
+  const [showManualEntry, setShowManualEntry] = useState(false);
+  const [manualTransaction, setManualTransaction] = useState({
+    description: '',
+    dateAcquired: '',
+    dateSold: '',
+    proceeds: '',
+    costBasis: '',
+    washSaleLoss: '0'
+  });
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
   const { taxData, updateTaxData } = useTaxContext();
@@ -257,6 +266,108 @@ export default function CapitalGainsCalculatorSimple() {
     });
   };
 
+  const addManualTransaction = () => {
+    const proceeds = parseFloat(manualTransaction.proceeds) || 0;
+    const costBasis = parseFloat(manualTransaction.costBasis) || 0;
+    const washSaleLoss = parseFloat(manualTransaction.washSaleLoss) || 0;
+    const netGainLoss = proceeds - costBasis - washSaleLoss;
+    
+    // 날짜 차이로 Long-term/Short-term 결정 (1년 이상이면 Long-term)
+    const acquiredDate = new Date(manualTransaction.dateAcquired);
+    const soldDate = new Date(manualTransaction.dateSold);
+    const daysDifference = (soldDate.getTime() - acquiredDate.getTime()) / (1000 * 60 * 60 * 24);
+    const isLongTerm = daysDifference > 365;
+
+    const newTransaction: Transaction = {
+      description: manualTransaction.description,
+      dateAcquired: manualTransaction.dateAcquired,
+      dateSold: manualTransaction.dateSold,
+      proceeds,
+      costBasis,
+      washSaleLoss,
+      netGainLoss,
+      quantity: 1,
+      isLongTerm,
+      formType: 'A'
+    };
+
+    globalTransactions.push(newTransaction);
+    setTransactions([...globalTransactions]);
+    setUpdateCounter(prev => prev + 1);
+
+    // 폼 초기화
+    setManualTransaction({
+      description: '',
+      dateAcquired: '',
+      dateSold: '',
+      proceeds: '',
+      costBasis: '',
+      washSaleLoss: '0'
+    });
+
+    // Income 페이지 자동 업데이트
+    const updatedSummary = calculateScheduleDSummaryFromTransactions([...globalTransactions]);
+    const totalCapitalGains = updatedSummary.grandTotal.netGainLoss;
+    
+    const currentIncome = taxData.income as Income || {
+      wages: 0,
+      otherEarnedIncome: 0,
+      interestIncome: 0,
+      dividends: 0,
+      businessIncome: 0,
+      capitalGains: 0,
+      rentalIncome: 0,
+      retirementIncome: 0,
+      unemploymentIncome: 0,
+      otherIncome: 0,
+      totalIncome: 0,
+      adjustments: {
+        studentLoanInterest: 0,
+        retirementContributions: 0,
+        otherAdjustments: 0
+      },
+      adjustedGrossIncome: 0,
+      additionalIncomeItems: []
+    };
+    
+    const newTotalIncome = currentIncome.wages + 
+                          currentIncome.otherEarnedIncome + 
+                          currentIncome.interestIncome + 
+                          currentIncome.dividends + 
+                          currentIncome.businessIncome + 
+                          totalCapitalGains + 
+                          currentIncome.rentalIncome + 
+                          currentIncome.retirementIncome + 
+                          currentIncome.unemploymentIncome + 
+                          currentIncome.otherIncome;
+
+    updateTaxData({
+      income: {
+        wages: currentIncome.wages,
+        otherEarnedIncome: currentIncome.otherEarnedIncome,
+        interestIncome: currentIncome.interestIncome,
+        dividends: currentIncome.dividends,
+        businessIncome: currentIncome.businessIncome,
+        capitalGains: totalCapitalGains,
+        rentalIncome: currentIncome.rentalIncome,
+        retirementIncome: currentIncome.retirementIncome,
+        unemploymentIncome: currentIncome.unemploymentIncome,
+        otherIncome: currentIncome.otherIncome,
+        totalIncome: newTotalIncome,
+        adjustments: currentIncome.adjustments,
+        adjustedGrossIncome: newTotalIncome - (currentIncome.adjustments.studentLoanInterest + 
+                                              currentIncome.adjustments.retirementContributions + 
+                                              currentIncome.adjustments.otherAdjustments),
+        additionalIncomeItems: currentIncome.additionalIncomeItems
+      }
+    });
+
+    toast({
+      title: "거래 추가됨",
+      description: `${manualTransaction.description} 거래가 추가되었고 Income 페이지에 반영되었습니다.`,
+    });
+  };
+
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="max-w-6xl mx-auto">
@@ -277,10 +388,25 @@ export default function CapitalGainsCalculatorSimple() {
               1099-B PDF 업로드
             </CardTitle>
             <CardDescription>
-              Robinhood, TD Ameritrade, Charles Schwab 등의 1099-B PDF 파일을 업로드하세요
+              현재 <strong>Robinhood PDF만 자동 파싱</strong>이 지원됩니다. 다른 증권사는 수동으로 입력해주세요.
             </CardDescription>
           </CardHeader>
           <CardContent>
+            {/* 지원 증권사 안내 */}
+            <div className="mb-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
+              <h4 className="font-semibold text-blue-900 mb-2">📋 현재 지원 상황</h4>
+              <div className="space-y-1 text-sm">
+                <div className="flex items-center gap-2">
+                  <span className="text-green-600">✅</span>
+                  <span><strong>Robinhood</strong> - 자동 파싱 지원</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-orange-500">⏳</span>
+                  <span><strong>TD Ameritrade, Charles Schwab, Interactive Brokers, Fidelity 등</strong> - 수동 입력 필요</span>
+                </div>
+              </div>
+            </div>
+
             <div className="space-y-4">
               <div>
                 <input
@@ -296,7 +422,10 @@ export default function CapitalGainsCalculatorSimple() {
                   <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-gray-400 cursor-pointer">
                     <FileText className="h-8 w-8 mx-auto mb-2 text-gray-400" />
                     <p className="text-sm text-gray-600">
-                      {isUploading ? '업로드 중...' : 'PDF 파일을 선택하거나 드래그하세요'}
+                      {isUploading ? '업로드 중...' : 'Robinhood PDF 파일을 선택하거나 드래그하세요'}
+                    </p>
+                    <p className="text-xs text-gray-500 mt-1">
+                      다른 증권사 PDF는 아래 수동 입력을 이용해주세요
                     </p>
                   </div>
                 </label>
@@ -320,6 +449,149 @@ export default function CapitalGainsCalculatorSimple() {
                   >
                     모든 거래 삭제
                   </Button>
+                </div>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Manual Entry Section */}
+        <Card className="mb-8">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Plus className="h-5 w-5" />
+              수동 거래 입력
+            </CardTitle>
+            <CardDescription>
+              다른 증권사 1099-B 정보를 수동으로 입력하세요 (TD Ameritrade, Charles Schwab, Interactive Brokers, Fidelity 등)
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <Button
+                onClick={() => setShowManualEntry(!showManualEntry)}
+                variant="outline"
+                className="w-full"
+              >
+                {showManualEntry ? '입력 폼 숨기기' : '거래 수동 입력하기'}
+              </Button>
+              
+              {showManualEntry && (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 bg-gray-50 rounded-lg">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      종목명 *
+                    </label>
+                    <input
+                      type="text"
+                      value={manualTransaction.description}
+                      onChange={(e) => setManualTransaction(prev => ({ ...prev, description: e.target.value }))}
+                      placeholder="예: AAPL, Tesla Inc, SPY 등"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      취득일 *
+                    </label>
+                    <input
+                      type="date"
+                      value={manualTransaction.dateAcquired}
+                      onChange={(e) => setManualTransaction(prev => ({ ...prev, dateAcquired: e.target.value }))}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      매도일 *
+                    </label>
+                    <input
+                      type="date"
+                      value={manualTransaction.dateSold}
+                      onChange={(e) => setManualTransaction(prev => ({ ...prev, dateSold: e.target.value }))}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      매각금액 (Proceeds) *
+                    </label>
+                    <input
+                      type="number"
+                      step="0.01"
+                      value={manualTransaction.proceeds}
+                      onChange={(e) => setManualTransaction(prev => ({ ...prev, proceeds: e.target.value }))}
+                      placeholder="1000.00"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      취득가 (Cost Basis) *
+                    </label>
+                    <input
+                      type="number"
+                      step="0.01"
+                      value={manualTransaction.costBasis}
+                      onChange={(e) => setManualTransaction(prev => ({ ...prev, costBasis: e.target.value }))}
+                      placeholder="900.00"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Wash Sale Loss (선택사항)
+                    </label>
+                    <input
+                      type="number"
+                      step="0.01"
+                      value={manualTransaction.washSaleLoss}
+                      onChange={(e) => setManualTransaction(prev => ({ ...prev, washSaleLoss: e.target.value }))}
+                      placeholder="0.00"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+                  
+                  <div className="md:col-span-2">
+                    <Button
+                      onClick={addManualTransaction}
+                      disabled={!manualTransaction.description || !manualTransaction.dateAcquired || !manualTransaction.dateSold || !manualTransaction.proceeds || !manualTransaction.costBasis}
+                      className="w-full bg-green-600 hover:bg-green-700 text-white"
+                    >
+                      <Plus className="h-4 w-4 mr-2" />
+                      거래 추가하기
+                    </Button>
+                  </div>
+                  
+                  {/* 계산 미리보기 */}
+                  {manualTransaction.proceeds && manualTransaction.costBasis && (
+                    <div className="md:col-span-2 p-3 bg-blue-50 rounded-lg border border-blue-200">
+                      <h5 className="font-medium text-blue-900 mb-2">계산 미리보기</h5>
+                      <div className="text-sm space-y-1">
+                        <div>매각금액: ${parseFloat(manualTransaction.proceeds || '0').toLocaleString()}</div>
+                        <div>취득가: ${parseFloat(manualTransaction.costBasis || '0').toLocaleString()}</div>
+                        <div>Wash Sale Loss: ${parseFloat(manualTransaction.washSaleLoss || '0').toLocaleString()}</div>
+                        <div className="font-semibold border-t border-blue-300 pt-1">
+                          순손익: ${((parseFloat(manualTransaction.proceeds || '0') - parseFloat(manualTransaction.costBasis || '0') - parseFloat(manualTransaction.washSaleLoss || '0'))).toLocaleString()}
+                        </div>
+                        {manualTransaction.dateAcquired && manualTransaction.dateSold && (
+                          <div className="text-blue-700">
+                            기간: {(() => {
+                              const acquiredDate = new Date(manualTransaction.dateAcquired);
+                              const soldDate = new Date(manualTransaction.dateSold);
+                              const daysDifference = (soldDate.getTime() - acquiredDate.getTime()) / (1000 * 60 * 60 * 24);
+                              return daysDifference > 365 ? 'Long-term' : 'Short-term';
+                            })()}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
             </div>

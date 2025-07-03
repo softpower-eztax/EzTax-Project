@@ -497,7 +497,7 @@ ${additionalRequests || '없음'}
   });
 
   // Real PDF parsing endpoint
-  app.post('/api/parse-1099b', upload.single('pdf'), async (req, res) => {
+  app.post('/api/parse-1099b', upload.single('file'), async (req, res) => {
     try {
       if (!req.file) {
         return res.status(400).json({ error: 'No PDF file uploaded' });

@@ -44,7 +44,7 @@ export class RobinhoodPDFParser {
     console.log(`PDF 파싱 시작: ${filePath}`);
     
     return new Promise((resolve, reject) => {
-      const pythonScriptPath = path.join(__dirname, 'parse_pdf.py');
+      const pythonScriptPath = path.join(__dirname, 'parse_pdf_fixed.py');
       
       // Python 스크립트 실행
       const pythonProcess = spawn('python3', [pythonScriptPath, filePath]);

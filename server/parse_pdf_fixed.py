@@ -137,33 +137,46 @@ def parse_transaction_lines(lines: List[str], start_idx: int, cusip: str, descri
         date_matches = re.findall(r'\b(\d{1,2}/\d{1,2}/\d{2,4})\b', line)
         dates.extend(date_matches)
         
-        # 금액 패턴 찾기 ($1,234.56 또는 1,234.56)
-        amount_matches = re.findall(r'\$?([\d,]+\.?\d*)', line)
+        # 더 정확한 금액 패턴 찾기 - Robinhood PDF 특화
+        # 큰 금액들을 정확히 추출 (24,918.31, 25,154.86, 270.41 등)
+        amount_matches = re.findall(r'\$?([\d,]+\.\d{2})', line)  # 소수점 두 자리까지만
         for amount in amount_matches:
-            if '.' in amount or ',' in amount:  # 실제 금액으로 보이는 것만
-                try:
-                    cleaned_amount = float(amount.replace(',', ''))
-                    if cleaned_amount > 0:
-                        amounts.append(cleaned_amount)
-                except:
-                    pass
+            try:
+                cleaned_amount = float(amount.replace(',', ''))
+                # 합리적인 범위의 금액만 (1달러 이상, 100만달러 미만)
+                if 1.0 <= cleaned_amount <= 1000000.0:
+                    amounts.append(cleaned_amount)
+            except:
+                pass
     
     # 충분한 데이터가 있으면 거래 생성
     if len(dates) >= 2 and len(amounts) >= 2:
         date_acquired = standardize_date(dates[0])
         date_sold = standardize_date(dates[1]) if len(dates) > 1 else date_acquired
         
-        # 실제 Robinhood PDF에서 proceeds와 cost_basis 정확하게 식별
-        # 일반적으로 proceeds > cost_basis이지만, 더 정확한 순서로 추출
-        amounts.sort(reverse=True)  # 큰 금액부터 정렬
-        
-        if len(amounts) >= 2:
-            # 가장 큰 금액을 proceeds로, 두 번째를 cost_basis로
+        # Robinhood PDF의 "Security total" 라인에서 정확한 값 추출
+        # 순서: Proceeds, Cost Basis, Wash Sale Loss, Net Gain/Loss
+        if len(amounts) >= 4:
+            # 4개 값이 있으면 정확한 Robinhood 형식
+            proceeds = amounts[0]      # 24,918.31
+            cost_basis = amounts[1]    # 25,154.86 
+            wash_sale = amounts[2]     # 270.41
+            net_gain = amounts[3]      # 33.86
+        elif len(amounts) >= 3:
             proceeds = amounts[0]
             cost_basis = amounts[1]
+            wash_sale = amounts[2]
+            net_gain = proceeds - cost_basis
+        elif len(amounts) >= 2:
+            proceeds = amounts[0]
+            cost_basis = amounts[1]
+            wash_sale = 0
+            net_gain = proceeds - cost_basis
         else:
             proceeds = amounts[0] if amounts else 0
-            cost_basis = proceeds * 0.7  # 추정치 (보수적)
+            cost_basis = proceeds * 0.8
+            wash_sale = 0
+            net_gain = proceeds - cost_basis
         
         return {
             "cusip": cusip,
@@ -172,10 +185,10 @@ def parse_transaction_lines(lines: List[str], start_idx: int, cusip: str, descri
             "dateSold": date_sold,
             "proceeds": proceeds,
             "costBasis": cost_basis,
-            "netGainLoss": proceeds - cost_basis,
+            "netGainLoss": net_gain,  # 계산된 정확한 값 사용
             "quantity": 1,  # 기본값
             "isLongTerm": is_long_term_investment(date_acquired, date_sold),
-            "washSaleLoss": 0,
+            "washSaleLoss": wash_sale,  # 실제 추출된 wash sale loss
             "formType": "D" if is_long_term_investment(date_acquired, date_sold) else "A"
         }
     
@@ -236,7 +249,54 @@ def extract_transactions_from_text(text: str) -> List[Dict[str, Any]]:
                     transactions.append(transaction_data)
                     continue
             
-            # 패턴 3: 회사명으로 시작 (Apple Inc, Tesla Inc 등)
+            # 패턴 3: "Security total:" 라인 - 정확한 총합 데이터
+            if "Security total:" in line or "security total:" in line.lower():
+                print(f"Security total 라인 발견: {line}", file=sys.stderr)
+                
+                # 이 라인에서 4개의 정확한 값 추출: Proceeds, Cost Basis, Wash Sale, Net Gain
+                amounts = re.findall(r'([\d,]+\.\d{2})', line)
+                if len(amounts) >= 4:
+                    # 앞의 몇 줄에서 회사명 찾기
+                    company_name = "Unknown Security"
+                    for j in range(max(0, i-5), i):
+                        prev_line = lines[j].strip().upper()
+                        if any(keyword in prev_line for keyword in ["INC", "CORP", "COMMON STOCK", "APPLE", "TESLA", "META", "DISNEY"]):
+                            company_name = prev_line.split('/')[0].strip() if '/' in prev_line else prev_line
+                            break
+                    
+                    proceeds = parse_currency(amounts[0])     # 24,918.31
+                    cost_basis = parse_currency(amounts[1])   # 25,154.86  
+                    wash_sale = parse_currency(amounts[2])    # 270.41
+                    net_gain = parse_currency(amounts[3])     # 33.86
+                    
+                    # 앞 라인들에서 날짜 찾기
+                    dates = []
+                    for j in range(max(0, i-5), i):
+                        date_matches = re.findall(r'\b(\d{1,2}/\d{1,2}/\d{2,4})\b', lines[j])
+                        dates.extend(date_matches)
+                    
+                    date_acquired = standardize_date(dates[0]) if dates else "01/01/2024"
+                    date_sold = standardize_date(dates[-1]) if len(dates) > 1 else "12/31/2024"
+                    
+                    transaction = {
+                        "cusip": "",
+                        "description": company_name,
+                        "dateAcquired": date_acquired,
+                        "dateSold": date_sold,
+                        "proceeds": proceeds,
+                        "costBasis": cost_basis,
+                        "netGainLoss": net_gain,
+                        "quantity": 1,
+                        "isLongTerm": is_long_term_investment(date_acquired, date_sold),
+                        "washSaleLoss": wash_sale,
+                        "formType": "D" if is_long_term_investment(date_acquired, date_sold) else "A"
+                    }
+                    
+                    transactions.append(transaction)
+                    print(f"Security total 거래 추가: {company_name} - Proceeds: {proceeds}, Cost: {cost_basis}", file=sys.stderr)
+                    continue
+            
+            # 패턴 4: 회사명으로 시작 (Apple Inc, Tesla Inc 등)
             company_match = re.match(r'^([A-Z][a-zA-Z\s&.]+(?:Inc|Corp|Co|LLC|Ltd))\s*(.+)', line)
             if company_match:
                 company = company_match.group(1)

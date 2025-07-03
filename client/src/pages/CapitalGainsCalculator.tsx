@@ -48,42 +48,8 @@ export default function CapitalGainsCalculator() {
   const { taxData, updateTaxData } = useTaxContext();
   const { toast } = useToast();
   
-  // 초기 상태: 일부 예시 거래 데이터
-  const [transactions, setTransactions] = useState<Transaction[]>([
-    { 
-      id: 1, 
-      description: '테슬라 주식', 
-      buyPrice: 180, 
-      sellPrice: 220, 
-      quantity: 10, 
-      profit: 400,
-      purchaseDate: '2023-01-15',
-      saleDate: '2024-03-20',
-      isLongTerm: true  // 1년 이상 보유
-    },
-    { 
-      id: 2, 
-      description: '애플 주식', 
-      buyPrice: 140, 
-      sellPrice: 170, 
-      quantity: 15, 
-      profit: 450,
-      purchaseDate: '2024-01-10',
-      saleDate: '2024-04-15',
-      isLongTerm: false // 1년 미만 보유
-    },
-    { 
-      id: 3, 
-      description: '마이크로소프트 주식', 
-      buyPrice: 280, 
-      sellPrice: 310, 
-      quantity: 8, 
-      profit: 240,
-      purchaseDate: '2022-06-22',
-      saleDate: '2024-02-18',
-      isLongTerm: true  // 1년 이상 보유
-    },
-  ]);
+  // 거래 목록 상태 관리 (빈 배열로 시작)
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
   
   // 새로운 거래 입력을 위한 상태
   const [newTransaction, setNewTransaction] = useState<Omit<Transaction, 'id' | 'profit' | 'isLongTerm'>>({

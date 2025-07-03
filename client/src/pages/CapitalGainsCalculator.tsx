@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useLocation } from 'wouter';
 import { useTaxContext } from '@/context/TaxContext';
 import { Income } from '@shared/schema';
@@ -50,6 +50,11 @@ export default function CapitalGainsCalculator() {
   
   // 거래 목록 상태 관리 (빈 배열로 시작)
   const [transactions, setTransactions] = useState<Transaction[]>([]);
+  
+  // 거래 목록 상태 변화 추적
+  useEffect(() => {
+    console.log('거래 목록 상태 업데이트됨:', transactions);
+  }, [transactions]);
   
   // 새로운 거래 입력을 위한 상태
   const [newTransaction, setNewTransaction] = useState<Omit<Transaction, 'id' | 'profit' | 'isLongTerm'>>({
@@ -187,7 +192,9 @@ export default function CapitalGainsCalculator() {
     console.log('추가할 거래:', newTransactionWithId);
     console.log('기존 거래 목록:', transactions);
     
-    setTransactions([...transactions, newTransactionWithId]);
+    const updatedTransactions = [...transactions, newTransactionWithId];
+    console.log('업데이트된 거래 목록:', updatedTransactions);
+    setTransactions(updatedTransactions);
     
     // 입력 필드 초기화
     setNewTransaction({

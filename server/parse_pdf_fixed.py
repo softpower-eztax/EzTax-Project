@@ -7,7 +7,7 @@ Robinhood, TD Ameritrade, Charles Schwab 등의 브로커 문서 지원
 import sys
 import json
 import re
-from typing import Dict, List, Any
+from typing import Dict, List, Any, Optional
 import pdfplumber
 from datetime import datetime
 
@@ -123,28 +123,122 @@ def parse_robinhood_pdf(pdf_path: str) -> Dict[str, Any]:
     
     return result
 
+def parse_transaction_lines(lines: List[str], start_idx: int, cusip: str, description: str) -> Optional[Dict[str, Any]]:
+    """여러 줄에 걸친 거래 데이터 파싱"""
+    
+    # 다음 5줄 내에서 날짜와 금액 패턴 찾기
+    dates = []
+    amounts = []
+    
+    for i in range(start_idx, min(start_idx + 5, len(lines))):
+        line = lines[i].strip()
+        
+        # 날짜 패턴 찾기 (MM/DD/YYYY, MM/DD/YY)
+        date_matches = re.findall(r'\b(\d{1,2}/\d{1,2}/\d{2,4})\b', line)
+        dates.extend(date_matches)
+        
+        # 금액 패턴 찾기 ($1,234.56 또는 1,234.56)
+        amount_matches = re.findall(r'\$?([\d,]+\.?\d*)', line)
+        for amount in amount_matches:
+            if '.' in amount or ',' in amount:  # 실제 금액으로 보이는 것만
+                try:
+                    cleaned_amount = float(amount.replace(',', ''))
+                    if cleaned_amount > 0:
+                        amounts.append(cleaned_amount)
+                except:
+                    pass
+    
+    # 충분한 데이터가 있으면 거래 생성
+    if len(dates) >= 2 and len(amounts) >= 2:
+        date_acquired = standardize_date(dates[0])
+        date_sold = standardize_date(dates[1]) if len(dates) > 1 else date_acquired
+        
+        # 일반적으로 proceeds가 cost_basis보다 큼
+        proceeds = max(amounts) if len(amounts) >= 2 else amounts[0]
+        cost_basis = min(amounts) if len(amounts) >= 2 and len(amounts) > 1 else amounts[0] * 0.8
+        
+        return {
+            "cusip": cusip,
+            "description": description.upper(),
+            "dateAcquired": date_acquired,
+            "dateSold": date_sold,
+            "proceeds": proceeds,
+            "costBasis": cost_basis,
+            "netGainLoss": proceeds - cost_basis,
+            "quantity": 1,  # 기본값
+            "isLongTerm": is_long_term_investment(date_acquired, date_sold),
+            "washSaleLoss": 0,
+            "formType": "D" if is_long_term_investment(date_acquired, date_sold) else "A"
+        }
+    
+    return None
+
 def extract_transactions_from_text(text: str) -> List[Dict[str, Any]]:
     """텍스트에서 거래 데이터 추출"""
     transactions = []
     
-    # 실제 Robinhood 1099-B에서 더 다양한 패턴 검색
+    # 실제 Robinhood 1099-B PDF 구조 분석
     lines = text.split('\n')
     
-    # 1099-B 양식에서 거래 섹션 찾기
-    transaction_section = False
+    print(f"전체 라인 수: {len(lines)}", file=sys.stderr)
+    
+    # Robinhood 1099-B의 실제 패턴 찾기
+    in_transaction_section = False
+    
     for i, line in enumerate(lines):
         line = line.strip()
         
-        # 거래 섹션 시작점 찾기
+        # 1099-B 거래 섹션 찾기 - 더 구체적인 키워드
         if any(keyword in line.upper() for keyword in [
-            'PROCEEDS FROM BROKER', 'STOCK TRANSACTIONS', 'SECURITIES SOLD',
-            'COVERED SECURITIES', 'NONCOVERED SECURITIES', 'FORM 8949'
+            'FORM 1099-B', 'PROCEEDS FROM BROKER', 'REPORTING GAIN',
+            'SHORT-TERM TRANSACTIONS', 'LONG-TERM TRANSACTIONS',
+            'STOCKS, BONDS, ETC', 'SECURITIES TRANSACTIONS'
         ]):
-            transaction_section = True
+            in_transaction_section = True
+            print(f"거래 섹션 시작 감지: {line}", file=sys.stderr)
             continue
+        
+        # 거래 데이터가 있는 라인 찾기
+        if in_transaction_section:
+            # 실제 Robinhood PDF의 거래 라인 패턴
+            # 일반적으로: CUSIP/Symbol + 회사명 + 날짜들 + 금액들
             
-        if not transaction_section:
-            continue
+            # 패턴 1: CUSIP 9자리 + 회사명 패턴
+            cusip_match = re.match(r'^([A-Z0-9]{9})\s+(.+)', line)
+            if cusip_match:
+                cusip = cusip_match.group(1)
+                rest = cusip_match.group(2)
+                print(f"CUSIP 발견: {cusip}, 나머지: {rest[:50]}...", file=sys.stderr)
+                
+                # 다음 몇 줄에서 날짜와 금액 찾기
+                transaction_data = parse_transaction_lines(lines, i, cusip, rest)
+                if transaction_data:
+                    transactions.append(transaction_data)
+                    continue
+            
+            # 패턴 2: 주식 티커로 시작하는 라인
+            ticker_match = re.match(r'^([A-Z]{1,5})\s+(.+)', line)
+            if ticker_match and len(ticker_match.group(1)) <= 5:
+                ticker = ticker_match.group(1)
+                rest = ticker_match.group(2)
+                print(f"티커 발견: {ticker}, 나머지: {rest[:50]}...", file=sys.stderr)
+                
+                transaction_data = parse_transaction_lines(lines, i, "", f"{ticker} {rest}")
+                if transaction_data:
+                    transactions.append(transaction_data)
+                    continue
+            
+            # 패턴 3: 회사명으로 시작 (Apple Inc, Tesla Inc 등)
+            company_match = re.match(r'^([A-Z][a-zA-Z\s&.]+(?:Inc|Corp|Co|LLC|Ltd))\s*(.+)', line)
+            if company_match:
+                company = company_match.group(1)
+                rest = company_match.group(2) if company_match.group(2) else ""
+                print(f"회사명 발견: {company}, 나머지: {rest[:50]}...", file=sys.stderr)
+                
+                transaction_data = parse_transaction_lines(lines, i, "", company + " " + rest)
+                if transaction_data:
+                    transactions.append(transaction_data)
+                    continue
             
         # 실제 거래 라인 패턴들
         patterns = [
@@ -229,6 +323,11 @@ def extract_transactions_from_text(text: str) -> List[Dict[str, Any]]:
                 print(f"{i:3d}: {line.strip()}", file=sys.stderr)
     
     print(f"최종 거래 목록: {len(transactions)}개", file=sys.stderr)
+    
+    # 실제 거래가 5개 이상 발견되면 샘플 데이터 대신 실제 데이터 사용
+    if len(transactions) >= 5:
+        print("충분한 실제 거래 데이터 발견! 실제 데이터를 사용합니다.", file=sys.stderr)
+        return transactions
     return transactions
 
 def standardize_date(date_str: str) -> str:

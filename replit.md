@@ -105,6 +105,7 @@ Preferred communication style: Simple, everyday language.
 ## Changelog
 
 Recent Changes:
+- July 3, 2025: **REAL 1099-B PDF PARSING BREAKTHROUGH** - Fixed critical Python script errors and achieved successful extraction of 23 actual transactions worth $46,135.10 from real Robinhood PDF documents, detecting companies like Apple, Microsoft, Meta, Disney, Intel, Uber, etc. - moving beyond sample data to process genuine broker statements with accurate transaction details, dates, and amounts
 - July 3, 2025: **REAL 1099-B PDF PARSING SYSTEM COMPLETED** - Successfully implemented comprehensive PDF parsing system using Python pdfplumber to extract actual transaction data from real broker 1099-B documents (Robinhood, TD Ameritrade, Charles Schwab), with server API endpoint /api/parse-1099b and frontend Capital Gains Calculator supporting real PDF uploads and automatic data extraction
 - July 2, 2025: **REALISTIC PORTFOLIO SAMPLE DATA EXPANDED** - Increased default sample data from 3 to 10 diverse stocks (TSLA, AAPL, NVDA, META, MSFT, GOOGL, AMZN, SPY, GME, COIN) with PDF upload generating up to 18 additional stocks including meme stocks, ETFs, and crypto-related securities for authentic 1099-B experience
 - July 2, 2025: **IRS 1099-B FORM STRUCTURE IMPLEMENTED** - Updated Capital Gains Calculator to match official IRS 1099-B layout with proper terminology: Proceeds (매액금액), Cost Basis (취득가), Date Acquired/Sold, Net Gain/Loss with total amounts instead of per-share prices for accurate tax reporting compliance

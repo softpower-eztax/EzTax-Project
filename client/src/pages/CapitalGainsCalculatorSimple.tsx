@@ -3,7 +3,9 @@ import { useLocation } from 'wouter';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
-import { Upload, FileText, Calculator, TrendingUp } from 'lucide-react';
+import { Upload, FileText, Calculator, TrendingUp, ArrowRight } from 'lucide-react';
+import { useTaxContext } from '@/context/TaxContext';
+import { Income } from '@shared/schema';
 
 interface Transaction {
   id: number;
@@ -52,6 +54,7 @@ export default function CapitalGainsCalculatorSimple() {
   const [showIndividualTransactions, setShowIndividualTransactions] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
+  const { taxData, updateTaxData } = useTaxContext();
 
   // 디버깅용 로그
   console.log('컴포넌트 렌더링 - transactions.length:', transactions.length, 'globalTransactions.length:', globalTransactions.length);
@@ -63,12 +66,17 @@ export default function CapitalGainsCalculatorSimple() {
     }
   }, [updateCounter, globalTransactions.length]);
 
-  // Schedule D Summary 계산
+  // Schedule D Summary 계산 (현재 거래 배열 사용)
   const calculateScheduleDSummary = (): ScheduleDSummary => {
+    return calculateScheduleDSummaryFromTransactions(transactions);
+  };
+
+  // Schedule D Summary 계산 (지정된 거래 배열 사용)
+  const calculateScheduleDSummaryFromTransactions = (transactionsList: Transaction[]): ScheduleDSummary => {
     const shortTerm = { proceeds: 0, costBasis: 0, washSaleLoss: 0, netGainLoss: 0 };
     const longTerm = { proceeds: 0, costBasis: 0, washSaleLoss: 0, netGainLoss: 0 };
 
-    transactions.forEach(transaction => {
+    transactionsList.forEach(transaction => {
       if (transaction.isLongTerm) {
         longTerm.proceeds += transaction.proceeds || 0;
         longTerm.costBasis += transaction.costBasis || 0;
@@ -146,9 +154,67 @@ export default function CapitalGainsCalculatorSimple() {
         setTransactions([...globalTransactions]);
         setUpdateCounter(prev => prev + 1);
 
+        // Capital Gains 계산 및 Income 페이지 자동 업데이트
+        const updatedSummary = calculateScheduleDSummaryFromTransactions([...globalTransactions]);
+        const totalCapitalGains = updatedSummary.grandTotal.netGainLoss;
+        
+        // Income 페이지의 Capital Gains 필드 업데이트
+        const currentIncome = taxData.income as Income || {
+          wages: 0,
+          otherEarnedIncome: 0,
+          interestIncome: 0,
+          dividends: 0,
+          businessIncome: 0,
+          capitalGains: 0,
+          rentalIncome: 0,
+          retirementIncome: 0,
+          unemploymentIncome: 0,
+          otherIncome: 0,
+          totalIncome: 0,
+          adjustments: {
+            studentLoanInterest: 0,
+            retirementContributions: 0,
+            otherAdjustments: 0
+          },
+          adjustedGrossIncome: 0,
+          additionalIncomeItems: []
+        };
+        
+        const newTotalIncome = currentIncome.wages + 
+                              currentIncome.otherEarnedIncome + 
+                              currentIncome.interestIncome + 
+                              currentIncome.dividends + 
+                              currentIncome.businessIncome + 
+                              totalCapitalGains + 
+                              currentIncome.rentalIncome + 
+                              currentIncome.retirementIncome + 
+                              currentIncome.unemploymentIncome + 
+                              currentIncome.otherIncome;
+
+        updateTaxData({
+          income: {
+            wages: currentIncome.wages,
+            otherEarnedIncome: currentIncome.otherEarnedIncome,
+            interestIncome: currentIncome.interestIncome,
+            dividends: currentIncome.dividends,
+            businessIncome: currentIncome.businessIncome,
+            capitalGains: totalCapitalGains,
+            rentalIncome: currentIncome.rentalIncome,
+            retirementIncome: currentIncome.retirementIncome,
+            unemploymentIncome: currentIncome.unemploymentIncome,
+            otherIncome: currentIncome.otherIncome,
+            totalIncome: newTotalIncome,
+            adjustments: currentIncome.adjustments,
+            adjustedGrossIncome: newTotalIncome - (currentIncome.adjustments.studentLoanInterest + 
+                                                  currentIncome.adjustments.retirementContributions + 
+                                                  currentIncome.adjustments.otherAdjustments),
+            additionalIncomeItems: currentIncome.additionalIncomeItems
+          }
+        });
+
         toast({
           title: "PDF 파싱 완료!",
-          description: `${newTransactions.length}개의 거래가 추가되었습니다.`,
+          description: `${newTransactions.length}개의 거래가 추가되고 Capital Gains ($${totalCapitalGains.toLocaleString()})이 Income 페이지에 반영되었습니다.`,
         });
       } else {
         throw new Error(result.message || 'PDF 파싱에 실패했습니다.');
@@ -345,6 +411,34 @@ export default function CapitalGainsCalculatorSimple() {
                     </tr>
                   </tbody>
                 </table>
+              </div>
+              
+              {/* Income 페이지 반영 버튼 */}
+              <div className="mt-6 p-4 bg-blue-50 rounded-lg border-2 border-blue-200">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h4 className="font-semibold text-blue-900 mb-1">
+                      총 Capital Gains: ${scheduleDSummary.grandTotal.netGainLoss.toLocaleString()}
+                    </h4>
+                    <p className="text-blue-700 text-sm">
+                      이 값을 Income 페이지의 Capital Gains 필드에 자동으로 반영됩니다.
+                    </p>
+                  </div>
+                  <Button
+                    onClick={() => {
+                      // Income 페이지로 이동
+                      setLocation('/income');
+                      toast({
+                        title: "Income 페이지로 이동",
+                        description: `Capital Gains $${scheduleDSummary.grandTotal.netGainLoss.toLocaleString()}이 반영되었습니다.`,
+                      });
+                    }}
+                    className="bg-blue-600 hover:bg-blue-700 text-white"
+                  >
+                    <ArrowRight className="h-4 w-4 mr-2" />
+                    Income 페이지 확인
+                  </Button>
+                </div>
               </div>
             </CardContent>
           </Card>

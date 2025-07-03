@@ -57,11 +57,33 @@ def extract_schedule_d_summary(text: str) -> Optional[Dict[str, Any]]:
     
     # 라인별 Summary 검색 - 더 정확한 숫자 패턴
     lines = text.split('\n')
+    
+    # PDF 텍스트에서 정확한 Grand total 라인 찾기
+    print("=== Grand total 라인 검색 시작 ===", file=sys.stderr)
     for i, line in enumerate(lines):
-        # 디버깅 출력을 Summary 관련 라인만으로 제한
-        if 'total' in line.lower() or 'summary' in line.lower() or any(char.isdigit() for char in line):
-            if len(line.strip()) > 10:  # 의미있는 라인만
-                print(f"라인 {i}: {line[:100]}", file=sys.stderr)
+        if 'Grand total' in line or 'grand total' in line.lower():
+            print(f"Grand total 후보 라인 {i}: {line}", file=sys.stderr)
+            
+            # 같은 라인과 다음 몇 라인에서 숫자 검색
+            for j in range(5):  # 현재 라인부터 다음 4라인까지
+                if i + j < len(lines):
+                    search_line = lines[i + j].strip()
+                    if search_line:
+                        numbers_in_line = re.findall(r'([\d,]+\.\d{2})', search_line)
+                        if numbers_in_line:
+                            print(f"  라인 {i+j}: {search_line[:150]}", file=sys.stderr)
+                            print(f"  추출 숫자: {numbers_in_line}", file=sys.stderr)
+    
+    print("=== 671,623.43 패턴 직접 검색 ===", file=sys.stderr)
+    for i, line in enumerate(lines):
+        if '671,623.43' in line or '671623.43' in line:
+            print(f"Target 라인 {i}: {line}", file=sys.stderr)
+            # 주변 라인들도 확인
+            for j in range(-2, 3):
+                if 0 <= i + j < len(lines) and lines[i + j].strip():
+                    print(f"  주변 라인 {i+j}: {lines[i+j][:150]}", file=sys.stderr)
+    
+    for i, line in enumerate(lines):
         
         # Grand total이나 Total Short-term 검색
         if 'Grand total' in line or 'Total Short-term' in line:

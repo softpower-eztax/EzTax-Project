@@ -3,7 +3,7 @@ import { useLocation } from 'wouter';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { File, FileText, Clock, Shield } from 'lucide-react';
+import { File, FileText, Clock, Shield, Play } from 'lucide-react';
 import { useTaxContext } from '@/context/TaxContext';
 import { useAuth } from '@/hooks/use-auth';
 
@@ -56,6 +56,19 @@ const Home: React.FC = () => {
             onClick={() => navigate('/retirement-score')}
           >
             은퇴준비상태진단
+          </Button>
+        </div>
+        
+        {/* YouTube 튜토리얼 버튼 */}
+        <div className="mt-6 flex justify-center">
+          <Button
+            variant="outline"
+            size="lg"
+            className="bg-white hover:bg-gray-50 text-gray-800 border-2 border-gray-300 hover:border-gray-400 font-semibold px-6 py-3 flex items-center gap-2 transition-all duration-200"
+            onClick={() => window.open('https://youtube.com/@EzTax-Tutorial', '_blank')}
+          >
+            <Play className="h-5 w-5 text-red-600" />
+            Watch Demo
           </Button>
         </div>
       </section>

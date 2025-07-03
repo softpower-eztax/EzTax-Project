@@ -364,36 +364,12 @@ export default function CapitalGainsCalculator() {
         <CardContent>
           <div className="mb-6">
             <p className="text-gray-600 mb-2">
-              자본 이득을 계산하려면 아래에 거래 정보를 입력하거나 1099-B 데이터를 가져오세요.
+              자본 이득을 계산하려면 아래에 거래 정보를 입력하세요.
               계산된 총 자본 이득은 소득 페이지의 자본 이득(Capital Gains) 필드에 자동으로 반영됩니다.
             </p>
           </div>
           
-          {/* 1099-B 업로드 섹션 */}
-          <div className="mb-6 p-4 border rounded-md bg-gray-50">
-            <h3 className="text-lg font-medium mb-2">1099-B 데이터 가져오기</h3>
-            <p className="text-sm text-gray-500 mb-3">
-              1099-B 파일을 업로드하면 거래 정보가 자동으로 추출됩니다.
-            </p>
-            <div className="flex items-center gap-3">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={simulateFileUpload}
-                disabled={isUploading}
-                className="flex items-center gap-2"
-              >
-                <FileText className="h-4 w-4" />
-                <span>1099-B 파일 업로드</span>
-              </Button>
-              {isUploading && (
-                <div className="flex-1 max-w-xs">
-                  <Progress value={uploadProgress} className="h-2" />
-                  <p className="text-xs text-gray-500 mt-1">업로드 중... {uploadProgress}%</p>
-                </div>
-              )}
-            </div>
-          </div>
+
           
           {/* 거래 목록 테이블 */}
           <div className="mb-6">
@@ -666,27 +642,7 @@ export default function CapitalGainsCalculator() {
                 </CardFooter>
               </Card>
               
-              {/* 업그레이드 버튼 */}
-              <Card className="bg-primary/5 border-primary/20">
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-base flex gap-2 items-center text-primary">
-                    <Crown className="h-4 w-4" />
-                    프리미엄으로 업그레이드
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="text-sm text-gray-500">
-                  모든 고급 기능을 이용하고 더 많은 세금을 절약하세요.
-                </CardContent>
-                <CardFooter>
-                  <Button 
-                    onClick={goToPremiumPage}
-                    className="w-full"
-                    variant="default"
-                  >
-                    지금 업그레이드
-                  </Button>
-                </CardFooter>
-              </Card>
+
             </div>
             
             <div className="flex justify-end">
@@ -703,50 +659,7 @@ export default function CapitalGainsCalculator() {
         </CardContent>
       </Card>
       
-      {/* 프리미엄 기능 안내 다이얼로그 */}
-      <Dialog open={premiumDialogOpen} onOpenChange={setPremiumDialogOpen}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <Crown className="h-5 w-5 text-amber-500" />
-              <span>프리미엄 기능 안내</span>
-            </DialogTitle>
-            <DialogDescription>
-              이 기능은 프리미엄 사용자에게만 제공됩니다. 
-              프리미엄으로 업그레이드하고 고급 세금 계산 기능을 활용하세요.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="p-4 bg-amber-50 rounded-lg mb-4">
-            <h3 className="font-medium mb-2 text-amber-800">프리미엄 기능 혜택</h3>
-            <ul className="space-y-2">
-              <li className="flex items-start gap-2">
-                <Check className="h-4 w-4 text-amber-600 shrink-0 mt-0.5" />
-                <span className="text-sm">1099-B 파일 자동 업로드 및 파싱</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <Check className="h-4 w-4 text-amber-600 shrink-0 mt-0.5" />
-                <span className="text-sm">세금 최적화 추천</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <Check className="h-4 w-4 text-amber-600 shrink-0 mt-0.5" />
-                <span className="text-sm">여러 거래소/브로커 통합</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <Check className="h-4 w-4 text-amber-600 shrink-0 mt-0.5" />
-                <span className="text-sm">PDF/Excel 보고서 내보내기</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <Check className="h-4 w-4 text-amber-600 shrink-0 mt-0.5" />
-                <span className="text-sm">무제한 거래 내역 저장</span>
-              </li>
-            </ul>
-          </div>
-          <DialogFooter className="flex flex-col sm:flex-row gap-2">
-            <Button variant="outline" onClick={() => setPremiumDialogOpen(false)} className="sm:w-auto w-full">나중에 하기</Button>
-            <Button onClick={goToPremiumPage} className="sm:w-auto w-full">프리미엄으로 업그레이드</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+
     </div>
   );
 }

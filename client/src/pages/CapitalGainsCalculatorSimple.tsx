@@ -8,14 +8,36 @@ import { Upload, FileText, Calculator, TrendingUp } from 'lucide-react';
 interface Transaction {
   id: number;
   description: string;
-  buyPrice: number;
-  sellPrice: number;
+  dateAcquired: string;
+  dateSold: string;
+  proceeds: number;
+  costBasis: number;
+  washSaleLoss: number;
+  netGainLoss: number;
   quantity: number;
-  profit: number;
-  purchaseDate: string;
-  saleDate: string;
   isLongTerm: boolean;
-  washSaleLoss?: number;
+  formType: string;
+}
+
+interface ScheduleDSummary {
+  shortTerm: {
+    proceeds: number;
+    costBasis: number;
+    washSaleLoss: number;
+    netGainLoss: number;
+  };
+  longTerm: {
+    proceeds: number;
+    costBasis: number;
+    washSaleLoss: number;
+    netGainLoss: number;
+  };
+  grandTotal: {
+    proceeds: number;
+    costBasis: number;
+    washSaleLoss: number;
+    netGainLoss: number;
+  };
 }
 
 // 전역 상태를 사용하여 React 상태 관리 문제 우회
@@ -27,6 +49,7 @@ export default function CapitalGainsCalculatorSimple() {
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [updateCounter, setUpdateCounter] = useState(0);
+  const [showIndividualTransactions, setShowIndividualTransactions] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
 
@@ -40,6 +63,37 @@ export default function CapitalGainsCalculatorSimple() {
     }
   }, [updateCounter, globalTransactions.length]);
 
+  // Schedule D Summary 계산
+  const calculateScheduleDSummary = (): ScheduleDSummary => {
+    const shortTerm = { proceeds: 0, costBasis: 0, washSaleLoss: 0, netGainLoss: 0 };
+    const longTerm = { proceeds: 0, costBasis: 0, washSaleLoss: 0, netGainLoss: 0 };
+
+    transactions.forEach(transaction => {
+      if (transaction.isLongTerm) {
+        longTerm.proceeds += transaction.proceeds || 0;
+        longTerm.costBasis += transaction.costBasis || 0;
+        longTerm.washSaleLoss += transaction.washSaleLoss || 0;
+        longTerm.netGainLoss += transaction.netGainLoss || 0;
+      } else {
+        shortTerm.proceeds += transaction.proceeds || 0;
+        shortTerm.costBasis += transaction.costBasis || 0;
+        shortTerm.washSaleLoss += transaction.washSaleLoss || 0;
+        shortTerm.netGainLoss += transaction.netGainLoss || 0;
+      }
+    });
+
+    const grandTotal = {
+      proceeds: shortTerm.proceeds + longTerm.proceeds,
+      costBasis: shortTerm.costBasis + longTerm.costBasis,
+      washSaleLoss: shortTerm.washSaleLoss + longTerm.washSaleLoss,
+      netGainLoss: shortTerm.netGainLoss + longTerm.netGainLoss
+    };
+
+    return { shortTerm, longTerm, grandTotal };
+  };
+
+  const scheduleDSummary = calculateScheduleDSummary();
+
   // 실제 PDF 파싱 함수
   const handlePdfUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -51,58 +105,59 @@ export default function CapitalGainsCalculatorSimple() {
 
     try {
       const formData = new FormData();
-      formData.append('file', file);
+      formData.append('pdf', file);
+
+      const progressInterval = setInterval(() => {
+        setUploadProgress(prev => Math.min(prev + 10, 90));
+      }, 200);
 
       const response = await fetch('/api/parse-1099b', {
         method: 'POST',
         body: formData,
       });
 
+      clearInterval(progressInterval);
+      setUploadProgress(100);
+
       if (!response.ok) {
-        throw new Error(`서버 오류: ${response.status}`);
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
 
       const result = await response.json();
-      console.log('서버 PDF 파싱 결과:', result);
+      console.log('PDF 파싱 결과:', result);
 
-      if (result.success && result.data.transactions) {
+      if (result.success && result.data && result.data.transactions) {
         const newTransactions = result.data.transactions.map((t: any, index: number) => ({
           id: Date.now() + index,
-          description: t.description || `거래 ${index + 1}`,
-          buyPrice: t.costBasis || 0,
-          sellPrice: t.proceeds || 0,
-          quantity: t.quantity || 1,
-          profit: t.netGainLoss || 0,
-          purchaseDate: t.dateAcquired || '',
-          saleDate: t.dateSold || '',
-          isLongTerm: t.isLongTerm || false,
+          description: t.description || 'Unknown',
+          dateAcquired: t.dateAcquired || '',
+          dateSold: t.dateSold || '',
+          proceeds: t.proceeds || 0,
+          costBasis: t.costBasis || 0,
           washSaleLoss: t.washSaleLoss || 0,
+          netGainLoss: t.netGainLoss || 0,
+          quantity: t.quantity || 1,
+          isLongTerm: t.isLongTerm || false,
+          formType: t.formType || 'A'
         }));
 
-        console.log('파싱된 거래 데이터:', newTransactions);
-        
-        // 전역 상태에 저장
-        globalTransactions = [...newTransactions];
-        
-        // 로컬 상태 강제 업데이트
-        setTransactions([...newTransactions]);
+        // 전역 상태 업데이트
+        globalTransactions = [...globalTransactions, ...newTransactions];
+        setTransactions([...globalTransactions]);
         setUpdateCounter(prev => prev + 1);
-        
-        console.log('상태 업데이트 완료:', newTransactions.length);
-        setUploadProgress(100);
 
         toast({
-          title: "PDF 파싱 완료",
-          description: `${newTransactions.length}개의 거래 데이터가 추출되었습니다.`,
+          title: "PDF 파싱 완료!",
+          description: `${newTransactions.length}개의 거래가 추가되었습니다.`,
         });
       } else {
-        throw new Error(result.message || '파싱 실패');
+        throw new Error(result.message || 'PDF 파싱에 실패했습니다.');
       }
     } catch (error) {
       console.error('PDF 업로드 오류:', error);
       toast({
-        title: "오류",
-        description: error instanceof Error ? error.message : "파일 업로드에 실패했습니다.",
+        title: "업로드 실패",
+        description: error instanceof Error ? error.message : "알 수 없는 오류가 발생했습니다.",
         variant: "destructive",
       });
     } finally {
@@ -114,171 +169,274 @@ export default function CapitalGainsCalculatorSimple() {
     }
   };
 
-  // 계산 함수들
-  const longTermGains = transactions
-    .filter(t => t.isLongTerm)
-    .reduce((sum, t) => sum + t.profit, 0);
+  const deleteTransaction = (index: number) => {
+    globalTransactions.splice(index, 1);
+    setTransactions([...globalTransactions]);
+    setUpdateCounter(prev => prev + 1);
 
-  const shortTermGains = transactions
-    .filter(t => !t.isLongTerm)
-    .reduce((sum, t) => sum + t.profit, 0);
+    toast({
+      title: "거래 삭제됨",
+      description: "선택한 거래가 삭제되었습니다.",
+    });
+  };
 
-  const totalGains = longTermGains + shortTermGains;
+  const clearAllTransactions = () => {
+    globalTransactions.length = 0;
+    setTransactions([]);
+    setUpdateCounter(prev => prev + 1);
+
+    toast({
+      title: "모든 거래 삭제됨",
+      description: "모든 거래가 삭제되었습니다.",
+    });
+  };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white p-4">
-      <div className="max-w-6xl mx-auto space-y-6">
-        <Card>
+    <div className="container mx-auto px-4 py-8">
+      <div className="max-w-6xl mx-auto">
+        <div className="text-center mb-8">
+          <h1 className="text-3xl font-bold text-gray-900 mb-4">
+            Capital Gains Calculator - Schedule D Summary
+          </h1>
+          <p className="text-lg text-gray-600">
+            1099-B PDF를 업로드하여 IRS Form 8949 Schedule D Summary를 생성하세요
+          </p>
+        </div>
+
+        {/* PDF Upload Section */}
+        <Card className="mb-8">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Calculator className="h-6 w-6" />
-              양도소득세 계산기 (실제 1099-B 문서 파싱)
+              <Upload className="h-5 w-5" />
+              1099-B PDF 업로드
             </CardTitle>
             <CardDescription>
-              실제 브로커 1099-B PDF 문서를 업로드하여 자동으로 거래 데이터를 추출하고 양도소득세를 계산합니다. Robinhood, TD Ameritrade, Charles Schwab 등의 문서를 지원합니다.
+              Robinhood, TD Ameritrade, Charles Schwab 등의 1099-B PDF 파일을 업로드하세요
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="space-y-6">
-              {/* PDF 업로드 섹션 */}
-              <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
+            <div className="space-y-4">
+              <div>
                 <input
                   ref={fileInputRef}
                   type="file"
                   accept=".pdf"
                   onChange={handlePdfUpload}
-                  className="hidden"
-                />
-                
-                <Upload className="h-12 w-12 mx-auto text-gray-400 mb-4" />
-                <h3 className="text-lg font-semibold mb-2">실제 1099-B PDF 문서 업로드</h3>
-                <p className="text-gray-600 mb-4">
-                  브로커에서 받은 실제 1099-B 세금 문서를 업로드하여 자동으로 거래 데이터를 추출하세요
-                </p>
-                
-                <Button
-                  onClick={() => fileInputRef.current?.click()}
                   disabled={isUploading}
-                  className="mb-4"
-                >
-                  <FileText className="h-4 w-4 mr-2" />
-                  {isUploading ? `업로드 중... ${uploadProgress}%` : 'PDF 파일 선택'}
-                </Button>
-                
-                {isUploading && (
-                  <div className="w-full bg-gray-200 rounded-full h-2 mb-4">
-                    <div 
-                      className="bg-blue-600 h-2 rounded-full transition-all duration-300"
-                      style={{ width: `${uploadProgress}%` }}
-                    />
+                  className="hidden"
+                  id="pdf-upload"
+                />
+                <label htmlFor="pdf-upload">
+                  <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-gray-400 cursor-pointer">
+                    <FileText className="h-8 w-8 mx-auto mb-2 text-gray-400" />
+                    <p className="text-sm text-gray-600">
+                      {isUploading ? '업로드 중...' : 'PDF 파일을 선택하거나 드래그하세요'}
+                    </p>
                   </div>
-                )}
-                
-                <p className="text-sm text-gray-500">
-                  지원 형식: PDF (최대 10MB) | 지원 브로커: Robinhood, TD Ameritrade, Charles Schwab
-                </p>
+                </label>
               </div>
 
-              {/* 거래 데이터 표시 - 항상 표시 */}
-              <div className="space-y-4">
-                <h3 className="text-lg font-semibold flex items-center gap-2">
-                  <TrendingUp className="h-5 w-5" />
-                  추출된 거래 데이터 ({transactions.length}개) [전역: {globalTransactions.length}개]
-                </h3>
-                
-                {transactions.length > 0 ? (
-                  <>
-                    <div className="overflow-x-auto">
-                      <table className="w-full border border-gray-200 rounded-lg">
-                        <thead className="bg-gray-50">
-                          <tr>
-                            <th className="px-4 py-2 text-left border-b">Stock Name</th>
-                            <th className="px-4 py-2 text-left border-b">수량</th>
-                            <th className="px-4 py-2 text-left border-b">Date Acquired</th>
-                            <th className="px-4 py-2 text-left border-b">Date Sold</th>
-                            <th className="px-4 py-2 text-right border-b">Proceeds</th>
-                            <th className="px-4 py-2 text-right border-b">Cost Basis</th>
-                            <th className="px-4 py-2 text-right border-b">Wash Sales Loss Disallowed</th>
-                            <th className="px-4 py-2 text-right border-b">Net Gain/Loss</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {transactions.map((transaction) => (
-                            <tr key={transaction.id} className="hover:bg-gray-50">
-                              <td className="px-4 py-2 border-b font-medium">
-                                {transaction.description.split(' / ')[0] || 'N/A'}
-                              </td>
-                              <td className="px-4 py-2 border-b">{transaction.quantity}</td>
-                              <td className="px-4 py-2 border-b">{transaction.purchaseDate}</td>
-                              <td className="px-4 py-2 border-b">{transaction.saleDate}</td>
-                              <td className="px-4 py-2 border-b text-right">${transaction.sellPrice.toFixed(2)}</td>
-                              <td className="px-4 py-2 border-b text-right">${transaction.buyPrice.toFixed(2)}</td>
-                              <td className="px-4 py-2 border-b text-right">${(transaction.washSaleLoss || 0).toFixed(2)}</td>
-                              <td className={`px-4 py-2 border-b text-right font-semibold ${
-                                transaction.profit >= 0 ? 'text-green-600' : 'text-red-600'
-                              }`}>
-                                ${transaction.profit.toFixed(2)}
-                              </td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
+              {isUploading && (
+                <div className="w-full bg-gray-200 rounded-full h-2">
+                  <div
+                    className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+                    style={{ width: `${uploadProgress}%` }}
+                  ></div>
+                </div>
+              )}
 
-                    {/* 요약 정보 */}
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
-                      <Card>
-                        <CardContent className="p-4">
-                          <div className="text-sm font-medium text-gray-600">총 자본이득</div>
-                          <div className={`text-2xl font-bold ${totalGains >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                            ${totalGains.toFixed(2)}
-                          </div>
-                        </CardContent>
-                      </Card>
-                      <Card>
-                        <CardContent className="p-4">
-                          <div className="text-sm font-medium text-gray-600">장기 자본이득</div>
-                          <div className={`text-2xl font-bold ${longTermGains >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                            ${longTermGains.toFixed(2)}
-                          </div>
-                        </CardContent>
-                      </Card>
-                      <Card>
-                        <CardContent className="p-4">
-                          <div className="text-sm font-medium text-gray-600">단기 자본이득</div>
-                          <div className={`text-2xl font-bold ${shortTermGains >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                            ${shortTermGains.toFixed(2)}
-                          </div>
-                        </CardContent>
-                      </Card>
-                    </div>
-
-                    <div className="flex gap-4">
-                      <Button onClick={() => setLocation('/income')} className="flex-1">
-                        세금 신고서에 추가
-                      </Button>
-                      <Button 
-                        onClick={() => {
-                          globalTransactions = [];
-                          setTransactions([]);
-                          setUpdateCounter(prev => prev + 1);
-                        }} 
-                        className="flex-1"
-                      >
-                        데이터 초기화
-                      </Button>
-                    </div>
-                  </>
-                ) : (
-                  <div className="text-center py-8 text-gray-500 border-2 border-dashed border-gray-300 rounded-lg">
-                    <div className="text-lg mb-2">PDF를 업로드하여 1099-B 거래 데이터를 추출하세요.</div>
-                    <div className="text-sm">현재 상태: local={transactions.length}, global={globalTransactions.length}</div>
-                  </div>
-                )}
-              </div>
+              {transactions.length > 0 && (
+                <div className="flex gap-2">
+                  <Button
+                    onClick={clearAllTransactions}
+                    variant="outline"
+                    size="sm"
+                  >
+                    모든 거래 삭제
+                  </Button>
+                </div>
+              )}
             </div>
           </CardContent>
         </Card>
+
+        {/* Schedule D Summary Section */}
+        {transactions.length > 0 && (
+          <Card className="mb-8">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Calculator className="h-5 w-5" />
+                Schedule D Summary (IRS Form 8949 형식)
+              </CardTitle>
+              <CardDescription>
+                세금 신고용 요약 정보 - 실제 Form 8949에 입력할 데이터입니다
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="overflow-x-auto">
+                <table className="min-w-full bg-white border border-gray-300">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      <th className="border border-gray-300 px-4 py-2 text-left">Term</th>
+                      <th className="border border-gray-300 px-4 py-2 text-left">Form 8949 type</th>
+                      <th className="border border-gray-300 px-4 py-2 text-right">Proceeds</th>
+                      <th className="border border-gray-300 px-4 py-2 text-right">Cost basis</th>
+                      <th className="border border-gray-300 px-4 py-2 text-right">Market discount</th>
+                      <th className="border border-gray-300 px-4 py-2 text-right">Wash sale loss disallowed</th>
+                      <th className="border border-gray-300 px-4 py-2 text-right">Net gain or (loss)</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {/* Short-term totals */}
+                    <tr className="bg-blue-50">
+                      <td className="border border-gray-300 px-4 py-2 font-semibold">Short</td>
+                      <td className="border border-gray-300 px-4 py-2">A (basis reported to the IRS)</td>
+                      <td className="border border-gray-300 px-4 py-2 text-right font-semibold">
+                        ${scheduleDSummary.shortTerm.proceeds.toLocaleString()}
+                      </td>
+                      <td className="border border-gray-300 px-4 py-2 text-right font-semibold">
+                        ${scheduleDSummary.shortTerm.costBasis.toLocaleString()}
+                      </td>
+                      <td className="border border-gray-300 px-4 py-2 text-right">0.00</td>
+                      <td className="border border-gray-300 px-4 py-2 text-right font-semibold">
+                        ${scheduleDSummary.shortTerm.washSaleLoss.toLocaleString()}
+                      </td>
+                      <td className={`border border-gray-300 px-4 py-2 text-right font-semibold ${scheduleDSummary.shortTerm.netGainLoss >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                        ${scheduleDSummary.shortTerm.netGainLoss.toLocaleString()}
+                      </td>
+                    </tr>
+                    
+                    {/* Long-term totals */}
+                    <tr className="bg-green-50">
+                      <td className="border border-gray-300 px-4 py-2 font-semibold">Long</td>
+                      <td className="border border-gray-300 px-4 py-2">D (basis reported to the IRS)</td>
+                      <td className="border border-gray-300 px-4 py-2 text-right font-semibold">
+                        ${scheduleDSummary.longTerm.proceeds.toLocaleString()}
+                      </td>
+                      <td className="border border-gray-300 px-4 py-2 text-right font-semibold">
+                        ${scheduleDSummary.longTerm.costBasis.toLocaleString()}
+                      </td>
+                      <td className="border border-gray-300 px-4 py-2 text-right">0.00</td>
+                      <td className="border border-gray-300 px-4 py-2 text-right font-semibold">
+                        ${scheduleDSummary.longTerm.washSaleLoss.toLocaleString()}
+                      </td>
+                      <td className={`border border-gray-300 px-4 py-2 text-right font-semibold ${scheduleDSummary.longTerm.netGainLoss >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                        ${scheduleDSummary.longTerm.netGainLoss.toLocaleString()}
+                      </td>
+                    </tr>
+                    
+                    {/* Grand Total */}
+                    <tr className="bg-yellow-100 font-bold">
+                      <td className="border border-gray-300 px-4 py-2 font-bold">Grand total</td>
+                      <td className="border border-gray-300 px-4 py-2"></td>
+                      <td className="border border-gray-300 px-4 py-2 text-right font-bold">
+                        ${scheduleDSummary.grandTotal.proceeds.toLocaleString()}
+                      </td>
+                      <td className="border border-gray-300 px-4 py-2 text-right font-bold">
+                        ${scheduleDSummary.grandTotal.costBasis.toLocaleString()}
+                      </td>
+                      <td className="border border-gray-300 px-4 py-2 text-right">0.00</td>
+                      <td className="border border-gray-300 px-4 py-2 text-right font-bold">
+                        ${scheduleDSummary.grandTotal.washSaleLoss.toLocaleString()}
+                      </td>
+                      <td className={`border border-gray-300 px-4 py-2 text-right font-bold ${scheduleDSummary.grandTotal.netGainLoss >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                        ${scheduleDSummary.grandTotal.netGainLoss.toLocaleString()}
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Individual Transactions (Collapsible) */}
+        {transactions.length > 0 && (
+          <Card>
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <CardTitle className="flex items-center gap-2">
+                  <TrendingUp className="h-5 w-5" />
+                  개별 거래 내역 ({transactions.length}건)
+                </CardTitle>
+                <Button
+                  onClick={() => setShowIndividualTransactions(!showIndividualTransactions)}
+                  variant="outline"
+                  size="sm"
+                >
+                  {showIndividualTransactions ? '숨기기' : '보기'}
+                </Button>
+              </div>
+              <CardDescription>
+                상세한 개별 거래 내역 (참고용)
+              </CardDescription>
+            </CardHeader>
+            
+            {showIndividualTransactions && (
+              <CardContent>
+                <div className="overflow-x-auto">
+                  <table className="min-w-full bg-white border border-gray-300">
+                    <thead className="bg-gray-50">
+                      <tr>
+                        <th className="border border-gray-300 px-4 py-2 text-left">종목명</th>
+                        <th className="border border-gray-300 px-4 py-2 text-left">취득일</th>
+                        <th className="border border-gray-300 px-4 py-2 text-left">매도일</th>
+                        <th className="border border-gray-300 px-4 py-2 text-right">매각금액</th>
+                        <th className="border border-gray-300 px-4 py-2 text-right">취득가</th>
+                        <th className="border border-gray-300 px-4 py-2 text-right">Wash Sale Loss</th>
+                        <th className="border border-gray-300 px-4 py-2 text-right">순손익</th>
+                        <th className="border border-gray-300 px-4 py-2 text-center">기간</th>
+                        <th className="border border-gray-300 px-4 py-2 text-center">삭제</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {transactions.map((transaction, index) => (
+                        <tr key={`${transaction.description}-${index}-${updateCounter}`} className="hover:bg-gray-50">
+                          <td className="border border-gray-300 px-4 py-2">{transaction.description}</td>
+                          <td className="border border-gray-300 px-4 py-2">{transaction.dateAcquired}</td>
+                          <td className="border border-gray-300 px-4 py-2">{transaction.dateSold}</td>
+                          <td className="border border-gray-300 px-4 py-2 text-right">${transaction.proceeds?.toLocaleString() || '0'}</td>
+                          <td className="border border-gray-300 px-4 py-2 text-right">${transaction.costBasis?.toLocaleString() || '0'}</td>
+                          <td className="border border-gray-300 px-4 py-2 text-right">${transaction.washSaleLoss?.toLocaleString() || '0'}</td>
+                          <td className={`border border-gray-300 px-4 py-2 text-right ${transaction.netGainLoss >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                            ${transaction.netGainLoss?.toLocaleString() || '0'}
+                          </td>
+                          <td className="border border-gray-300 px-4 py-2 text-center">
+                            {transaction.isLongTerm ? 'Long' : 'Short'}
+                          </td>
+                          <td className="border border-gray-300 px-4 py-2 text-center">
+                            <button
+                              onClick={() => deleteTransaction(index)}
+                              className="text-red-600 hover:text-red-800 font-bold"
+                              title="거래 삭제"
+                            >
+                              ×
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </CardContent>
+            )}
+          </Card>
+        )}
+
+        {/* No Data State */}
+        {transactions.length === 0 && (
+          <Card>
+            <CardContent className="text-center py-12">
+              <FileText className="h-12 w-12 mx-auto mb-4 text-gray-400" />
+              <h3 className="text-lg font-medium text-gray-900 mb-2">
+                아직 업로드된 거래 내역이 없습니다
+              </h3>
+              <p className="text-gray-600">
+                1099-B PDF 파일을 업로드하여 Schedule D Summary를 생성하세요
+              </p>
+            </CardContent>
+          </Card>
+        )}
       </div>
     </div>
   );

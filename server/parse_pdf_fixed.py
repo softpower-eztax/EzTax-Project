@@ -54,6 +54,9 @@ def parse_robinhood_pdf(pdf_path: str) -> Dict[str, Any]:
                 short_term_gain = sum(t.get("netGainLoss", 0) for t in transactions if not t.get("isLongTerm", False))
                 long_term_gain = sum(t.get("netGainLoss", 0) for t in transactions if t.get("isLongTerm", False))
                 
+                # Schedule D Summary 형식으로 계산
+                schedule_d_summary = create_schedule_d_summary(transactions)
+                
                 result["summary"] = {
                     "totalProceeds": total_proceeds,
                     "totalCostBasis": total_cost_basis,
@@ -61,6 +64,8 @@ def parse_robinhood_pdf(pdf_path: str) -> Dict[str, Any]:
                     "shortTermGainLoss": short_term_gain,
                     "longTermGainLoss": long_term_gain
                 }
+                
+                result["scheduleDSummary"] = schedule_d_summary
                 
                 print(f"거래 데이터 파싱 완료: {len(transactions)}개 거래", file=sys.stderr)
             else:
@@ -465,6 +470,46 @@ def is_long_term_investment(date_acquired: str, date_sold: str) -> bool:
         
     except Exception:
         return False
+
+def create_schedule_d_summary(transactions):
+    """
+    거래 데이터를 Schedule D Summary 형식으로 분류
+    Short-term vs Long-term으로 구분하여 합계 계산
+    """
+    short_term = {'proceeds': 0, 'costBasis': 0, 'washSaleLoss': 0, 'netGainLoss': 0}
+    long_term = {'proceeds': 0, 'costBasis': 0, 'washSaleLoss': 0, 'netGainLoss': 0}
+    
+    for transaction in transactions:
+        proceeds = transaction.get('proceeds', 0)
+        cost_basis = transaction.get('costBasis', 0)
+        wash_sale = transaction.get('washSaleLoss', 0)
+        net_gain = transaction.get('netGainLoss', 0)
+        is_long_term = transaction.get('isLongTerm', False)
+        
+        if is_long_term:
+            long_term['proceeds'] += proceeds
+            long_term['costBasis'] += cost_basis
+            long_term['washSaleLoss'] += wash_sale
+            long_term['netGainLoss'] += net_gain
+        else:
+            short_term['proceeds'] += proceeds
+            short_term['costBasis'] += cost_basis
+            short_term['washSaleLoss'] += wash_sale
+            short_term['netGainLoss'] += net_gain
+    
+    # Grand Total 계산
+    grand_total = {
+        'proceeds': short_term['proceeds'] + long_term['proceeds'],
+        'costBasis': short_term['costBasis'] + long_term['costBasis'],
+        'washSaleLoss': short_term['washSaleLoss'] + long_term['washSaleLoss'],
+        'netGainLoss': short_term['netGainLoss'] + long_term['netGainLoss']
+    }
+    
+    return {
+        'shortTerm': short_term,
+        'longTerm': long_term,
+        'grandTotal': grand_total
+    }
 
 def main():
     if len(sys.argv) != 2:

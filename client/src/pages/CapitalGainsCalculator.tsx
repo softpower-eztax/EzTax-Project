@@ -143,12 +143,22 @@ export default function CapitalGainsCalculator() {
   
   // 새 거래 추가
   const addTransaction = () => {
+    console.log('거래 추가 시도:', newTransaction);
+    
     if (!newTransaction.description || 
         newTransaction.buyPrice <= 0 || 
         newTransaction.sellPrice <= 0 || 
         newTransaction.quantity <= 0 ||
         !newTransaction.purchaseDate || 
         !newTransaction.saleDate) {
+      console.log('입력 검증 실패:', {
+        description: newTransaction.description,
+        buyPrice: newTransaction.buyPrice,
+        sellPrice: newTransaction.sellPrice,
+        quantity: newTransaction.quantity,
+        purchaseDate: newTransaction.purchaseDate,
+        saleDate: newTransaction.saleDate
+      });
       toast({
         title: "입력 오류",
         description: "모든 필드를 올바르게 입력해주세요.",
@@ -163,14 +173,21 @@ export default function CapitalGainsCalculator() {
     // 장기/단기 투자 여부 판단
     const isLongTerm = isLongTermInvestment(newTransaction.purchaseDate, newTransaction.saleDate);
     
+    console.log('계산된 값들:', { profit, isLongTerm });
+    
     // 새 거래 추가
     const newId = transactions.length > 0 ? Math.max(...transactions.map(t => t.id)) + 1 : 1;
-    setTransactions([...transactions, { 
+    const newTransactionWithId = { 
       ...newTransaction, 
       id: newId, 
       profit,
       isLongTerm 
-    }]);
+    };
+    
+    console.log('추가할 거래:', newTransactionWithId);
+    console.log('기존 거래 목록:', transactions);
+    
+    setTransactions([...transactions, newTransactionWithId]);
     
     // 입력 필드 초기화
     setNewTransaction({

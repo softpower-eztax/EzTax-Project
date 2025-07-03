@@ -5,9 +5,6 @@ import { insertTaxReturnSchema } from "@shared/schema";
 import { z } from "zod";
 import nodemailer from "nodemailer";
 import path from "path";
-import multer from "multer";
-import fs from "fs";
-import { exec } from "child_process";
 
 // Configure email transporter for Gmail with better error handling
 const createEmailTransporter = () => {
@@ -479,93 +476,6 @@ ${additionalRequests || '없음'}
       console.error('Error deleting tax returns:', error);
       res.status(500).json({ message: 'Failed to delete tax returns' });
     }
-  });
-
-  // Configure multer for file uploads
-  const upload = multer({
-    dest: 'uploads/',
-    limits: {
-      fileSize: 10 * 1024 * 1024, // 10MB limit
-    },
-    fileFilter: (req, file, cb) => {
-      if (file.mimetype === 'application/pdf') {
-        cb(null, true);
-      } else {
-        cb(new Error('Only PDF files are allowed'));
-      }
-    }
-  });
-
-  // Brokerage-specific PDF parsing endpoint
-  app.post('/api/parse-1099b', upload.single('pdf'), (req, res) => {
-    if (!req.file) {
-      return res.status(400).json({ error: 'PDF 파일이 업로드되지 않았습니다' });
-    }
-
-    console.log('증권사별 PDF 파싱 시작:', req.file.originalname);
-    console.log('파일 크기:', req.file.size, 'bytes');
-
-    const filePath = req.file.path;
-
-    // Execute brokerage-specific Python parser
-    console.log('Python 파서 실행:', `python3 server/brokerageParser.py "${filePath}"`);
-    
-    exec(`python3 server/brokerageParser.py "${filePath}"`, (error, stdout, stderr) => {
-      console.log('Python 파서 stdout:', stdout);
-      console.log('Python 파서 stderr:', stderr);
-      
-      // Clean up uploaded file
-      fs.unlink(filePath, (unlinkError) => {
-        if (unlinkError) {
-          console.error('임시 파일 삭제 실패:', unlinkError);
-        }
-      });
-
-      if (error) {
-        console.error('증권사별 PDF 파싱 오류:', error);
-        console.error('stderr:', stderr);
-        return res.status(500).json({ error: 'PDF 파싱에 실패했습니다' });
-      }
-
-      try {
-        const result = JSON.parse(stdout);
-        console.log('증권사별 PDF 파싱 완료:', {
-          brokerage: result.brokerage,
-          accountNumber: result.accountNumber,
-          taxpayerName: result.taxpayerName,
-          transactionCount: result.transactions?.length || 0,
-          totalProceeds: result.totalProceeds,
-          totalGainLoss: result.totalNetGainLoss
-        });
-        
-        // 기존 API 응답 형식과 호환성 유지
-        res.json({
-          success: true,
-          data: {
-            accountNumber: result.accountNumber,
-            documentId: result.documentId,
-            taxpayerName: result.taxpayerName,
-            transactions: result.transactions,
-            summary: {
-              totalProceeds: result.totalProceeds,
-              totalCostBasis: result.totalCostBasis,
-              totalNetGainLoss: result.totalNetGainLoss,
-              totalWashSaleLoss: result.totalWashSaleLoss,
-              shortTermProceeds: result.shortTermProceeds,
-              shortTermCostBasis: result.shortTermCostBasis,
-              shortTermNetGainLoss: result.shortTermNetGainLoss,
-              longTermProceeds: result.longTermProceeds,
-              longTermCostBasis: result.longTermCostBasis,
-              longTermNetGainLoss: result.longTermNetGainLoss
-            }
-          }
-        });
-      } catch (parseError) {
-        console.error('JSON 파싱 오류:', parseError);
-        console.error('stdout:', stdout);
-        res.status(500).json({ error: 'PDF 파싱 결과를 처리할 수 없습니다' });
-      }
-    });
   });
 
   const httpServer = createServer(app);

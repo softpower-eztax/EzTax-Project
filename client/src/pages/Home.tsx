@@ -3,7 +3,7 @@ import { useLocation } from 'wouter';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { File, FileText, Clock, Shield, Play } from 'lucide-react';
+import { File, FileText, Clock, Shield } from 'lucide-react';
 import { useTaxContext } from '@/context/TaxContext';
 import { useAuth } from '@/hooks/use-auth';
 
@@ -56,22 +56,6 @@ const Home: React.FC = () => {
             onClick={() => navigate('/retirement-score')}
           >
             은퇴준비상태진단
-          </Button>
-        </div>
-        
-        {/* YouTube 튜토리얼 버튼 */}
-        <div className="mt-6 flex justify-center">
-          <Button
-            variant="outline"
-            size="lg"
-            className="bg-white hover:bg-gray-50 text-gray-800 border-2 border-gray-300 hover:border-gray-400 font-semibold px-6 py-3 flex items-center gap-3 transition-all duration-200"
-            onClick={() => window.open('https://youtube.com/@EzTax-Tutorial', '_blank')}
-          >
-            <Play className="h-5 w-5 text-red-600" />
-            <div className="flex flex-col items-start">
-              <span className="text-sm font-medium">EzTax 사용법 시청</span>
-              <span className="text-xs text-gray-600">Watch Demo</span>
-            </div>
           </Button>
         </div>
       </section>
@@ -163,22 +147,13 @@ const Home: React.FC = () => {
             >
               {user ? '지금 시작하기' : '로그인하고 시작하기(Login to Start)'}
             </Button>
-            <div className="space-y-3">
-              <Button 
-                size="lg"
-                className="w-full bg-green-500 hover:bg-green-600 text-white font-bold"
-                onClick={() => navigate('/personal-info')}
-              >
-                세금시뮬레이터(Tax Simulator)
-              </Button>
-              <Button 
-                size="lg"
-                className="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold"
-                onClick={() => navigate('/capital-gains')}
-              >
-                1099-B 양도소득세 계산기
-              </Button>
-            </div>
+            <Button 
+              size="lg"
+              className="w-full bg-green-500 hover:bg-green-600 text-white font-bold"
+              onClick={() => navigate('/personal-info')}
+            >
+              세금시뮬레이터(Tax Simulator)
+            </Button>
           </CardFooter>
         </Card>
       </section>

@@ -2,8 +2,6 @@ import { useState, useRef, useEffect } from 'react';
 import { useLocation } from 'wouter';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { Upload, FileText, Calculator, TrendingUp } from 'lucide-react';
 
@@ -20,22 +18,27 @@ interface Transaction {
   washSaleLoss?: number;
 }
 
+// 전역 상태를 사용하여 React 상태 관리 문제 우회
+let globalTransactions: Transaction[] = [];
+
 export default function CapitalGainsCalculatorSimple() {
   const [, setLocation] = useLocation();
-  const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [transactions, setTransactions] = useState<Transaction[]>(globalTransactions);
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
-  const [forceRender, setForceRender] = useState(0);
+  const [updateCounter, setUpdateCounter] = useState(0);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
 
   // 디버깅용 로그
-  console.log('컴포넌트 렌더링 - transactions.length:', transactions.length, 'forceRender:', forceRender);
+  console.log('컴포넌트 렌더링 - transactions.length:', transactions.length, 'globalTransactions.length:', globalTransactions.length);
 
-  // 렌더링 조건 체크 로그
+  // 전역 상태와 로컬 상태 동기화
   useEffect(() => {
-    console.log('useEffect - transactions 변경됨:', transactions.length);
-  }, [transactions]);
+    if (globalTransactions.length !== transactions.length) {
+      setTransactions([...globalTransactions]);
+    }
+  }, [updateCounter, globalTransactions.length]);
 
   // 실제 PDF 파싱 함수
   const handlePdfUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -77,22 +80,15 @@ export default function CapitalGainsCalculatorSimple() {
         }));
 
         console.log('파싱된 거래 데이터:', newTransactions);
-        console.log('현재 transactions 상태:', transactions.length);
         
-        // 직접적인 상태 업데이트
-        console.log('상태 업데이트 시작 - 기존:', transactions.length, '새로운:', newTransactions.length);
+        // 전역 상태에 저장
+        globalTransactions = [...newTransactions];
         
-        // 즉시 상태 업데이트
-        setTransactions(newTransactions);
-        setForceRender(Date.now());
+        // 로컬 상태 강제 업데이트
+        setTransactions([...newTransactions]);
+        setUpdateCounter(prev => prev + 1);
         
-        // 추가 업데이트 강제 실행
-        setTimeout(() => {
-          setTransactions([...newTransactions]);
-          setForceRender(Date.now());
-          console.log('상태 업데이트 완료:', newTransactions.length);
-        }, 100);
-        
+        console.log('상태 업데이트 완료:', newTransactions.length);
         setUploadProgress(100);
 
         toast({
@@ -183,15 +179,15 @@ export default function CapitalGainsCalculatorSimple() {
                 </p>
               </div>
 
-              {/* 거래 데이터 표시 */}
-              <div key={`transactions-${forceRender}`} className="space-y-4">
+              {/* 거래 데이터 표시 - 항상 표시 */}
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold flex items-center gap-2">
+                  <TrendingUp className="h-5 w-5" />
+                  추출된 거래 데이터 ({transactions.length}개) [전역: {globalTransactions.length}개]
+                </h3>
+                
                 {transactions.length > 0 ? (
                   <>
-                    <h3 className="text-lg font-semibold flex items-center gap-2">
-                      <TrendingUp className="h-5 w-5" />
-                      추출된 거래 데이터 ({transactions.length}개)
-                    </h3>
-                    
                     <div className="overflow-x-auto">
                       <table className="w-full border border-gray-200 rounded-lg">
                         <thead className="bg-gray-50">
@@ -261,14 +257,22 @@ export default function CapitalGainsCalculatorSimple() {
                       <Button onClick={() => setLocation('/income')} className="flex-1">
                         세금 신고서에 추가
                       </Button>
-                      <Button onClick={() => setTransactions([])} className="flex-1">
+                      <Button 
+                        onClick={() => {
+                          globalTransactions = [];
+                          setTransactions([]);
+                          setUpdateCounter(prev => prev + 1);
+                        }} 
+                        className="flex-1"
+                      >
                         데이터 초기화
                       </Button>
                     </div>
                   </>
                 ) : (
-                  <div className="text-center py-8 text-gray-500">
-                    PDF를 업로드하여 1099-B 거래 데이터를 추출하세요.
+                  <div className="text-center py-8 text-gray-500 border-2 border-dashed border-gray-300 rounded-lg">
+                    <div className="text-lg mb-2">PDF를 업로드하여 1099-B 거래 데이터를 추출하세요.</div>
+                    <div className="text-sm">현재 상태: local={transactions.length}, global={globalTransactions.length}</div>
                   </div>
                 )}
               </div>

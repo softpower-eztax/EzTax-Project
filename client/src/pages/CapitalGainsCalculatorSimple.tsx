@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useLocation } from 'wouter';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -31,6 +31,11 @@ export default function CapitalGainsCalculatorSimple() {
 
   // 디버깅용 로그
   console.log('컴포넌트 렌더링 - transactions.length:', transactions.length, 'forceRender:', forceRender);
+
+  // 렌더링 조건 체크 로그
+  useEffect(() => {
+    console.log('useEffect - transactions 변경됨:', transactions.length);
+  }, [transactions]);
 
   // 실제 PDF 파싱 함수
   const handlePdfUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -97,10 +102,19 @@ export default function CapitalGainsCalculatorSimple() {
       console.log('파싱된 거래 데이터:', newTransactions);
       console.log('현재 transactions 상태:', transactions.length);
       
-      // 즉시 상태 업데이트 (setTimeout 제거)
-      setTransactions(newTransactions);
-      setForceRender(prev => prev + 1);
-      console.log('상태 업데이트 완료:', newTransactions.length);
+      // 강제 컴포넌트 재마운트
+      console.log('상태 업데이트 시작 - 기존:', transactions.length, '새로운:', newTransactions.length);
+      
+      // 먼저 상태를 완전히 리셋
+      setTransactions([]);
+      setForceRender(Date.now()); // 고유한 키 생성
+      
+      // 새로운 데이터로 업데이트
+      requestAnimationFrame(() => {
+        setTransactions([...newTransactions]); // 새 배열 참조 생성
+        setForceRender(Date.now() + 1);
+        console.log('상태 업데이트 완료:', newTransactions.length);
+      });
       
       setUploadProgress(100);
 

@@ -25,8 +25,12 @@ export default function CapitalGainsCalculatorSimple() {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
+  const [forceRender, setForceRender] = useState(0);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
+
+  // 디버깅용 로그
+  console.log('컴포넌트 렌더링 - transactions.length:', transactions.length, 'forceRender:', forceRender);
 
   // 실제 PDF 파싱 함수
   const handlePdfUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -93,10 +97,12 @@ export default function CapitalGainsCalculatorSimple() {
       console.log('파싱된 거래 데이터:', newTransactions);
       console.log('현재 transactions 상태:', transactions.length);
       
-      // 강제 상태 업데이트
+      // 강제 상태 업데이트 및 렌더링
       setTransactions([]);
+      setForceRender(prev => prev + 1);
       setTimeout(() => {
         setTransactions(newTransactions);
+        setForceRender(prev => prev + 1);
         console.log('상태 업데이트 완료:', newTransactions.length);
       }, 100);
       
@@ -186,8 +192,8 @@ export default function CapitalGainsCalculatorSimple() {
               </div>
 
               {/* 거래 데이터 표시 */}
-              {transactions.length > 0 && (
-                <div className="space-y-4">
+              {(transactions.length > 0) && (
+                <div key={`transactions-${forceRender}-${transactions.length}`} className="space-y-4">
                   <h3 className="text-lg font-semibold flex items-center gap-2">
                     <TrendingUp className="h-5 w-5" />
                     추출된 거래 데이터 ({transactions.length}개)

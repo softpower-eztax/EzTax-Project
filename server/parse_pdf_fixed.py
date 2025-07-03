@@ -85,8 +85,8 @@ def extract_schedule_d_summary(text: str) -> Optional[Dict[str, Any]]:
     
     for i, line in enumerate(lines):
         
-        # Grand total이나 Total Short-term 검색
-        if 'Grand total' in line or 'Total Short-term' in line:
+        # Grand total이나 Total Short-term 검색 (공백 있음/없음 모두 처리)
+        if 'Grand total' in line or 'Grandtotal' in line or 'Total Short-term' in line:
             print(f"Summary 라인 발견: {line}", file=sys.stderr)
             
             # 현재 라인에서 숫자 찾기

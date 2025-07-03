@@ -26,7 +26,7 @@ import AdminPanel from "@/pages/AdminPanel";
 import NotFound from "@/pages/not-found";
 import AuthPage from "@/pages/auth-page";
 import DataTester from "@/pages/DataTester";
-import CapitalGainsCalculator from "@/pages/CapitalGainsCalculator";
+import CapitalGainsCalculator from "@/pages/CapitalGainsCalculatorSimple";
 import QBIDetails from "@/pages/QBIDetails";
 import PremiumFeatures from "@/pages/PremiumFeatures";
 import Payment from "@/pages/Payment";

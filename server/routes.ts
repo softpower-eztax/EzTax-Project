@@ -5,6 +5,9 @@ import { insertTaxReturnSchema } from "@shared/schema";
 import { z } from "zod";
 import nodemailer from "nodemailer";
 import path from "path";
+import multer from "multer";
+import { RobinhoodPDFParser } from "./pdfParser";
+import fs from "fs";
 
 // Configure email transporter for Gmail with better error handling
 const createEmailTransporter = () => {
@@ -475,6 +478,65 @@ ${additionalRequests || '없음'}
     } catch (error) {
       console.error('Error deleting tax returns:', error);
       res.status(500).json({ message: 'Failed to delete tax returns' });
+    }
+  });
+
+  // Configure multer for file uploads
+  const upload = multer({
+    dest: 'uploads/',
+    limits: {
+      fileSize: 10 * 1024 * 1024, // 10MB limit
+    },
+    fileFilter: (req, file, cb) => {
+      if (file.mimetype === 'application/pdf') {
+        cb(null, true);
+      } else {
+        cb(new Error('Only PDF files are allowed'));
+      }
+    }
+  });
+
+  // Real PDF parsing endpoint
+  app.post('/api/parse-1099b', upload.single('pdf'), async (req, res) => {
+    try {
+      if (!req.file) {
+        return res.status(400).json({ error: 'No PDF file uploaded' });
+      }
+
+      console.log('실제 PDF 파싱 시작:', req.file.originalname);
+      console.log('파일 크기:', req.file.size, 'bytes');
+      
+      const parser = new RobinhoodPDFParser();
+      const parsedData = await parser.parsePDF(req.file.path);
+      
+      // Clean up uploaded file
+      fs.unlinkSync(req.file.path);
+      
+      console.log('PDF 파싱 완료:', {
+        accountNumber: parsedData.accountNumber,
+        taxpayerName: parsedData.taxpayerName,
+        transactionCount: parsedData.transactions.length,
+        totalProceeds: parsedData.summary.totalProceeds,
+        totalGainLoss: parsedData.summary.totalNetGainLoss
+      });
+
+      res.json({
+        success: true,
+        data: parsedData
+      });
+      
+    } catch (error) {
+      console.error('PDF 파싱 오류:', error);
+      
+      // Clean up uploaded file on error
+      if (req.file && fs.existsSync(req.file.path)) {
+        fs.unlinkSync(req.file.path);
+      }
+      
+      res.status(500).json({
+        error: 'PDF 파싱에 실패했습니다.',
+        details: error instanceof Error ? error.message : 'Unknown error'
+      });
     }
   });
 

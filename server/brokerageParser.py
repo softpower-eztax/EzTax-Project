@@ -100,47 +100,100 @@ def parse_interactive_brokers_pdf(text: str) -> Optional[Dict[str, Any]]:
     """Interactive Brokers 1099-B PDF 파싱 (개별 거래 형식)"""
     print("Interactive Brokers 파싱 시작", file=sys.stderr)
     
+    # 디버깅: 텍스트에서 숫자 패턴이 있는 라인들 찾기
+    lines = text.split('\n')
+    number_pattern = r'[\d,]+\.\d{2}'
+    
+    print("숫자 패턴 라인들 분석:", file=sys.stderr)
+    for i, line in enumerate(lines[:50]):  # 처음 50라인만 확인
+        if line.strip():
+            numbers = re.findall(number_pattern, line)
+            if len(numbers) >= 3:  # 3개 이상의 숫자가 있는 라인
+                print(f"라인 {i}: {line.strip()}", file=sys.stderr)
+                print(f"  숫자들: {numbers}", file=sys.stderr)
+    
     transactions = []
     total_proceeds = 0
     total_cost_basis = 0
     total_wash_sale = 0
     total_net_gain = 0
     
-    # IBKR 거래 라인 패턴들 - 실제 PDF에서 발견된 패턴
+    # 더 간단하고 유연한 패턴들로 시작
     patterns = [
-        # 기본 패턴: "ELI LILLY & CO 532457108 LLY 2 A SALE 12/16/2024 11/26/2024 1,558.42 1,572.74 0.00 14.32"
-        r'([A-Z\s&\.]+?)\s+(\d+)\s+([A-Z]+)\s+(\d+)\s+([AB])\s+(SALE|PURCHASE)\s+(\d{1,2}/\d{1,2}/\d{4})\s+(\d{1,2}/\d{1,2}/\d{4}|\w+)\s+([\d,]+\.\d{2})\s+([\d,]+\.\d{2})\s+([\d,]+\.\d{2})\s+([\d,\-]+\.\d{2})',
-        # 더 유연한 패턴
-        r'([A-Z\s&\.]+)\s+(\d{6,})\s+([A-Z]{1,5})\s+(\d+)\s+([AB])\s+(SALE|PURCHASE)\s+([\d/]+)\s+([\d/]+|\w+)\s+([\d,\.]+)\s+([\d,\.]+)\s+([\d,\.]+)\s+([\d,\.\-]+)'
+        # 패턴 1: 4개 숫자 연속 (가장 간단)
+        r'([\d,]+\.\d{2})\s+([\d,]+\.\d{2})\s+([\d,]+\.\d{2})\s+([\d,\-]+\.\d{2})',
+        # 패턴 2: 회사명 + 숫자들
+        r'([A-Z\s&\.]+)\s+([\d,]+\.\d{2})\s+([\d,]+\.\d{2})\s+([\d,]+\.\d{2})\s+([\d,\-]+\.\d{2})',
+        # 패턴 3: 전체 IBKR 라인 (원래 패턴)
+        r'([A-Z\s&\.]+?)\s+(\d+)\s+([A-Z]+)\s+(\d+)\s+([AB])\s+(SALE|PURCHASE)\s+(\d{1,2}/\d{1,2}/\d{4})\s+(\d{1,2}/\d{1,2}/\d{4}|\w+)\s+([\d,]+\.\d{2})\s+([\d,]+\.\d{2})\s+([\d,]+\.\d{2})\s+([\d,\-]+\.\d{2})'
     ]
     
-    lines = text.split('\n')
-    
-    for line in lines:
-        line = line.strip()
-        if not line:
-            continue
-            
-        for pattern in patterns:
+    for pattern_idx, pattern in enumerate(patterns):
+        print(f"패턴 {pattern_idx + 1} 테스트 중...", file=sys.stderr)
+        
+        for line_idx, line in enumerate(lines):
+            line = line.strip()
+            if not line:
+                continue
+                
             match = re.search(pattern, line)
             if match:
                 try:
-                    company_name = match.group(1).strip()
-                    cusip = match.group(2)
-                    symbol = match.group(3)
-                    quantity = int(match.group(4))
-                    form_type = match.group(5)
-                    action = match.group(6)
-                    date_sold = match.group(7)
-                    date_acquired = match.group(8)
-                    proceeds = parse_currency(match.group(9))
-                    cost_basis = parse_currency(match.group(10))
-                    market_discount = parse_currency(match.group(11))
-                    wash_sale = parse_currency(match.group(12))
+                    groups = match.groups()
+                    print(f"패턴 {pattern_idx + 1} 매치 발견 (라인 {line_idx}): {line}", file=sys.stderr)
+                    print(f"  그룹들: {groups}", file=sys.stderr)
                     
-                    net_gain = proceeds - cost_basis
+                    # 패턴에 따라 다른 파싱 로직
+                    if pattern_idx == 0:  # 4개 숫자만
+                        proceeds = parse_currency(groups[0])
+                        cost_basis = parse_currency(groups[1])
+                        market_discount = parse_currency(groups[2])
+                        wash_sale = parse_currency(groups[3])
+                        net_gain = proceeds - cost_basis
+                        
+                        # 기본값 설정
+                        company_name = f"Transaction {len(transactions) + 1}"
+                        cusip = "Unknown"
+                        symbol = "Unknown"
+                        quantity = 1
+                        form_type = "A"
+                        action = "SALE"
+                        date_sold = "Various"
+                        date_acquired = "Various"
+                        
+                    elif pattern_idx == 1:  # 회사명 + 4개 숫자
+                        company_name = groups[0].strip()
+                        proceeds = parse_currency(groups[1])
+                        cost_basis = parse_currency(groups[2])
+                        market_discount = parse_currency(groups[3])
+                        wash_sale = parse_currency(groups[4])
+                        net_gain = proceeds - cost_basis
+                        
+                        # 기본값 설정
+                        cusip = "Unknown"
+                        symbol = company_name.split()[0] if company_name else "Unknown"
+                        quantity = 1
+                        form_type = "A"
+                        action = "SALE"
+                        date_sold = "Various"
+                        date_acquired = "Various"
+                        
+                    else:  # 전체 패턴
+                        company_name = groups[0].strip()
+                        cusip = groups[1]
+                        symbol = groups[2]
+                        quantity = int(groups[3])
+                        form_type = groups[4]
+                        action = groups[5]
+                        date_sold = groups[6]
+                        date_acquired = groups[7]
+                        proceeds = parse_currency(groups[8])
+                        cost_basis = parse_currency(groups[9])
+                        market_discount = parse_currency(groups[10])
+                        wash_sale = parse_currency(groups[11])
+                        net_gain = proceeds - cost_basis
                     
-                    print(f"IBKR 거래 발견: {symbol} {proceeds} {cost_basis} {wash_sale}", file=sys.stderr)
+                    print(f"파싱 결과: {symbol} P={proceeds} C={cost_basis} W={wash_sale} N={net_gain}", file=sys.stderr)
                     
                     transactions.append({
                         "cusip": cusip,
@@ -152,7 +205,7 @@ def parse_interactive_brokers_pdf(text: str) -> Optional[Dict[str, Any]]:
                         "washSaleLoss": wash_sale,
                         "netGainLoss": net_gain,
                         "quantity": quantity,
-                        "isLongTerm": False,  # IBKR 예시는 대부분 short-term
+                        "isLongTerm": False,
                         "formType": form_type
                     })
                     
@@ -160,10 +213,15 @@ def parse_interactive_brokers_pdf(text: str) -> Optional[Dict[str, Any]]:
                     total_cost_basis += cost_basis
                     total_wash_sale += wash_sale
                     total_net_gain += net_gain
-                    break
+                    
                 except Exception as e:
                     print(f"IBKR 거래 파싱 오류: {e}", file=sys.stderr)
                     continue
+        
+        # 거래를 찾았으면 다른 패턴은 시도하지 않음
+        if transactions:
+            print(f"패턴 {pattern_idx + 1}로 {len(transactions)}개 거래 발견", file=sys.stderr)
+            break
     
     if transactions:
         print(f"Interactive Brokers 거래 {len(transactions)}개 파싱 완료", file=sys.stderr)

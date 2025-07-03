@@ -563,53 +563,7 @@ export default function CapitalGainsCalculator() {
               </div>
             </div>
             
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-              {/* 세금 최적화 추천 */}
-              <Card className="relative">
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-base flex gap-2 items-center">
-                    <Calculator className="h-4 w-4 text-blue-500" />
-                    세금 최적화 추천
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="text-sm text-gray-500">
-                  세금 부담을 줄일 수 있는 맞춤 최적화 제안을 받아보세요.
-                </CardContent>
-                <CardFooter>
-                  <Button 
-                    onClick={() => checkPremiumAccess('tax-optimization')}
-                    variant="outline" 
-                    className="w-full"
-                  >
-                    최적화 분석 시작
-                  </Button>
-                </CardFooter>
-              </Card>
-              
-              {/* 보고서 내보내기 */}
-              <Card className="relative">
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-base flex gap-2 items-center">
-                    <Download className="h-4 w-4 text-blue-500" />
-                    보고서 내보내기
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="text-sm text-gray-500">
-                  거래 내역 및 세금 계산 결과를 PDF 또는 Excel로 내보내기
-                </CardContent>
-                <CardFooter>
-                  <Button 
-                    onClick={() => checkPremiumAccess('export-report')}
-                    variant="outline" 
-                    className="w-full"
-                  >
-                    보고서 생성
-                  </Button>
-                </CardFooter>
-              </Card>
-              
 
-            </div>
             
             <div className="flex justify-end">
               <Button

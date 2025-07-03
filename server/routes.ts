@@ -508,7 +508,12 @@ ${additionalRequests || '없음'}
     const filePath = req.file.path;
 
     // Execute brokerage-specific Python parser
+    console.log('Python 파서 실행:', `python3 server/brokerageParser.py "${filePath}"`);
+    
     exec(`python3 server/brokerageParser.py "${filePath}"`, (error, stdout, stderr) => {
+      console.log('Python 파서 stdout:', stdout);
+      console.log('Python 파서 stderr:', stderr);
+      
       // Clean up uploaded file
       fs.unlink(filePath, (unlinkError) => {
         if (unlinkError) {

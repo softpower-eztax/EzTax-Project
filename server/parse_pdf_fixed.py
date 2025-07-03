@@ -71,14 +71,15 @@ def extract_schedule_d_summary(text: str) -> Optional[Dict[str, Any]]:
             numbers = re.findall(r'([\d,]+\.\d{2})', line)
             print(f"추출된 숫자들: {numbers}", file=sys.stderr)
             
-            # 최소 5개의 숫자가 필요 (실제 PDF에는 5개 컬럼)
+            # 5개 숫자가 있으면 완벽한 매칭
             if len(numbers) >= 5:
+                print(f"5개 숫자 패턴 매칭: {numbers}", file=sys.stderr)
                 try:
                     proceeds = parse_currency(numbers[0])      # 671,623.43
                     cost_basis = parse_currency(numbers[1])    # 680,252.08  
                     market_discount = parse_currency(numbers[2]) # 0.00
-                    wash_sale = parse_currency(numbers[3])     # 14,605.50
-                    net_gain = parse_currency(numbers[4])      # 5,976.85
+                    wash_sale = parse_currency(numbers[3])     # 14,605.50 (Wash sale loss disallowed)
+                    net_gain = parse_currency(numbers[4])      # 5,976.85 (Net gain or loss)
                     
                     print(f"Summary 추출 성공: Proceeds={proceeds}, Cost={cost_basis}, Wash={wash_sale}, Net={net_gain}", file=sys.stderr)
                     
@@ -97,6 +98,35 @@ def extract_schedule_d_summary(text: str) -> Optional[Dict[str, Any]]:
                 except Exception as e:
                     print(f"라인별 Summary 파싱 오류: {e}", file=sys.stderr)
             
+            # 4개 숫자만 있는 경우도 처리 (Net Gain이 누락된 경우)
+            elif len(numbers) >= 4:
+                print(f"4개 숫자 패턴 (Net Gain 별도 계산): {numbers}", file=sys.stderr)
+                try:
+                    proceeds = parse_currency(numbers[0])      # 671,623.43
+                    cost_basis = parse_currency(numbers[1])    # 680,252.08  
+                    market_discount = parse_currency(numbers[2]) # 0.00
+                    wash_sale = parse_currency(numbers[3])     # 14,605.50 (Wash sale loss disallowed)
+                    
+                    # Net Gain/Loss 계산: Proceeds - Cost Basis + Wash Sale Loss Disallowed (실제 IRS 공식)
+                    net_gain = proceeds - cost_basis + wash_sale  # 671,623.43 - 680,252.08 + 14,605.50 = 5,976.85
+                    
+                    print(f"4개 숫자 Summary 추출 성공: Proceeds={proceeds}, Cost={cost_basis}, Wash={wash_sale}, Calculated Net={net_gain}", file=sys.stderr)
+                    
+                    return {
+                        "totalProceeds": proceeds,
+                        "totalCostBasis": cost_basis,
+                        "totalNetGainLoss": net_gain,
+                        "totalWashSaleLoss": wash_sale,
+                        "shortTermProceeds": proceeds,
+                        "shortTermCostBasis": cost_basis,
+                        "shortTermNetGainLoss": net_gain,
+                        "longTermProceeds": 0,
+                        "longTermCostBasis": 0,
+                        "longTermNetGainLoss": 0
+                    }
+                except Exception as e:
+                    print(f"4개 숫자 Summary 파싱 오류: {e}", file=sys.stderr)
+            
             # 다음 줄들도 확인 (숫자가 여러 줄에 걸쳐 있을 수 있음)
             for j in range(1, 3):
                 if i + j < len(lines):
@@ -106,11 +136,11 @@ def extract_schedule_d_summary(text: str) -> Optional[Dict[str, Any]]:
                         numbers = re.findall(r'([\d,]+\.\d{2})', combined_line)
                         if len(numbers) >= 5:
                             try:
-                                proceeds = parse_currency(numbers[0])
-                                cost_basis = parse_currency(numbers[1])
-                                market_discount = parse_currency(numbers[2])
-                                wash_sale = parse_currency(numbers[3])
-                                net_gain = parse_currency(numbers[4])
+                                proceeds = parse_currency(numbers[0])      # 671,623.43
+                                cost_basis = parse_currency(numbers[1])    # 680,252.08
+                                market_discount = parse_currency(numbers[2]) # 0.00
+                                wash_sale = parse_currency(numbers[3])     # 14,605.50 (Wash sale loss disallowed)
+                                net_gain = parse_currency(numbers[4])      # 5,976.85 (Net gain or loss)
                                 
                                 print(f"다중 라인 Summary 추출: {combined_line[:100]}", file=sys.stderr)
                                 

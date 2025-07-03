@@ -89,9 +89,33 @@ def extract_schedule_d_summary(text: str) -> Optional[Dict[str, Any]]:
         if 'Grand total' in line or 'Total Short-term' in line:
             print(f"Summary 라인 발견: {line}", file=sys.stderr)
             
-            # 정확한 숫자 5개 패턴 찾기 (Proceeds, Cost, Market discount, Wash sale, Net gain)
+            # 현재 라인에서 숫자 찾기
             numbers = re.findall(r'([\d,]+\.\d{2})', line)
-            print(f"추출된 숫자들: {numbers}", file=sys.stderr)
+            print(f"현재 라인 숫자: {numbers}", file=sys.stderr)
+            
+            # 만약 5개 숫자가 없다면 다음 라인들도 검사 (테이블 형태)
+            if len(numbers) < 5:
+                print(f"5개 숫자 부족 - 다음 라인들 검사 시작", file=sys.stderr)
+                extended_text = line
+                for j in range(1, 4):  # 다음 3라인까지
+                    if i + j < len(lines):
+                        next_line = lines[i + j].strip()
+                        if next_line:
+                            extended_text += " " + next_line
+                            print(f"  확장 라인 {i+j}: {next_line}", file=sys.stderr)
+                
+                # 확장된 텍스트에서 모든 숫자 다시 찾기
+                extended_numbers = re.findall(r'([\d,]+\.\d{2})', extended_text)
+                print(f"확장 텍스트에서 추출된 숫자: {extended_numbers}", file=sys.stderr)
+                
+                if len(extended_numbers) >= 5:
+                    numbers = extended_numbers
+                    print(f"5개 숫자 패턴 사용: {numbers[:5]}", file=sys.stderr)
+                elif len(extended_numbers) > len(numbers):
+                    numbers = extended_numbers
+                    print(f"더 많은 숫자 패턴 사용: {numbers}", file=sys.stderr)
+            
+            print(f"최종 추출된 숫자들: {numbers}", file=sys.stderr)
             
             # 5개 숫자가 있으면 완벽한 매칭
             if len(numbers) >= 5:
@@ -124,13 +148,25 @@ def extract_schedule_d_summary(text: str) -> Optional[Dict[str, Any]]:
             elif len(numbers) >= 4:
                 print(f"4개 숫자 패턴 (Net Gain 별도 계산): {numbers}", file=sys.stderr)
                 try:
-                    proceeds = parse_currency(numbers[0])      # 671,623.43
-                    cost_basis = parse_currency(numbers[1])    # 680,252.08  
-                    market_discount = parse_currency(numbers[2]) # 0.00
-                    wash_sale = parse_currency(numbers[3])     # 14,605.50 (Wash sale loss disallowed)
+                    # PDF 이미지 확인 결과: Grand total 라인에서 5개 컬럼
+                    # Proceeds: 671,623.43, Cost basis: 680,252.08, Market discount: 0.00, Wash sale: 14,605.50, Net gain: 5,976.85
                     
-                    # Net Gain/Loss 계산: Proceeds - Cost Basis + Wash Sale Loss Disallowed (실제 IRS 공식)
-                    net_gain = proceeds - cost_basis + wash_sale  # 671,623.43 - 680,252.08 + 14,605.50 = 5,976.85
+                    if len(numbers) >= 5:
+                        # 5개 숫자가 있는 경우 - 모든 필드 직접 할당
+                        proceeds = parse_currency(numbers[0])      # 671,623.43
+                        cost_basis = parse_currency(numbers[1])    # 680,252.08  
+                        market_discount = parse_currency(numbers[2]) # 0.00
+                        wash_sale = parse_currency(numbers[3])     # 14,605.50 (Wash sale loss disallowed)
+                        net_gain = parse_currency(numbers[4])      # 5,976.85 (Net gain or loss) - PDF에서 직접 가져오기
+                    else:
+                        # 4개 숫자만 있는 경우 - 기존 로직 유지
+                        proceeds = parse_currency(numbers[0])      # 671,623.43
+                        cost_basis = parse_currency(numbers[1])    # 680,252.08  
+                        market_discount = parse_currency(numbers[2]) # 0.00
+                        wash_sale = parse_currency(numbers[3])     # 14,605.50 (Wash sale loss disallowed)
+                        
+                        # Net Gain/Loss 계산: Proceeds - Cost Basis + Wash Sale Loss Disallowed (실제 IRS 공식)
+                        net_gain = proceeds - cost_basis + wash_sale  # 671,623.43 - 680,252.08 + 14,605.50 = 5,976.85
                     
                     print(f"4개 숫자 Summary 추출 성공: Proceeds={proceeds}, Cost={cost_basis}, Wash={wash_sale}, Calculated Net={net_gain}", file=sys.stderr)
                     

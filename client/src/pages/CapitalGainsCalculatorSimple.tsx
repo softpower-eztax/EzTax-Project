@@ -97,14 +97,10 @@ export default function CapitalGainsCalculatorSimple() {
       console.log('파싱된 거래 데이터:', newTransactions);
       console.log('현재 transactions 상태:', transactions.length);
       
-      // 강제 상태 업데이트 및 렌더링
-      setTransactions([]);
+      // 즉시 상태 업데이트 (setTimeout 제거)
+      setTransactions(newTransactions);
       setForceRender(prev => prev + 1);
-      setTimeout(() => {
-        setTransactions(newTransactions);
-        setForceRender(prev => prev + 1);
-        console.log('상태 업데이트 완료:', newTransactions.length);
-      }, 100);
+      console.log('상태 업데이트 완료:', newTransactions.length);
       
       setUploadProgress(100);
 
@@ -191,8 +187,8 @@ export default function CapitalGainsCalculatorSimple() {
                 </p>
               </div>
 
-              {/* 거래 데이터 표시 */}
-              {(transactions.length > 0) && (
+              {/* 거래 데이터 표시 - 디버깅 개선 */}
+              {transactions.length > 0 && (
                 <div key={`transactions-${forceRender}-${transactions.length}`} className="space-y-4">
                   <h3 className="text-lg font-semibold flex items-center gap-2">
                     <TrendingUp className="h-5 w-5" />
@@ -203,13 +199,14 @@ export default function CapitalGainsCalculatorSimple() {
                     <table className="w-full border border-gray-200 rounded-lg">
                       <thead className="bg-gray-50">
                         <tr>
-                          <th className="px-4 py-2 text-left border-b">종목명</th>
+                          <th className="px-4 py-2 text-left border-b">Stock Name</th>
                           <th className="px-4 py-2 text-left border-b">수량</th>
-                          <th className="px-4 py-2 text-left border-b">매수일</th>
-                          <th className="px-4 py-2 text-left border-b">매도일</th>
-                          <th className="px-4 py-2 text-right border-b">매수가</th>
-                          <th className="px-4 py-2 text-right border-b">매도가</th>
-                          <th className="px-4 py-2 text-right border-b">손익</th>
+                          <th className="px-4 py-2 text-left border-b">Date Acquired</th>
+                          <th className="px-4 py-2 text-left border-b">Date Sold</th>
+                          <th className="px-4 py-2 text-right border-b">Proceeds</th>
+                          <th className="px-4 py-2 text-right border-b">Cost Basis</th>
+                          <th className="px-4 py-2 text-right border-b">Wash Sales Disallowed</th>
+                          <th className="px-4 py-2 text-right border-b">Net Gain/Loss</th>
                           <th className="px-4 py-2 text-center border-b">보유기간</th>
                         </tr>
                       </thead>
@@ -220,8 +217,9 @@ export default function CapitalGainsCalculatorSimple() {
                             <td className="px-4 py-2">{tx.quantity}</td>
                             <td className="px-4 py-2">{tx.purchaseDate}</td>
                             <td className="px-4 py-2">{tx.saleDate}</td>
-                            <td className="px-4 py-2 text-right">${tx.buyPrice.toFixed(2)}</td>
                             <td className="px-4 py-2 text-right">${tx.sellPrice.toFixed(2)}</td>
+                            <td className="px-4 py-2 text-right">${tx.buyPrice.toFixed(2)}</td>
+                            <td className="px-4 py-2 text-right">${(tx.washSaleLoss || 0).toFixed(2)}</td>
                             <td className={`px-4 py-2 text-right font-medium ${tx.profit >= 0 ? 'text-green-600' : 'text-red-600'}`}>
                               ${tx.profit.toFixed(2)}
                             </td>
@@ -272,6 +270,13 @@ export default function CapitalGainsCalculatorSimple() {
                       데이터 초기화
                     </Button>
                   </div>
+                </div>
+              )}
+              
+              {/* No transactions message */}
+              {transactions.length === 0 && !isUploading && (
+                <div className="text-center py-8 text-gray-500">
+                  PDF를 업로드하여 1099-B 거래 데이터를 추출하세요.
                 </div>
               )}
             </div>

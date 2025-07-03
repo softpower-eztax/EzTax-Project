@@ -32,19 +32,20 @@ def extract_schedule_d_summary(text: str) -> Optional[Dict[str, Any]]:
         match = re.search(pattern, text, re.DOTALL | re.IGNORECASE)
         if match:
             try:
-                proceeds = parse_currency(match.group(1))
-                cost_basis = parse_currency(match.group(2))
-                wash_sale = parse_currency(match.group(3))
-                net_gain = parse_currency(match.group(4))
+                proceeds = parse_currency(match.group(1))        # 671,623.43
+                cost_basis = parse_currency(match.group(2))      # 680,252.08  
+                market_discount = parse_currency(match.group(3)) # 0.00
+                wash_sale = parse_currency(match.group(4))       # 14,605.50 (Wash sale loss disallowed)
+                net_gain = parse_currency(match.group(5))        # 5,976.85 (Net gain or loss)
                 
-                print(f"Summary 패턴 매치: Proceeds={proceeds}, Cost={cost_basis}, Net={net_gain}", file=sys.stderr)
+                print(f"정규식 5개 숫자 매치: Proceeds={proceeds}, Cost={cost_basis}, Market={market_discount}, Wash={wash_sale}, Net={net_gain}", file=sys.stderr)
                 
                 return {
                     "totalProceeds": proceeds,
                     "totalCostBasis": cost_basis,
-                    "totalNetGainLoss": net_gain,
-                    "totalWashSaleLoss": wash_sale,
-                    "shortTermProceeds": proceeds,  # 대부분이 Short-term
+                    "totalNetGainLoss": net_gain,        # 5,976.85 (올바른 Net Gain)
+                    "totalWashSaleLoss": wash_sale,      # 14,605.50 (올바른 Wash Sale Loss)
+                    "shortTermProceeds": proceeds,       # 대부분이 Short-term
                     "shortTermCostBasis": cost_basis,
                     "shortTermNetGainLoss": net_gain,
                     "longTermProceeds": 0,

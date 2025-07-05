@@ -903,6 +903,7 @@ const Deductions: React.FC = () => {
                     <Button
                       type="submit"
                       className="px-8 py-2 bg-green-600 text-white font-semibold rounded hover:bg-green-700 transition duration-200"
+                      onClick={() => console.log('진행상황저장 버튼 클릭됨')}
                     >
                       진행상황저장
                     </Button>

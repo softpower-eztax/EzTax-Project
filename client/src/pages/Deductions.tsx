@@ -163,16 +163,7 @@ const Deductions: React.FC = () => {
     }
   }, [deductibleMedicalAmount, form]);
 
-  // Reset form when taxData changes (e.g., when returning from SALT page)
-  useEffect(() => {
-    if (taxData.deductions && Object.keys(taxData.deductions).length > 0) {
-      console.log('taxData.deductions 변경 감지, form 재설정:', taxData.deductions);
-      const newValues = getDefaultValues();
-      console.log('새로운 폼 값 설정:', newValues);
-      form.reset(newValues);
-      setFormKey(prev => prev + 1); // Force re-render if needed
-    }
-  }, [taxData.id, taxData.updatedAt]); // Only trigger when data is actually updated
+
 
   // When useStandardDeduction changes, update form field status
   useEffect(() => {
@@ -259,14 +250,15 @@ const Deductions: React.FC = () => {
     form
   ]);
 
-  // Reset form completely when taxData changes
+  // Initialize form only when component first loads or tax return ID changes
+  const [isInitialized, setIsInitialized] = useState(false);
+  
   useEffect(() => {
-    if (taxData.deductions) {
-      console.log('Deductions 페이지에서 기존 데이터로 form.reset 실행:', taxData.deductions);
+    if (taxData.deductions && !isInitialized) {
+      console.log('Deductions 페이지 초기화 - 기존 데이터로 form 설정:', taxData.deductions);
       
       const deductions = taxData.deductions;
       
-      // Use form.reset with new values to completely refresh the form
       const newFormValues: Deductions = {
         useStandardDeduction: deductions.useStandardDeduction ?? true,
         standardDeductionAmount: deductions.standardDeductionAmount ?? standardDeductionAmount,
@@ -283,13 +275,11 @@ const Deductions: React.FC = () => {
         totalDeductions: deductions.totalDeductions ?? standardDeductionAmount
       };
       
-      console.log('새로운 폼 값으로 reset:', newFormValues);
+      console.log('초기 폼 값 설정:', newFormValues);
       form.reset(newFormValues);
-      
-      // Also trigger form key change to force re-render
-      setFormKey(prev => prev + 1);
+      setIsInitialized(true);
     }
-  }, [taxData.deductions, form, standardDeductionAmount]);
+  }, [taxData.id, isInitialized]); // Only trigger when tax return ID changes
 
   const onSubmit = (data: Deductions) => {
     // 표준 공제를 선택한 경우에도 항목별 공제 값을 유지하기 위해 

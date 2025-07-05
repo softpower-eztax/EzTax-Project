@@ -282,6 +282,8 @@ const Deductions: React.FC = () => {
   }, [taxData.id, isInitialized]); // Only trigger when tax return ID changes
 
   const onSubmit = (data: Deductions) => {
+    console.log('Deductions onSubmit 호출됨, 입력 데이터:', data);
+    
     // 표준 공제를 선택한 경우에도 항목별 공제 값을 유지하기 위해 
     // taxData에서 기존 itemizedDeductions 값을 보존
     if (data.useStandardDeduction && taxData.deductions?.itemizedDeductions) {
@@ -291,7 +293,10 @@ const Deductions: React.FC = () => {
       };
     }
     
+    console.log('updateTaxData 호출 전 최종 데이터:', data);
     updateTaxData({ deductions: data });
+    
+    console.log('updateTaxData 호출 완료');
     return true;
   };
 

@@ -250,12 +250,13 @@ const Deductions: React.FC = () => {
     form
   ]);
 
-  // Initialize form only when component first loads or tax return ID changes
-  const [isInitialized, setIsInitialized] = useState(false);
+  // Track the last update timestamp to know when to reset form
+  const [lastUpdateTime, setLastUpdateTime] = useState<string>('');
   
   useEffect(() => {
-    if (taxData.deductions && !isInitialized) {
-      console.log('Deductions 페이지 초기화 - 기존 데이터로 form 설정:', taxData.deductions);
+    if (taxData.deductions && taxData.updatedAt && taxData.updatedAt !== lastUpdateTime) {
+      console.log('Deductions 페이지 데이터 업데이트 감지 - form 재설정:', taxData.deductions);
+      console.log('마지막 업데이트 시간:', lastUpdateTime, '→', taxData.updatedAt);
       
       const deductions = taxData.deductions;
       
@@ -275,11 +276,11 @@ const Deductions: React.FC = () => {
         totalDeductions: deductions.totalDeductions ?? standardDeductionAmount
       };
       
-      console.log('초기 폼 값 설정:', newFormValues);
+      console.log('업데이트된 폼 값 설정:', newFormValues);
       form.reset(newFormValues);
-      setIsInitialized(true);
+      setLastUpdateTime(taxData.updatedAt);
     }
-  }, [taxData.id, isInitialized]); // Only trigger when tax return ID changes
+  }, [taxData.deductions, taxData.updatedAt, lastUpdateTime, standardDeductionAmount]); // Track when data actually changes
 
   const onSubmit = (data: Deductions) => {
     console.log('Deductions onSubmit 호출됨, 입력 데이터:', data);

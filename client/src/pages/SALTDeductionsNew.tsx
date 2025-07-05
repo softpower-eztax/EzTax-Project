@@ -7,12 +7,12 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Info, RefreshCw, ArrowLeft } from "lucide-react";
-import { Link, useLocation, useRouter } from "wouter";
+import { Link, useLocation, useRoute } from "wouter";
 
 export default function SALTDeductionsNew() {
   const { taxData, updateTaxData, saveTaxReturn } = useTaxContext();
   const { toast } = useToast();
-  const router = useRouter();
+  const [, navigate] = useLocation();
   const [isLoading, setIsLoading] = useState(false);
   
   // State for all SALT inputs - initialize with proper defaults
@@ -111,8 +111,22 @@ export default function SALTDeductionsNew() {
       const totalItemizedDeductions = limitedSaltAmount + otherItemizedDeductions;
 
       // Preserve all existing deduction data and only update SALT-related fields
-      const existingDeductions = taxData.deductions || {};
-      const existingItemized = existingDeductions.itemizedDeductions || {};
+      const existingDeductions = taxData.deductions || {
+        useStandardDeduction: false,
+        standardDeductionAmount: 27700,
+        itemizedDeductions: {},
+        otherDeductionItems: [],
+        totalDeductions: 0
+      };
+      const existingItemized = existingDeductions.itemizedDeductions || {
+        medicalExpenses: 0,
+        stateLocalIncomeTax: 0,
+        realEstateTaxes: 0,
+        personalPropertyTax: 0,
+        mortgageInterest: 0,
+        charitableCash: 0,
+        charitableNonCash: 0
+      };
       
       const updatedDeductions = {
         ...existingDeductions,
@@ -137,7 +151,7 @@ export default function SALTDeductionsNew() {
       });
       
       // Navigate back to deductions page after successful save
-      window.location.href = '/deductions';
+      navigate('/deductions');
     } catch (error) {
       console.error('저장 오류:', error);
       toast({

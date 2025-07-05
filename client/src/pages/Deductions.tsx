@@ -24,9 +24,15 @@ const Deductions: React.FC = () => {
   const { toast } = useToast();
   const [, navigate] = useLocation();
   const [isItemizedDisabled, setIsItemizedDisabled] = useState(true);
+  const [totalMedicalInput, setTotalMedicalInput] = useState(0);
   
   // Calculate standard deduction based on filing status
   const standardDeductionAmount = calculateStandardDeduction(taxData.personalInfo?.filingStatus || 'single');
+  
+  // Calculate medical expense deduction
+  const agi = taxData.income?.adjustedGrossIncome || 0;
+  const threshold = agi * 0.075; // AGI의 7.5%
+  const deductibleMedicalAmount = Math.max(0, totalMedicalInput - threshold);
   
   // Reset function to clear form values
   const handleReset = () => {
@@ -149,6 +155,13 @@ const Deductions: React.FC = () => {
   
   // Watch changes to otherDeductionItems
   const watchOtherDeductionItems = form.watch('otherDeductionItems');
+
+  // Auto-update medical expense deduction field when calculation changes
+  useEffect(() => {
+    if (form && form.setValue) {
+      form.setValue("itemizedDeductions.medicalExpenses", deductibleMedicalAmount);
+    }
+  }, [deductibleMedicalAmount, form]);
 
   // When useStandardDeduction changes, update form field status
   useEffect(() => {
@@ -447,16 +460,6 @@ const Deductions: React.FC = () => {
                           </div>
                           
                           {(() => {
-                            const agi = taxData.income?.adjustedGrossIncome || 0;
-                            const threshold = agi * 0.075; // AGI의 7.5%
-                            const [totalMedicalInput, setTotalMedicalInput] = React.useState(0);
-                            const deductibleAmount = Math.max(0, totalMedicalInput - threshold);
-                            
-                            // 계산된 공제 가능 금액을 실제 의료비 공제 필드에 자동 설정
-                            React.useEffect(() => {
-                              form.setValue("itemizedDeductions.medicalExpenses", deductibleAmount);
-                            }, [deductibleAmount]);
-                            
                             return (
                               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 {/* 총 의료비 입력 섹션 */}
@@ -505,13 +508,13 @@ const Deductions: React.FC = () => {
                                       <div className="text-center">
                                         <div className="text-sm text-gray-600 mb-1">실제 공제 가능 금액</div>
                                         <div className="text-xl font-bold text-green-600">
-                                          ${deductibleAmount.toLocaleString()}
+                                          ${deductibleMedicalAmount.toLocaleString()}
                                         </div>
                                       </div>
                                       
                                       {totalMedicalInput > 0 && (
                                         <div className="mt-3 text-center">
-                                          {deductibleAmount > 0 ? (
+                                          {deductibleMedicalAmount > 0 ? (
                                             <p className="text-green-700 font-medium text-sm">
                                               ✅ 공제 가능합니다!
                                             </p>

@@ -297,6 +297,12 @@ const Deductions: React.FC = () => {
     updateTaxData({ deductions: data });
     
     console.log('updateTaxData 호출 완료');
+    
+    toast({
+      title: "저장 완료",
+      description: "공제 정보가 성공적으로 저장되었습니다.",
+    });
+    
     return true;
   };
 
@@ -892,8 +898,19 @@ const Deductions: React.FC = () => {
                   
 
                   
+                  {/* 진행상황저장 버튼 */}
+                  <div className="mt-6 flex justify-center">
+                    <Button
+                      type="submit"
+                      className="px-8 py-2 bg-green-600 text-white font-semibold rounded hover:bg-green-700 transition duration-200"
+                    >
+                      진행상황저장
+                    </Button>
+                  </div>
+                  
                   <div className="flex justify-between mt-8">
                     <Button
+                      type="button"
                       variant="outline"
                       className="px-6 py-2 border border-primary text-primary font-semibold rounded hover:bg-primary-light hover:text-white transition duration-200"
                       onClick={() => navigate('/income')}
@@ -902,6 +919,7 @@ const Deductions: React.FC = () => {
                     </Button>
                     
                     <Button
+                      type="button"
                       className="px-6 py-2 bg-primary text-white font-semibold rounded hover:bg-primary-dark transition duration-200"
                       onClick={async () => {
                         console.log("Next 버튼 클릭됨");

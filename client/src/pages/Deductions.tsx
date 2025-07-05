@@ -24,7 +24,20 @@ const Deductions: React.FC = () => {
   const { toast } = useToast();
   const [, navigate] = useLocation();
   const [isItemizedDisabled, setIsItemizedDisabled] = useState(true);
-  const [totalMedicalInput, setTotalMedicalInput] = useState(0);
+  
+  // Initialize medical input from existing data
+  const getInitialMedicalInput = () => {
+    const existingMedicalExpenses = taxData.deductions?.itemizedDeductions?.medicalExpenses || 0;
+    if (existingMedicalExpenses > 0) {
+      // Reverse calculate: medicalExpenses = totalInput - (AGI * 0.075)
+      const agi = taxData.income?.adjustedGrossIncome || 0;
+      const threshold = agi * 0.075;
+      return existingMedicalExpenses + threshold;
+    }
+    return 0;
+  };
+  
+  const [totalMedicalInput, setTotalMedicalInput] = useState(getInitialMedicalInput);
   
   // Calculate standard deduction based on filing status
   const standardDeductionAmount = calculateStandardDeduction(taxData.personalInfo?.filingStatus || 'single');
@@ -162,6 +175,19 @@ const Deductions: React.FC = () => {
       form.setValue("itemizedDeductions.medicalExpenses", deductibleMedicalAmount);
     }
   }, [deductibleMedicalAmount, form]);
+  
+  // Update medical input when taxData changes (restore saved data)
+  useEffect(() => {
+    const existingMedicalExpenses = taxData.deductions?.itemizedDeductions?.medicalExpenses || 0;
+    if (existingMedicalExpenses > 0 && totalMedicalInput === 0) {
+      // Reverse calculate original input from saved deduction amount
+      const agi = taxData.income?.adjustedGrossIncome || 0;
+      const threshold = agi * 0.075;
+      const originalInput = existingMedicalExpenses + threshold;
+      console.log('의료비 입력 복원:', originalInput, '(기존 공제액:', existingMedicalExpenses, ')');
+      setTotalMedicalInput(originalInput);
+    }
+  }, [taxData.deductions?.itemizedDeductions?.medicalExpenses, taxData.income?.adjustedGrossIncome, totalMedicalInput]);
 
 
 

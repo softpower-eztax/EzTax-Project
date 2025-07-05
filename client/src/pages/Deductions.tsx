@@ -163,6 +163,16 @@ const Deductions: React.FC = () => {
     }
   }, [deductibleMedicalAmount, form]);
 
+  // Reset form when taxData changes (e.g., when returning from SALT page)
+  useEffect(() => {
+    if (taxData.deductions) {
+      console.log('taxData.deductions 변경 감지, form 재설정:', taxData.deductions);
+      const newValues = getDefaultValues();
+      form.reset(newValues);
+      setFormKey(prev => prev + 1); // Force re-render if needed
+    }
+  }, [taxData.deductions]);
+
   // When useStandardDeduction changes, update form field status
   useEffect(() => {
     setIsItemizedDisabled(watchDeductionType);

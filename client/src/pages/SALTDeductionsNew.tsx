@@ -109,20 +109,20 @@ export default function SALTDeductionsNew() {
       
       const totalItemizedDeductions = limitedSaltAmount + otherItemizedDeductions;
 
+      // Preserve all existing deduction data and only update SALT-related fields
+      const existingDeductions = taxData.deductions || {};
+      const existingItemized = existingDeductions.itemizedDeductions || {};
+      
       const updatedDeductions = {
-        ...taxData.deductions,
-        useStandardDeduction: false,
-        standardDeductionAmount: 0,
+        ...existingDeductions,
+        useStandardDeduction: false, // Switch to itemized deductions
         totalDeductions: totalItemizedDeductions,
         itemizedDeductions: {
-          ...taxData.deductions?.itemizedDeductions,
-          stateLocalIncomeTax: selectedTaxAmount, // Store the selected tax type amount
+          ...existingItemized,
+          // Update only SALT-related fields, preserve everything else
+          stateLocalIncomeTax: selectedTaxAmount,
           realEstateTaxes: realEstateTax,
-          personalPropertyTax: personalPropertyTax, // Store personal property tax separately
-          medicalExpenses: taxData.deductions?.itemizedDeductions?.medicalExpenses || 0,
-          mortgageInterest: taxData.deductions?.itemizedDeductions?.mortgageInterest || 0,
-          charitableCash: taxData.deductions?.itemizedDeductions?.charitableCash || 0,
-          charitableNonCash: taxData.deductions?.itemizedDeductions?.charitableNonCash || 0
+          personalPropertyTax: personalPropertyTax
         }
       };
 

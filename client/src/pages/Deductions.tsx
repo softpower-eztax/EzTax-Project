@@ -250,13 +250,14 @@ const Deductions: React.FC = () => {
     form
   ]);
 
-  // Track the last update timestamp to know when to reset form
-  const [lastUpdateTime, setLastUpdateTime] = useState<string>('');
+  // Track if this is the initial load to avoid unnecessary form resets
+  const [isInitialLoad, setIsInitialLoad] = useState(true);
   
   useEffect(() => {
-    if (taxData.deductions && taxData.updatedAt && taxData.updatedAt !== lastUpdateTime) {
-      console.log('Deductions 페이지 데이터 업데이트 감지 - form 재설정:', taxData.deductions);
-      console.log('마지막 업데이트 시간:', lastUpdateTime, '→', taxData.updatedAt);
+    // Only reset form on initial load or when coming back from other pages
+    // Don't reset when user is actively editing in this page
+    if (taxData.deductions && isInitialLoad) {
+      console.log('Deductions 페이지 초기 로드 - form 설정:', taxData.deductions);
       
       const deductions = taxData.deductions;
       
@@ -276,11 +277,11 @@ const Deductions: React.FC = () => {
         totalDeductions: deductions.totalDeductions ?? standardDeductionAmount
       };
       
-      console.log('업데이트된 폼 값 설정:', newFormValues);
+      console.log('초기 폼 값 설정:', newFormValues);
       form.reset(newFormValues);
-      setLastUpdateTime(taxData.updatedAt);
+      setIsInitialLoad(false);
     }
-  }, [taxData.deductions, taxData.updatedAt, lastUpdateTime, standardDeductionAmount]); // Track when data actually changes
+  }, [taxData.deductions, isInitialLoad, standardDeductionAmount]); // Only run on initial load
 
   const onSubmit = (data: Deductions) => {
     console.log('Deductions onSubmit 호출됨, 입력 데이터:', data);

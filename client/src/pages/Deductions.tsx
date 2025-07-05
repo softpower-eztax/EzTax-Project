@@ -165,13 +165,14 @@ const Deductions: React.FC = () => {
 
   // Reset form when taxData changes (e.g., when returning from SALT page)
   useEffect(() => {
-    if (taxData.deductions) {
+    if (taxData.deductions && Object.keys(taxData.deductions).length > 0) {
       console.log('taxData.deductions 변경 감지, form 재설정:', taxData.deductions);
       const newValues = getDefaultValues();
+      console.log('새로운 폼 값 설정:', newValues);
       form.reset(newValues);
       setFormKey(prev => prev + 1); // Force re-render if needed
     }
-  }, [taxData.deductions?.itemizedDeductions?.stateLocalIncomeTax, taxData.deductions?.itemizedDeductions?.realEstateTaxes, taxData.deductions?.itemizedDeductions?.personalPropertyTax, taxData.deductions?.totalDeductions]);
+  }, [taxData.id, taxData.updatedAt]); // Only trigger when data is actually updated
 
   // When useStandardDeduction changes, update form field status
   useEffect(() => {

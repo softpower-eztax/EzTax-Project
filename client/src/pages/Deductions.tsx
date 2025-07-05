@@ -171,7 +171,7 @@ const Deductions: React.FC = () => {
       form.reset(newValues);
       setFormKey(prev => prev + 1); // Force re-render if needed
     }
-  }, [taxData.deductions]);
+  }, [taxData.deductions?.itemizedDeductions?.stateLocalIncomeTax, taxData.deductions?.itemizedDeductions?.realEstateTaxes, taxData.deductions?.itemizedDeductions?.personalPropertyTax, taxData.deductions?.totalDeductions]);
 
   // When useStandardDeduction changes, update form field status
   useEffect(() => {

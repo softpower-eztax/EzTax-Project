@@ -7,11 +7,12 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Info, RefreshCw, ArrowLeft } from "lucide-react";
-import { Link } from "wouter";
+import { Link, useLocation, useRouter } from "wouter";
 
 export default function SALTDeductionsNew() {
   const { taxData, updateTaxData, saveTaxReturn } = useTaxContext();
   const { toast } = useToast();
+  const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   
   // State for all SALT inputs - initialize with proper defaults
@@ -116,6 +117,7 @@ export default function SALTDeductionsNew() {
       const updatedDeductions = {
         ...existingDeductions,
         useStandardDeduction: false, // Switch to itemized deductions
+        standardDeductionAmount: existingDeductions.standardDeductionAmount || 27700, // Preserve standardDeductionAmount
         totalDeductions: totalItemizedDeductions,
         itemizedDeductions: {
           ...existingItemized,
@@ -133,6 +135,9 @@ export default function SALTDeductionsNew() {
         title: "저장 완료",
         description: "SALT 공제 정보가 성공적으로 저장되었습니다.",
       });
+      
+      // Navigate back to deductions page after successful save
+      window.location.href = '/deductions';
     } catch (error) {
       console.error('저장 오류:', error);
       toast({

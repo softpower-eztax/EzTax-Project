@@ -955,6 +955,8 @@ const Deductions: React.FC = () => {
                         if (isValid) {
                           console.log("폼이 유효함, 데이터 저장 후 진행");
                           const data = form.getValues();
+                          console.log("Next 버튼에서 가져온 form 데이터:", data);
+                          console.log("특히 의료비 공제:", data.itemizedDeductions?.medicalExpenses);
                           updateTaxData({ deductions: data });
                           navigate('/tax-credits');
                         } else {

@@ -423,6 +423,123 @@ const Deductions: React.FC = () => {
                     <div className="mt-8">
                       <h3 className="text-lg font-heading font-semibold mb-4">항목별 공제 정보 (Itemized Deductions)</h3>
                       
+                      {/* 의료비 공제 계산기 섹션 */}
+                      <div className="col-span-full mb-6">
+                        <div className="border rounded-md p-4 bg-blue-50/50">
+                          <div className="flex items-center gap-2 mb-3">
+                            <h4 className="text-base font-medium text-blue-700">
+                              의료비 공제 계산기 (Medical Expense Calculator)
+                            </h4>
+                            <TooltipProvider>
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <Info className="h-4 w-4 text-blue-600 cursor-help" />
+                                </TooltipTrigger>
+                                <TooltipContent className="max-w-md p-4">
+                                  <div>
+                                    <h5 className="font-semibold mb-2">의료비 공제 계산법</h5>
+                                    <p className="text-sm mb-2">총 의료비에서 AGI의 7.5%를 뺀 금액이 실제 공제 가능한 의료비입니다.</p>
+                                    <p className="text-sm font-semibold">계산식: 총 의료비 - (AGI × 7.5%)</p>
+                                  </div>
+                                </TooltipContent>
+                              </Tooltip>
+                            </TooltipProvider>
+                          </div>
+                          
+                          {(() => {
+                            const agi = taxData.income?.adjustedGrossIncome || 0;
+                            const threshold = agi * 0.075; // AGI의 7.5%
+                            const [totalMedicalInput, setTotalMedicalInput] = React.useState(0);
+                            const deductibleAmount = Math.max(0, totalMedicalInput - threshold);
+                            
+                            // 계산된 공제 가능 금액을 실제 의료비 공제 필드에 자동 설정
+                            React.useEffect(() => {
+                              form.setValue("itemizedDeductions.medicalExpenses", deductibleAmount);
+                            }, [deductibleAmount]);
+                            
+                            return (
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                {/* 총 의료비 입력 섹션 */}
+                                <div className="space-y-3">
+                                  <div>
+                                    <label className="text-sm font-medium text-gray-700 mb-2 block">
+                                      총 의료비 입력 (Total Medical Expenses)
+                                    </label>
+                                    <Input
+                                      type="number"
+                                      step="0.01"
+                                      min="0"
+                                      value={totalMedicalInput || ''}
+                                      onChange={(e) => setTotalMedicalInput(parseFloat(e.target.value) || 0)}
+                                      disabled={isItemizedDisabled}
+                                      placeholder="실제 지출한 총 의료비를 입력하세요"
+                                      className="w-full"
+                                    />
+                                  </div>
+                                  
+                                  <div className="text-xs text-gray-600 bg-white p-2 rounded border">
+                                    <div className="space-y-1">
+                                      <div className="flex justify-between">
+                                        <span>현재 AGI:</span>
+                                        <span className="font-semibold">${agi.toLocaleString()}</span>
+                                      </div>
+                                      <div className="flex justify-between">
+                                        <span>공제 한계선 (7.5%):</span>
+                                        <span className="font-semibold text-red-600">${threshold.toLocaleString()}</span>
+                                      </div>
+                                      <div className="flex justify-between border-t pt-1">
+                                        <span>입력한 총 의료비:</span>
+                                        <span className="font-semibold">${totalMedicalInput.toLocaleString()}</span>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                                
+                                {/* 계산 결과 표시 */}
+                                <div className="space-y-3">
+                                  <div>
+                                    <label className="text-sm font-medium text-gray-700 mb-2 block">
+                                      계산 결과 (Calculation Result)
+                                    </label>
+                                    <div className="p-3 bg-white rounded border">
+                                      <div className="text-center">
+                                        <div className="text-sm text-gray-600 mb-1">실제 공제 가능 금액</div>
+                                        <div className="text-xl font-bold text-green-600">
+                                          ${deductibleAmount.toLocaleString()}
+                                        </div>
+                                      </div>
+                                      
+                                      {totalMedicalInput > 0 && (
+                                        <div className="mt-3 text-center">
+                                          {deductibleAmount > 0 ? (
+                                            <p className="text-green-700 font-medium text-sm">
+                                              ✅ 공제 가능합니다!
+                                            </p>
+                                          ) : (
+                                            <div>
+                                              <p className="text-orange-700 font-medium text-sm mb-1">
+                                                ⚠️ 공제 대상이 아닙니다
+                                              </p>
+                                              <p className="text-xs text-gray-600">
+                                                ${(threshold + 1).toLocaleString()} 이상 필요
+                                              </p>
+                                            </div>
+                                          )}
+                                        </div>
+                                      )}
+                                    </div>
+                                  </div>
+                                  
+                                  <div className="text-xs text-blue-700 bg-blue-100 p-2 rounded">
+                                    💡 이 금액이 자동으로 아래 의료비 공제 필드에 입력됩니다
+                                  </div>
+                                </div>
+                              </div>
+                            );
+                          })()}
+                        </div>
+                      </div>
+
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <FormField
                           control={form.control}
@@ -430,7 +547,7 @@ const Deductions: React.FC = () => {
                           render={({ field }) => (
                             <FormItem className="flex flex-col justify-center h-full">
                               <div className="flex justify-between">
-                                <FormLabel>의료비 공제 (Medical Expenses)</FormLabel>
+                                <FormLabel>의료비 공제 (Medical Expenses Deduction)</FormLabel>
                                 <TooltipProvider>
                                   <Tooltip>
                                     <TooltipTrigger asChild>
@@ -483,87 +600,18 @@ const Deductions: React.FC = () => {
                                   step="0.01"
                                   min="0"
                                   {...field}
-                                  onChange={(e) => {
-                                    field.onChange(parseFloat(e.target.value) || 0);
-                                  }}
-                                  disabled={isItemizedDisabled}
+                                  readOnly={true}
+                                  className="bg-gray-50"
+                                  placeholder="자동 계산됨"
                                 />
                               </FormControl>
                               <FormMessage />
+                              <p className="text-xs text-gray-600">
+                                위 계산기에서 자동으로 계산된 공제 가능 금액입니다
+                              </p>
                             </FormItem>
                           )}
                         />
-                        
-                        {/* 의료비 공제 계산기 */}
-                        <div className="flex flex-col justify-center h-full">
-                          <div className="border rounded-md p-3 bg-blue-50/50">
-                            <div className="flex items-center gap-2 mb-2">
-                              <h4 className="text-base font-medium text-blue-700">
-                                의료비 공제 계산기 (Medical Expense Calculator)
-                              </h4>
-                              <TooltipProvider>
-                                <Tooltip>
-                                  <TooltipTrigger asChild>
-                                    <Info className="h-4 w-4 text-blue-600 cursor-help" />
-                                  </TooltipTrigger>
-                                  <TooltipContent className="max-w-md p-4">
-                                    <div>
-                                      <h5 className="font-semibold mb-2">의료비 공제 계산법</h5>
-                                      <p className="text-sm mb-2">총 의료비에서 AGI의 7.5%를 뺀 금액이 실제 공제 가능한 의료비입니다.</p>
-                                      <p className="text-sm font-semibold">계산식: 총 의료비 - (AGI × 7.5%)</p>
-                                    </div>
-                                  </TooltipContent>
-                                </Tooltip>
-                              </TooltipProvider>
-                            </div>
-                            
-                            {(() => {
-                              const agi = taxData.income?.adjustedGrossIncome || 0;
-                              const threshold = agi * 0.075; // AGI의 7.5%
-                              const totalMedicalExpenses = form.watch("itemizedDeductions.medicalExpenses") || 0;
-                              const deductibleAmount = Math.max(0, totalMedicalExpenses - threshold);
-                              
-                              return (
-                                <div className="space-y-2 text-sm">
-                                  <div className="grid grid-cols-2 gap-2">
-                                    <div className="text-gray-600">현재 AGI:</div>
-                                    <div className="font-semibold">${agi.toLocaleString()}</div>
-                                    
-                                    <div className="text-gray-600">공제 한계선 (AGI × 7.5%):</div>
-                                    <div className="font-semibold text-red-600">${threshold.toLocaleString()}</div>
-                                    
-                                    <div className="text-gray-600">입력한 총 의료비:</div>
-                                    <div className="font-semibold">${totalMedicalExpenses.toLocaleString()}</div>
-                                    
-                                    <div className="text-gray-600 border-t pt-1">실제 공제 가능 금액:</div>
-                                    <div className="font-bold text-green-600 border-t pt-1">
-                                      ${deductibleAmount.toLocaleString()}
-                                    </div>
-                                  </div>
-                                  
-                                  {totalMedicalExpenses > 0 && (
-                                    <div className="mt-3 p-2 bg-white rounded border">
-                                      {deductibleAmount > 0 ? (
-                                        <p className="text-green-700 font-medium">
-                                          ✅ ${deductibleAmount.toLocaleString()}이 공제 가능합니다!
-                                        </p>
-                                      ) : (
-                                        <div>
-                                          <p className="text-orange-700 font-medium mb-1">
-                                            ⚠️ 현재 의료비는 공제 대상이 아닙니다.
-                                          </p>
-                                          <p className="text-xs text-gray-600">
-                                            ${(threshold - totalMedicalExpenses + 1).toLocaleString()} 이상이 되어야 공제 가능합니다.
-                                          </p>
-                                        </div>
-                                      )}
-                                    </div>
-                                  )}
-                                </div>
-                              );
-                            })()}
-                          </div>
-                        </div>
                         
                         <div className="flex flex-col justify-center h-full">
                           <div className="flex justify-between">

@@ -198,15 +198,31 @@ const Deductions: React.FC = () => {
   }, [taxData.deductions?.itemizedDeductions?.medicalExpenses, taxData.income?.adjustedGrossIncome, totalMedicalInput]);
 
   // Update form values when taxData changes (for SALT data synchronization)
-  // 의료비 필드는 덮어쓰지 않도록 제외
   useEffect(() => {
     if (taxData.deductions?.itemizedDeductions) {
-      console.log('SALT 데이터 변경 감지, form 업데이트 (의료비 제외):', taxData.deductions.itemizedDeductions);
+      console.log('SALT 데이터 변경 감지, form 업데이트:', taxData.deductions.itemizedDeductions);
       
-      // Update form values with current taxData (excluding medicalExpenses)
+      // Get current form medical expenses to avoid overwriting
+      const currentMedicalExpenses = form.getValues("itemizedDeductions.medicalExpenses") || 0;
+      const savedMedicalExpenses = taxData.deductions.itemizedDeductions.medicalExpenses || 0;
+      
+      // Use the higher value between current form value and saved value
+      const preservedMedicalExpenses = Math.max(currentMedicalExpenses, savedMedicalExpenses);
+      
+      console.log('의료비 값 보존:', {
+        current: currentMedicalExpenses,
+        saved: savedMedicalExpenses,
+        preserved: preservedMedicalExpenses
+      });
+      
+      // Update all form values including preserved medical expenses
+      form.setValue('itemizedDeductions.medicalExpenses', preservedMedicalExpenses);
       form.setValue('itemizedDeductions.stateLocalIncomeTax', taxData.deductions.itemizedDeductions.stateLocalIncomeTax || 0);
       form.setValue('itemizedDeductions.realEstateTaxes', taxData.deductions.itemizedDeductions.realEstateTaxes || 0);
       form.setValue('itemizedDeductions.personalPropertyTax', taxData.deductions.itemizedDeductions.personalPropertyTax || 0);
+      form.setValue('itemizedDeductions.mortgageInterest', taxData.deductions.itemizedDeductions.mortgageInterest || 0);
+      form.setValue('itemizedDeductions.charitableCash', taxData.deductions.itemizedDeductions.charitableCash || 0);
+      form.setValue('itemizedDeductions.charitableNonCash', taxData.deductions.itemizedDeductions.charitableNonCash || 0);
       form.setValue('totalDeductions', taxData.deductions.totalDeductions || 0);
       
       // Update useStandardDeduction if we have itemized deductions
@@ -217,6 +233,7 @@ const Deductions: React.FC = () => {
   }, [taxData.deductions?.itemizedDeductions?.stateLocalIncomeTax, 
       taxData.deductions?.itemizedDeductions?.realEstateTaxes, 
       taxData.deductions?.itemizedDeductions?.personalPropertyTax,
+      taxData.deductions?.itemizedDeductions?.medicalExpenses,
       taxData.deductions?.totalDeductions]);
 
 

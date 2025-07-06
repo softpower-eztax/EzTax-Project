@@ -10,6 +10,7 @@ import {
 } from '@shared/schema';
 import { calculateStateTax } from '@shared/stateTaxCalculator';
 import type { StateTaxCalculationInput } from '@shared/stateTaxCalculator';
+import { formatInputNumber } from '@/utils/formatNumber';
 
 interface TaxData {
   personalInfo?: PersonalInformation;
@@ -747,12 +748,28 @@ export function calculateTaxes(taxData: TaxData): CalculatedResults {
 
   // Calculate refund or amount owed
   if (result.payments > result.taxDue) {
-    result.refundAmount = Math.round((result.payments - result.taxDue) * 100) / 100;
+    result.refundAmount = formatInputNumber(result.payments - result.taxDue);
     result.amountOwed = 0;
   } else {
-    result.amountOwed = Math.round((result.taxDue - result.payments) * 100) / 100;
+    result.amountOwed = formatInputNumber(result.taxDue - result.payments);
     result.refundAmount = 0;
   }
+  
+  // Format all result numbers to 2 decimal places for consistency
+  result.totalIncome = formatInputNumber(result.totalIncome);
+  result.adjustments = formatInputNumber(result.adjustments);
+  result.adjustedGrossIncome = formatInputNumber(result.adjustedGrossIncome);
+  result.deductions = formatInputNumber(result.deductions);
+  result.taxableIncome = formatInputNumber(result.taxableIncome);
+  result.federalTax = formatInputNumber(result.federalTax);
+  result.credits = formatInputNumber(result.credits);
+  result.taxDue = formatInputNumber(result.taxDue);
+  result.payments = formatInputNumber(result.payments);
+  result.childTaxCredit = formatInputNumber(result.childTaxCredit);
+  result.childDependentCareCredit = formatInputNumber(result.childDependentCareCredit);
+  result.retirementSavingsCredit = formatInputNumber(result.retirementSavingsCredit);
+  result.creditForOtherDependents = formatInputNumber(result.creditForOtherDependents);
+  result.earnedIncomeCredit = formatInputNumber(result.earnedIncomeCredit);
   
   return result;
 }

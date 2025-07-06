@@ -18,6 +18,7 @@ import { Label } from '@/components/ui/label';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { calculateStandardDeduction } from '@/lib/taxCalculations';
 import { useLocation } from 'wouter';
+import { formatNumber, formatCurrency, formatInputNumber } from '@/utils/formatNumber';
 
 const Deductions: React.FC = () => {
   const { taxData, updateTaxData, resetToZero, saveTaxReturn } = useTaxContext();
@@ -654,7 +655,7 @@ const Deductions: React.FC = () => {
                                       <div className="text-center">
                                         <div className="text-sm text-gray-600 mb-1">실제 공제 가능 금액</div>
                                         <div className="text-xl font-bold text-green-600">
-                                          ${deductibleMedicalAmount.toLocaleString()}
+                                          ${formatNumber(deductibleMedicalAmount)}
                                         </div>
                                       </div>
                                       
@@ -704,11 +705,12 @@ const Deductions: React.FC = () => {
                                           totalDeductions: 0
                                         };
                                         
+                                        const formattedMedicalAmount = formatInputNumber(deductibleMedicalAmount);
                                         const updatedDeductions = {
                                           ...currentDeductions,
                                           itemizedDeductions: {
                                             ...currentDeductions.itemizedDeductions,
-                                            medicalExpenses: deductibleMedicalAmount
+                                            medicalExpenses: formattedMedicalAmount
                                           }
                                         };
                                         
@@ -717,12 +719,13 @@ const Deductions: React.FC = () => {
                                         // 세금 컨텍스트 업데이트
                                         await updateTaxData({ deductions: updatedDeductions });
                                         
-                                        // 폼도 업데이트
-                                        form.setValue("itemizedDeductions.medicalExpenses", deductibleMedicalAmount);
+                                        // 폼도 업데이트 (소수점 2자리로 제한)
+                                        const formattedAmount = formatInputNumber(deductibleMedicalAmount);
+                                        form.setValue("itemizedDeductions.medicalExpenses", formattedAmount);
                                         
                                         toast({
                                           title: "적용 완료",
-                                          description: `의료비 공제 $${deductibleMedicalAmount.toLocaleString()}이 적용되었습니다.`,
+                                          description: `의료비 공제 $${formatNumber(deductibleMedicalAmount)}이 적용되었습니다.`,
                                         });
                                       }}
                                       className="w-full bg-blue-600 hover:bg-blue-700"

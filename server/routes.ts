@@ -276,7 +276,34 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(403).json({ message: "Access denied" });
       }
       
-      const updatedTaxReturn = await storage.updateTaxReturn(id, req.body);
+      console.log('기존 데이터:', JSON.stringify(existingReturn.deductions, null, 2));
+      console.log('새 데이터:', JSON.stringify(req.body.deductions, null, 2));
+      
+      // Deep merge existing data with new data to preserve all fields
+      const mergedData = { ...req.body };
+      
+      // Specifically handle deductions merge
+      if (existingReturn.deductions && req.body.deductions) {
+        mergedData.deductions = {
+          ...existingReturn.deductions,
+          ...req.body.deductions
+        };
+        
+        // Handle itemizedDeductions specifically to preserve medical expenses
+        if (existingReturn.deductions.itemizedDeductions && req.body.deductions.itemizedDeductions) {
+          mergedData.deductions.itemizedDeductions = {
+            ...existingReturn.deductions.itemizedDeductions,
+            ...req.body.deductions.itemizedDeductions
+          };
+        }
+      } else if (existingReturn.deductions && !req.body.deductions) {
+        // If req.body doesn't have deductions but existing data does, preserve existing
+        mergedData.deductions = existingReturn.deductions;
+      }
+      
+      console.log('병합된 데이터:', JSON.stringify(mergedData.deductions, null, 2));
+      
+      const updatedTaxReturn = await storage.updateTaxReturn(id, mergedData);
       res.json(updatedTaxReturn);
     } catch (error) {
       console.error("Error updating tax return:", error);

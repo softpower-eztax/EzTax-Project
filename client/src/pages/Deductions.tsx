@@ -38,8 +38,8 @@ const Deductions: React.FC = () => {
   
   // Calculate medical expense deduction
   const agi = taxData.income?.adjustedGrossIncome || 0;
-  const threshold = agi * 0.075; // AGI의 7.5%
-  const deductibleMedicalAmount = Math.max(0, totalMedicalInput - threshold);
+  const threshold = formatInputNumber(agi * 0.075); // AGI의 7.5%
+  const deductibleMedicalAmount = formatInputNumber(Math.max(0, totalMedicalInput - threshold));
   
   // Reset function to clear form values
   const handleReset = () => {

@@ -215,6 +215,17 @@ const TaxCredits3Page: React.FC = () => {
   const calculateEarnedIncomeCredit = () => {
     const agi = taxData.income?.adjustedGrossIncome || 0;
     
+    // **중요: 투자소득 제한 확인 (2024년 기준 $11,600)**
+    const investmentIncome = (taxData.income?.interestIncome || 0) + 
+                           (taxData.income?.dividends || 0) + 
+                           (taxData.income?.capitalGains || 0);
+    
+    // 투자소득이 $11,600을 초과하면 EIC 부적격
+    if (investmentIncome > 11600) {
+      console.log(`투자소득 ${investmentIncome}이 한도 $11,600을 초과하여 EIC 부적격`);
+      return 0;
+    }
+    
     // EIC를 위한 근로소득 계산 (사업소득도 포함)
     const wages = taxData.income?.wages || 0;
     const otherEarnedIncome = taxData.income?.otherEarnedIncome || 0;
@@ -1495,6 +1506,12 @@ const TaxCredits3Page: React.FC = () => {
                               }
                               <br />
                               <span className="text-xs text-blue-600">현재 AGI: ${(taxData.income?.adjustedGrossIncome || 0).toLocaleString()}</span>
+                              <br />
+                              <span className="text-xs text-red-600 font-medium">⚠️ 투자소득 한도: $11,600 (초과시 EIC 부적격)</span>
+                              <br />
+                              <span className="text-xs text-gray-500">
+                                현재 투자소득: ${((taxData.income?.interestIncome || 0) + (taxData.income?.dividends || 0) + (taxData.income?.capitalGains || 0)).toLocaleString()}
+                              </span>
                             </FormDescription>
                             <FormMessage />
                           </FormItem>

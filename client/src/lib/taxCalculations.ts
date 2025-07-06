@@ -671,6 +671,18 @@ export function calculateTaxes(taxData: TaxData): CalculatedResults {
   // Auto-calculate Earned Income Credit if applicable (기본값 0)
   let calculatedEarnedIncomeCredit = 0;
   
+  // EIC 계산에 투자소득 제한 적용 ($11,600 한도, 2024년 기준)
+  const investmentIncome = (income.interestIncome || 0) + (income.dividends || 0) + (income.capitalGains || 0);
+  
+  if (investmentIncome <= 11600) {
+    // 투자소득이 한도 이내인 경우에만 EIC 계산
+    // 여기서는 간단한 플레이스홀더만 제공하고, 실제 계산은 TaxCredits3.tsx의 함수를 사용
+    calculatedEarnedIncomeCredit = 0; // 실제 계산은 사용자가 "자동 계산" 버튼을 클릭할 때 수행
+  } else {
+    console.log(`투자소득 ${investmentIncome}이 $11,600을 초과하여 EIC 부적격`);
+    calculatedEarnedIncomeCredit = 0;
+  }
+  
   // If there are tax credits in the data, use those values, otherwise use calculated ones
   const taxCredits = taxData.taxCredits || {
     childTaxCredit: calculatedChildTaxCredit,

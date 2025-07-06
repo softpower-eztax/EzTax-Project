@@ -300,7 +300,13 @@ const Review: React.FC = () => {
                             )}
                             <div className="flex justify-between text-blue-700 text-xs mt-1">
                               <span>• Child Care Credit 환급분:</span>
-                              <span>$0.00</span>
+                              <span>$0.00 (환급불가능)</span>
+                            </div>
+                            <div className="border-t border-blue-200 mt-1 pt-1">
+                              <div className="flex justify-between text-blue-800 font-medium text-xs">
+                                <span>총 환급 가능한 크레딧:</span>
+                                <span>{formatCurrency((calculatedResults.additionalChildTaxCredit || 0) + (calculatedResults.earnedIncomeCredit || 0))}</span>
+                              </div>
                             </div>
                           </div>
                         )}

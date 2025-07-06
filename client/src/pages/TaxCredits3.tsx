@@ -155,7 +155,7 @@ const formSchema = z.object({
 });
 
 const TaxCredits3Page: React.FC = () => {
-  const { taxData, updateTaxData, saveTaxReturn } = useTaxContext();
+  const { taxData, updateTaxData } = useTaxContext();
   const { toast } = useToast();
   
   // 돌봄 비용 입력 필드 표시 여부를 위한 상태
@@ -543,22 +543,12 @@ const TaxCredits3Page: React.FC = () => {
       retirementContributions: formattedTaxCredits.retirementContributions
     });
     
-    // 서버에 저장
-    saveTaxReturn()
-      .then(() => {
-        toast({
-          title: "저장 완료",
-          description: "세액공제 정보가 저장되었습니다."
-        });
-        setPendingChanges(false);
-      })
-      .catch(error => {
-        toast({
-          title: "저장 실패",
-          description: `오류가 발생했습니다: ${error.message}`,
-          variant: "destructive"
-        });
-      });
+    // 데이터가 이미 updateTaxData로 저장되었으므로 성공 메시지만 표시
+    toast({
+      title: "저장 완료",
+      description: "세액공제 정보가 저장되었습니다."
+    });
+    setPendingChanges(false);
   };
   
   return (

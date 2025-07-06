@@ -21,7 +21,7 @@ import { useLocation } from 'wouter';
 import { formatNumber, formatCurrency, formatInputNumber } from '@/utils/formatNumber';
 
 const Deductions: React.FC = () => {
-  const { taxData, updateTaxData, resetToZero, saveTaxReturn } = useTaxContext();
+  const { taxData, updateTaxData } = useTaxContext();
   const { toast } = useToast();
   const [, navigate] = useLocation();
   const [isItemizedDisabled, setIsItemizedDisabled] = useState(true);
@@ -831,9 +831,6 @@ const Deductions: React.FC = () => {
                                 
                                 // 폼 데이터를 세금 컨텍스트에 업데이트
                                 await updateTaxData({ deductions: currentFormData });
-                                
-                                // 그 다음 서버에 저장
-                                await saveTaxReturn();
                                 
                                 toast({
                                   title: "저장 완료",

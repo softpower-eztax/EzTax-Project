@@ -101,9 +101,27 @@ export default function SALTDeductionsNew() {
       const totalSaltAmount = selectedTaxAmount + realEstateTax + personalPropertyTax;
       const limitedSaltAmount = Math.min(totalSaltAmount, 10000);
       
+      // Get medical expenses from localStorage if taxData.deductions is null
+      let medicalExpenses = 0;
+      if (taxData.deductions?.itemizedDeductions?.medicalExpenses) {
+        medicalExpenses = taxData.deductions.itemizedDeductions.medicalExpenses;
+      } else {
+        // Try to get from localStorage as fallback
+        const localData = localStorage.getItem('currentTaxFormData');
+        if (localData) {
+          try {
+            const parsed = JSON.parse(localData);
+            medicalExpenses = parsed.deductions?.itemizedDeductions?.medicalExpenses || 0;
+            console.log('localStorage에서 의료비 복원:', medicalExpenses);
+          } catch (e) {
+            console.error('localStorage 파싱 오류:', e);
+          }
+        }
+      }
+      
       // Calculate total itemized deductions with SALT limit applied
       const otherItemizedDeductions = 
-        (taxData.deductions?.itemizedDeductions?.medicalExpenses || 0) +
+        medicalExpenses +
         (taxData.deductions?.itemizedDeductions?.mortgageInterest || 0) +
         (taxData.deductions?.itemizedDeductions?.charitableCash || 0) +
         (taxData.deductions?.itemizedDeductions?.charitableNonCash || 0);
@@ -128,10 +146,14 @@ export default function SALTDeductionsNew() {
         charitableNonCash: 0
       };
       
+      // Override medical expenses with the recovered value
+      existingItemized.medicalExpenses = medicalExpenses;
+      
       console.log('SALT 저장 전 기존 데이터 확인:', {
         existingDeductions,
         existingItemized,
-        medicalExpenses: existingItemized.medicalExpenses
+        medicalExpenses: existingItemized.medicalExpenses,
+        recoveredMedicalExpenses: medicalExpenses
       });
       
       const updatedDeductions = {

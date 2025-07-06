@@ -105,6 +105,7 @@ Preferred communication style: Simple, everyday language.
 ## Changelog
 
 Recent Changes:
+- July 6, 2025: **MEDICAL EXPENSE CALCULATOR-TO-FIELD CONNECTION COMPLETELY FIXED** - Successfully implemented seamless integration between medical expense calculator and deduction field with direct tax context updates, server-side data merging logic, and "Apply to Deduction Field" manual button for reliable data persistence across page navigation
 - July 1, 2025: **QBI DEDUCTION PROPERLY INTEGRATED INTO TAX CALCULATION** - QBI deduction now correctly applied to taxable income calculation (AGI - Standard/Itemized Deductions - QBI Deduction) and displayed in Review page for accurate tax computation and reporting
 - July 1, 2025: **TOTAL INCOME CALCULATION FIXED TO INCLUDE BUSINESS INCOME** - Resolved issue where business income from QBI was displayed in field but not included in total income calculation, now properly adds QBI totalQBI to aggregate income totals
 - July 1, 2025: **QBI ↔ INCOME AUTOMATIC SYNC COMPLETELY FIXED** - Successfully implemented seamless data integration between QBI Details and Income pages with direct field value display, real-time data synchronization, and comprehensive debugging system ensuring QBI totalQBI automatically populates business income field

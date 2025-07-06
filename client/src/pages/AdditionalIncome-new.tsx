@@ -94,28 +94,8 @@ export default function AdditionalIncomePage() {
         // 추가 소득 항목의 총액 계산
         const totalAmount = addedItems.reduce((sum, item) => sum + item.amount, 0);
         
-        // 기존 소득 데이터 가져오기
-        const currentIncome = taxData.income || {
-          wages: 0,
-          otherEarnedIncome: 0,
-          interestIncome: 0,
-          dividends: 0,
-          businessIncome: 0,
-          capitalGains: 0,
-          rentalIncome: 0,
-          retirementIncome: 0,
-          unemploymentIncome: 0,
-          otherIncome: 0,
-          additionalIncomeItems: [],
-          totalIncome: 0,
-          adjustments: {
-            studentLoanInterest: 0,
-            retirementContributions: 0,
-            healthSavingsAccount: 0,
-            otherAdjustments: 0,
-          },
-          adjustedGrossIncome: 0,
-        };
+        // 기존 소득 데이터 가져오기 - 기존 값 보존
+        const currentIncome = taxData.income || {};
         
         // 기타 소득에 추가하고 총소득 업데이트
         const updatedIncome = {
@@ -163,28 +143,18 @@ export default function AdditionalIncomePage() {
       // 추가 소득 항목의 총액 계산
       const totalAmount = addedItems.reduce((sum, item) => sum + item.amount, 0);
 
-      // 기존 소득 데이터 가져오기
-      const currentIncome = taxData.income || {
-        wages: 0,
-        otherEarnedIncome: 0,
-        interestIncome: 0,
-        dividends: 0,
-        businessIncome: 0,
-        capitalGains: 0,
-        rentalIncome: 0,
-        retirementIncome: 0,
-        unemploymentIncome: 0,
-        otherIncome: 0,
-        additionalIncomeItems: [],
-        totalIncome: 0,
-        adjustments: {
-          studentLoanInterest: 0,
-          retirementContributions: 0,
-          healthSavingsAccount: 0,
-          otherAdjustments: 0,
-        },
-        adjustedGrossIncome: 0,
-      };
+      // 기존 소득 데이터 가져오기 - 자동 초기화하지 않음
+      const currentIncome = taxData.income;
+
+      // 기존 데이터가 없으면 저장하지 않음
+      if (!currentIncome) {
+        toast({
+          title: "알림",
+          description: "먼저 기본 소득 정보를 입력해주세요.",
+          variant: "destructive",
+        });
+        return;
+      }
 
       // 기타 소득에 추가하고 총소득 업데이트
       const updatedIncome = {
@@ -193,26 +163,30 @@ export default function AdditionalIncomePage() {
         otherIncome: totalAmount
       };
 
-      // 총소득 재계산
+      // 총소득 재계산 - 모든 값이 존재하는지 확인
       updatedIncome.totalIncome = 
-        updatedIncome.wages + 
-        updatedIncome.otherEarnedIncome + 
-        updatedIncome.interestIncome + 
-        updatedIncome.dividends + 
-        updatedIncome.businessIncome + 
-        updatedIncome.capitalGains + 
-        updatedIncome.rentalIncome + 
-        updatedIncome.retirementIncome + 
-        updatedIncome.unemploymentIncome + 
-        updatedIncome.otherIncome;
+        (updatedIncome.wages || 0) + 
+        (updatedIncome.otherEarnedIncome || 0) + 
+        (updatedIncome.interestIncome || 0) + 
+        (updatedIncome.dividends || 0) + 
+        (updatedIncome.businessIncome || 0) + 
+        (updatedIncome.capitalGains || 0) + 
+        (updatedIncome.rentalIncome || 0) + 
+        (updatedIncome.retirementIncome || 0) + 
+        (updatedIncome.unemploymentIncome || 0) + 
+        (updatedIncome.otherIncome || 0);
 
       // 조정총소득(AGI) 재계산
-      updatedIncome.adjustedGrossIncome = 
-        updatedIncome.totalIncome - 
-        (updatedIncome.adjustments.studentLoanInterest + 
-         updatedIncome.adjustments.retirementContributions + 
-         updatedIncome.adjustments.healthSavingsAccount + 
-         updatedIncome.adjustments.otherAdjustments);
+      if (updatedIncome.adjustments) {
+        updatedIncome.adjustedGrossIncome = 
+          updatedIncome.totalIncome - 
+          ((updatedIncome.adjustments.studentLoanInterest || 0) + 
+           (updatedIncome.adjustments.retirementContributions || 0) + 
+           (updatedIncome.adjustments.healthSavingsAccount || 0) + 
+           (updatedIncome.adjustments.otherAdjustments || 0));
+      } else {
+        updatedIncome.adjustedGrossIncome = updatedIncome.totalIncome;
+      }
 
       // 컨텍스트 업데이트
       updateTaxData({ income: updatedIncome });

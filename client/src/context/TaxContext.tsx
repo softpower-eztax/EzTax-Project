@@ -312,19 +312,38 @@ export const TaxProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         };
       }
       
-      // 공제 정보 깊은 병합
-      if (prevData.deductions && newData.deductions) {
+      // 공제 정보 깊은 병합 (prevData.deductions가 null이어도 처리)
+      if (newData.deductions) {
+        // localStorage에서 의료비 데이터 복원 시도
+        let medicalExpenses = 0;
+        if (prevData.deductions?.itemizedDeductions?.medicalExpenses) {
+          medicalExpenses = prevData.deductions.itemizedDeductions.medicalExpenses;
+        } else {
+          // localStorage에서 복원 시도
+          try {
+            const localData = localStorage.getItem('currentTaxFormData');
+            if (localData) {
+              const parsed = JSON.parse(localData);
+              medicalExpenses = parsed.deductions?.itemizedDeductions?.medicalExpenses || 0;
+              console.log('TaxContext에서 의료비 복원:', medicalExpenses);
+            }
+          } catch (e) {
+            console.error('TaxContext localStorage 파싱 오류:', e);
+          }
+        }
+        
         newData.deductions = {
-          ...prevData.deductions,
+          ...(prevData.deductions || {}),
           ...newData.deductions
         };
         
-        // 항목별 공제 데이터 병합 (있는 경우)
-        if (prevData.deductions.itemizedDeductions && 
-            newData.deductions.itemizedDeductions) {
+        // 항목별 공제 데이터 병합
+        if (newData.deductions.itemizedDeductions) {
           newData.deductions.itemizedDeductions = {
-            ...prevData.deductions.itemizedDeductions,
-            ...newData.deductions.itemizedDeductions
+            ...(prevData.deductions?.itemizedDeductions || {}),
+            ...newData.deductions.itemizedDeductions,
+            // 의료비는 항상 보존
+            medicalExpenses: newData.deductions.itemizedDeductions.medicalExpenses || medicalExpenses
           };
         }
       }

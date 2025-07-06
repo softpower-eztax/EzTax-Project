@@ -7,7 +7,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import Home from "@/pages/Home";
 import PersonalInfo from "@/pages/PersonalInfo";
-import IncomePage from "@/pages/Income-safe";
+import IncomePage from "@/pages/Income-fixed";
 import AdditionalIncomePage from "@/pages/AdditionalIncome-simple";
 import AdditionalAdjustmentsPage from "@/pages/AdditionalAdjustments-simple";
 import RetirementContributions from "@/pages/RetirementContributions";

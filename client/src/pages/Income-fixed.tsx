@@ -355,70 +355,28 @@ export default function IncomePage() {
     });
   };
   
-  // Manual calculation function (no auto-trigger)
-  const calculateTotals = () => {
-    // 근로소득 계산
-    const earnedIncomeTotal = 
-      Number(form.getValues('wages') || 0) +
-      Number(form.getValues('otherEarnedIncome') || 0);
+  // 수동 저장 함수 추가
+  const handleManualSave = async () => {
+    try {
+      const currentFormData = form.getValues();
       
-    // QBI 사업소득 확인
-    const qbiBusinessIncome = taxData.income?.qbi?.totalQBI || 0;
-    const currentBusinessIncome = Number(form.getValues('businessIncome') || 0);
-    const effectiveBusinessIncome = qbiBusinessIncome > 0 ? qbiBusinessIncome : currentBusinessIncome;
-    
-    // 비근로소득 계산 (사업소득 포함)
-    const unearnedIncomeTotal =
-      Number(form.getValues('interestIncome') || 0) +
-      Number(form.getValues('dividends') || 0) +
-      effectiveBusinessIncome +
-      Number(form.getValues('capitalGains') || 0) +
-      Number(form.getValues('rentalIncome') || 0);
+      // additionalIncomeItems와 additionalAdjustmentItems 추가
+      currentFormData.additionalIncomeItems = additionalIncomeItems;
+      currentFormData.additionalAdjustmentItems = additionalAdjustmentItems;
       
-    // QBI 사업소득이 있으면 businessIncome 필드 업데이트
-    if (qbiBusinessIncome > 0 && Math.abs(currentBusinessIncome - qbiBusinessIncome) > 0.01) {
-      form.setValue('businessIncome', qbiBusinessIncome);
+      updateTaxData({ income: currentFormData });
+      
+      toast({
+        title: "저장 완료",
+        description: "소득 정보가 성공적으로 저장되었습니다.",
+      });
+    } catch (error) {
+      toast({
+        title: "저장 실패",
+        description: "소득 정보 저장 중 오류가 발생했습니다.",
+        variant: "destructive"
+      });
     }
-    
-    // 기타소득 계산 (사용자 직접 입력값)
-    const userOtherIncome = Number(form.getValues('otherIncome') || 0);
-    
-    // 추가 소득 항목 계산 (AdditionalIncome 페이지에서 추가된 항목들)
-    let additionalItemsTotal = 0;
-    if (additionalIncomeItems.length > 0) {
-      additionalItemsTotal = additionalIncomeItems.reduce((sum, item) => 
-        sum + Number(item.amount || 0), 0);
-    }
-    
-    // 기타소득은 사용자 직접 입력값 + 추가 소득 항목의 합계
-    const totalOtherIncome = userOtherIncome + additionalItemsTotal;
-    
-    // 최종 총소득 계산 (근로소득 + 비근로소득 + 기타소득)
-    const totalIncome = earnedIncomeTotal + unearnedIncomeTotal + totalOtherIncome;
-    
-    // 조정 항목 계산
-    const studentLoanInterest = Number(form.getValues('adjustments.studentLoanInterest') || 0);
-    const retirementContributions = Number(form.getValues('adjustments.retirementContributions') || 0);
-    
-    // 추가 조정 항목 계산
-    let additionalAdjustmentsTotal = 0;
-    if (additionalAdjustmentItems.length > 0) {
-      additionalAdjustmentsTotal = additionalAdjustmentItems.reduce((sum, item) => 
-        sum + Number(item.amount || 0), 0);
-    }
-    
-    // 조정 항목 합계 계산
-    const totalAdjustments = studentLoanInterest + 
-                           retirementContributions + 
-                           additionalAdjustmentsTotal;
-    
-    // 조정 총소득(AGI) 계산
-    const adjustedGrossIncome = totalIncome - totalAdjustments;
-    
-    // 폼 필드에 계산된 값 설정
-    form.setValue('totalIncome', totalIncome);
-    form.setValue('adjustments.otherAdjustments', additionalAdjustmentsTotal);
-    form.setValue('adjustedGrossIncome', adjustedGrossIncome);
   };
   
   // 소득 요약 데이터 계산 함수
@@ -1064,6 +1022,19 @@ export default function IncomePage() {
                   </div>
                 </CardContent>
               </Card>
+              
+              {/* 수동 저장 버튼 */}
+              <div className="flex justify-center mb-6">
+                <Button 
+                  type="button"
+                  variant="outline"
+                  onClick={handleManualSave}
+                  className="flex items-center gap-2"
+                >
+                  <Save className="h-4 w-4" />
+                  진행상황 저장
+                </Button>
+              </div>
               
               <StepNavigation 
                 prevStep="/personal-info" 

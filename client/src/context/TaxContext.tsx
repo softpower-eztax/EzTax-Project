@@ -172,7 +172,7 @@ export const TaxProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     };
 
     checkAuthAndLoadData();
-  }, [currentUserId]);
+  }, []); // 의존성 배열을 비워서 무한 루프 방지
 
   const updateTaxData = (data: Partial<TaxData>) => {
     setTaxData(prevData => {

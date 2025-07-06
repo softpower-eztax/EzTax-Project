@@ -16,7 +16,7 @@ import { Info } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 const AdditionalTaxPage: React.FC = () => {
-  const { taxData, updateTaxData, recalculateTaxes, resetToZero, saveTaxReturn } = useTaxContext();
+  const { taxData, updateTaxData } = useTaxContext();
   const { toast } = useToast();
   const [, navigate] = useLocation();
   
@@ -61,7 +61,12 @@ const AdditionalTaxPage: React.FC = () => {
     };
     
     updateTaxData({ additionalTax: processedData });
-    recalculateTaxes();
+    
+    toast({
+      title: "추가세금 정보 저장됨",
+      description: "추가세금 정보가 성공적으로 저장되었습니다.",
+    });
+    
     return true;
   };
 

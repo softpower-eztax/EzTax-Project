@@ -146,8 +146,8 @@ export default function SALTDeductionsNew() {
         charitableNonCash: 0
       };
       
-      // Override medical expenses with the recovered value
-      existingItemized.medicalExpenses = medicalExpenses;
+      // 의료비는 0으로 초기화 (복원하지 않음)
+      existingItemized.medicalExpenses = 0;
       
       console.log('SALT 저장 전 기존 데이터 확인:', {
         existingDeductions,
@@ -162,7 +162,7 @@ export default function SALTDeductionsNew() {
         standardDeductionAmount: existingDeductions.standardDeductionAmount || 27700, // Preserve standardDeductionAmount
         totalDeductions: totalItemizedDeductions,
         itemizedDeductions: {
-          medicalExpenses: medicalExpenses, // 복원된 의료비 명시적 설정
+          medicalExpenses: 0, // 의료비는 항상 0으로 초기화
           stateLocalIncomeTax: selectedTaxAmount,
           realEstateTaxes: realEstateTax,
           personalPropertyTax: personalPropertyTax,

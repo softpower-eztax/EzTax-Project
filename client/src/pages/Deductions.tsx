@@ -26,19 +26,12 @@ const Deductions: React.FC = () => {
   const [, navigate] = useLocation();
   const [isItemizedDisabled, setIsItemizedDisabled] = useState(true);
   
-  // Initialize medical input from existing data
+  // Initialize medical input from existing data - 간단히 0으로 시작
   const getInitialMedicalInput = () => {
-    const existingMedicalExpenses = taxData.deductions?.itemizedDeductions?.medicalExpenses || 0;
-    if (existingMedicalExpenses > 0) {
-      // Reverse calculate: medicalExpenses = totalInput - (AGI * 0.075)
-      const agi = taxData.income?.adjustedGrossIncome || 0;
-      const threshold = agi * 0.075;
-      return existingMedicalExpenses + threshold;
-    }
     return 0;
   };
   
-  const [totalMedicalInput, setTotalMedicalInput] = useState(getInitialMedicalInput);
+  const [totalMedicalInput, setTotalMedicalInput] = useState(0);
   
   // Calculate standard deduction based on filing status
   const standardDeductionAmount = calculateStandardDeduction(taxData.personalInfo?.filingStatus || 'single');

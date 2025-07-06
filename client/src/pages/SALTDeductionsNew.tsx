@@ -191,28 +191,56 @@ export default function SALTDeductionsNew() {
       await updateTaxData({ deductions: updatedDeductions });
       console.log('세금 컨텍스트 업데이트 완료');
       
-      // 직접 API 호출로 서버에 저장 (컨텍스트와 동기화 문제 방지)
+      // 인증 상태 확인 후 적절한 저장 방법 선택
       try {
-        const response = await fetch(`/api/tax-return/${taxData.id}`, {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
+        // 먼저 현재 사용자 인증 상태 확인
+        const userResponse = await fetch('/api/user');
+        
+        if (userResponse.ok) {
+          // 인증된 사용자 - 직접 API 호출로 서버에 저장
+          console.log('인증된 사용자 - 서버에 직접 저장');
+          const response = await fetch(`/api/tax-return/${taxData.id}`, {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              deductions: updatedDeductions
+            }),
+          });
+          
+          if (!response.ok) {
+            throw new Error('서버 저장 실패');
+          }
+          
+          const savedData = await response.json();
+          console.log('서버 저장 완료:', savedData);
+        } else {
+          // 로그아웃 상태 - localStorage만 사용
+          console.log('로그아웃 상태 - localStorage에만 저장');
+          const localData = {
+            ...taxData,
             deductions: updatedDeductions
-          }),
-        });
-        
-        if (!response.ok) {
-          throw new Error('서버 저장 실패');
+          };
+          localStorage.setItem('currentTaxFormData', JSON.stringify(localData));
+          console.log('localStorage 저장 완료');
         }
-        
-        const savedData = await response.json();
-        console.log('서버 저장 완료:', savedData);
       } catch (error) {
-        console.error('직접 저장 오류:', error);
+        console.error('저장 오류:', error);
         // 실패시 기존 방법으로 시도
-        await saveTaxReturn();
+        try {
+          await saveTaxReturn();
+          console.log('기존 방법으로 저장 완료');
+        } catch (fallbackError) {
+          console.error('기존 방법 저장도 실패:', fallbackError);
+          // localStorage에라도 저장
+          const localData = {
+            ...taxData,
+            deductions: updatedDeductions
+          };
+          localStorage.setItem('currentTaxFormData', JSON.stringify(localData));
+          console.log('fallback - localStorage 저장 완료');
+        }
       }
       
       toast({

@@ -199,12 +199,45 @@ const Deductions: React.FC = () => {
 
   // Update form values when taxData changes (for SALT data synchronization)
   useEffect(() => {
-    if (taxData.deductions?.itemizedDeductions) {
-      console.log('SALT 데이터 변경 감지, form 업데이트:', taxData.deductions.itemizedDeductions);
+    // localStorage에서 추가 데이터 확인 (로그아웃 상태에서 사용)
+    const tryLoadFromLocalStorage = () => {
+      try {
+        const localData = localStorage.getItem('currentTaxFormData');
+        if (localData) {
+          const parsed = JSON.parse(localData);
+          if (parsed.deductions?.itemizedDeductions) {
+            console.log('localStorage에서 SALT 데이터 로드:', parsed.deductions.itemizedDeductions);
+            return parsed.deductions.itemizedDeductions;
+          }
+        }
+      } catch (e) {
+        console.error('localStorage 읽기 오류:', e);
+      }
+      return null;
+    };
+
+    const localStorageData = tryLoadFromLocalStorage();
+    const serverData = taxData.deductions?.itemizedDeductions;
+    
+    // 서버 데이터와 localStorage 데이터 중 더 완전한 것 사용
+    let sourceData = serverData;
+    if (localStorageData) {
+      // localStorage에 SALT 데이터가 있고 서버 데이터보다 완전하면 사용
+      const localHasSalt = (localStorageData.stateLocalIncomeTax || 0) + (localStorageData.realEstateTaxes || 0) + (localStorageData.personalPropertyTax || 0) > 0;
+      const serverHasSalt = serverData ? (serverData.stateLocalIncomeTax || 0) + (serverData.realEstateTaxes || 0) + (serverData.personalPropertyTax || 0) > 0 : false;
+      
+      if (localHasSalt && !serverHasSalt) {
+        console.log('localStorage의 SALT 데이터가 더 완전함, 이를 사용');
+        sourceData = localStorageData;
+      }
+    }
+
+    if (sourceData) {
+      console.log('SALT 데이터 변경 감지, form 업데이트:', sourceData);
       
       // Get current form medical expenses to avoid overwriting
       const currentMedicalExpenses = form.getValues("itemizedDeductions.medicalExpenses") || 0;
-      const savedMedicalExpenses = taxData.deductions.itemizedDeductions.medicalExpenses || 0;
+      const savedMedicalExpenses = sourceData.medicalExpenses || 0;
       
       // Use the higher value between current form value and saved value
       const preservedMedicalExpenses = Math.max(currentMedicalExpenses, savedMedicalExpenses);
@@ -216,26 +249,36 @@ const Deductions: React.FC = () => {
       });
       
       console.log('SALT 데이터 동기화:', {
-        stateLocalIncomeTax: taxData.deductions.itemizedDeductions.stateLocalIncomeTax,
-        realEstateTaxes: taxData.deductions.itemizedDeductions.realEstateTaxes,
-        personalPropertyTax: taxData.deductions.itemizedDeductions.personalPropertyTax
+        stateLocalIncomeTax: sourceData.stateLocalIncomeTax,
+        realEstateTaxes: sourceData.realEstateTaxes,
+        personalPropertyTax: sourceData.personalPropertyTax
       });
       
       // Update all form values including preserved medical expenses
       form.setValue('itemizedDeductions.medicalExpenses', preservedMedicalExpenses);
-      form.setValue('itemizedDeductions.stateLocalIncomeTax', taxData.deductions.itemizedDeductions.stateLocalIncomeTax || 0);
-      form.setValue('itemizedDeductions.realEstateTaxes', taxData.deductions.itemizedDeductions.realEstateTaxes || 0);
-      form.setValue('itemizedDeductions.personalPropertyTax', taxData.deductions.itemizedDeductions.personalPropertyTax || 0);
-      form.setValue('itemizedDeductions.mortgageInterest', taxData.deductions.itemizedDeductions.mortgageInterest || 0);
-      form.setValue('itemizedDeductions.charitableCash', taxData.deductions.itemizedDeductions.charitableCash || 0);
-      form.setValue('itemizedDeductions.charitableNonCash', taxData.deductions.itemizedDeductions.charitableNonCash || 0);
-      form.setValue('totalDeductions', taxData.deductions.totalDeductions || 0);
+      form.setValue('itemizedDeductions.stateLocalIncomeTax', sourceData.stateLocalIncomeTax || 0);
+      form.setValue('itemizedDeductions.realEstateTaxes', sourceData.realEstateTaxes || 0);
+      form.setValue('itemizedDeductions.personalPropertyTax', sourceData.personalPropertyTax || 0);
+      form.setValue('itemizedDeductions.mortgageInterest', sourceData.mortgageInterest || 0);
+      form.setValue('itemizedDeductions.charitableCash', sourceData.charitableCash || 0);
+      form.setValue('itemizedDeductions.charitableNonCash', sourceData.charitableNonCash || 0);
+      
+      // Calculate total deductions
+      const totalItemized = preservedMedicalExpenses + 
+                           (sourceData.stateLocalIncomeTax || 0) + 
+                           (sourceData.realEstateTaxes || 0) + 
+                           (sourceData.personalPropertyTax || 0) + 
+                           (sourceData.mortgageInterest || 0) + 
+                           (sourceData.charitableCash || 0) + 
+                           (sourceData.charitableNonCash || 0);
+      
+      form.setValue('totalDeductions', totalItemized);
       
       // Force form re-render
       form.trigger();
       
       // Update useStandardDeduction if we have itemized deductions
-      if (taxData.deductions.totalDeductions > standardDeductionAmount) {
+      if (totalItemized > standardDeductionAmount) {
         form.setValue('useStandardDeduction', false);
       }
     }

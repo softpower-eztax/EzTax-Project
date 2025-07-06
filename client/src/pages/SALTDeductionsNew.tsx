@@ -174,11 +174,24 @@ export default function SALTDeductionsNew() {
       
       console.log('SALT 저장할 최종 데이터:', {
         updatedDeductions,
-        medicalExpenses: updatedDeductions.itemizedDeductions.medicalExpenses
+        medicalExpenses: updatedDeductions.itemizedDeductions.medicalExpenses,
+        saltInputValues: {
+          selectedTaxAmount,
+          realEstateTax,
+          personalPropertyTax
+        },
+        finalSaltValues: {
+          stateLocalIncomeTax: updatedDeductions.itemizedDeductions.stateLocalIncomeTax,
+          realEstateTaxes: updatedDeductions.itemizedDeductions.realEstateTaxes,
+          personalPropertyTax: updatedDeductions.itemizedDeductions.personalPropertyTax
+        }
       });
 
       await updateTaxData({ deductions: updatedDeductions });
+      console.log('세금 컨텍스트 업데이트 완료');
+      
       await saveTaxReturn();
+      console.log('세금 신고서 저장 완료');
       
       toast({
         title: "저장 완료",

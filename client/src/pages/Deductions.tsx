@@ -215,6 +215,12 @@ const Deductions: React.FC = () => {
         preserved: preservedMedicalExpenses
       });
       
+      console.log('SALT 데이터 동기화:', {
+        stateLocalIncomeTax: taxData.deductions.itemizedDeductions.stateLocalIncomeTax,
+        realEstateTaxes: taxData.deductions.itemizedDeductions.realEstateTaxes,
+        personalPropertyTax: taxData.deductions.itemizedDeductions.personalPropertyTax
+      });
+      
       // Update all form values including preserved medical expenses
       form.setValue('itemizedDeductions.medicalExpenses', preservedMedicalExpenses);
       form.setValue('itemizedDeductions.stateLocalIncomeTax', taxData.deductions.itemizedDeductions.stateLocalIncomeTax || 0);
@@ -225,16 +231,26 @@ const Deductions: React.FC = () => {
       form.setValue('itemizedDeductions.charitableNonCash', taxData.deductions.itemizedDeductions.charitableNonCash || 0);
       form.setValue('totalDeductions', taxData.deductions.totalDeductions || 0);
       
+      // Force form re-render
+      form.trigger();
+      
       // Update useStandardDeduction if we have itemized deductions
       if (taxData.deductions.totalDeductions > standardDeductionAmount) {
         form.setValue('useStandardDeduction', false);
       }
     }
-  }, [taxData.deductions?.itemizedDeductions?.stateLocalIncomeTax, 
-      taxData.deductions?.itemizedDeductions?.realEstateTaxes, 
-      taxData.deductions?.itemizedDeductions?.personalPropertyTax,
-      taxData.deductions?.itemizedDeductions?.medicalExpenses,
-      taxData.deductions?.totalDeductions]);
+  }, [
+    taxData.deductions?.itemizedDeductions?.stateLocalIncomeTax, 
+    taxData.deductions?.itemizedDeductions?.realEstateTaxes, 
+    taxData.deductions?.itemizedDeductions?.personalPropertyTax,
+    taxData.deductions?.itemizedDeductions?.medicalExpenses,
+    taxData.deductions?.itemizedDeductions?.mortgageInterest,
+    taxData.deductions?.itemizedDeductions?.charitableCash,
+    taxData.deductions?.itemizedDeductions?.charitableNonCash,
+    taxData.deductions?.totalDeductions,
+    // 전체 taxData도 의존성에 추가하여 페이지 이동 시 강제 업데이트
+    taxData.id
+  ]);
 
 
 

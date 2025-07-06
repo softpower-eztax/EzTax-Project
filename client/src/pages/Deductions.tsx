@@ -189,6 +189,27 @@ const Deductions: React.FC = () => {
     }
   }, [taxData.deductions?.itemizedDeductions?.medicalExpenses, taxData.income?.adjustedGrossIncome, totalMedicalInput]);
 
+  // Update form values when taxData changes (for SALT data synchronization)
+  useEffect(() => {
+    if (taxData.deductions?.itemizedDeductions) {
+      console.log('SALT 데이터 변경 감지, form 업데이트:', taxData.deductions.itemizedDeductions);
+      
+      // Update form values with current taxData
+      form.setValue('itemizedDeductions.stateLocalIncomeTax', taxData.deductions.itemizedDeductions.stateLocalIncomeTax || 0);
+      form.setValue('itemizedDeductions.realEstateTaxes', taxData.deductions.itemizedDeductions.realEstateTaxes || 0);
+      form.setValue('itemizedDeductions.personalPropertyTax', taxData.deductions.itemizedDeductions.personalPropertyTax || 0);
+      form.setValue('totalDeductions', taxData.deductions.totalDeductions || 0);
+      
+      // Update useStandardDeduction if we have itemized deductions
+      if (taxData.deductions.totalDeductions > standardDeductionAmount) {
+        form.setValue('useStandardDeduction', false);
+      }
+    }
+  }, [taxData.deductions?.itemizedDeductions?.stateLocalIncomeTax, 
+      taxData.deductions?.itemizedDeductions?.realEstateTaxes, 
+      taxData.deductions?.itemizedDeductions?.personalPropertyTax,
+      taxData.deductions?.totalDeductions]);
+
 
 
   // When useStandardDeduction changes, update form field status

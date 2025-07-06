@@ -275,6 +275,39 @@ export function calculateChildTaxCredit(
   return Math.round(creditAmount * 100) / 100;
 }
 
+// Calculate Additional Child Tax Credit (ACTC) - 환급 가능한 부분
+export function calculateAdditionalChildTaxCredit(
+  dependents: Dependent[] = [],
+  earnedIncome: number,
+  taxLiability: number,
+  childTaxCredit: number
+): number {
+  // If no eligible children or no Child Tax Credit, return 0
+  const eligibleChildren = dependents.filter(isEligibleForChildTaxCredit);
+  if (eligibleChildren.length === 0 || childTaxCredit <= 0) return 0;
+  
+  // ACTC는 세금 부채로 상쇄되지 않은 Child Tax Credit 부분만 환급 가능
+  const nonRefundableUsed = Math.min(childTaxCredit, taxLiability);
+  const remainingCredit = childTaxCredit - nonRefundableUsed;
+  
+  if (remainingCredit <= 0) return 0;
+  
+  // ACTC 계산: (근로소득 - $2,500) × 15%
+  if (earnedIncome <= 2500) return 0;
+  
+  const actcCalculation = (earnedIncome - 2500) * 0.15;
+  
+  // 자녀 1명당 최대 $1,600까지 환급 가능
+  const maxRefundable = eligibleChildren.length * 1600;
+  
+  // 환급 가능한 금액은 세 값 중 최소값
+  const refundableAmount = Math.min(remainingCredit, actcCalculation, maxRefundable);
+  
+  console.log(`ACTC 계산: 근로소득 ${earnedIncome}, 적격자녀 ${eligibleChildren.length}명, 환급가능 ${refundableAmount}`);
+  
+  return Math.round(refundableAmount * 100) / 100;
+}
+
 // QBI Deduction Calculation (Section 199A)
 export function calculateQBIDeduction(
   qbiIncome: number,
@@ -694,12 +727,24 @@ export function calculateTaxes(taxData: TaxData): CalculatedResults {
     totalCredits: calculatedChildTaxCredit + calculatedRetirementSavingsCredit + calculatedChildDependentCareCredit + calculatedCreditForOtherDependents
   };
   
+  // Calculate earned income for ACTC
+  const earnedIncome = (income.wages || 0) + (income.otherEarnedIncome || 0) + (additionalTax.selfEmploymentIncome || 0);
+  
+  // Calculate Additional Child Tax Credit (ACTC) - refundable portion
+  const calculatedACTC = calculateAdditionalChildTaxCredit(
+    taxData.personalInfo?.dependents || [],
+    earnedIncome,
+    result.federalTax,
+    calculatedChildTaxCredit
+  );
+  
   // Store individual credit amounts in result for display purposes
   result.childTaxCredit = calculatedChildTaxCredit;
   result.childDependentCareCredit = calculatedChildDependentCareCredit;
   result.retirementSavingsCredit = calculatedRetirementSavingsCredit;
   result.creditForOtherDependents = calculatedCreditForOtherDependents;
   result.earnedIncomeCredit = calculatedEarnedIncomeCredit;
+  result.additionalChildTaxCredit = calculatedACTC;
 
   // If the user hasn't explicitly set tax credit values, use the calculated ones
   if (!taxData.taxCredits || 
@@ -707,7 +752,7 @@ export function calculateTaxes(taxData: TaxData): CalculatedResults {
        taxData.taxCredits.retirementSavingsCredit === 0 &&
        taxData.taxCredits.childDependentCareCredit === 0 &&
        taxData.taxCredits.otherCredits === 0)) {
-    // Update the total credits with our calculated credits
+    // Update the total credits with our calculated credits (non-refundable portion only)
     result.credits = (
       calculatedChildTaxCredit + 
       calculatedRetirementSavingsCredit +
@@ -758,12 +803,15 @@ export function calculateTaxes(taxData: TaxData): CalculatedResults {
     }
   }
 
-  // Calculate refund or amount owed
-  if (result.payments > result.taxDue) {
-    result.refundAmount = formatInputNumber(result.payments - result.taxDue);
+  // Calculate refund or amount owed including ACTC
+  // ACTC is refundable, so it adds to refunds even if tax liability is zero
+  const totalRefundableCredits = calculatedACTC + calculatedEarnedIncomeCredit;
+  
+  if (result.payments + totalRefundableCredits > result.taxDue) {
+    result.refundAmount = formatInputNumber((result.payments + totalRefundableCredits) - result.taxDue);
     result.amountOwed = 0;
   } else {
-    result.amountOwed = formatInputNumber(result.taxDue - result.payments);
+    result.amountOwed = formatInputNumber(result.taxDue - (result.payments + totalRefundableCredits));
     result.refundAmount = 0;
   }
   
@@ -782,6 +830,7 @@ export function calculateTaxes(taxData: TaxData): CalculatedResults {
   result.retirementSavingsCredit = formatInputNumber(result.retirementSavingsCredit);
   result.creditForOtherDependents = formatInputNumber(result.creditForOtherDependents);
   result.earnedIncomeCredit = formatInputNumber(result.earnedIncomeCredit);
+  result.additionalChildTaxCredit = formatInputNumber(result.additionalChildTaxCredit);
   
   return result;
 }

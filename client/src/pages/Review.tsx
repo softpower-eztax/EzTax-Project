@@ -227,6 +227,9 @@ const Review: React.FC = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <Field label="자녀 세액공제(Child Tax Credit)" value={formatCurrency(calculatedResults.childTaxCredit || taxCredits.childTaxCredit || 0)} />
+                    {calculatedResults.additionalChildTaxCredit > 0 && (
+                      <Field label="추가 자녀 세액공제 - 환급가능(Additional Child Tax Credit - Refundable)" value={formatCurrency(calculatedResults.additionalChildTaxCredit)} />
+                    )}
                     <Field label="자녀 및 부양가족 돌봄 공제(Child & Dependent Care Credit)" value={formatCurrency(calculatedResults.childDependentCareCredit || taxCredits.childDependentCareCredit || 0)} />
                     <Field label="교육비 공제(Education Credits)" value={formatCurrency(taxCredits.educationCredits || 0)} />
                   </div>

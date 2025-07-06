@@ -78,6 +78,6 @@ export function formatInputNumber(value: number | string): number {
     return 0;
   }
 
-  // 소수점 2자리로 반올림
-  return Math.round(numValue * 100) / 100;
+  // 부동소수점 정밀도 문제 해결을 위해 toFixed 사용 후 다시 숫자로 변환
+  return parseFloat(numValue.toFixed(2));
 }

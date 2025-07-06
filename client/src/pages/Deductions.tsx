@@ -683,7 +683,16 @@ const Deductions: React.FC = () => {
                             type="button"
                             onClick={async () => {
                               try {
+                                // 현재 폼 데이터를 먼저 세금 컨텍스트에 업데이트
+                                const currentFormData = form.getValues();
+                                console.log('진행상황저장 - 현재 폼 데이터:', currentFormData);
+                                
+                                // 폼 데이터를 세금 컨텍스트에 업데이트
+                                await updateTaxData({ deductions: currentFormData });
+                                
+                                // 그 다음 서버에 저장
                                 await saveTaxReturn();
+                                
                                 toast({
                                   title: "저장 완료",
                                   description: "의료비 공제 정보가 성공적으로 저장되었습니다.",

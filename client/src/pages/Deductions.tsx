@@ -709,12 +709,13 @@ const Deductions: React.FC = () => {
                                           totalDeductions: 0
                                         };
                                         
-                                        const formattedMedicalAmount = formatInputNumber(deductibleMedicalAmount);
+                                        // deductibleMedicalAmount를 직접 사용 (formatInputNumber 중복 호출 방지)
+                                        const preciseMedicalAmount = Math.round(deductibleMedicalAmount * 100) / 100;
                                         const updatedDeductions = {
                                           ...currentDeductions,
                                           itemizedDeductions: {
                                             ...currentDeductions.itemizedDeductions,
-                                            medicalExpenses: formattedMedicalAmount
+                                            medicalExpenses: preciseMedicalAmount
                                           }
                                         };
                                         
@@ -723,9 +724,8 @@ const Deductions: React.FC = () => {
                                         // 세금 컨텍스트 업데이트
                                         await updateTaxData({ deductions: updatedDeductions });
                                         
-                                        // 폼도 업데이트 (소수점 2자리로 제한)
-                                        const formattedAmount = formatInputNumber(deductibleMedicalAmount);
-                                        form.setValue("itemizedDeductions.medicalExpenses", formattedAmount);
+                                        // 폼도 업데이트 (정확한 값으로)
+                                        form.setValue("itemizedDeductions.medicalExpenses", preciseMedicalAmount);
                                         
                                         toast({
                                           title: "적용 완료",

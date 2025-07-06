@@ -613,12 +613,25 @@ const Deductions: React.FC = () => {
                                       type="button"
                                       onClick={() => {
                                         console.log('수동으로 의료비 공제 필드에 적용:', deductibleMedicalAmount);
+                                        console.log('적용 전 폼 값:', form.getValues());
+                                        console.log('적용 전 의료비 필드:', form.getValues("itemizedDeductions.medicalExpenses"));
+                                        
                                         form.setValue("itemizedDeductions.medicalExpenses", deductibleMedicalAmount, { 
                                           shouldValidate: true,
                                           shouldDirty: true,
                                           shouldTouch: true 
                                         });
+                                        
+                                        console.log('적용 후 폼 값:', form.getValues());
+                                        console.log('적용 후 의료비 필드:', form.getValues("itemizedDeductions.medicalExpenses"));
+                                        
                                         form.trigger("itemizedDeductions.medicalExpenses");
+                                        
+                                        // 강제로 리렌더링 트리거
+                                        setTimeout(() => {
+                                          console.log('1초 후 의료비 필드:', form.getValues("itemizedDeductions.medicalExpenses"));
+                                        }, 1000);
+                                        
                                         toast({
                                           title: "적용 완료",
                                           description: `의료비 공제 ${deductibleMedicalAmount.toLocaleString()}원이 공제 필드에 적용되었습니다.`,

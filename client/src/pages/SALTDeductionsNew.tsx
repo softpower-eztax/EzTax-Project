@@ -187,11 +187,33 @@ export default function SALTDeductionsNew() {
         }
       });
 
+      // 세금 컨텍스트 업데이트
       await updateTaxData({ deductions: updatedDeductions });
       console.log('세금 컨텍스트 업데이트 완료');
       
-      await saveTaxReturn();
-      console.log('세금 신고서 저장 완료');
+      // 직접 API 호출로 서버에 저장 (컨텍스트와 동기화 문제 방지)
+      try {
+        const response = await fetch(`/api/tax-return/${taxData.id}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            deductions: updatedDeductions
+          }),
+        });
+        
+        if (!response.ok) {
+          throw new Error('서버 저장 실패');
+        }
+        
+        const savedData = await response.json();
+        console.log('서버 저장 완료:', savedData);
+      } catch (error) {
+        console.error('직접 저장 오류:', error);
+        // 실패시 기존 방법으로 시도
+        await saveTaxReturn();
+      }
       
       toast({
         title: "저장 완료",

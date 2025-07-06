@@ -618,10 +618,10 @@ const Deductions: React.FC = () => {
                                         if (value === '') {
                                           setTotalMedicalInput(0);
                                         } else {
-                                          // parseFloat 대신 Number를 사용하고, 입력값을 그대로 유지
+                                          // formatInputNumber를 사용해 소수점 정밀도 문제 해결
                                           const numValue = Number(value);
                                           if (!isNaN(numValue)) {
-                                            setTotalMedicalInput(numValue);
+                                            setTotalMedicalInput(formatInputNumber(numValue));
                                           }
                                         }
                                       }}
@@ -635,15 +635,15 @@ const Deductions: React.FC = () => {
                                     <div className="space-y-1">
                                       <div className="flex justify-between">
                                         <span>현재 AGI:</span>
-                                        <span className="font-semibold">${agi.toLocaleString()}</span>
+                                        <span className="font-semibold">${formatNumber(agi)}</span>
                                       </div>
                                       <div className="flex justify-between">
                                         <span>공제 한계선 (7.5%):</span>
-                                        <span className="font-semibold text-red-600">${threshold.toLocaleString()}</span>
+                                        <span className="font-semibold text-red-600">${formatNumber(threshold)}</span>
                                       </div>
                                       <div className="flex justify-between border-t pt-1">
                                         <span>입력한 총 의료비:</span>
-                                        <span className="font-semibold">${totalMedicalInput.toLocaleString()}</span>
+                                        <span className="font-semibold">${formatNumber(totalMedicalInput)}</span>
                                       </div>
                                     </div>
                                   </div>
@@ -675,7 +675,7 @@ const Deductions: React.FC = () => {
                                                 ⚠️ 공제 대상이 아닙니다
                                               </p>
                                               <p className="text-xs text-gray-600">
-                                                ${(threshold + 1).toLocaleString()} 이상 필요
+                                                ${formatNumber(threshold + 1)} 이상 필요
                                               </p>
                                             </div>
                                           )}
@@ -804,6 +804,7 @@ const Deductions: React.FC = () => {
                                   step="0.01"
                                   min="0"
                                   {...field}
+                                  value={formatInputNumber(field.value || 0)}
                                   readOnly={true}
                                   className="bg-gray-50"
                                   placeholder="자동 계산됨"

@@ -620,7 +620,18 @@ const Deductions: React.FC = () => {
                                       step="0.01"
                                       min="0"
                                       value={totalMedicalInput || ''}
-                                      onChange={(e) => setTotalMedicalInput(parseFloat(e.target.value) || 0)}
+                                      onChange={(e) => {
+                                        const value = e.target.value;
+                                        if (value === '') {
+                                          setTotalMedicalInput(0);
+                                        } else {
+                                          // parseFloat 대신 Number를 사용하고, 입력값을 그대로 유지
+                                          const numValue = Number(value);
+                                          if (!isNaN(numValue)) {
+                                            setTotalMedicalInput(numValue);
+                                          }
+                                        }
+                                      }}
                                       disabled={isItemizedDisabled}
                                       placeholder="실제 지출한 총 의료비를 입력하세요"
                                       className="w-full"

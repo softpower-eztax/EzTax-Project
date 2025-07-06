@@ -170,18 +170,19 @@ const Deductions: React.FC = () => {
   const watchOtherDeductionItems = form.watch('otherDeductionItems');
 
   // Auto-update medical expense deduction field when calculation changes
-  useEffect(() => {
-    if (form && form.setValue) {
-      console.log('의료비 공제 필드 자동 업데이트:', deductibleMedicalAmount);
-      form.setValue("itemizedDeductions.medicalExpenses", deductibleMedicalAmount, { 
-        shouldValidate: true,
-        shouldDirty: true,
-        shouldTouch: true 
-      });
-      // 즉시 폼 상태를 업데이트하여 UI에 반영
-      form.trigger("itemizedDeductions.medicalExpenses");
-    }
-  }, [deductibleMedicalAmount, form]);
+  // 자동 업데이트는 비활성화하고 수동 적용만 사용
+  // useEffect(() => {
+  //   if (form && form.setValue && deductibleMedicalAmount > 0) {
+  //     console.log('의료비 공제 필드 자동 업데이트:', deductibleMedicalAmount);
+  //     form.setValue("itemizedDeductions.medicalExpenses", deductibleMedicalAmount, { 
+  //       shouldValidate: true,
+  //       shouldDirty: true,
+  //       shouldTouch: true 
+  //     });
+  //     // 즉시 폼 상태를 업데이트하여 UI에 반영
+  //     form.trigger("itemizedDeductions.medicalExpenses");
+  //   }
+  // }, [deductibleMedicalAmount, form]);
   
   // Update medical input when taxData changes (restore saved data)
   useEffect(() => {
@@ -197,11 +198,12 @@ const Deductions: React.FC = () => {
   }, [taxData.deductions?.itemizedDeductions?.medicalExpenses, taxData.income?.adjustedGrossIncome, totalMedicalInput]);
 
   // Update form values when taxData changes (for SALT data synchronization)
+  // 의료비 필드는 덮어쓰지 않도록 제외
   useEffect(() => {
     if (taxData.deductions?.itemizedDeductions) {
-      console.log('SALT 데이터 변경 감지, form 업데이트:', taxData.deductions.itemizedDeductions);
+      console.log('SALT 데이터 변경 감지, form 업데이트 (의료비 제외):', taxData.deductions.itemizedDeductions);
       
-      // Update form values with current taxData
+      // Update form values with current taxData (excluding medicalExpenses)
       form.setValue('itemizedDeductions.stateLocalIncomeTax', taxData.deductions.itemizedDeductions.stateLocalIncomeTax || 0);
       form.setValue('itemizedDeductions.realEstateTaxes', taxData.deductions.itemizedDeductions.realEstateTaxes || 0);
       form.setValue('itemizedDeductions.personalPropertyTax', taxData.deductions.itemizedDeductions.personalPropertyTax || 0);
@@ -602,7 +604,7 @@ const Deductions: React.FC = () => {
                                   </div>
                                   
                                   <div className="text-xs text-blue-700 bg-blue-100 p-2 rounded mb-3">
-                                    💡 이 금액이 자동으로 아래 의료비 공제 필드에 입력됩니다
+                                    💡 아래 버튼을 클릭하여 의료비 공제 필드에 적용하세요
                                   </div>
                                   
                                   {/* 수동 적용 버튼 */}

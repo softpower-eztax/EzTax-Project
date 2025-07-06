@@ -105,6 +105,7 @@ Preferred communication style: Simple, everyday language.
 ## Changelog
 
 Recent Changes:
+- July 6, 2025: **INFINITE LOOP DATA LOSS ISSUE COMPLETELY RESOLVED** - Fixed critical TaxContext useEffect dependency causing continuous income data deletion, eliminated formatInputNumber precision errors (4500 no longer becomes 4000.0005), and implemented stable application state preventing user data loss during form navigation
 - July 6, 2025: **EARNED INCOME CREDIT INVESTMENT INCOME LIMIT IMPLEMENTED** - Added critical $11,600 investment income threshold check (2024 IRS rules) to EIC calculation preventing eligibility when investment income (interest + dividends + capital gains) exceeds limit, includes real-time display of current investment income and warning messages for compliance
 - July 6, 2025: **DECIMAL FORMATTING CONSISTENCY COMPLETELY RESOLVED** - Implemented comprehensive formatNumber utility function ensuring all tax calculations display exactly 2 decimal places, applied across medical expense calculator, SALT calculations, tax results, and all numeric inputs for professional appearance
 - July 6, 2025: **MEDICAL EXPENSE CALCULATOR-TO-FIELD CONNECTION COMPLETELY FIXED** - Successfully implemented seamless integration between medical expense calculator and deduction field with direct tax context updates, server-side data merging logic, and "Apply to Deduction Field" manual button for reliable data persistence across page navigation

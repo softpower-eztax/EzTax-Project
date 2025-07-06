@@ -172,7 +172,14 @@ const Deductions: React.FC = () => {
   // Auto-update medical expense deduction field when calculation changes
   useEffect(() => {
     if (form && form.setValue) {
-      form.setValue("itemizedDeductions.medicalExpenses", deductibleMedicalAmount);
+      console.log('의료비 공제 필드 자동 업데이트:', deductibleMedicalAmount);
+      form.setValue("itemizedDeductions.medicalExpenses", deductibleMedicalAmount, { 
+        shouldValidate: true,
+        shouldDirty: true,
+        shouldTouch: true 
+      });
+      // 즉시 폼 상태를 업데이트하여 UI에 반영
+      form.trigger("itemizedDeductions.medicalExpenses");
     }
   }, [deductibleMedicalAmount, form]);
   
@@ -594,9 +601,32 @@ const Deductions: React.FC = () => {
                                     </div>
                                   </div>
                                   
-                                  <div className="text-xs text-blue-700 bg-blue-100 p-2 rounded">
+                                  <div className="text-xs text-blue-700 bg-blue-100 p-2 rounded mb-3">
                                     💡 이 금액이 자동으로 아래 의료비 공제 필드에 입력됩니다
                                   </div>
+                                  
+                                  {/* 수동 적용 버튼 */}
+                                  {deductibleMedicalAmount > 0 && (
+                                    <Button
+                                      type="button"
+                                      onClick={() => {
+                                        console.log('수동으로 의료비 공제 필드에 적용:', deductibleMedicalAmount);
+                                        form.setValue("itemizedDeductions.medicalExpenses", deductibleMedicalAmount, { 
+                                          shouldValidate: true,
+                                          shouldDirty: true,
+                                          shouldTouch: true 
+                                        });
+                                        form.trigger("itemizedDeductions.medicalExpenses");
+                                        toast({
+                                          title: "적용 완료",
+                                          description: `의료비 공제 ${deductibleMedicalAmount.toLocaleString()}원이 공제 필드에 적용되었습니다.`,
+                                        });
+                                      }}
+                                      className="w-full bg-blue-600 hover:bg-blue-700"
+                                    >
+                                      공제 필드에 적용하기
+                                    </Button>
+                                  )}
                                 </div>
                               </div>
                             );

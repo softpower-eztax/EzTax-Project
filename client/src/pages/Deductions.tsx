@@ -611,30 +611,42 @@ const Deductions: React.FC = () => {
                                   {deductibleMedicalAmount > 0 && (
                                     <Button
                                       type="button"
-                                      onClick={() => {
+                                      onClick={async () => {
                                         console.log('수동으로 의료비 공제 필드에 적용:', deductibleMedicalAmount);
-                                        console.log('적용 전 폼 값:', form.getValues());
-                                        console.log('적용 전 의료비 필드:', form.getValues("itemizedDeductions.medicalExpenses"));
                                         
-                                        form.setValue("itemizedDeductions.medicalExpenses", deductibleMedicalAmount, { 
-                                          shouldValidate: true,
-                                          shouldDirty: true,
-                                          shouldTouch: true 
-                                        });
+                                        // 직접 세금 컨텍스트를 업데이트
+                                        const currentDeductions = taxData.deductions || {
+                                          useStandardDeduction: false,
+                                          standardDeductionAmount: 27700,
+                                          itemizedDeductions: {
+                                            medicalExpenses: 0,
+                                            stateLocalIncomeTax: 0,
+                                            realEstateTaxes: 0,
+                                            personalPropertyTax: 0
+                                          },
+                                          otherDeductionItems: [],
+                                          totalDeductions: 0
+                                        };
                                         
-                                        console.log('적용 후 폼 값:', form.getValues());
-                                        console.log('적용 후 의료비 필드:', form.getValues("itemizedDeductions.medicalExpenses"));
+                                        const updatedDeductions = {
+                                          ...currentDeductions,
+                                          itemizedDeductions: {
+                                            ...currentDeductions.itemizedDeductions,
+                                            medicalExpenses: deductibleMedicalAmount
+                                          }
+                                        };
                                         
-                                        form.trigger("itemizedDeductions.medicalExpenses");
+                                        console.log('업데이트할 공제 데이터:', updatedDeductions);
                                         
-                                        // 강제로 리렌더링 트리거
-                                        setTimeout(() => {
-                                          console.log('1초 후 의료비 필드:', form.getValues("itemizedDeductions.medicalExpenses"));
-                                        }, 1000);
+                                        // 세금 컨텍스트 업데이트
+                                        await updateTaxData({ deductions: updatedDeductions });
+                                        
+                                        // 폼도 업데이트
+                                        form.setValue("itemizedDeductions.medicalExpenses", deductibleMedicalAmount);
                                         
                                         toast({
                                           title: "적용 완료",
-                                          description: `의료비 공제 ${deductibleMedicalAmount.toLocaleString()}원이 공제 필드에 적용되었습니다.`,
+                                          description: `의료비 공제 $${deductibleMedicalAmount.toLocaleString()}이 적용되었습니다.`,
                                         });
                                       }}
                                       className="w-full bg-blue-600 hover:bg-blue-700"

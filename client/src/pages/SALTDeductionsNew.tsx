@@ -162,11 +162,13 @@ export default function SALTDeductionsNew() {
         standardDeductionAmount: existingDeductions.standardDeductionAmount || 27700, // Preserve standardDeductionAmount
         totalDeductions: totalItemizedDeductions,
         itemizedDeductions: {
-          ...existingItemized,
-          // Update only SALT-related fields, preserve everything else
+          medicalExpenses: medicalExpenses, // 복원된 의료비 명시적 설정
           stateLocalIncomeTax: selectedTaxAmount,
           realEstateTaxes: realEstateTax,
-          personalPropertyTax: personalPropertyTax
+          personalPropertyTax: personalPropertyTax,
+          mortgageInterest: existingItemized.mortgageInterest || 0,
+          charitableCash: existingItemized.charitableCash || 0,
+          charitableNonCash: existingItemized.charitableNonCash || 0
         }
       };
       

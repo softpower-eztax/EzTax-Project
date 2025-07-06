@@ -278,10 +278,33 @@ const Review: React.FC = () => {
                     <Field label="납부할 세금(Tax Due)" value={formatCurrency(calculatedResults.taxDue)} />
                     <Field label="기납부 세금 및 원천징수(Payments & Withholding)" value={formatCurrency(calculatedResults.payments)} />
                     {calculatedResults.refundAmount > 0 ? (
-                      <div className="flex justify-between py-2 font-bold bg-success/10 rounded px-2 text-success">
-                        <span>환급 금액(Refund Amount):</span>
-                        <span>{formatCurrency(calculatedResults.refundAmount)}</span>
-                      </div>
+                      <>
+                        <div className="flex justify-between py-2 font-bold bg-success/10 rounded px-2 text-success">
+                          <span>환급 금액(Refund Amount):</span>
+                          <span>{formatCurrency(calculatedResults.refundAmount)}</span>
+                        </div>
+                        {(calculatedResults.additionalChildTaxCredit > 0 || calculatedResults.earnedIncomeCredit > 0) && (
+                          <div className="mt-2 p-2 bg-blue-50 rounded text-sm">
+                            <div className="font-medium text-blue-800 mb-1">환급 가능한 크레딧 내역:</div>
+                            {calculatedResults.additionalChildTaxCredit > 0 && (
+                              <div className="flex justify-between text-blue-700">
+                                <span>• ACTC(추가 자녀 세액공제):</span>
+                                <span>{formatCurrency(calculatedResults.additionalChildTaxCredit)}</span>
+                              </div>
+                            )}
+                            {calculatedResults.earnedIncomeCredit > 0 && (
+                              <div className="flex justify-between text-blue-700">
+                                <span>• EIC(근로소득세액공제):</span>
+                                <span>{formatCurrency(calculatedResults.earnedIncomeCredit)}</span>
+                              </div>
+                            )}
+                            <div className="flex justify-between text-blue-700 text-xs mt-1">
+                              <span>• Child Care Credit 환급분:</span>
+                              <span>$0.00</span>
+                            </div>
+                          </div>
+                        )}
+                      </>
                     ) : (
                       <div className="flex justify-between py-2 font-bold bg-destructive/10 rounded px-2 text-destructive">
                         <span>납부할 금액(Amount You Owe):</span>

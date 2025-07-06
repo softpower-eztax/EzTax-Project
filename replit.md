@@ -105,6 +105,7 @@ Preferred communication style: Simple, everyday language.
 ## Changelog
 
 Recent Changes:
+- July 6, 2025: **CRITICAL BUILD ERRORS COMPLETELY RESOLVED** - Fixed all undefined saveTaxReturn function references across multiple components (TaxCredits3.tsx, Deductions.tsx, SALTDeductionsNew.tsx), replaced with updateTaxData for consistent data management, eliminated duplicate try-catch structures, and completely rebuilt SALTDeductionsNew.tsx with clean architecture ensuring stable application execution
 - July 6, 2025: **INFINITE LOOP DATA LOSS ISSUE COMPLETELY RESOLVED** - Fixed critical TaxContext useEffect dependency causing continuous income data deletion, eliminated formatInputNumber precision errors (4500 no longer becomes 4000.0005), and implemented stable application state preventing user data loss during form navigation
 - July 6, 2025: **EARNED INCOME CREDIT INVESTMENT INCOME LIMIT IMPLEMENTED** - Added critical $11,600 investment income threshold check (2024 IRS rules) to EIC calculation preventing eligibility when investment income (interest + dividends + capital gains) exceeds limit, includes real-time display of current investment income and warning messages for compliance
 - July 6, 2025: **DECIMAL FORMATTING CONSISTENCY COMPLETELY RESOLVED** - Implemented comprehensive formatNumber utility function ensuring all tax calculations display exactly 2 decimal places, applied across medical expense calculator, SALT calculations, tax results, and all numeric inputs for professional appearance

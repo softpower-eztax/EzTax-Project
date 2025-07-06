@@ -108,25 +108,30 @@ const IncomePage: React.FC = () => {
     });
   };
 
-  // 테스트용 하드코딩된 데이터로 시작
+  // 저장된 데이터를 직접 기본값으로 사용
+  const qbiBusinessIncome = taxData.income?.qbi?.totalQBI || 0;
+  const effectiveBusinessIncome = qbiBusinessIncome > 0 ? qbiBusinessIncome : (taxData.income?.businessIncome || 0);
+  
   const defaultValues: Income = {
-    wages: 75000,
-    otherEarnedIncome: 0,
-    interestIncome: 1200,
-    dividends: 3500,
-    businessIncome: 15000,
-    capitalGains: 5000,
-    rentalIncome: 12000,
-    retirementIncome: 0,
-    unemploymentIncome: 0,
-    otherIncome: 1500,
-    totalIncome: 113200,
+    wages: taxData.income?.wages || 0,
+    otherEarnedIncome: taxData.income?.otherEarnedIncome || 0,
+    interestIncome: taxData.income?.interestIncome || 0,
+    dividends: taxData.income?.dividends || 0,
+    businessIncome: effectiveBusinessIncome,
+    capitalGains: taxData.income?.capitalGains || 0,
+    rentalIncome: taxData.income?.rentalIncome || 0,
+    retirementIncome: taxData.income?.retirementIncome || 0,
+    unemploymentIncome: taxData.income?.unemploymentIncome || 0,
+    otherIncome: taxData.income?.otherIncome || 0,
+    additionalIncomeItems: taxData.income?.additionalIncomeItems || [],
+    totalIncome: taxData.income?.totalIncome || 0,
     adjustments: {
-      studentLoanInterest: 2500,
-      retirementContributions: 6000,
-      otherAdjustments: 1000
+      studentLoanInterest: taxData.income?.adjustments?.studentLoanInterest || 0,
+      retirementContributions: taxData.income?.adjustments?.retirementContributions || 0,
+      otherAdjustments: taxData.income?.adjustments?.otherAdjustments || 0
     },
-    adjustedGrossIncome: 100200
+    adjustedGrossIncome: taxData.income?.adjustedGrossIncome || 0,
+    additionalAdjustmentItems: taxData.income?.additionalAdjustmentItems || []
   };
 
   // Initialize the form with react-hook-form
@@ -135,6 +140,8 @@ const IncomePage: React.FC = () => {
     defaultValues,
     mode: 'onChange',
   });
+
+
 
   // Update calculated fields when form values change
   // Additional income types

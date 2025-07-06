@@ -355,46 +355,39 @@ export default function IncomePage() {
     });
   };
   
-  // 지정된 필드 값이 변경될 때마다 자동 계산 및 저장
-  useEffect(() => {
+  // Manual calculation function (no auto-trigger)
+  const calculateTotals = () => {
     // 근로소득 계산
     const earnedIncomeTotal = 
-      Number(form.watch('wages') || 0) +
-      Number(form.watch('otherEarnedIncome') || 0);
+      Number(form.getValues('wages') || 0) +
+      Number(form.getValues('otherEarnedIncome') || 0);
       
     // QBI 사업소득 확인
     const qbiBusinessIncome = taxData.income?.qbi?.totalQBI || 0;
-    const currentBusinessIncome = Number(form.watch('businessIncome') || 0);
+    const currentBusinessIncome = Number(form.getValues('businessIncome') || 0);
     const effectiveBusinessIncome = qbiBusinessIncome > 0 ? qbiBusinessIncome : currentBusinessIncome;
     
     // 비근로소득 계산 (사업소득 포함)
     const unearnedIncomeTotal =
-      Number(form.watch('interestIncome') || 0) +
-      Number(form.watch('dividends') || 0) +
+      Number(form.getValues('interestIncome') || 0) +
+      Number(form.getValues('dividends') || 0) +
       effectiveBusinessIncome +
-      Number(form.watch('capitalGains') || 0) +
-      Number(form.watch('rentalIncome') || 0);
+      Number(form.getValues('capitalGains') || 0) +
+      Number(form.getValues('rentalIncome') || 0);
       
-    // 사용하지 않는 필드들은 0으로 설정 (businessIncome과 capitalGains 제외)
-    form.setValue('retirementIncome', 0);
-    form.setValue('unemploymentIncome', 0);
-    form.setValue('otherIncome', 0);
-    
     // QBI 사업소득이 있으면 businessIncome 필드 업데이트
     if (qbiBusinessIncome > 0 && Math.abs(currentBusinessIncome - qbiBusinessIncome) > 0.01) {
       form.setValue('businessIncome', qbiBusinessIncome);
     }
     
     // 기타소득 계산 (사용자 직접 입력값)
-    const userOtherIncome = Number(form.watch('otherIncome') || 0);
+    const userOtherIncome = Number(form.getValues('otherIncome') || 0);
     
     // 추가 소득 항목 계산 (AdditionalIncome 페이지에서 추가된 항목들)
     let additionalItemsTotal = 0;
     if (additionalIncomeItems.length > 0) {
-      additionalIncomeItems.forEach(item => {
-        console.log("계산에 포함된 추가 소득 항목:", item.type, Number(item.amount || 0));
-        additionalItemsTotal += Number(item.amount || 0);
-      });
+      additionalItemsTotal = additionalIncomeItems.reduce((sum, item) => 
+        sum + Number(item.amount || 0), 0);
     }
     
     // 기타소득은 사용자 직접 입력값 + 추가 소득 항목의 합계
@@ -403,26 +396,15 @@ export default function IncomePage() {
     // 최종 총소득 계산 (근로소득 + 비근로소득 + 기타소득)
     const totalIncome = earnedIncomeTotal + unearnedIncomeTotal + totalOtherIncome;
     
-    console.log("계산 세부사항:", {
-      근로소득합계: earnedIncomeTotal,
-      비근로소득합계: unearnedIncomeTotal,
-      사용자기타소득: userOtherIncome,
-      추가소득항목합계: additionalItemsTotal,
-      총기타소득: totalOtherIncome,
-      최종총소득: totalIncome
-    });
-    
     // 조정 항목 계산
-    const studentLoanInterest = Number(form.watch('adjustments.studentLoanInterest') || 0);
-    const retirementContributions = Number(form.watch('adjustments.retirementContributions') || 0);
+    const studentLoanInterest = Number(form.getValues('adjustments.studentLoanInterest') || 0);
+    const retirementContributions = Number(form.getValues('adjustments.retirementContributions') || 0);
     
     // 추가 조정 항목 계산
     let additionalAdjustmentsTotal = 0;
     if (additionalAdjustmentItems.length > 0) {
-      additionalAdjustmentItems.forEach(item => {
-        console.log("계산에 포함된 조정 항목:", item.type, Number(item.amount || 0));
-        additionalAdjustmentsTotal += Number(item.amount || 0);
-      });
+      additionalAdjustmentsTotal = additionalAdjustmentItems.reduce((sum, item) => 
+        sum + Number(item.amount || 0), 0);
     }
     
     // 조정 항목 합계 계산
@@ -433,52 +415,11 @@ export default function IncomePage() {
     // 조정 총소득(AGI) 계산
     const adjustedGrossIncome = totalIncome - totalAdjustments;
     
-    console.log("조정 계산 세부사항:", {
-      학자금대출이자: studentLoanInterest,
-      은퇴기여금: retirementContributions,
-      추가조정항목합계: additionalAdjustmentsTotal,
-      총조정금액: totalAdjustments,
-      조정총소득: adjustedGrossIncome
-    });
-    
     // 폼 필드에 계산된 값 설정
     form.setValue('totalIncome', totalIncome);
     form.setValue('adjustments.otherAdjustments', additionalAdjustmentsTotal);
     form.setValue('adjustedGrossIncome', adjustedGrossIncome);
-    
-    // 폼 데이터를 컨텍스트에 자동 저장
-    // 이렇게 하면 다른 페이지로 이동했다가 돌아와도 데이터가 유지됨
-    const currentFormData = form.getValues();
-    
-    // additionalIncomeItems와 additionalAdjustmentItems 추가
-    currentFormData.additionalIncomeItems = additionalIncomeItems;
-    currentFormData.additionalAdjustmentItems = additionalAdjustmentItems;
-    
-    // 입력값 저장 - 약간의 디바운싱을 위해 타이머 사용
-    const saveTimer = setTimeout(() => {
-      updateTaxData({ income: currentFormData });
-      console.log('자동 저장됨', currentFormData);
-    }, 500);
-    
-    return () => clearTimeout(saveTimer);
-  }, [
-    form.watch('wages'),
-    form.watch('otherEarnedIncome'),
-    form.watch('interestIncome'),
-    form.watch('dividends'),
-    form.watch('businessIncome'),
-    form.watch('capitalGains'),
-    form.watch('rentalIncome'),
-    form.watch('retirementIncome'),
-    form.watch('unemploymentIncome'),
-    form.watch('otherIncome'),
-    form.watch('adjustments.studentLoanInterest'),
-    form.watch('adjustments.retirementContributions'),
-    form.watch('adjustments.otherAdjustments'),
-    additionalIncomeItems,
-    additionalAdjustmentItems,
-    updateTaxData
-  ]);
+  };
   
   // 소득 요약 데이터 계산 함수
   const getIncomeSummary = () => {

@@ -618,10 +618,11 @@ const Deductions: React.FC = () => {
                                         if (value === '') {
                                           setTotalMedicalInput(0);
                                         } else {
-                                          // formatInputNumber를 사용해 소수점 정밀도 문제 해결
-                                          const numValue = Number(value);
+                                          // 직접 숫자 변환하여 정밀도 문제 방지
+                                          const numValue = parseFloat(value);
                                           if (!isNaN(numValue)) {
-                                            setTotalMedicalInput(formatInputNumber(numValue));
+                                            // Math.round를 사용하여 정확한 소수점 2자리 유지
+                                            setTotalMedicalInput(Math.round(numValue * 100) / 100);
                                           }
                                         }
                                       }}

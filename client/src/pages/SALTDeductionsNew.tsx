@@ -128,6 +128,12 @@ export default function SALTDeductionsNew() {
         charitableNonCash: 0
       };
       
+      console.log('SALT 저장 전 기존 데이터 확인:', {
+        existingDeductions,
+        existingItemized,
+        medicalExpenses: existingItemized.medicalExpenses
+      });
+      
       const updatedDeductions = {
         ...existingDeductions,
         useStandardDeduction: false, // Switch to itemized deductions
@@ -141,6 +147,11 @@ export default function SALTDeductionsNew() {
           personalPropertyTax: personalPropertyTax
         }
       };
+      
+      console.log('SALT 저장할 최종 데이터:', {
+        updatedDeductions,
+        medicalExpenses: updatedDeductions.itemizedDeductions.medicalExpenses
+      });
 
       await updateTaxData({ deductions: updatedDeductions });
       await saveTaxReturn();

@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Separator } from '@/components/ui/separator';
-import { Info, Plus, X } from 'lucide-react';
+import { Info, Plus, X, Save } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import ProgressTracker from '@/components/ProgressTracker';
 
@@ -676,6 +676,33 @@ const Deductions: React.FC = () => {
                             </FormItem>
                           )}
                         />
+                        
+                        {/* 진행상황저장 버튼 - 의료비 계산 후 */}
+                        <div className="flex justify-center my-6">
+                          <Button
+                            type="button"
+                            onClick={async () => {
+                              try {
+                                await saveTaxReturn();
+                                toast({
+                                  title: "저장 완료",
+                                  description: "의료비 공제 정보가 성공적으로 저장되었습니다.",
+                                });
+                              } catch (error) {
+                                console.error('저장 오류:', error);
+                                toast({
+                                  title: "저장 실패",
+                                  description: "저장 중 오류가 발생했습니다. 다시 시도해주세요.",
+                                  variant: "destructive",
+                                });
+                              }
+                            }}
+                            className="bg-green-600 hover:bg-green-700 text-white px-6 py-2"
+                          >
+                            <Save className="w-4 h-4 mr-2" />
+                            진행상황저장
+                          </Button>
+                        </div>
                         
                         <div className="flex flex-col justify-center h-full">
                           <div className="flex justify-between">

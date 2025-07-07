@@ -11,7 +11,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { FormField, FormItem, FormLabel, FormControl, FormMessage, Form } from '@/components/ui/form';
 import { useTaxContext } from '@/context/TaxContext';
-import { ArrowLeft, Plus, Trash2, Calculator, InfoIcon } from 'lucide-react';
+import { ArrowLeft, Plus, Trash2, Calculator, InfoIcon, Mail } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 const qbiSchema = z.object({
@@ -555,6 +555,30 @@ export default function QBIDetails() {
                     </div>
                   </div>
                 </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Expert Consultation Section */}
+          <Card className="bg-blue-50 border-blue-200">
+            <CardContent className="pt-6">
+              <div className="text-center">
+                <div className="flex items-center justify-center gap-2 mb-3">
+                  <Mail className="h-5 w-5 text-blue-600" />
+                  <h3 className="text-lg font-semibold text-blue-800">QBI 공제 전문가 상담</h3>
+                </div>
+                <p className="text-blue-700 mb-4 text-sm">
+                  복잡한 QBI 공제 계산이나 전문서비스업(SSTB) 판정이 어려우시면<br/>
+                  전문가와 상담하여 정확한 공제 혜택을 받으세요
+                </p>
+                <Button
+                  type="button"
+                  onClick={() => window.open('mailto:eztax88@gmail.com?subject=QBI 공제 전문가 상담 문의&body=안녕하세요,%0A%0AQBI(사업소득공제) 관련 상담을 요청드립니다.%0A%0A사업 형태:%0A연간 소득 규모:%0A전문서비스업(SSTB) 해당 여부:%0A문의 내용:%0A%0A연락처:%0A%0A감사합니다.', '_blank')}
+                  className="bg-blue-600 hover:bg-blue-700 text-white font-medium"
+                >
+                  <Mail className="mr-2 h-4 w-4" />
+                  전문가 상담하기
+                </Button>
               </div>
             </CardContent>
           </Card>

@@ -67,12 +67,40 @@ const PersonalInfo: React.FC = () => {
 
   // 모든 useEffect를 조건부 렌더링 이전에 선언
   useEffect(() => {
-    if (taxData.personalInfo) {
-      form.reset(taxData.personalInfo);
-    } else {
-      form.reset(emptyDefaults);
-    }
-  }, [taxData.personalInfo]);
+    // 우선순위: localStorage > TaxContext > 기본값
+    const restoreFormData = () => {
+      let dataToUse = emptyDefaults;
+      
+      // 1. localStorage에서 임시 저장된 데이터 확인
+      try {
+        const tempPersonalInfo = localStorage.getItem('tempPersonalInfo');
+        const tempFilingStatus = localStorage.getItem('tempFilingStatus');
+        
+        if (tempPersonalInfo) {
+          const parsedData = JSON.parse(tempPersonalInfo);
+          console.log("PersonalInfo - localStorage에서 데이터 복원:", parsedData);
+          dataToUse = { ...emptyDefaults, ...parsedData };
+        } else if (tempFilingStatus) {
+          const parsedStatus = JSON.parse(tempFilingStatus);
+          console.log("PersonalInfo - localStorage에서 Filing Status 복원:", parsedStatus);
+          dataToUse = { ...emptyDefaults, ...parsedStatus };
+        }
+      } catch (error) {
+        console.error("localStorage 데이터 복원 오류:", error);
+      }
+      
+      // 2. TaxContext 데이터가 있으면 우선 적용
+      if (taxData.personalInfo) {
+        console.log("PersonalInfo - TaxContext 데이터로 폼 초기화:", taxData.personalInfo);
+        dataToUse = { ...dataToUse, ...taxData.personalInfo };
+      }
+      
+      console.log("PersonalInfo - 최종 폼 데이터:", dataToUse);
+      form.reset(dataToUse);
+    };
+    
+    restoreFormData();
+  }, [taxData.personalInfo, form]);
 
   useEffect(() => {
     const shouldShowSpouse = filingStatus === 'married_joint' || filingStatus === 'married_separate';
@@ -90,7 +118,14 @@ const PersonalInfo: React.FC = () => {
 
   const onSubmit = async (data: PersonalInformation) => {
     try {
+      // localStorage에 백업 저장
+      localStorage.setItem('tempPersonalInfo', JSON.stringify(data));
+      
       await updateTaxData({ personalInfo: data });
+      
+      // 성공 시 임시 데이터 정리
+      localStorage.removeItem('tempPersonalInfo');
+      localStorage.removeItem('tempFilingStatus');
       
       toast({
         title: "저장 완료",
@@ -368,7 +403,23 @@ const PersonalInfo: React.FC = () => {
           {/* 신고 상태 */}
           <Card>
             <CardContent className="pt-6">
-              <h2 className="text-xl font-semibold mb-4">신고 상태 (Filing Status)</h2>
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-xl font-semibold">신고 상태 (Filing Status)</h2>
+                <Button 
+                  type="button" 
+                  variant="outline" 
+                  onClick={() => {
+                    // 현재 폼 데이터를 localStorage에 저장
+                    const currentFormData = form.getValues();
+                    localStorage.setItem('tempPersonalInfo', JSON.stringify(currentFormData));
+                    console.log("Filing Status 확인 전 데이터 저장:", currentFormData);
+                    navigate('/filing-status-checker');
+                  }}
+                  className="text-sm"
+                >
+                  Filing Status 확인
+                </Button>
+              </div>
               
               <FormField
                 control={form.control}

@@ -78,6 +78,11 @@ export function formatInputNumber(value: number | string): number {
     return 0;
   }
 
-  // 부동소수점 정밀도 문제 해결을 위해 toFixed 사용 후 다시 숫자로 변환
-  return parseFloat(numValue.toFixed(2));
+  // 정수인 경우 그대로 반환하여 정밀도 문제 방지
+  if (Number.isInteger(numValue)) {
+    return numValue;
+  }
+
+  // 소수점이 있는 경우에만 반올림 처리
+  return Math.round(numValue * 100) / 100;
 }

@@ -186,7 +186,7 @@ const IncomePageClean: React.FC = () => {
                         name="wages"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>W-2 근로소득 (W-2 Wages)</FormLabel>
+                            <FormLabel>급여 (Wages, Salaries)</FormLabel>
                             <FormControl>
                               <Input
                                 type="number"
@@ -194,7 +194,13 @@ const IncomePageClean: React.FC = () => {
                                 min="0"
                                 {...field}
                                 onChange={(e) => {
-                                  field.onChange(parseFloat(e.target.value) || 0);
+                                  const value = e.target.value;
+                                  if (value === '') {
+                                    field.onChange(0);
+                                  } else {
+                                    const numValue = parseFloat(value);
+                                    field.onChange(isNaN(numValue) ? 0 : numValue);
+                                  }
                                 }}
                               />
                             </FormControl>

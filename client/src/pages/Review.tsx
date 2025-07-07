@@ -128,6 +128,70 @@ const Review: React.FC = () => {
 
       <ProgressTracker currentStep={6} />
 
+      {/* Tax Calculation Summary - Moved to top */}
+      <div className="border border-primary rounded-lg p-6 bg-primary/5 mb-6">
+        <h3 className="text-lg font-heading font-semibold text-primary-dark mb-4">세금 계산 요약(Tax Calculation Summary)</h3>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <Field label="총 소득(Total Income)" value={formatCurrency(calculatedResults.totalIncome)} />
+            <Field label="소득 조정(Adjustments)" value={formatCurrency(calculatedResults.adjustments)} />
+            <Field label="조정 총소득(Adjusted Gross Income)" value={formatCurrency(calculatedResults.adjustedGrossIncome)} />
+            <Field label="공제액(Deductions)" value={formatCurrency(calculatedResults.deductions)} />
+            {income.qbi?.qbiDeduction && income.qbi.qbiDeduction > 0 && (
+              <Field label="QBI 공제(QBI Deduction)" value={formatCurrency(income.qbi.qbiDeduction)} />
+            )}
+            <Field label="과세 소득(Taxable Income)" value={formatCurrency(calculatedResults.taxableIncome)} />
+          </div>
+          <div>
+            <Field label="연방세(Federal Tax)" value={formatCurrency(calculatedResults.federalTax)} />
+            <Field label="세액공제(Tax Credits)" value={formatCurrency(calculatedResults.credits)} />
+            <Field label="납부할 세금(Tax Due)" value={formatCurrency(calculatedResults.taxDue)} />
+            <Field label="기납부 세금 및 원천징수(Payments & Withholding)" value={formatCurrency(calculatedResults.payments)} />
+            {calculatedResults.refundAmount > 0 ? (
+              <>
+                <div className="flex justify-between py-2 font-bold bg-success/10 rounded px-2 text-success">
+                  <span>환급 금액(Refund Amount):</span>
+                  <span>{formatCurrency(calculatedResults.refundAmount)}</span>
+                </div>
+                {(calculatedResults.additionalChildTaxCredit > 0 || calculatedResults.earnedIncomeCredit > 0) && (
+                  <div className="mt-2 p-2 bg-blue-50 rounded text-sm">
+                    <div className="font-medium text-blue-800 mb-1">환급 가능한 크레딧 내역:</div>
+                    {calculatedResults.additionalChildTaxCredit > 0 && (
+                      <div className="flex justify-between text-blue-700">
+                        <span>• ACTC(추가 자녀 세액공제):</span>
+                        <span>{formatCurrency(calculatedResults.additionalChildTaxCredit)}</span>
+                      </div>
+                    )}
+                    {calculatedResults.earnedIncomeCredit > 0 && (
+                      <div className="flex justify-between text-blue-700">
+                        <span>• EIC(근로소득세액공제):</span>
+                        <span>{formatCurrency(calculatedResults.earnedIncomeCredit)}</span>
+                      </div>
+                    )}
+                    <div className="flex justify-between text-blue-700 text-xs mt-1">
+                      <span>• Child Care Credit 환급분:</span>
+                      <span>$0.00 (환급불가능)</span>
+                    </div>
+                    <div className="border-t border-blue-200 mt-1 pt-1">
+                      <div className="flex justify-between text-blue-800 font-medium text-xs">
+                        <span>총 환급 가능한 크레딧:</span>
+                        <span>{formatCurrency((calculatedResults.additionalChildTaxCredit || 0) + (calculatedResults.earnedIncomeCredit || 0))}</span>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </>
+            ) : (
+              <div className="flex justify-between py-2 font-bold bg-destructive/10 rounded px-2 text-destructive">
+                <span>납부할 금액(Amount You Owe):</span>
+                <span>{formatCurrency(calculatedResults.amountOwed)}</span>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
       <div className="flex flex-col md:flex-row gap-6">
         <div className="flex-grow max-w-5xl">
           <Card className="mb-6">
@@ -257,71 +321,6 @@ const Review: React.FC = () => {
                 </div>
               </SectionSummary>
               
-              {/* Tax Calculation Summary */}
-              <div className="border border-primary rounded-lg p-6 bg-primary/5 mb-6">
-                <h3 className="text-lg font-heading font-semibold text-primary-dark mb-4">세금 계산 요약(Tax Calculation Summary)</h3>
-                
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <Field label="총 소득(Total Income)" value={formatCurrency(calculatedResults.totalIncome)} />
-                    <Field label="소득 조정(Adjustments)" value={formatCurrency(calculatedResults.adjustments)} />
-                    <Field label="조정 총소득(Adjusted Gross Income)" value={formatCurrency(calculatedResults.adjustedGrossIncome)} />
-                    <Field label="공제액(Deductions)" value={formatCurrency(calculatedResults.deductions)} />
-                    {income.qbi?.qbiDeduction && income.qbi.qbiDeduction > 0 && (
-                      <Field label="QBI 공제(QBI Deduction)" value={formatCurrency(income.qbi.qbiDeduction)} />
-                    )}
-                    <Field label="과세 소득(Taxable Income)" value={formatCurrency(calculatedResults.taxableIncome)} />
-                  </div>
-                  <div>
-                    <Field label="연방세(Federal Tax)" value={formatCurrency(calculatedResults.federalTax)} />
-                    <Field label="세액공제(Tax Credits)" value={formatCurrency(calculatedResults.credits)} />
-                    <Field label="납부할 세금(Tax Due)" value={formatCurrency(calculatedResults.taxDue)} />
-                    <Field label="기납부 세금 및 원천징수(Payments & Withholding)" value={formatCurrency(calculatedResults.payments)} />
-                    {calculatedResults.refundAmount > 0 ? (
-                      <>
-                        <div className="flex justify-between py-2 font-bold bg-success/10 rounded px-2 text-success">
-                          <span>환급 금액(Refund Amount):</span>
-                          <span>{formatCurrency(calculatedResults.refundAmount)}</span>
-                        </div>
-                        {(calculatedResults.additionalChildTaxCredit > 0 || calculatedResults.earnedIncomeCredit > 0) && (
-                          <div className="mt-2 p-2 bg-blue-50 rounded text-sm">
-                            <div className="font-medium text-blue-800 mb-1">환급 가능한 크레딧 내역:</div>
-                            {calculatedResults.additionalChildTaxCredit > 0 && (
-                              <div className="flex justify-between text-blue-700">
-                                <span>• ACTC(추가 자녀 세액공제):</span>
-                                <span>{formatCurrency(calculatedResults.additionalChildTaxCredit)}</span>
-                              </div>
-                            )}
-                            {calculatedResults.earnedIncomeCredit > 0 && (
-                              <div className="flex justify-between text-blue-700">
-                                <span>• EIC(근로소득세액공제):</span>
-                                <span>{formatCurrency(calculatedResults.earnedIncomeCredit)}</span>
-                              </div>
-                            )}
-                            <div className="flex justify-between text-blue-700 text-xs mt-1">
-                              <span>• Child Care Credit 환급분:</span>
-                              <span>$0.00 (환급불가능)</span>
-                            </div>
-                            <div className="border-t border-blue-200 mt-1 pt-1">
-                              <div className="flex justify-between text-blue-800 font-medium text-xs">
-                                <span>총 환급 가능한 크레딧:</span>
-                                <span>{formatCurrency((calculatedResults.additionalChildTaxCredit || 0) + (calculatedResults.earnedIncomeCredit || 0))}</span>
-                              </div>
-                            </div>
-                          </div>
-                        )}
-                      </>
-                    ) : (
-                      <div className="flex justify-between py-2 font-bold bg-destructive/10 rounded px-2 text-destructive">
-                        <span>납부할 금액(Amount You Owe):</span>
-                        <span>{formatCurrency(calculatedResults.amountOwed)}</span>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </div>
-
-
               
               {/* Tax Saving Advice Button */}
               <div className="border border-primary-light rounded-lg p-6 bg-primary/5 mb-6">

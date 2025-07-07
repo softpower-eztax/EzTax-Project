@@ -105,12 +105,14 @@ export const TaxProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         const currentUser = await userResponse.json();
         
         if (currentUserId !== currentUser.id) {
-          console.log(`사용자 변경/로그인: ${currentUser.id}`);
-          // 사용자가 변경된 경우에만 데이터 초기화
-          if (currentUserId !== null) {
-            console.log("사용자 변경으로 인한 데이터 초기화");
+          console.log(`사용자 변경/로그인: ${currentUser.id} (이전: ${currentUserId})`);
+          
+          // 실제 다른 사용자로 변경된 경우에만 데이터 초기화
+          if (currentUserId !== null && currentUserId !== currentUser.id) {
+            console.log("다른 사용자로 변경 - 데이터 초기화");
             clearAllData();
           }
+          
           setCurrentUserId(currentUser.id);
         }
         
@@ -170,7 +172,7 @@ export const TaxProvider: React.FC<{ children: React.ReactNode }> = ({ children 
           }
         } else {
           console.log(`사용자의 세금 데이터 없음 - 새로 시작`);
-          // 새 사용자의 경우 clearAllData 호출하지 않고 기본 데이터만 설정
+          // 새 사용자 또는 데이터가 없는 경우 기본 구조만 설정
           setTaxData({
             taxYear: 2025,
             status: 'in_progress',

@@ -4,7 +4,7 @@ import { useToast } from "@/hooks/use-toast";
 import { HelpCircle, Save, LogIn, LogOut, User, RefreshCcw, ClipboardCheck, Shield } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useLocation } from 'wouter';
-import { useTaxContext } from '@/context/TaxContext';
+// import { useTaxContext } from '@/context/TaxContext';
 import { useAuth } from '@/hooks/use-auth';
 import { 
   AlertDialog,
@@ -21,42 +21,28 @@ import {
 const Header: React.FC = () => {
   const { toast } = useToast();
   const [location, navigate] = useLocation();
-  const { taxData, saveTaxReturn, resetToZero, updateTaxData } = useTaxContext();
+  // TaxContext는 임시로 사용하지 않음 - 오류 방지
+  // const taxContext = useTaxContext();
+  // const { taxData, saveTaxReturn, resetToZero, updateTaxData } = taxContext || {};
   const { user, logoutMutation } = useAuth();
   const [isResetting, setIsResetting] = useState(false);
 
   const handleSaveProgress = async () => {
-    try {
-      await saveTaxReturn();
-      toast({
-        title: "진행 상황 저장됨",
-        description: "세금 신고 진행 상황이 성공적으로 저장되었습니다.",
-      });
-    } catch (error) {
-      toast({
-        title: "저장 오류",
-        description: "진행 상황을 저장하는 중 문제가 발생했습니다. 다시 시도해 주세요.",
-        variant: "destructive",
-      });
-    }
+    // 임시로 기능 비활성화 - TaxContext 오류 방지
+    toast({
+      title: "저장 기능 임시 비활성화",
+      description: "곧 복원될 예정입니다.",
+    });
   };
   
   // 모든 필드 초기화 함수
   const handleReset = async () => {
-    try {
-      setIsResetting(true);
-      await resetToZero();
-      // 홈페이지로 리디렉션
-      navigate('/');
-    } catch (error) {
-      toast({
-        title: "초기화 오류", 
-        description: "데이터 초기화 중 문제가 발생했습니다.",
-        variant: "destructive"
-      });
-    } finally {
-      setIsResetting(false);
-    }
+    // 임시로 기능 비활성화 - TaxContext 오류 방지
+    toast({
+      title: "초기화 기능 임시 비활성화",
+      description: "곧 복원될 예정입니다.",
+    });
+    setIsResetting(false);
   };
 
   // Only show buttons on tax form pages

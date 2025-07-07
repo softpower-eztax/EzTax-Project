@@ -367,7 +367,7 @@ const Review: React.FC = () => {
                   
                   <Button
                     className="bg-primary text-white font-semibold rounded hover:bg-primary-dark transition duration-200 w-[240px] justify-center"
-                    onClick={() => window.open('mailto:eztax88@gmail.com?subject=세무상담 문의 (Tax Consultation Inquiry)&body=안녕하세요,%0A%0A세무 상담을 요청드립니다.%0A%0A문의 내용:%0A%0A연락처:%0A%0A감사합니다.', '_blank')}
+                    onClick={() => navigate('/expert-consultation')}
                   >
                     전문가 상담 문의
                   </Button>

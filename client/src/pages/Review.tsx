@@ -367,17 +367,9 @@ const Review: React.FC = () => {
                   
                   <Button
                     className="bg-primary text-white font-semibold rounded hover:bg-primary-dark transition duration-200 w-[240px] justify-center"
-                    onClick={() => setShowSubmitDialog(true)}
-                    disabled={isLoading}
+                    onClick={() => navigate('/about')}
                   >
-                    {isLoading ? (
-                      <>
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        처리 중...(Processing...)
-                      </>
-                    ) : (
-                      '신고서제출(준비중)'
-                    )}
+                    전문가 소개
                   </Button>
                   
 

@@ -105,6 +105,7 @@ Preferred communication style: Simple, everyday language.
 ## Changelog
 
 Recent Changes:
+- July 7, 2025: **TAX SAVING ADVICE PAGE SIMPLIFIED** - Streamlined TaxSavingAdvice page to show only essential "전문가 상담이 도움이 되는 경우" section and functional email contact button for eztax88@gmail.com, removing all unnecessary consultation options and complex tax suggestions per user request
 - July 7, 2025: **DEEP DATA MERGING LOGIC ADDED** - Enhanced TaxContext with comprehensive field-by-field data merging to preserve existing data structure during partial updates, preventing accidental data loss during form submissions
 - July 7, 2025: **ASYNC TAX DATA UPDATES IMPLEMENTED** - Converted TaxContext updateTaxData to async function with proper await calls in Deductions.tsx, SALTDeductionsNew.tsx, and TaxCredits3.tsx ensuring reliable server-side data persistence
 - July 7, 2025: **DATA PERSISTENCE ISSUE COMPLETELY RESOLVED** - Fixed critical logout/login data loss problem by implementing proper data loading sequence with isDataReady state management, preventing pages from rendering with empty data before server data is fully loaded and restored

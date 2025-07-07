@@ -5,6 +5,7 @@ import { calculateTaxes } from '../lib/taxCalculations';
 interface TaxContextType {
   taxData: TaxData;
   isLoading: boolean;
+  isDataReady: boolean;
   updateTaxData: (data: Partial<TaxData>) => Promise<void>;
   saveTaxData: () => Promise<void>;
 }
@@ -40,7 +41,8 @@ export const TaxProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     }
   });
 
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isDataReady, setIsDataReady] = useState(false);
   const [currentUserId, setCurrentUserId] = useState<number | null>(null);
 
   useEffect(() => {
@@ -75,6 +77,7 @@ export const TaxProvider: React.FC<{ children: React.ReactNode }> = ({ children 
               amountOwed: 0
             }
           });
+          setIsDataReady(true);
           return;
         }
         
@@ -116,6 +119,7 @@ export const TaxProvider: React.FC<{ children: React.ReactNode }> = ({ children 
             
             console.log(`데이터 복원 완료:`, restoredData);
             setTaxData(restoredData);
+            setIsDataReady(true);
           } else {
             console.error("데이터 사용자 ID 불일치");
             setTaxData({
@@ -159,6 +163,7 @@ export const TaxProvider: React.FC<{ children: React.ReactNode }> = ({ children 
               amountOwed: 0
             }
           });
+          setIsDataReady(true);
         }
       } catch (error) {
         console.error('데이터 로드 오류:', error);
@@ -278,6 +283,7 @@ export const TaxProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     <TaxContext.Provider value={{
       taxData,
       isLoading,
+      isDataReady,
       updateTaxData,
       saveTaxData
     }}>

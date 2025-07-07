@@ -21,9 +21,18 @@ import { useLocation } from 'wouter';
 import { formatNumber, formatCurrency, formatInputNumber } from '@/utils/formatNumber';
 
 const Deductions: React.FC = () => {
-  const { taxData, updateTaxData } = useTaxContext();
+  const { taxData, updateTaxData, isDataReady } = useTaxContext();
   const { toast } = useToast();
   const [, navigate] = useLocation();
+  
+  // 데이터가 로드되지 않았으면 로딩 표시
+  if (!isDataReady) {
+    return (
+      <div className="max-w-5xl mx-auto px-4 py-6">
+        <div className="text-center">데이터 로딩 중...</div>
+      </div>
+    );
+  }
   const [isItemizedDisabled, setIsItemizedDisabled] = useState(true);
   
   // Initialize medical input from existing data - 간단히 0으로 시작

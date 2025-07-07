@@ -155,8 +155,17 @@ const formSchema = z.object({
 });
 
 const TaxCredits3Page: React.FC = () => {
-  const { taxData, updateTaxData } = useTaxContext();
+  const { taxData, updateTaxData, isDataReady } = useTaxContext();
   const { toast } = useToast();
+  
+  // 데이터가 로드되지 않았으면 로딩 표시
+  if (!isDataReady) {
+    return (
+      <div className="max-w-5xl mx-auto px-4 py-6">
+        <div className="text-center">데이터 로딩 중...</div>
+      </div>
+    );
+  }
   
   // 돌봄 비용 입력 필드 표시 여부를 위한 상태
   const [showCareExpenseFields, setShowCareExpenseFields] = useState<boolean>(false);

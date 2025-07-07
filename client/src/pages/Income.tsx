@@ -23,8 +23,17 @@ import { useToast } from '@/hooks/use-toast';
 
 const IncomePageClean: React.FC = () => {
   const [, navigate] = useLocation();
-  const { taxData, updateTaxData, saveTaxReturn } = useTaxContext();
+  const { taxData, updateTaxData, saveTaxReturn, isDataReady } = useTaxContext();
   const { toast } = useToast();
+  
+  // 데이터가 로드되지 않았으면 로딩 표시
+  if (!isDataReady) {
+    return (
+      <div className="max-w-5xl mx-auto px-4 py-6">
+        <div className="text-center">데이터 로딩 중...</div>
+      </div>
+    );
+  }
 
   // Initialize form with saved data only (no auto-updates)
   const defaultValues: Income = {

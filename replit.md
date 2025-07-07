@@ -105,6 +105,7 @@ Preferred communication style: Simple, everyday language.
 ## Changelog
 
 Recent Changes:
+- July 7, 2025: **DEEP DATA MERGING LOGIC ADDED** - Enhanced TaxContext with comprehensive field-by-field data merging to preserve existing data structure during partial updates, preventing accidental data loss during form submissions
 - July 7, 2025: **ASYNC TAX DATA UPDATES IMPLEMENTED** - Converted TaxContext updateTaxData to async function with proper await calls in Deductions.tsx, SALTDeductionsNew.tsx, and TaxCredits3.tsx ensuring reliable server-side data persistence
 - July 7, 2025: **DATA PERSISTENCE ISSUE COMPLETELY RESOLVED** - Fixed critical logout/login data loss problem by implementing proper data loading sequence with isDataReady state management, preventing pages from rendering with empty data before server data is fully loaded and restored
 - July 7, 2025: **REACT HOOK RULES VIOLATION COMPLETELY FIXED** - Rebuilt PersonalInfo component with all Hook calls at top level, eliminated conditional Hook usage causing "more hooks than previous render" errors, ensuring stable React component behavior

@@ -105,6 +105,7 @@ Preferred communication style: Simple, everyday language.
 ## Changelog
 
 Recent Changes:
+- July 7, 2025: **PERSONAL INFO SECURITY VULNERABILITY COMPLETELY RESOLVED** - Fixed critical privacy issue where personal info persisted after logout by implementing clearAllData() function that explicitly sets all data fields to undefined and clears all localStorage, ensuring no user data remains visible to other users
 - July 7, 2025: **DATA PERSISTENCE ISSUE COMPLETELY RESOLVED** - Fixed critical logout/login data loss problem by implementing proper data loading sequence with isDataReady state management, preventing pages from rendering with empty data before server data is fully loaded and restored
 - July 7, 2025: **ASYNC TAX DATA UPDATES IMPLEMENTED** - Converted TaxContext updateTaxData to async function with proper await calls in Deductions.tsx, SALTDeductionsNew.tsx, and TaxCredits3.tsx ensuring reliable server-side data persistence
 - July 7, 2025: **DEEP DATA MERGING LOGIC ADDED** - Enhanced TaxContext with comprehensive field-by-field data merging to preserve existing data structure during partial updates, preventing accidental data loss during form submissions

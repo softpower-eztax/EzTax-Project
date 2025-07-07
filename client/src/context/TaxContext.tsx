@@ -45,6 +45,46 @@ export const TaxProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [isDataReady, setIsDataReady] = useState(false);
   const [currentUserId, setCurrentUserId] = useState<number | null>(null);
 
+  // 완전한 데이터 초기화 함수 (보안 중요)
+  const clearAllData = () => {
+    console.log("모든 사용자 데이터 완전 삭제 중...");
+    
+    // TaxContext 데이터 완전 초기화
+    setTaxData({
+      taxYear: 2025,
+      status: 'in_progress',
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      personalInfo: undefined,
+      income: undefined,
+      deductions: undefined,
+      taxCredits: undefined,
+      additionalTax: undefined,
+      calculatedResults: {
+        totalIncome: 0,
+        adjustments: 0,
+        adjustedGrossIncome: 0,
+        deductions: 0,
+        taxableIncome: 0,
+        federalTax: 0,
+        credits: 0,
+        taxDue: 0,
+        payments: 0,
+        refundAmount: 0,
+        amountOwed: 0
+      }
+    });
+    
+    // 모든 로컬 저장소 데이터 삭제
+    localStorage.removeItem('personalInfo');
+    localStorage.removeItem('tempPersonalInfo');
+    localStorage.removeItem('tempFilingStatus');
+    localStorage.removeItem('taxData');
+    
+    setCurrentUserId(null);
+    console.log("데이터 삭제 완료 - 보안 확보됨");
+  };
+
   useEffect(() => {
     const checkAuthAndLoadData = async () => {
       try {
@@ -57,26 +97,7 @@ export const TaxProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         
         if (!userResponse.ok) {
           console.log("사용자 인증되지 않음 - 빈 데이터로 초기화");
-          setCurrentUserId(null);
-          setTaxData({
-            taxYear: 2025,
-            status: 'in_progress',
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString(),
-            calculatedResults: {
-              totalIncome: 0,
-              adjustments: 0,
-              adjustedGrossIncome: 0,
-              deductions: 0,
-              taxableIncome: 0,
-              federalTax: 0,
-              credits: 0,
-              taxDue: 0,
-              payments: 0,
-              refundAmount: 0,
-              amountOwed: 0
-            }
-          });
+          clearAllData(); // 완전한 데이터 삭제
           setIsDataReady(true);
           return;
         }
@@ -144,25 +165,7 @@ export const TaxProvider: React.FC<{ children: React.ReactNode }> = ({ children 
           }
         } else {
           console.log(`사용자의 세금 데이터 없음 - 새로 시작`);
-          setTaxData({
-            taxYear: 2025,
-            status: 'in_progress',
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString(),
-            calculatedResults: {
-              totalIncome: 0,
-              adjustments: 0,
-              adjustedGrossIncome: 0,
-              deductions: 0,
-              taxableIncome: 0,
-              federalTax: 0,
-              credits: 0,
-              taxDue: 0,
-              payments: 0,
-              refundAmount: 0,
-              amountOwed: 0
-            }
-          });
+          clearAllData(); // 완전한 데이터 삭제
           setIsDataReady(true);
         }
       } catch (error) {

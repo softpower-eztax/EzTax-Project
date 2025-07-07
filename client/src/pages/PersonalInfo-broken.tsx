@@ -11,7 +11,6 @@ import { useToast } from '@/hooks/use-toast';
 import { Separator } from '@/components/ui/separator';
 import { PlusCircle, Trash2, ClipboardCheck, Save } from 'lucide-react';
 import ProgressTracker from '@/components/ProgressTracker';
-import StepNavigation from '@/components/StepNavigation';
 import { useTaxContext } from '@/context/TaxContext';
 import { useLocation } from 'wouter';
 
@@ -71,7 +70,7 @@ const PersonalInfo: React.FC = () => {
   // Watch filing status to show spouse info when 'married_joint' is selected
   const filingStatus = form.watch('filingStatus');
   const [showSpouseInfo, setShowSpouseInfo] = useState(false);
-  
+
   // 데이터가 로드되지 않았으면 로딩 표시 (모든 Hook 호출 이후)
   if (!isDataReady) {
     return (
@@ -91,8 +90,8 @@ const PersonalInfo: React.FC = () => {
       // 인증되지 않은 사용자나 새 사용자는 빈 폼
       form.reset(emptyDefaults);
     }
-  }, [taxData.personalInfo]); // TaxContext 데이터 변경 시에만 실행
-  
+  }, [taxData.personalInfo]);
+
   useEffect(() => {
     console.log("Current filing status:", filingStatus);
     const shouldShowSpouse = filingStatus === 'married_joint' || filingStatus === 'married_separate';
@@ -112,7 +111,10 @@ const PersonalInfo: React.FC = () => {
         description: "개인정보가 성공적으로 저장되었습니다.",
       });
       
-      navigate('/income');
+      // 다음 페이지로 이동
+      setTimeout(() => {
+        navigate('/income');
+      }, 1000);
     } catch (error) {
       console.error("개인정보 저장 오류:", error);
       toast({
@@ -618,19 +620,14 @@ const PersonalInfo: React.FC = () => {
           </Card>
 
           {/* 저장 및 계속 버튼 */}
-          <div className="flex justify-between">
-            <Button type="button" variant="outline">
-              이전 단계
-            </Button>
-            <Button type="submit" className="bg-blue-600 hover:bg-blue-700">
-              <Save className="h-4 w-4 mr-2" />
+          <div className="flex justify-center mt-8">
+            <Button type="submit" className="bg-blue-600 hover:bg-blue-700 px-8 py-3 text-lg">
+              <Save className="h-5 w-5 mr-3" />
               저장하고 계속
             </Button>
           </div>
         </form>
       </Form>
-
-      <StepNavigation currentStep="personal-info" />
     </div>
   );
 };

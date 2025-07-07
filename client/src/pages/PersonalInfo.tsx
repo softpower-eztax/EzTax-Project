@@ -1,20 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import { useForm, useFieldArray } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { personalInfoSchema, type PersonalInformation, type Dependent } from '@shared/schema';
+import { personalInfoSchema, type PersonalInformation } from '@shared/schema';
 import { Card, CardContent } from '@/components/ui/card';
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
-import { Separator } from '@/components/ui/separator';
-import { PlusCircle, Trash2, ClipboardCheck, Save } from 'lucide-react';
+import { PlusCircle, Trash2, Save } from 'lucide-react';
 import ProgressTracker from '@/components/ProgressTracker';
 import { useTaxContext } from '@/context/TaxContext';
 import { useLocation } from 'wouter';
 
-// 부양가족 관계 옵션
 const relationshipOptions = [
   { value: "child", label: "자녀 (Child)" },
   { value: "parent", label: "부모 (Parent)" },
@@ -29,11 +27,12 @@ const relationshipOptions = [
 ];
 
 const PersonalInfo: React.FC = () => {
+  // 모든 Hook을 최상단에 선언 (조건부 호출 금지)
   const { taxData, updateTaxData, isDataReady } = useTaxContext();
   const { toast } = useToast();
   const [, navigate] = useLocation();
+  const [showSpouseInfo, setShowSpouseInfo] = useState(false);
 
-  // 새 사용자용 빈 기본값 (보안상 중요)
   const emptyDefaults: PersonalInformation = {
     firstName: '',
     middleInitial: '',
@@ -54,12 +53,9 @@ const PersonalInfo: React.FC = () => {
     spouseInfo: undefined
   };
 
-  // TaxContext의 데이터만 사용 (보안 최우선)
-  const defaultValues: PersonalInformation = taxData.personalInfo || emptyDefaults;
-
   const form = useForm<PersonalInformation>({
     resolver: zodResolver(personalInfoSchema),
-    defaultValues
+    defaultValues: taxData.personalInfo || emptyDefaults
   });
 
   const { fields: dependentFields, append, remove } = useFieldArray({
@@ -67,11 +63,23 @@ const PersonalInfo: React.FC = () => {
     name: 'dependents'
   });
 
-  // Watch filing status to show spouse info when 'married_joint' is selected
   const filingStatus = form.watch('filingStatus');
-  const [showSpouseInfo, setShowSpouseInfo] = useState(false);
 
-  // 데이터가 로드되지 않았으면 로딩 표시 (모든 Hook 호출 이후)
+  // 모든 useEffect를 조건부 렌더링 이전에 선언
+  useEffect(() => {
+    if (taxData.personalInfo) {
+      form.reset(taxData.personalInfo);
+    } else {
+      form.reset(emptyDefaults);
+    }
+  }, [taxData.personalInfo]);
+
+  useEffect(() => {
+    const shouldShowSpouse = filingStatus === 'married_joint' || filingStatus === 'married_separate';
+    setShowSpouseInfo(shouldShowSpouse);
+  }, [filingStatus]);
+
+  // 데이터 로딩 체크는 모든 Hook 이후에
   if (!isDataReady) {
     return (
       <div className="max-w-5xl mx-auto px-4 py-6">
@@ -80,30 +88,8 @@ const PersonalInfo: React.FC = () => {
     );
   }
 
-  // TaxContext 데이터와 폼 동기화 - 보안 최우선
-  useEffect(() => {
-    console.log("PersonalInfo - TaxContext 데이터로 폼 초기화:", taxData.personalInfo);
-    
-    if (taxData.personalInfo) {
-      form.reset(taxData.personalInfo);
-    } else {
-      // 인증되지 않은 사용자나 새 사용자는 빈 폼
-      form.reset(emptyDefaults);
-    }
-  }, [taxData.personalInfo]);
-
-  useEffect(() => {
-    console.log("Current filing status:", filingStatus);
-    const shouldShowSpouse = filingStatus === 'married_joint' || filingStatus === 'married_separate';
-    setShowSpouseInfo(shouldShowSpouse);
-    console.log("PersonalInfo - Should show spouse info:", shouldShowSpouse);
-  }, [filingStatus]);
-
   const onSubmit = async (data: PersonalInformation) => {
     try {
-      console.log("PersonalInfo - 폼 제출:", data);
-      
-      // TaxContext에 데이터 업데이트
       await updateTaxData({ personalInfo: data });
       
       toast({
@@ -111,7 +97,6 @@ const PersonalInfo: React.FC = () => {
         description: "개인정보가 성공적으로 저장되었습니다.",
       });
       
-      // 다음 페이지로 이동
       setTimeout(() => {
         navigate('/income');
       }, 1000);
@@ -138,7 +123,6 @@ const PersonalInfo: React.FC = () => {
     });
   };
 
-  // Format SSN as user types
   const formatSSN = (value: string) => {
     const digits = value.replace(/\D/g, '');
     if (digits.length <= 3) {
@@ -150,7 +134,6 @@ const PersonalInfo: React.FC = () => {
     }
   };
 
-  // Format phone as user types
   const formatPhone = (value: string) => {
     const digits = value.replace(/\D/g, '');
     if (digits.length <= 3) {
@@ -168,9 +151,7 @@ const PersonalInfo: React.FC = () => {
       
       <div className="mb-6">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">개인정보 (Personal Information)</h1>
-        <p className="text-gray-600">
-          세금 신고서 작성을 위해 개인정보를 입력해주세요.
-        </p>
+        <p className="text-gray-600">세금 신고서 작성을 위해 개인정보를 입력해주세요.</p>
       </div>
 
       <Form {...form}>
@@ -619,7 +600,7 @@ const PersonalInfo: React.FC = () => {
             </CardContent>
           </Card>
 
-          {/* 저장 및 계속 버튼 */}
+          {/* 저장 버튼 */}
           <div className="flex justify-center mt-8">
             <Button type="submit" className="bg-blue-600 hover:bg-blue-700 px-8 py-3 text-lg">
               <Save className="h-5 w-5 mr-3" />

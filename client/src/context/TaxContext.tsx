@@ -106,6 +106,11 @@ export const TaxProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         
         if (currentUserId !== currentUser.id) {
           console.log(`사용자 변경/로그인: ${currentUser.id}`);
+          // 사용자가 변경된 경우에만 데이터 초기화
+          if (currentUserId !== null) {
+            console.log("사용자 변경으로 인한 데이터 초기화");
+            clearAllData();
+          }
           setCurrentUserId(currentUser.id);
         }
         
@@ -165,7 +170,26 @@ export const TaxProvider: React.FC<{ children: React.ReactNode }> = ({ children 
           }
         } else {
           console.log(`사용자의 세금 데이터 없음 - 새로 시작`);
-          clearAllData(); // 완전한 데이터 삭제
+          // 새 사용자의 경우 clearAllData 호출하지 않고 기본 데이터만 설정
+          setTaxData({
+            taxYear: 2025,
+            status: 'in_progress',
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+            calculatedResults: {
+              totalIncome: 0,
+              adjustments: 0,
+              adjustedGrossIncome: 0,
+              deductions: 0,
+              taxableIncome: 0,
+              federalTax: 0,
+              credits: 0,
+              taxDue: 0,
+              payments: 0,
+              refundAmount: 0,
+              amountOwed: 0
+            }
+          });
           setIsDataReady(true);
         }
       } catch (error) {

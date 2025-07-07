@@ -71,7 +71,7 @@ const PersonalInfo: React.FC = () => {
   // Watch filing status to show spouse info when 'married_joint' is selected
   const filingStatus = form.watch('filingStatus');
   const [showSpouseInfo, setShowSpouseInfo] = useState(false);
-
+  
   // 데이터가 로드되지 않았으면 로딩 표시 (모든 Hook 호출 이후)
   if (!isDataReady) {
     return (
@@ -91,8 +91,8 @@ const PersonalInfo: React.FC = () => {
       // 인증되지 않은 사용자나 새 사용자는 빈 폼
       form.reset(emptyDefaults);
     }
-  }, [taxData.personalInfo]);
-
+  }, [taxData.personalInfo]); // TaxContext 데이터 변경 시에만 실행
+  
   useEffect(() => {
     console.log("Current filing status:", filingStatus);
     const shouldShowSpouse = filingStatus === 'married_joint' || filingStatus === 'married_separate';

@@ -409,7 +409,7 @@ const Deductions: React.FC = () => {
     }
   }, [taxData.deductions, isInitialLoad, standardDeductionAmount]); // Only run on initial load
 
-  const onSubmit = (data: Deductions) => {
+  const onSubmit = async (data: Deductions) => {
     console.log('Deductions onSubmit 호출됨, 입력 데이터:', data);
     
     // 표준 공제를 선택한 경우에도 항목별 공제 값을 유지하기 위해 
@@ -422,14 +422,23 @@ const Deductions: React.FC = () => {
     }
     
     console.log('updateTaxData 호출 전 최종 데이터:', data);
-    updateTaxData({ deductions: data });
     
-    console.log('updateTaxData 호출 완료');
-    
-    toast({
-      title: "저장 완료",
-      description: "공제 정보가 성공적으로 저장되었습니다.",
-    });
+    try {
+      await updateTaxData({ deductions: data });
+      console.log('updateTaxData 호출 완료');
+      
+      toast({
+        title: "저장 완료",
+        description: "공제 정보가 성공적으로 저장되었습니다.",
+      });
+    } catch (error) {
+      console.error('저장 오류:', error);
+      toast({
+        title: "저장 실패",
+        description: "데이터 저장 중 오류가 발생했습니다.",
+        variant: "destructive",
+      });
+    }
     
     return true;
   };

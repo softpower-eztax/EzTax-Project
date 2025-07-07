@@ -268,6 +268,7 @@ export interface CalculatedResults {
   retirementSavingsCredit?: number;
   creditForOtherDependents?: number;
   earnedIncomeCredit?: number;
+  additionalChildTaxCredit?: number;
   // State Income Tax
   stateIncomeTax?: StateIncomeTax;
 }
@@ -428,6 +429,7 @@ export const calculatedResultsSchema = z.object({
   retirementSavingsCredit: z.number().optional(),
   creditForOtherDependents: z.number().optional(),
   earnedIncomeCredit: z.number().optional(),
+  additionalChildTaxCredit: z.number().optional(),
 });
 
 // Main TaxData interface

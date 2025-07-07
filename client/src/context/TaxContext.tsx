@@ -5,7 +5,7 @@ import { calculateTaxes } from '../lib/taxCalculations';
 interface TaxContextType {
   taxData: TaxData;
   isLoading: boolean;
-  updateTaxData: (data: Partial<TaxData>) => void;
+  updateTaxData: (data: Partial<TaxData>) => Promise<void>;
   saveTaxData: () => Promise<void>;
 }
 
@@ -174,36 +174,72 @@ export const TaxProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     checkAuthAndLoadData();
   }, []); // 의존성 배열을 비워서 무한 루프 방지
 
-  const updateTaxData = (data: Partial<TaxData>) => {
-    setTaxData(prevData => {
-      const updatedData = {
-        ...prevData,
-        ...data,
-        updatedAt: new Date().toISOString()
-      };
-      
-      const calculatedResults = calculateTaxes(updatedData);
-      
-      return {
-        ...updatedData,
-        calculatedResults
-      };
-    });
+  const updateTaxData = async (data: Partial<TaxData>) => {
+    const updatedData = {
+      ...taxData,
+      ...data,
+      updatedAt: new Date().toISOString()
+    };
+    
+    const calculatedResults = calculateTaxes(updatedData);
+    
+    const finalData = {
+      ...updatedData,
+      calculatedResults
+    };
+    
+    setTaxData(finalData);
+    
+    // Auto-save to server if user is authenticated
+    if (currentUserId && finalData.id) {
+      try {
+        await fetch(`/api/tax-return/${finalData.id}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          credentials: 'include',
+          body: JSON.stringify(finalData),
+        });
+      } catch (error) {
+        console.error('자동 저장 실패:', error);
+      }
+    }
   };
 
   const saveTaxData = async () => {
     try {
-      const response = await fetch('/api/tax-return', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include',
-        body: JSON.stringify(taxData),
-      });
+      if (taxData.id) {
+        // Update existing tax return
+        const response = await fetch(`/api/tax-return/${taxData.id}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          credentials: 'include',
+          body: JSON.stringify(taxData),
+        });
 
-      if (!response.ok) {
-        throw new Error('세금 데이터 저장 실패');
+        if (!response.ok) {
+          throw new Error('세금 데이터 업데이트 실패');
+        }
+      } else {
+        // Create new tax return
+        const response = await fetch('/api/tax-return', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          credentials: 'include',
+          body: JSON.stringify(taxData),
+        });
+
+        if (!response.ok) {
+          throw new Error('세금 데이터 생성 실패');
+        }
+
+        const newTaxReturn = await response.json();
+        setTaxData(prev => ({ ...prev, id: newTaxReturn.id }));
       }
 
       console.log('세금 데이터 저장 완료');

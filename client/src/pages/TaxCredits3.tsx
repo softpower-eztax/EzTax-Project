@@ -516,39 +516,47 @@ const TaxCredits3Page: React.FC = () => {
   };
   
   // 폼 제출 처리
-  const onSubmit = (data: TaxCreditsFormData) => {
-    // 총 세액공제 합계 계산
-    const totalSum = calculateTotalCredits();
-    
-    const formattedTaxCredits = {
-      ...data,
-      totalCredits: totalSum
-    };
-    
-    // TaxContext 업데이트
-    updateTaxData({
-      taxCredits: {
-        childTaxCredit: formattedTaxCredits.childTaxCredit,
-        childDependentCareCredit: formattedTaxCredits.childDependentCareCredit,
-        educationCredits: formattedTaxCredits.educationCredits,
-        aotcCredit: formattedTaxCredits.aotcCredit,
-        llcCredit: formattedTaxCredits.llcCredit,
-        retirementSavingsCredit: formattedTaxCredits.retirementSavingsCredit,
-        foreignTaxCredit: formattedTaxCredits.foreignTaxCredit,
-        earnedIncomeCredit: formattedTaxCredits.earnedIncomeCredit,
-        otherCredits: formattedTaxCredits.otherCredits,
-        otherCreditItems: formattedTaxCredits.otherCreditItems,
-        totalCredits: formattedTaxCredits.totalCredits
-      },
-      retirementContributions: formattedTaxCredits.retirementContributions
-    });
-    
-    // 데이터가 이미 updateTaxData로 저장되었으므로 성공 메시지만 표시
-    toast({
-      title: "저장 완료",
-      description: "세액공제 정보가 저장되었습니다."
-    });
-    setPendingChanges(false);
+  const onSubmit = async (data: TaxCreditsFormData) => {
+    try {
+      // 총 세액공제 합계 계산
+      const totalSum = calculateTotalCredits();
+      
+      const formattedTaxCredits = {
+        ...data,
+        totalCredits: totalSum
+      };
+      
+      // TaxContext 업데이트
+      await updateTaxData({
+        taxCredits: {
+          childTaxCredit: formattedTaxCredits.childTaxCredit,
+          childDependentCareCredit: formattedTaxCredits.childDependentCareCredit,
+          educationCredits: formattedTaxCredits.educationCredits,
+          aotcCredit: formattedTaxCredits.aotcCredit,
+          llcCredit: formattedTaxCredits.llcCredit,
+          retirementSavingsCredit: formattedTaxCredits.retirementSavingsCredit,
+          foreignTaxCredit: formattedTaxCredits.foreignTaxCredit,
+          earnedIncomeCredit: formattedTaxCredits.earnedIncomeCredit,
+          otherCredits: formattedTaxCredits.otherCredits,
+          otherCreditItems: formattedTaxCredits.otherCreditItems,
+          totalCredits: formattedTaxCredits.totalCredits
+        },
+        retirementContributions: formattedTaxCredits.retirementContributions
+      });
+      
+      toast({
+        title: "저장 완료",
+        description: "세액공제 정보가 저장되었습니다."
+      });
+      setPendingChanges(false);
+    } catch (error) {
+      console.error('저장 오류:', error);
+      toast({
+        title: "저장 실패",
+        description: "데이터 저장 중 오류가 발생했습니다.",
+        variant: "destructive",
+      });
+    }
   };
   
   return (

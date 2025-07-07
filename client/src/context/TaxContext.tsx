@@ -96,21 +96,33 @@ export const TaxProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         });
         
         if (!userResponse.ok) {
-          console.log("사용자 인증되지 않음 - 빈 데이터로 초기화");
-          clearAllData(); // 완전한 데이터 삭제
+          console.log(`사용자 인증 실패 (status: ${userResponse.status}) - 현재 사용자 ID: ${currentUserId}`);
+          // 이미 로그인된 사용자가 있다면 데이터를 즉시 삭제하지 않고 잠시 대기
+          if (currentUserId !== null) {
+            console.log("기존 로그인 사용자 존재 - 데이터 보존하며 재시도 대기");
+            setIsLoading(false);
+            return;
+          }
+          console.log("새 사용자 또는 완전 로그아웃 - 데이터 초기화");
+          clearAllData();
           setIsDataReady(true);
           return;
         }
         
         const currentUser = await userResponse.json();
         
+        // 사용자 ID 비교 및 데이터 처리
+        const isUserChange = currentUserId !== null && currentUserId !== currentUser.id;
+        const isFirstLogin = currentUserId === null;
+        
         if (currentUserId !== currentUser.id) {
-          console.log(`사용자 변경/로그인: ${currentUser.id} (이전: ${currentUserId})`);
+          console.log(`사용자 로그인: ${currentUser.id} (이전: ${currentUserId})`);
           
-          // 실제 다른 사용자로 변경된 경우에만 데이터 초기화
-          if (currentUserId !== null && currentUserId !== currentUser.id) {
-            console.log("다른 사용자로 변경 - 데이터 초기화");
+          if (isUserChange) {
+            console.log("다른 사용자로 변경 - 기존 데이터 삭제");
             clearAllData();
+          } else if (isFirstLogin) {
+            console.log("첫 로그인 - 서버에서 데이터 로드 준비");
           }
           
           setCurrentUserId(currentUser.id);

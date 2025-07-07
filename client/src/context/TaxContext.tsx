@@ -92,15 +92,30 @@ export const TaxProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         
         if (taxResponse.ok) {
           const serverTaxData = await taxResponse.json();
-          console.log(`사용자 ${currentUser.username}의 세금 데이터 로드`);
+          console.log(`사용자 ${currentUser.username}의 세금 데이터 로드:`, serverTaxData);
           
           if (serverTaxData?.userId === currentUser.id) {
             const calculatedResults = calculateTaxes(serverTaxData);
-            setTaxData({
-              ...serverTaxData,
-              calculatedResults,
-              updatedAt: new Date().toISOString()
-            });
+            
+            // 서버 데이터 구조 유지하며 병합
+            const restoredData = {
+              id: serverTaxData.id,
+              userId: serverTaxData.userId,
+              taxYear: serverTaxData.taxYear || 2025,
+              status: serverTaxData.status || 'in_progress',
+              createdAt: serverTaxData.createdAt,
+              updatedAt: new Date().toISOString(),
+              personalInfo: serverTaxData.personalInfo,
+              income: serverTaxData.income,
+              deductions: serverTaxData.deductions,
+              taxCredits: serverTaxData.taxCredits,
+              retirementContributions: serverTaxData.retirementContributions,
+              additionalTax: serverTaxData.additionalTax,
+              calculatedResults
+            };
+            
+            console.log(`데이터 복원 완료:`, restoredData);
+            setTaxData(restoredData);
           } else {
             console.error("데이터 사용자 ID 불일치");
             setTaxData({
@@ -175,10 +190,20 @@ export const TaxProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   }, []); // 의존성 배열을 비워서 무한 루프 방지
 
   const updateTaxData = async (data: Partial<TaxData>) => {
+    // 데이터 깊은 병합
     const updatedData = {
-      ...taxData,
-      ...data,
-      updatedAt: new Date().toISOString()
+      id: taxData.id,
+      userId: taxData.userId || currentUserId,
+      taxYear: taxData.taxYear || 2025,
+      status: taxData.status || 'in_progress',
+      createdAt: taxData.createdAt || new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      personalInfo: data.personalInfo ? { ...taxData.personalInfo, ...data.personalInfo } : taxData.personalInfo,
+      income: data.income ? { ...taxData.income, ...data.income } : taxData.income,
+      deductions: data.deductions ? { ...taxData.deductions, ...data.deductions } : taxData.deductions,
+      taxCredits: data.taxCredits ? { ...taxData.taxCredits, ...data.taxCredits } : taxData.taxCredits,
+      retirementContributions: data.retirementContributions ? { ...taxData.retirementContributions, ...data.retirementContributions } : taxData.retirementContributions,
+      additionalTax: data.additionalTax ? { ...taxData.additionalTax, ...data.additionalTax } : taxData.additionalTax,
     };
     
     const calculatedResults = calculateTaxes(updatedData);

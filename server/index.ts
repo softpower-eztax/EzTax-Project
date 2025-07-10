@@ -84,11 +84,20 @@ app.use((req, res, next) => {
     }
   });
 
-  // Start server on port 5000
-  const port = 5000;
+  // Start server on port 5000 or environment port
+  const port = process.env.PORT || 5000;
   server.listen(port, "0.0.0.0", () => {
     log(`serving on port ${port}`);
-    log(`Direct access: https://${process.env.REPLIT_DEV_DOMAIN || '3e18f96e-0fbf-4af6-b766-cfbae9f2437b-00-17nnd6cbvtwuy.janeway.replit.dev'}`);
+    
+    // Display access URLs based on environment
+    if (process.env.REPLIT_DEV_DOMAIN) {
+      log(`Replit Development URL: https://${process.env.REPLIT_DEV_DOMAIN}`);
+    }
+    
+    if (process.env.REPL_SLUG && process.env.REPL_OWNER) {
+      log(`Replit Public URL: https://${process.env.REPL_SLUG}.${process.env.REPL_OWNER}.repl.co`);
+    }
+    
     log(`Local access: http://localhost:${port}`);
     log(`Local development file: file://${process.cwd()}/local-dev.html`);
   });

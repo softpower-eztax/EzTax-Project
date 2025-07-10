@@ -199,12 +199,13 @@ const TaxCredits3Page: React.FC = () => {
   // 총 기여금 감시
   const retirementContributionsTotal = form.watch('retirementContributions.totalContributions') || 0;
   
-  // 모든 개별 은퇴 기여금을 합산하여 총 기여금 필드 업데이트
+  // 은퇴저축공제 대상 기여금만 합산 (로스 IRA 제외)
   const calculateAllRetirementContributions = () => {
     const values = form.getValues();
+    // 로스 IRA는 세후 기여이므로 은퇴저축공제 대상에서 제외
     const total = 
       (values.retirementContributions?.traditionalIRA || 0) +
-      (values.retirementContributions?.rothIRA || 0) +
+      // (values.retirementContributions?.rothIRA || 0) +  // 로스 IRA 제외
       (values.retirementContributions?.plan401k || 0) +
       (values.retirementContributions?.plan403b || 0) +
       (values.retirementContributions?.plan457 || 0) +
@@ -1068,6 +1069,9 @@ const TaxCredits3Page: React.FC = () => {
                                     />
                                   </div>
                                 </FormControl>
+                                <div className="text-xs text-red-600 mt-1">
+                                  ⚠️ 로스 IRA는 세후 기여이므로 은퇴저축공제 대상이 아닙니다
+                                </div>
                                 <FormMessage />
                               </FormItem>
                             )}
@@ -1288,7 +1292,7 @@ const TaxCredits3Page: React.FC = () => {
                             name="retirementContributions.totalContributions"
                             render={({ field }) => (
                               <FormItem>
-                                <FormLabel>총 기여금 (Total Contributions)</FormLabel>
+                                <FormLabel>은퇴저축공제 대상 총 기여금 (로스 IRA 제외)</FormLabel>
                                 <FormControl>
                                   <div className="relative flex gap-2">
                                     <div className="flex-grow relative">
@@ -1314,6 +1318,9 @@ const TaxCredits3Page: React.FC = () => {
                                     </Button>
                                   </div>
                                 </FormControl>
+                                <div className="text-xs text-blue-600 mt-1">
+                                  💡 세액공제가 가능한 기여금만 포함 (전통적 IRA, 401k, 403b, 457, SEP IRA 등)
+                                </div>
                                 <FormMessage />
                               </FormItem>
                             )}

@@ -105,6 +105,8 @@ Preferred communication style: Simple, everyday language.
 ## Changelog
 
 Recent Changes:
+- July 10, 2025: **ROTH IRA RETIREMENT SAVINGS CREDIT ERROR COMPLETELY FIXED** - Corrected critical tax calculation error where Roth IRA contributions were incorrectly included in retirement savings credit calculation; Roth IRA contributions are now properly excluded as they are after-tax contributions and not eligible for the retirement savings credit, updated UI with warning messages and explanatory text
+- July 10, 2025: **SSL CERTIFICATE DEPLOYMENT ISSUE** - Encountered SSL certificate validation error (NET::ERR_CERT_AUTHORITY_INVALID) during deployment; server restart completed but SSL issues persist requiring browser security bypass or HTTP access
 - July 7, 2025: **TAX SAVING ADVICE PAGE SIMPLIFIED** - Streamlined TaxSavingAdvice page to show only essential "전문가 상담이 도움이 되는 경우" section and functional email contact button for eztax88@gmail.com, removing all unnecessary consultation options and complex tax suggestions per user request
 - July 7, 2025: **DEEP DATA MERGING LOGIC ADDED** - Enhanced TaxContext with comprehensive field-by-field data merging to preserve existing data structure during partial updates, preventing accidental data loss during form submissions
 - July 7, 2025: **ASYNC TAX DATA UPDATES IMPLEMENTED** - Converted TaxContext updateTaxData to async function with proper await calls in Deductions.tsx, SALTDeductionsNew.tsx, and TaxCredits3.tsx ensuring reliable server-side data persistence

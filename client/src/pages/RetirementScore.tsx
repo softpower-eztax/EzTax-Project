@@ -10,7 +10,6 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Progress } from "@/components/ui/progress";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
-import { useTaxContext } from "@/context/TaxContext";
 import { useLocation } from "wouter";
 import { useState } from "react";
 import { 
@@ -66,7 +65,6 @@ interface RetirementAnalysis {
 }
 
 export default function RetirementScoreStepByStep() {
-  const { taxData } = useTaxContext();
   const [, navigate] = useLocation();
   const [analysis, setAnalysis] = useState<RetirementAnalysis | null>(null);
   const [currentStep, setCurrentStep] = useState(0);
@@ -222,48 +220,151 @@ export default function RetirementScoreStepByStep() {
     return Math.round(pia * adjustmentFactor);
   };
 
-  // 은퇴 점수 계산
+  // 은퇴 점수 계산 - 개선된 버전
   const calculateRetirementScore = (data: RetirementFormData): RetirementAnalysis => {
-    const yearsToRetirement = data.expectedRetirementAge - data.currentAge;
+    console.log("은퇴 점수 계산 시작 - 입력 데이터:", data);
+    
+    const yearsToRetirement = Math.max(1, data.expectedRetirementAge - data.currentAge);
     const annualContribution = data.monthlyContribution * 12;
-    const futureValue = data.currentSavings * Math.pow(1 + data.expectedAnnualReturn / 100, yearsToRetirement) +
-                       annualContribution * (Math.pow(1 + data.expectedAnnualReturn / 100, yearsToRetirement) - 1) / (data.expectedAnnualReturn / 100);
     
-    const requiredAmount = data.desiredRetirementIncome * 12 * 25; // 4% rule
-    const preparednessRatio = futureValue / requiredAmount;
+    // 복리 계산 개선: Social Security도 포함
+    const investmentGrowth = data.currentSavings * Math.pow(1 + data.expectedAnnualReturn / 100, yearsToRetirement);
+    const contributionGrowth = data.expectedAnnualReturn > 0 
+      ? annualContribution * (Math.pow(1 + data.expectedAnnualReturn / 100, yearsToRetirement) - 1) / (data.expectedAnnualReturn / 100)
+      : annualContribution * yearsToRetirement;
     
-    let score = Math.min(100, preparednessRatio * 50 + 50);
+    const socialSecurityValue = data.expectedSocialSecurityBenefit * 12 * 25; // 25년치 가치로 환산
+    const totalFutureValue = investmentGrowth + contributionGrowth + socialSecurityValue;
     
-    // 추가 점수 조정
-    if (data.emergencyFund >= data.currentIncome / 2) score += 5;
-    if (data.totalDebt / data.currentIncome < 0.3) score += 5;
-    if (data.hasHealthInsurance) score += 5;
-    if (data.healthStatus === 'excellent' || data.healthStatus === 'good') score += 5;
+    // 인플레이션 조정된 필요 금액
+    const inflationAdjustedIncome = data.desiredRetirementIncome * Math.pow(1 + data.expectedInflationRate / 100, yearsToRetirement);
+    const requiredAmount = inflationAdjustedIncome * 12 * 25; // 4% rule with inflation
     
-    const additionalNeeded = Math.max(0, requiredAmount - futureValue);
-    const monthlyNeeded = additionalNeeded > 0 ? additionalNeeded / (yearsToRetirement * 12) : 0;
+    console.log("계산 결과:", {
+      yearsToRetirement,
+      investmentGrowth,
+      contributionGrowth,
+      socialSecurityValue,
+      totalFutureValue,
+      requiredAmount,
+      inflationAdjustedIncome
+    });
+    
+    // 기본 준비율 점수 (0-70점)
+    const preparednessRatio = totalFutureValue / requiredAmount;
+    let baseScore = Math.min(70, preparednessRatio * 70);
+    
+    // 재정 건전성 점수 (0-20점)
+    let financialHealthScore = 0;
+    
+    // 비상자금 점수 (0-5점)
+    const emergencyRatio = data.emergencyFund / (data.currentIncome / 12 * 6); // 6개월치 비교
+    financialHealthScore += Math.min(5, emergencyRatio * 5);
+    
+    // 부채 비율 점수 (0-5점)
+    const debtRatio = data.currentIncome > 0 ? data.totalDebt / data.currentIncome : 0;
+    if (debtRatio <= 0.1) financialHealthScore += 5;
+    else if (debtRatio <= 0.3) financialHealthScore += 3;
+    else if (debtRatio <= 0.5) financialHealthScore += 1;
+    
+    // 저축률 점수 (0-5점)
+    const savingsRate = data.currentIncome > 0 ? (data.monthlyContribution * 12) / data.currentIncome : 0;
+    if (savingsRate >= 0.20) financialHealthScore += 5; // 20% 이상
+    else if (savingsRate >= 0.15) financialHealthScore += 4; // 15% 이상
+    else if (savingsRate >= 0.10) financialHealthScore += 3; // 10% 이상
+    else if (savingsRate >= 0.05) financialHealthScore += 2; // 5% 이상
+    else if (savingsRate > 0) financialHealthScore += 1;
+    
+    // 투자 수익률 현실성 점수 (0-5점)
+    if (data.expectedAnnualReturn >= 5 && data.expectedAnnualReturn <= 8) financialHealthScore += 5;
+    else if (data.expectedAnnualReturn >= 3 && data.expectedAnnualReturn <= 10) financialHealthScore += 3;
+    else financialHealthScore += 1;
+    
+    // 라이프스타일 점수 (0-10점)
+    let lifestyleScore = 0;
+    
+    // 건강 점수 (0-3점)
+    switch (data.healthStatus) {
+      case 'excellent': lifestyleScore += 3; break;
+      case 'good': lifestyleScore += 2; break;
+      case 'fair': lifestyleScore += 1; break;
+      case 'poor': lifestyleScore += 0; break;
+    }
+    
+    // 보험 점수 (0-2점)
+    if (data.hasHealthInsurance) lifestyleScore += 2;
+    
+    // 주거 상황 점수 (0-3점)
+    switch (data.homeOwnership) {
+      case 'own_outright': lifestyleScore += 3; break;
+      case 'mortgage': lifestyleScore += 2; break;
+      case 'rent': lifestyleScore += 1; break;
+    }
+    
+    // 부양가족 부담 조정 (0-2점)
+    if (data.dependentsCount === 0) lifestyleScore += 2;
+    else if (data.dependentsCount <= 2) lifestyleScore += 1;
+    
+    const totalScore = Math.min(100, Math.max(0, baseScore + financialHealthScore + lifestyleScore));
+    
+    console.log("점수 계산:", {
+      baseScore,
+      financialHealthScore,
+      lifestyleScore,
+      totalScore
+    });
+    
+    const additionalNeeded = Math.max(0, requiredAmount - totalFutureValue);
+    const monthlyNeeded = additionalNeeded > 0 && yearsToRetirement > 0 
+      ? additionalNeeded / (yearsToRetirement * 12) : 0;
 
+    // 동적 강점/우려사항/추천사항 생성
     const strengths: string[] = [];
     const concerns: string[] = [];
     const recommendations: string[] = [];
 
-    if (preparednessRatio >= 0.8) {
+    // 은퇴 자금 준비율
+    if (preparednessRatio >= 1.2) {
+      strengths.push(`은퇴 자금이 목표의 ${Math.round(preparednessRatio * 100)}%로 여유있게 준비되어 있습니다`);
+    } else if (preparednessRatio >= 0.8) {
       strengths.push("은퇴 자금 목표 달성에 근접했습니다");
-    } else {
-      concerns.push("은퇴 자금이 부족합니다");
+    } else if (preparednessRatio >= 0.5) {
+      concerns.push("은퇴 자금이 목표의 절반 수준입니다");
       recommendations.push(`월 ${Math.round(monthlyNeeded).toLocaleString()}달러 추가 저축을 권장합니다`);
+    } else {
+      concerns.push("은퇴 자금이 심각하게 부족합니다");
+      recommendations.push(`월 ${Math.round(monthlyNeeded).toLocaleString()}달러 추가 저축이 필요하며, 전문가 상담을 권장합니다`);
     }
 
-    if (data.emergencyFund >= data.currentIncome / 2) {
+    // 비상자금
+    if (emergencyRatio >= 1) {
       strengths.push("충분한 비상 자금을 보유하고 있습니다");
     } else {
       concerns.push("비상 자금이 부족합니다");
-      recommendations.push("6개월치 생활비에 해당하는 비상 자금을 마련하세요");
+      recommendations.push(`${Math.round((6 - emergencyRatio * 6) * data.currentIncome / 12).toLocaleString()}달러의 추가 비상자금이 필요합니다`);
+    }
+
+    // 부채 관리
+    if (debtRatio <= 0.3) {
+      strengths.push("부채 비율이 안정적입니다");
+    } else {
+      concerns.push("부채 비율이 높습니다");
+      recommendations.push("고금리 부채부터 우선 상환하여 부채 비율을 줄이세요");
+    }
+
+    // 저축률
+    if (savingsRate >= 0.15) {
+      strengths.push(`우수한 저축률(${Math.round(savingsRate * 100)}%)을 유지하고 있습니다`);
+    } else if (savingsRate >= 0.10) {
+      recommendations.push("저축률을 15% 이상으로 늘려보세요");
+    } else {
+      concerns.push("저축률이 너무 낮습니다");
+      recommendations.push("소득의 최소 10% 이상 저축을 목표로 하세요");
     }
 
     return {
-      score: Math.round(score),
-      projectedSavings: Math.round(futureValue),
+      score: Math.round(totalScore),
+      projectedSavings: Math.round(totalFutureValue),
       additionalNeeded: Math.round(additionalNeeded),
       monthlyNeeded: Math.round(monthlyNeeded),
       recommendations,

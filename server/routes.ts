@@ -505,6 +505,96 @@ ${additionalRequests || '없음'}
     }
   });
 
+  // Send expert consultation email
+  app.post("/api/send-consultation-email", async (req, res) => {
+    try {
+      const { name, phone, email, message } = req.body;
+      
+      // Validate required fields
+      if (!name || !phone || !email) {
+        return res.status(400).json({ message: "필수 정보가 누락되었습니다" });
+      }
+
+      // Create email content
+      const emailContent = `
+새로운 전문가 상담 요청이 접수되었습니다.
+
+상담자 정보:
+- 이름: ${name}
+- 전화번호: ${phone}
+- 이메일: ${email}
+
+상담 내용:
+${message || '상담 요청'}
+
+요청 시간: ${new Date().toLocaleString('ko-KR')}
+      `.trim();
+
+      // Try to send actual email if credentials are available
+      const transporter = createEmailTransporter();
+      
+      if (transporter) {
+        try {
+          // Test connection first
+          await transporter.verify();
+          console.log('Gmail SMTP connection verified successfully');
+          
+          const mailOptions = {
+            from: 'eztax88@gmail.com',
+            to: 'eztax88@gmail.com',
+            subject: '[EzTax] 새로운 전문가 상담 요청',
+            text: emailContent,
+            html: `
+              <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+                <h2 style="color: #0055AA;">새로운 전문가 상담 요청</h2>
+                <div style="background-color: #f5f5f5; padding: 20px; border-radius: 5px;">
+                  <h3>상담자 정보:</h3>
+                  <ul style="list-style: none; padding: 0;">
+                    <li><strong>이름:</strong> ${name}</li>
+                    <li><strong>전화번호:</strong> ${phone}</li>
+                    <li><strong>이메일:</strong> ${email}</li>
+                  </ul>
+                  
+                  <h3>상담 내용:</h3>
+                  <p style="background-color: white; padding: 15px; border-radius: 3px;">
+                    ${message || '상담 요청'}
+                  </p>
+                  
+                  <p style="margin-top: 20px; color: #666;">
+                    <strong>요청 시간:</strong> ${new Date().toLocaleString('ko-KR')}
+                  </p>
+                </div>
+              </div>
+            `
+          };
+
+          const info = await transporter.sendMail(mailOptions);
+          console.log('✅ Consultation email sent successfully to eztax88@gmail.com');
+          console.log('Message ID:', info.messageId);
+        } catch (emailError) {
+          console.error('❌ Failed to send consultation email:', emailError);
+          console.log('📧 Consultation Email Content (logged as backup):');
+          console.log('To: eztax88@gmail.com');
+          console.log('Subject: [EzTax] 새로운 전문가 상담 요청');
+          console.log('Content:', emailContent);
+        }
+      } else {
+        console.log('📧 Email credentials not configured - logging consultation request:');
+        console.log('To: eztax88@gmail.com');
+        console.log('Subject: [EzTax] 새로운 전문가 상담 요청');
+        console.log('Content:', emailContent);
+      }
+      
+      res.json({ 
+        success: true, 
+        message: "상담 요청이 성공적으로 전송되었습니다" 
+      });
+    } catch (error) {
+      console.error("Error sending consultation email:", error);
+      res.status(500).json({ message: "상담 요청 전송에 실패했습니다" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

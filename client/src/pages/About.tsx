@@ -1,7 +1,13 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import { useToast } from "@/hooks/use-toast";
 import { useLocation } from "wouter";
+import { useState } from "react";
 import { 
   TrendingUpIcon, 
   StarIcon, 
@@ -19,6 +25,75 @@ import missionImagePath from "@assets/ChatGPT Image Jun 20, 2025, 09_42_31 PM_17
 
 export default function About() {
   const [, navigate] = useLocation();
+  const { toast } = useToast();
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [formData, setFormData] = useState({
+    name: '',
+    phone: '',
+    email: '',
+    message: ''
+  });
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const handleSubmitConsultation = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!formData.name || !formData.phone || !formData.email) {
+      toast({
+        title: "필수 정보 누락",
+        description: "이름, 전화번호, 이메일을 모두 입력해주세요.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsSubmitting(true);
+    
+    try {
+      const response = await fetch('/api/send-consultation-email', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to send consultation request');
+      }
+
+      toast({
+        title: "상담 요청 완료",
+        description: "전문가 상담 요청이 성공적으로 전송되었습니다. 빠른 시일 내에 연락드리겠습니다.",
+      });
+
+      // Reset form and close dialog
+      setFormData({
+        name: '',
+        phone: '',
+        email: '',
+        message: ''
+      });
+      setIsDialogOpen(false);
+    } catch (error) {
+      console.error('Error sending consultation request:', error);
+      toast({
+        title: "전송 실패",
+        description: "상담 요청 전송에 실패했습니다. 다시 시도해주세요.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   return (
     <div className="max-w-6xl mx-auto p-6 space-y-8">
@@ -248,9 +323,89 @@ export default function About() {
                   <span>이메일 상담 가능</span>
                 </div>
               </div>
-              <Button className="mt-4 bg-primary hover:bg-primary-dark">
-                상담 예약하기
-              </Button>
+              <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                <DialogTrigger asChild>
+                  <Button className="mt-4 bg-primary hover:bg-primary-dark">
+                    상담 예약하기
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-[425px]">
+                  <DialogHeader>
+                    <DialogTitle>전문가 상담 요청</DialogTitle>
+                    <DialogDescription>
+                      세무 및 은퇴 계획 전문가 상담을 요청하시겠습니까? 빠른 시일 내에 연락드리겠습니다.
+                    </DialogDescription>
+                  </DialogHeader>
+                  <form onSubmit={handleSubmitConsultation} className="space-y-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="name">이름 *</Label>
+                      <Input
+                        id="name"
+                        name="name"
+                        value={formData.name}
+                        onChange={handleInputChange}
+                        placeholder="홍길동"
+                        required
+                      />
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label htmlFor="phone">전화번호 *</Label>
+                      <Input
+                        id="phone"
+                        name="phone"
+                        value={formData.phone}
+                        onChange={handleInputChange}
+                        placeholder="010-1234-5678"
+                        required
+                      />
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label htmlFor="email">이메일 *</Label>
+                      <Input
+                        id="email"
+                        name="email"
+                        type="email"
+                        value={formData.email}
+                        onChange={handleInputChange}
+                        placeholder="example@email.com"
+                        required
+                      />
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label htmlFor="message">상담 내용 (선택사항)</Label>
+                      <Textarea
+                        id="message"
+                        name="message"
+                        value={formData.message}
+                        onChange={handleInputChange}
+                        placeholder="상담받고 싶은 내용을 간단히 적어주세요"
+                        rows={3}
+                      />
+                    </div>
+                    
+                    <div className="flex justify-end space-x-2 pt-4">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={() => setIsDialogOpen(false)}
+                        disabled={isSubmitting}
+                      >
+                        취소
+                      </Button>
+                      <Button
+                        type="submit"
+                        disabled={isSubmitting}
+                        className="bg-primary hover:bg-primary-dark"
+                      >
+                        {isSubmitting ? '전송 중...' : '상담 요청하기'}
+                      </Button>
+                    </div>
+                  </form>
+                </DialogContent>
+              </Dialog>
             </div>
             
             <div className="text-center">

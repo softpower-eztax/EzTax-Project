@@ -820,7 +820,8 @@ export default function RetirementScoreStepByStep() {
                               type="number"
                               placeholder="45"
                               {...field}
-                              onChange={(e) => field.onChange(Number(e.target.value))}
+                              value={field.value || ''}
+                              onChange={(e) => field.onChange(e.target.value === '' ? 0 : Number(e.target.value))}
                             />
                           </FormControl>
                           <FormMessage />
@@ -839,7 +840,8 @@ export default function RetirementScoreStepByStep() {
                               type="number"
                               placeholder="65"
                               {...field}
-                              onChange={(e) => field.onChange(Number(e.target.value))}
+                              value={field.value || ''}
+                              onChange={(e) => field.onChange(e.target.value === '' ? 0 : Number(e.target.value))}
                             />
                           </FormControl>
                           <FormMessage />
@@ -858,7 +860,8 @@ export default function RetirementScoreStepByStep() {
                               type="number"
                               placeholder="401k, IRA, 예금 등 합산"
                               {...field}
-                              onChange={(e) => field.onChange(Number(e.target.value))}
+                              value={field.value || ''}
+                              onChange={(e) => field.onChange(e.target.value === '' ? 0 : Number(e.target.value))}
                             />
                           </FormControl>
                           <FormMessage />
@@ -877,7 +880,8 @@ export default function RetirementScoreStepByStep() {
                               type="number"
                               placeholder="매월 추가 저축 금액"
                               {...field}
-                              onChange={(e) => field.onChange(Number(e.target.value))}
+                              value={field.value || ''}
+                              onChange={(e) => field.onChange(e.target.value === '' ? 0 : Number(e.target.value))}
                             />
                           </FormControl>
                           <FormMessage />
@@ -896,7 +900,8 @@ export default function RetirementScoreStepByStep() {
                               type="number"
                               placeholder="매월 필요 생활비 (예: 5000)"
                               {...field}
-                              onChange={(e) => field.onChange(Number(e.target.value))}
+                              value={field.value || ''}
+                              onChange={(e) => field.onChange(e.target.value === '' ? 0 : Number(e.target.value))}
                             />
                           </FormControl>
                           <FormMessage />
@@ -916,7 +921,8 @@ export default function RetirementScoreStepByStep() {
                               placeholder="5-6% 보수적 가정"
                               step="0.1"
                               {...field}
-                              onChange={(e) => field.onChange(Number(e.target.value))}
+                              value={field.value || ''}
+                              onChange={(e) => field.onChange(e.target.value === '' ? 0 : Number(e.target.value))}
                             />
                           </FormControl>
                           <FormMessage />
@@ -942,7 +948,8 @@ export default function RetirementScoreStepByStep() {
                               type="number"
                               placeholder="세후 소득"
                               {...field}
-                              onChange={(e) => field.onChange(Number(e.target.value))}
+                              value={field.value || ''}
+                              onChange={(e) => field.onChange(e.target.value === '' ? 0 : Number(e.target.value))}
                             />
                           </FormControl>
                           <FormMessage />
@@ -961,7 +968,8 @@ export default function RetirementScoreStepByStep() {
                               type="number"
                               placeholder="6개월 생활비 권장"
                               {...field}
-                              onChange={(e) => field.onChange(Number(e.target.value))}
+                              value={field.value || ''}
+                              onChange={(e) => field.onChange(e.target.value === '' ? 0 : Number(e.target.value))}
                             />
                           </FormControl>
                           <FormMessage />
@@ -980,7 +988,8 @@ export default function RetirementScoreStepByStep() {
                               type="number"
                               placeholder="모기지 제외 부채"
                               {...field}
-                              onChange={(e) => field.onChange(Number(e.target.value))}
+                              value={field.value || ''}
+                              onChange={(e) => field.onChange(e.target.value === '' ? 0 : Number(e.target.value))}
                             />
                           </FormControl>
                           <FormMessage />
@@ -1000,7 +1009,8 @@ export default function RetirementScoreStepByStep() {
                                 type="number"
                                 placeholder="월 예상 수령액 (예: 2000)"
                                 {...field}
-                                onChange={(e) => field.onChange(Number(e.target.value))}
+                                value={field.value || ''}
+                                onChange={(e) => field.onChange(e.target.value === '' ? 0 : Number(e.target.value))}
                               />
                             </FormControl>
                             <Button
@@ -1240,7 +1250,8 @@ export default function RetirementScoreStepByStep() {
                               type="number"
                               placeholder="현재 부양 중인 자녀 및 가족 수"
                               {...field}
-                              onChange={(e) => field.onChange(Number(e.target.value))}
+                              value={field.value || ''}
+                              onChange={(e) => field.onChange(e.target.value === '' ? 0 : Number(e.target.value))}
                             />
                           </FormControl>
                           <FormMessage />
@@ -1313,7 +1324,8 @@ export default function RetirementScoreStepByStep() {
                               placeholder="3"
                               step="0.1"
                               {...field}
-                              onChange={(e) => field.onChange(Number(e.target.value))}
+                              value={field.value || ''}
+                              onChange={(e) => field.onChange(e.target.value === '' ? 0 : Number(e.target.value))}
                             />
                           </FormControl>
                           <FormMessage />

@@ -1210,11 +1210,11 @@ export default function RetirementScoreStepByStep() {
                       name="familyStatus"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>가족 상태 *</FormLabel>
+                          <FormLabel>결혼상태 *</FormLabel>
                           <Select onValueChange={field.onChange} defaultValue={field.value}>
                             <FormControl>
                               <SelectTrigger>
-                                <SelectValue placeholder="가족 상태 선택" />
+                                <SelectValue placeholder="결혼상태 선택" />
                               </SelectTrigger>
                             </FormControl>
                             <SelectContent>

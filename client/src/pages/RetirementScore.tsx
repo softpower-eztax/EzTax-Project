@@ -62,6 +62,21 @@ interface RetirementAnalysis {
   recommendations: string[];
   strengths: string[];
   concerns: string[];
+  calculationDetails: {
+    yearsToRetirement: number;
+    investmentGrowth: number;
+    contributionGrowth: number;
+    socialSecurityValue: number;
+    requiredAmount: number;
+    inflationAdjustedIncome: number;
+    preparednessRatio: number;
+    baseScore: number;
+    financialHealthScore: number;
+    lifestyleScore: number;
+    emergencyRatio: number;
+    debtRatio: number;
+    savingsRate: number;
+  };
 }
 
 export default function RetirementScoreStepByStep() {
@@ -70,6 +85,7 @@ export default function RetirementScoreStepByStep() {
   const [currentStep, setCurrentStep] = useState(0);
   const [completedSteps, setCompletedSteps] = useState<boolean[]>([false, false, false, false]);
   const [showSSCalculator, setShowSSCalculator] = useState(false);
+  const [showCalculationDetails, setShowCalculationDetails] = useState(false);
   
   // Social Security calculator state
   const [ssStartAge, setSsStartAge] = useState(25);
@@ -369,7 +385,22 @@ export default function RetirementScoreStepByStep() {
       monthlyNeeded: Math.round(monthlyNeeded),
       recommendations,
       strengths,
-      concerns
+      concerns,
+      calculationDetails: {
+        yearsToRetirement,
+        investmentGrowth,
+        contributionGrowth,
+        socialSecurityValue,
+        requiredAmount,
+        inflationAdjustedIncome,
+        preparednessRatio,
+        baseScore,
+        financialHealthScore,
+        lifestyleScore,
+        emergencyRatio,
+        debtRatio,
+        savingsRate
+      }
     };
   };
 
@@ -497,6 +528,159 @@ export default function RetirementScoreStepByStep() {
               ))}
             </ul>
           </CardContent>
+        </Card>
+
+        {/* 상세 계산 과정 설명 */}
+        <Card>
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <CardTitle className="flex items-center gap-2">
+                📊 계산 과정 상세 설명
+              </CardTitle>
+              <Button
+                variant="outline"
+                onClick={() => setShowCalculationDetails(!showCalculationDetails)}
+                className="flex items-center gap-2"
+              >
+                {showCalculationDetails ? '숨기기' : '자세히 보기'}
+                <ChevronRightIcon className={`h-4 w-4 transition-transform ${showCalculationDetails ? 'rotate-90' : ''}`} />
+              </Button>
+            </div>
+          </CardHeader>
+          
+          {showCalculationDetails && (
+            <CardContent className="space-y-6">
+              <div className="bg-blue-50 p-4 rounded-lg">
+                <h3 className="font-semibold text-blue-900 mb-3">입력 데이터 요약</h3>
+                <div className="grid md:grid-cols-2 gap-3 text-sm">
+                  <div>• 현재 나이: {form.getValues('currentAge')}세 → 은퇴 나이: {form.getValues('expectedRetirementAge')}세</div>
+                  <div>• 은퇴까지 기간: <strong>{analysis.calculationDetails.yearsToRetirement}년</strong></div>
+                  <div>• 현재 저축: ${form.getValues('currentSavings').toLocaleString()}</div>
+                  <div>• 월 저축액: ${form.getValues('monthlyContribution').toLocaleString()}</div>
+                  <div>• 목표 월 생활비: ${form.getValues('desiredRetirementIncome').toLocaleString()}</div>
+                  <div>• 예상 투자수익률: {form.getValues('expectedAnnualReturn')}%</div>
+                  <div>• 연소득: ${form.getValues('currentIncome').toLocaleString()}</div>
+                  <div>• Social Security: ${form.getValues('expectedSocialSecurityBenefit').toLocaleString()}/월</div>
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <h3 className="font-semibold text-gray-900">1단계: 미래 자산 계산</h3>
+                
+                <div className="bg-green-50 p-4 rounded-lg space-y-2">
+                  <h4 className="font-medium text-green-800">현재 저축 성장 (복리)</h4>
+                  <p className="text-sm text-green-700">
+                    ${form.getValues('currentSavings').toLocaleString()} × (1.{String(form.getValues('expectedAnnualReturn')).padStart(2, '0')})^{analysis.calculationDetails.yearsToRetirement} = 
+                    <strong> ${Math.round(analysis.calculationDetails.investmentGrowth).toLocaleString()}</strong>
+                  </p>
+                </div>
+
+                <div className="bg-green-50 p-4 rounded-lg space-y-2">
+                  <h4 className="font-medium text-green-800">월 저축 누적 성장</h4>
+                  <p className="text-sm text-green-700">
+                    ${form.getValues('monthlyContribution').toLocaleString()} × 12개월 × 복리공식({analysis.calculationDetails.yearsToRetirement}년) = 
+                    <strong> ${Math.round(analysis.calculationDetails.contributionGrowth).toLocaleString()}</strong>
+                  </p>
+                </div>
+
+                <div className="bg-green-50 p-4 rounded-lg space-y-2">
+                  <h4 className="font-medium text-green-800">Social Security 가치 환산</h4>
+                  <p className="text-sm text-green-700">
+                    월 ${form.getValues('expectedSocialSecurityBenefit').toLocaleString()} × 12개월 × 25년 = 
+                    <strong> ${Math.round(analysis.calculationDetails.socialSecurityValue).toLocaleString()}</strong>
+                  </p>
+                </div>
+
+                <div className="bg-blue-100 p-4 rounded-lg">
+                  <h4 className="font-medium text-blue-800">총 미래 자산</h4>
+                  <p className="text-lg font-bold text-blue-900">
+                    ${Math.round(analysis.calculationDetails.investmentGrowth).toLocaleString()} + 
+                    ${Math.round(analysis.calculationDetails.contributionGrowth).toLocaleString()} + 
+                    ${Math.round(analysis.calculationDetails.socialSecurityValue).toLocaleString()} = 
+                    ${analysis.projectedSavings.toLocaleString()}
+                  </p>
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <h3 className="font-semibold text-gray-900">2단계: 필요 금액 계산 (인플레이션 포함)</h3>
+                
+                <div className="bg-orange-50 p-4 rounded-lg space-y-2">
+                  <h4 className="font-medium text-orange-800">인플레이션 조정된 생활비</h4>
+                  <p className="text-sm text-orange-700">
+                    ${form.getValues('desiredRetirementIncome').toLocaleString()} × (1.{String(form.getValues('expectedInflationRate')).padStart(2, '0')})^{analysis.calculationDetails.yearsToRetirement} = 
+                    <strong> ${Math.round(analysis.calculationDetails.inflationAdjustedIncome).toLocaleString()}/월</strong>
+                  </p>
+                </div>
+
+                <div className="bg-orange-50 p-4 rounded-lg space-y-2">
+                  <h4 className="font-medium text-orange-800">4% 룰 적용 필요 금액</h4>
+                  <p className="text-sm text-orange-700">
+                    ${Math.round(analysis.calculationDetails.inflationAdjustedIncome).toLocaleString()} × 12개월 × 25년 = 
+                    <strong> ${Math.round(analysis.calculationDetails.requiredAmount).toLocaleString()}</strong>
+                  </p>
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <h3 className="font-semibold text-gray-900">3단계: 점수 계산 (총 {analysis.score}점)</h3>
+                
+                <div className="grid md:grid-cols-3 gap-4">
+                  <div className="bg-purple-50 p-4 rounded-lg">
+                    <h4 className="font-medium text-purple-800">기본 점수</h4>
+                    <p className="text-sm text-purple-700 mb-2">
+                      준비율: {Math.round(analysis.calculationDetails.preparednessRatio * 100)}%
+                    </p>
+                    <p className="text-lg font-bold text-purple-900">
+                      {Math.round(analysis.calculationDetails.baseScore)}점/70점
+                    </p>
+                  </div>
+
+                  <div className="bg-purple-50 p-4 rounded-lg">
+                    <h4 className="font-medium text-purple-800">재정 건전성</h4>
+                    <div className="text-xs text-purple-600 space-y-1">
+                      <div>• 비상자금: {Math.round(analysis.calculationDetails.emergencyRatio * 100)}%</div>
+                      <div>• 부채비율: {Math.round(analysis.calculationDetails.debtRatio * 100)}%</div>
+                      <div>• 저축률: {Math.round(analysis.calculationDetails.savingsRate * 100)}%</div>
+                    </div>
+                    <p className="text-lg font-bold text-purple-900 mt-2">
+                      {Math.round(analysis.calculationDetails.financialHealthScore)}점/20점
+                    </p>
+                  </div>
+
+                  <div className="bg-purple-50 p-4 rounded-lg">
+                    <h4 className="font-medium text-purple-800">라이프스타일</h4>
+                    <div className="text-xs text-purple-600 space-y-1">
+                      <div>• 건강상태: {form.getValues('healthStatus')}</div>
+                      <div>• 건강보험: {form.getValues('hasHealthInsurance') ? '있음' : '없음'}</div>
+                      <div>• 주거형태: {form.getValues('homeOwnership')}</div>
+                      <div>• 부양가족: {form.getValues('dependentsCount')}명</div>
+                    </div>
+                    <p className="text-lg font-bold text-purple-900 mt-2">
+                      {Math.round(analysis.calculationDetails.lifestyleScore)}점/10점
+                    </p>
+                  </div>
+                </div>
+
+                <div className="bg-gradient-to-r from-blue-100 to-purple-100 p-4 rounded-lg">
+                  <h4 className="font-medium text-gray-800 mb-2">최종 점수 계산</h4>
+                  <p className="text-lg font-bold text-gray-900">
+                    {Math.round(analysis.calculationDetails.baseScore)} + 
+                    {Math.round(analysis.calculationDetails.financialHealthScore)} + 
+                    {Math.round(analysis.calculationDetails.lifestyleScore)} = 
+                    <span className="text-primary"> {analysis.score}점</span>
+                  </p>
+                </div>
+              </div>
+
+              <div className="bg-yellow-50 border border-yellow-200 p-4 rounded-lg">
+                <p className="text-sm text-yellow-800">
+                  <strong>💡 이해하기:</strong> 이 점수는 현재 저축 패턴과 재정 상태를 기반으로 한 예상 결과입니다. 
+                  실제 은퇴 준비는 시장 변동성, 건강 상태 변화, 인플레이션 등 다양한 요인의 영향을 받을 수 있습니다.
+                </p>
+              </div>
+            </CardContent>
+          )}
         </Card>
 
         <div className="flex flex-col sm:flex-row gap-4">

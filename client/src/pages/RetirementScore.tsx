@@ -639,7 +639,7 @@ export default function RetirementScoreStepByStep() {
                   <div className="bg-purple-50 p-4 rounded-lg">
                     <h4 className="font-medium text-purple-800">재정 건전성</h4>
                     <div className="text-xs text-purple-600 space-y-1">
-                      <div>• 비상자금: {Math.round(analysis.calculationDetails.emergencyRatio * 100)}% (6개월 소득 기준)</div>
+                      <div>• 현재 비상자금: {Math.round(analysis.calculationDetails.emergencyRatio * 100)}% (6개월 소득 기준)</div>
                       <div>• 부채비율: {Math.round(analysis.calculationDetails.debtRatio * 100)}%</div>
                       <div>• 저축률: {Math.round(analysis.calculationDetails.savingsRate * 100)}%</div>
                     </div>
@@ -962,11 +962,11 @@ export default function RetirementScoreStepByStep() {
                       name="emergencyFund"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>비상 자금 ($) *</FormLabel>
+                          <FormLabel>현재 보유 비상 자금 ($) *</FormLabel>
                           <FormControl>
                             <Input
                               type="number"
-                              placeholder="6개월 생활비 권장"
+                              placeholder="현재 가지고 있는 비상자금 금액"
                               {...field}
                               value={field.value || ''}
                               onChange={(e) => field.onChange(e.target.value === '' ? 0 : Number(e.target.value))}

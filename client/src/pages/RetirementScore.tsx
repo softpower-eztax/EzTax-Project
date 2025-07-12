@@ -654,7 +654,7 @@ export default function RetirementScoreStepByStep() {
                       <div>• 건강상태: {form.getValues('healthStatus')}</div>
                       <div>• 건강보험: {form.getValues('hasHealthInsurance') ? '있음' : '없음'}</div>
                       <div>• 주거형태: {form.getValues('homeOwnership')}</div>
-                      <div>• 부양가족: {form.getValues('dependentsCount')}명 (배우자 제외)</div>
+                      <div>• 현재 부양가족: {form.getValues('dependentsCount')}명 (배우자 제외)</div>
                     </div>
                     <p className="text-lg font-bold text-purple-900 mt-2">
                       {Math.round(analysis.calculationDetails.lifestyleScore)}점/10점
@@ -1234,11 +1234,11 @@ export default function RetirementScoreStepByStep() {
                       name="dependentsCount"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>부양가족 수 (배우자 제외) *</FormLabel>
+                          <FormLabel>현재 부양가족 수 (배우자 제외) *</FormLabel>
                           <FormControl>
                             <Input
                               type="number"
-                              placeholder="자녀 및 기타 부양가족 수"
+                              placeholder="현재 부양 중인 자녀 및 가족 수"
                               {...field}
                               onChange={(e) => field.onChange(Number(e.target.value))}
                             />

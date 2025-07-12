@@ -639,7 +639,7 @@ export default function RetirementScoreStepByStep() {
                   <div className="bg-purple-50 p-4 rounded-lg">
                     <h4 className="font-medium text-purple-800">재정 건전성</h4>
                     <div className="text-xs text-purple-600 space-y-1">
-                      <div>• 비상자금: {Math.round(analysis.calculationDetails.emergencyRatio * 100)}%</div>
+                      <div>• 비상자금: {Math.round(analysis.calculationDetails.emergencyRatio * 100)}% (6개월 소득 기준)</div>
                       <div>• 부채비율: {Math.round(analysis.calculationDetails.debtRatio * 100)}%</div>
                       <div>• 저축률: {Math.round(analysis.calculationDetails.savingsRate * 100)}%</div>
                     </div>
@@ -670,6 +670,22 @@ export default function RetirementScoreStepByStep() {
                     {Math.round(analysis.calculationDetails.lifestyleScore)} = 
                     <span className="text-primary"> {analysis.score}점</span>
                   </p>
+                </div>
+              </div>
+
+              {/* 비상자금 기준 설명 */}
+              <div className="bg-blue-50 border border-blue-200 p-4 rounded-lg">
+                <h4 className="font-medium text-blue-800 mb-3 flex items-center gap-2">
+                  💡 비상자금 6개월 기준의 이유
+                </h4>
+                <div className="text-sm text-blue-700 space-y-2">
+                  <div><strong>실직 대비:</strong> 평균 재취업 기간 3-5개월 (전문직은 6-12개월)</div>
+                  <div><strong>의료비 응급상황:</strong> 건강보험 본인부담금 및 예상치 못한 의료비</div>
+                  <div><strong>주거비 연속성:</strong> 렌트/모기지 등 고정비용 지속 지불 능력</div>
+                  <div><strong>심리적 안정:</strong> 급하게 나쁜 조건의 일자리 선택하지 않고 냉정한 판단 가능</div>
+                  <div className="pt-2 border-t border-blue-300">
+                    <strong>개인별 조정:</strong> 안정적 직업(3-4개월), 자영업(8-12개월), 맞벌이(6개월 충분)
+                  </div>
                 </div>
               </div>
 

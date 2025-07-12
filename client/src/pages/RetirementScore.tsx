@@ -894,11 +894,11 @@ export default function RetirementScoreStepByStep() {
                       name="desiredRetirementIncome"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>은퇴 후 예상 생활비 (월 비용 $) *</FormLabel>
+                          <FormLabel>은퇴 후 예상 생활비 (월 비용, 주거비 포함 $) *</FormLabel>
                           <FormControl>
                             <Input
                               type="number"
-                              placeholder="매월 필요 생활비 (예: 5000)"
+                              placeholder="모기지/렌트 포함 월 총 생활비"
                               {...field}
                               value={field.value || ''}
                               onChange={(e) => field.onChange(e.target.value === '' ? 0 : Number(e.target.value))}

@@ -539,9 +539,18 @@ ${message || '상담 요청'}
           await transporter.verify();
           console.log('Gmail SMTP connection verified successfully');
           
+          // Configure recipient emails
+          const recipients = ['eztax88@gmail.com'];
+          
+          // Add additional recipient email if provided in environment variable
+          const additionalEmail = process.env.ADDITIONAL_EMAIL;
+          if (additionalEmail) {
+            recipients.push(additionalEmail);
+          }
+
           const mailOptions = {
             from: 'eztax88@gmail.com',
-            to: 'eztax88@gmail.com',
+            to: recipients,
             subject: '[EzTax] 새로운 전문가 상담 요청',
             text: emailContent,
             html: `

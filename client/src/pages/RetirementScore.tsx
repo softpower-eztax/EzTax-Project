@@ -894,7 +894,7 @@ export default function RetirementScoreStepByStep() {
                       name="desiredRetirementIncome"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>은퇴 후 예상 생활비 (월 비용, 주거비 포함 $) *</FormLabel>
+                          <FormLabel>은퇴 후 예상 생활비 (주거비 포함 월비용 $) *</FormLabel>
                           <FormControl>
                             <Input
                               type="number"

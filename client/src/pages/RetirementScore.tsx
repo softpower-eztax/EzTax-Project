@@ -689,10 +689,46 @@ export default function RetirementScoreStepByStep() {
                 </div>
               </div>
 
+              {/* 학술적 근거 및 출처 */}
+              <div className="bg-gray-50 border border-gray-200 p-4 rounded-lg">
+                <h4 className="font-medium text-gray-800 mb-3 flex items-center gap-2">
+                  📖 계산 방식의 학술적 근거
+                </h4>
+                <div className="text-sm text-gray-700 space-y-3">
+                  <div>
+                    <strong>복리 계산:</strong> William F. Sharpe "Investments" 교과서의 미래가치 공식
+                    <div className="text-xs text-gray-600 ml-4">FV = PV × (1 + r)^n (현재가치 성장), FV = PMT × [((1 + r)^n - 1) / r] (월 저축 성장)</div>
+                  </div>
+                  <div>
+                    <strong>4% 룰:</strong> Trinity Study (1998) + William Bengen의 Safe Withdrawal Rate 연구
+                    <div className="text-xs text-gray-600 ml-4">연간 4% 인출 시 30년간 자금 유지 가능성 95% 이상</div>
+                  </div>
+                  <div>
+                    <strong>Social Security:</strong> Social Security Administration (SSA.gov) 공식 계산법
+                    <div className="text-xs text-gray-600 ml-4">조기수령 감액률, 연기수령 증액률 적용</div>
+                  </div>
+                  <div>
+                    <strong>비상자금 6개월:</strong> Federal Reserve 가계금융조사 + Dave Ramsey, Suze Orman 권장사항
+                    <div className="text-xs text-gray-600 ml-4">평균 실직 기간 통계 및 재정 안정성 연구 기반</div>
+                  </div>
+                  <div>
+                    <strong>저축률/부채비율:</strong> Bureau of Economic Analysis + Consumer Financial Protection Bureau
+                    <div className="text-xs text-gray-600 ml-4">미국 가계 재정 통계 및 권장 기준</div>
+                  </div>
+                  <div>
+                    <strong>투자수익률:</strong> S&P 500 Historical Returns + Vanguard 장기 투자 연구
+                    <div className="text-xs text-gray-600 ml-4">장기 주식시장 평균 수익률 7-10% 기반</div>
+                  </div>
+                </div>
+              </div>
+
               <div className="bg-yellow-50 border border-yellow-200 p-4 rounded-lg">
                 <p className="text-sm text-yellow-800">
                   <strong>💡 이해하기:</strong> 이 점수는 현재 저축 패턴과 재정 상태를 기반으로 한 예상 결과입니다. 
                   실제 은퇴 준비는 시장 변동성, 건강 상태 변화, 인플레이션 등 다양한 요인의 영향을 받을 수 있습니다.
+                  <br /><br />
+                  <strong>계산 방식:</strong> 학술적 재정학 이론과 실무 재정 계획 업계의 베스트 프랙티스를 조합하여 
+                  한국 고객에게 맞춘 종합적 접근법을 사용합니다.
                 </p>
               </div>
             </CardContent>

@@ -115,6 +115,34 @@ export interface AdditionalAdjustmentItem {
   description?: string;
 }
 
+export interface BusinessExpense {
+  grossIncome: number;
+  expenses: {
+    advertising: number;
+    carAndTruck: number;
+    commissions: number;
+    contractLabor: number;
+    depletion: number;
+    depreciation: number;
+    employeeBenefits: number;
+    insurance: number;
+    interest: number;
+    legal: number;
+    meals: number;
+    office: number;
+    pension: number;
+    rent: number;
+    repairs: number;
+    supplies: number;
+    taxes: number;
+    travel: number;
+    utilities: number;
+    wages: number;
+    other: number;
+  };
+  netIncome: number;
+}
+
 export interface QualifiedBusinessIncome {
   scheduleC: {
     businessName: string;
@@ -158,6 +186,7 @@ export interface Income {
   additionalIncomeItems?: AdditionalIncomeItem[];
   additionalAdjustmentItems?: AdditionalAdjustmentItem[];
   qbi?: QualifiedBusinessIncome;
+  businessExpense?: BusinessExpense;
   totalIncome: number;
   adjustments: {
     studentLoanInterest: number;

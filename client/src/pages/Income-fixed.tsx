@@ -645,6 +645,16 @@ export default function IncomePage() {
                                   <span className="tooltip-text">Net profit from business operations (Schedule C)</span>
                                 </div>
                               </div>
+                              <Button
+                                type="button"
+                                variant="outline"
+                                size="sm"
+                                onClick={() => setLocation('/business-expense')}
+                                className="text-xs flex items-center gap-1"
+                              >
+                                <Calculator className="h-3 w-3" />
+                                <span>지출 계산기</span>
+                              </Button>
                             </div>
                             <FormControl>
                               <Input

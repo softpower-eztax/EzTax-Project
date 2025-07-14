@@ -121,16 +121,16 @@ export default function BusinessExpensePage() {
 
       toast({
         title: "저장 완료",
-        description: "사업 지출 정보가 성공적으로 저장되었습니다.",
+        description: "사업 순소득 정보가 성공적으로 저장되었습니다.",
       });
 
       // 소득 페이지로 돌아가기
       setLocation('/income');
     } catch (error) {
-      console.error('사업 지출 저장 오류:', error);
+      console.error('사업 순소득 저장 오류:', error);
       toast({
         title: "저장 실패",
-        description: "사업 지출 정보 저장 중 오류가 발생했습니다.",
+        description: "사업 순소득 정보 저장 중 오류가 발생했습니다.",
         variant: "destructive",
       });
     }
@@ -172,7 +172,7 @@ export default function BusinessExpensePage() {
           소득 페이지로 돌아가기
         </Button>
         
-        <h1 className="text-3xl font-bold text-primary-dark mb-2">사업 지출 계산기</h1>
+        <h1 className="text-3xl font-bold text-primary-dark mb-2">사업 순소득 계산기</h1>
         <p className="text-gray-600">
           Schedule C 사업 소득과 지출을 입력하여 순소득을 계산하세요.
         </p>

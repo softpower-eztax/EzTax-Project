@@ -653,7 +653,7 @@ export default function IncomePage() {
                                 className="text-xs flex items-center gap-1"
                               >
                                 <Calculator className="h-3 w-3" />
-                                <span>지출 계산기</span>
+                                <span>순소득 계산기</span>
                               </Button>
                             </div>
                             <FormControl>

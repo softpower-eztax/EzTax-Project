@@ -115,6 +115,21 @@ export interface AdditionalAdjustmentItem {
   description?: string;
 }
 
+export interface K1Item {
+  entityName: string;
+  entityType: 'partnership' | 'scorp' | 'trust';
+  ordinaryIncome: number;
+  rentalIncome: number;
+  interestIncome: number;
+  dividendIncome: number;
+  capitalGains: number;
+  section199ADeduction: number;
+  charitableContributions: number;
+  section179Deduction: number;
+  credits: number;
+  taxesPaid: number;
+}
+
 export interface BusinessExpense {
   grossIncome: number;
   expenses: {
@@ -141,6 +156,8 @@ export interface BusinessExpense {
     other: number;
   };
   netIncome: number;
+  k1Items: K1Item[];
+  totalK1Income: number;
 }
 
 export interface QualifiedBusinessIncome {

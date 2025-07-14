@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Separator } from '@/components/ui/separator';
-import { Info, Plus, X, Save } from 'lucide-react';
+import { Info, Plus, X, Save, Calculator } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import ProgressTracker from '@/components/ProgressTracker';
 
@@ -1139,6 +1139,31 @@ const Deductions: React.FC = () => {
                   )}
                   
 
+                  
+                  {/* QBI 계산기 버튼 */}
+                  <div className="mt-6 border rounded-md p-4 bg-blue-50/50">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <h4 className="font-semibold text-blue-700 mb-2">QBI 공제 계산기 (Section 199A)</h4>
+                        <p className="text-sm text-blue-600">
+                          적격 사업소득(QBI)의 최대 20% 공제 가능. 소득 한도 및 사업 유형에 따라 제한됩니다.
+                        </p>
+                        <div className="text-sm text-blue-600 mt-2 space-y-1">
+                          <div>• 2024년 한도 (단독): $191,950</div>
+                          <div>• 2024년 한도 (부부합산): $383,900</div>
+                        </div>
+                      </div>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={() => navigate('/qbi-details')}
+                        className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white border-blue-600"
+                      >
+                        <Calculator className="h-4 w-4" />
+                        QBI 계산기
+                      </Button>
+                    </div>
+                  </div>
                   
                   {/* 진행상황저장 버튼 */}
                   <div className="mt-6 flex justify-center">

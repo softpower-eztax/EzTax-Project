@@ -686,22 +686,7 @@ export default function IncomePage() {
                         )}
                       />
                       
-                      <div className="border rounded-md p-4 bg-green-50/50">
-                        <p className="text-sm font-medium text-green-800 mb-2">QBI 공제 (Section 199A)</p>
-                        <p className="text-xs text-green-700 mb-3">
-                          적격 사업소득의 최대 20% 공제 가능. 소득 한도 및 사업 유형에 따라 제한됩니다.
-                        </p>
-                        <div className="text-sm space-y-1">
-                          <div className="flex justify-between">
-                            <span>2024년 한도 (단독):</span>
-                            <span className="font-medium">$191,950</span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span>2024년 한도 (부부합산):</span>
-                            <span className="font-medium">$383,900</span>
-                          </div>
-                        </div>
-                      </div>
+
                     </div>
                   </div>
                   

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useLocation } from 'wouter';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
@@ -60,7 +60,19 @@ type BusinessExpenseForm = z.infer<typeof businessExpenseSchema>;
 export default function BusinessExpensePage() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
-  const { taxData, updateTaxData } = useTaxContext();
+  
+  // TaxContext 사용 시 에러 처리
+  let taxData, updateTaxData;
+  try {
+    const context = useTaxContext();
+    taxData = context.taxData;
+    updateTaxData = context.updateTaxData;
+  } catch (error) {
+    console.error('TaxContext 접근 오류:', error);
+    // 로그인 페이지로 리디렉션
+    setLocation('/auth');
+    return <div>로그인이 필요합니다...</div>;
+  }
 
   const form = useForm<BusinessExpenseForm>({
     resolver: zodResolver(businessExpenseSchema),
@@ -97,41 +109,41 @@ export default function BusinessExpensePage() {
 
   // 기존 데이터 로드
   useEffect(() => {
-    if (taxData.income?.businessExpense) {
+    if (taxData?.income?.businessExpense) {
       form.reset(taxData.income.businessExpense);
     }
-  }, [taxData.income?.businessExpense, form]);
+  }, [taxData?.income?.businessExpense, form]);
 
   // 총 지출 계산
-  const calculateTotalExpenses = () => {
-    const expenses = form.watch('expenses');
+  const calculateTotalExpenses = useCallback(() => {
+    const expenses = form.getValues('expenses');
     return Object.values(expenses).reduce((sum, value) => sum + (value || 0), 0);
-  };
+  }, [form]);
 
   // 순소득 계산
-  const calculateNetIncome = () => {
-    const grossIncome = form.watch('grossIncome') || 0;
+  const calculateNetIncome = useCallback(() => {
+    const grossIncome = form.getValues('grossIncome') || 0;
     const totalExpenses = calculateTotalExpenses();
     const netIncome = grossIncome - totalExpenses;
-    form.setValue('netIncome', netIncome);
+    form.setValue('netIncome', netIncome, { shouldDirty: false });
     return netIncome;
-  };
+  }, [form]);
 
   // K-1 총 소득 계산
-  const calculateTotalK1Income = () => {
-    const k1Items = form.watch('k1Items') || [];
+  const calculateTotalK1Income = useCallback(() => {
+    const k1Items = form.getValues('k1Items') || [];
     const totalK1 = k1Items.reduce((sum, item) => {
       return sum + (item.ordinaryIncome || 0) + (item.rentalIncome || 0) + 
              (item.interestIncome || 0) + (item.dividendIncome || 0) + 
              (item.capitalGains || 0);
     }, 0);
-    form.setValue('totalK1Income', totalK1);
+    form.setValue('totalK1Income', totalK1, { shouldDirty: false });
     return totalK1;
-  };
+  }, [form]);
 
   // K-1 항목 추가
-  const addK1Item = () => {
-    const currentItems = form.watch('k1Items') || [];
+  const addK1Item = useCallback(() => {
+    const currentItems = form.getValues('k1Items') || [];
     const newItem = {
       entityName: '',
       entityType: 'partnership' as const,
@@ -146,24 +158,21 @@ export default function BusinessExpensePage() {
       credits: 0,
       taxesPaid: 0,
     };
-    form.setValue('k1Items', [...currentItems, newItem]);
-  };
+    form.setValue('k1Items', [...currentItems, newItem], { shouldDirty: true });
+  }, [form]);
 
   // K-1 항목 제거
-  const removeK1Item = (index: number) => {
-    const currentItems = form.watch('k1Items') || [];
+  const removeK1Item = useCallback((index: number) => {
+    const currentItems = form.getValues('k1Items') || [];
     const updatedItems = currentItems.filter((_, i) => i !== index);
-    form.setValue('k1Items', updatedItems);
-  };
+    form.setValue('k1Items', updatedItems, { shouldDirty: true });
+  }, [form]);
 
   // 실시간 계산
   useEffect(() => {
-    const subscription = form.watch(() => {
-      calculateNetIncome();
-      calculateTotalK1Income();
-    });
-    return () => subscription.unsubscribe();
-  }, [form]);
+    calculateNetIncome();
+    calculateTotalK1Income();
+  }, [calculateNetIncome, calculateTotalK1Income]);
 
   const onSubmit = async (data: BusinessExpenseForm) => {
     try {
@@ -171,7 +180,7 @@ export default function BusinessExpensePage() {
       const totalBusinessIncome = data.netIncome + data.totalK1Income;
       await updateTaxData({
         income: {
-          ...taxData.income,
+          ...taxData?.income,
           businessExpense: data,
           businessIncome: totalBusinessIncome, // Schedule C + K-1 합계
         },
@@ -561,14 +570,14 @@ export default function BusinessExpensePage() {
                 <div className="flex justify-between items-center p-4 bg-green-50 rounded-lg border-2 border-green-200">
                   <span className="font-semibold text-green-800">Schedule C 순소득 (Net Income)</span>
                   <span className="text-2xl font-bold text-green-700">
-                    ${calculateNetIncome().toLocaleString()}
+                    ${form.watch('netIncome').toLocaleString()}
                   </span>
                 </div>
                 
                 <div className="flex justify-between items-center p-4 bg-blue-50 rounded-lg border-2 border-blue-200">
                   <span className="font-semibold text-blue-800">K-1 총소득 (Total K-1 Income)</span>
                   <span className="text-2xl font-bold text-blue-700">
-                    ${calculateTotalK1Income().toLocaleString()}
+                    ${form.watch('totalK1Income').toLocaleString()}
                   </span>
                 </div>
                 
@@ -577,7 +586,7 @@ export default function BusinessExpensePage() {
                 <div className="flex justify-between items-center p-4 bg-purple-50 rounded-lg border-2 border-purple-200">
                   <span className="font-semibold text-purple-800">총 사업소득 (Total Business Income)</span>
                   <span className="text-2xl font-bold text-purple-700">
-                    ${(calculateNetIncome() + calculateTotalK1Income()).toLocaleString()}
+                    ${(form.watch('netIncome') + form.watch('totalK1Income')).toLocaleString()}
                   </span>
                 </div>
                 

@@ -55,10 +55,27 @@ export interface Messages {
     taxSimulatorButton: string;
     retirementDiagnosisButton: string;
     description: string;
+    whyEzTax: string;
+    processDescription: string;
+    readyToFile: string;
+    learnMoreAbout: string;
+    taxSimulatorTooltip: string;
+    completeTaxReturn: string;
+    startNowAuth: string;
+    startWithLogin: string;
+    taxSimulatorCTA: string;
     features: {
       easyCalculation: string;
       expertConsultation: string;
       retirementPlanning: string;
+      maxDeductions: string;
+      safeAndPrivate: string;
+    };
+    featureDescriptions: {
+      easyCalculation: string;
+      maxDeductions: string;
+      retirementPlanning: string;
+      safeAndPrivate: string;
     };
   };
 
@@ -92,6 +109,17 @@ export interface Messages {
     addDependent: string;
     saveProgress: string;
     filingStatusChecker: string;
+    basicInfo: string;
+    noDependents: string;
+    dependent: string;
+    dependentName: string;
+    relationship: string;
+    remove: string;
+    formDescription: string;
+    spouseFirstName: string;
+    spouseLastName: string;
+    spouseSSN: string;
+    spouseDateOfBirth: string;
   };
 
   // Income
@@ -328,17 +356,17 @@ export const koMessages: Messages = {
       maxDeductions: '최대 공제 혜택',
       safeAndPrivate: '안전하고 비공개적',
     },
+    featureDescriptions: {
+      easyCalculation: '각 단계를 순서대로 안내하여 세금 신고를 도와드립니다.',
+      maxDeductions: '귀하가 받을 수 있는 모든 공제와 크레딧을 찾아드립니다.',
+      retirementPlanning: '개인별 맞춤 은퇴 설계와 세금 최적화 전략을 제공합니다.',
+      safeAndPrivate: '귀하의 데이터는 은행 수준의 보안으로 암호화되어 보호됩니다.',
+    },
     taxSimulatorTooltip: '가입없이도 세금을 계산해볼수 있습니다',
     completeTaxReturn: '30분 만에 2025년 세금 신고를 완료하세요.',
     startNowAuth: '지금 시작하기',
     startWithLogin: '로그인하고 시작하기(Login to Start)',
     taxSimulatorCTA: '세금시뮬레이터(Tax Simulator)',
-    featureDescriptions: {
-      easyCalculation: '세금 신고의 각 단계를 차례대로 안내해 드립니다.',
-      maxDeductions: '귀하가 받을 수 있는 모든 공제와 세액 공제를 찾아드립니다.',
-      retirementPlanning: '개인 맞춤형 은퇴 계획과 세금 최적화 전략을 제공합니다.',
-      safeAndPrivate: '귀하의 데이터는 은행 수준의 보안으로 암호화되고 보호됩니다.',
-    },
   },
 
   personalInfo: {
@@ -606,17 +634,17 @@ export const enMessages: Messages = {
       maxDeductions: 'Maximum Deductions',
       safeAndPrivate: 'Safe & Private',
     },
-    taxSimulatorTooltip: 'Calculate taxes without registration',
-    completeTaxReturn: 'Complete your 2025 tax return in 30 minutes.',
-    startNowAuth: 'Get Started',
-    startWithLogin: 'Login to Start',
-    taxSimulatorCTA: 'Tax Simulator',
     featureDescriptions: {
       easyCalculation: 'We guide you through each step of tax filing in order.',
       maxDeductions: 'We find all deductions and credits you qualify for.',
       retirementPlanning: 'Personalized retirement planning and tax optimization strategies.',
       safeAndPrivate: 'Your data is encrypted and protected with bank-level security.',
     },
+    taxSimulatorTooltip: 'Calculate taxes without registration',
+    completeTaxReturn: 'Complete your 2025 tax return in 30 minutes.',
+    startNowAuth: 'Get Started',
+    startWithLogin: 'Login to Start',
+    taxSimulatorCTA: 'Tax Simulator',
   },
 
   personalInfo: {

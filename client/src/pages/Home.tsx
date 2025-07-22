@@ -153,22 +153,22 @@ const Home: React.FC = () => {
             </p>
             <ol className="list-decimal pl-6 mb-4 space-y-2">
               <li>
-                <strong>개인 정보</strong> - 기본 정보 및 신고 상태
+                <strong>{messages.navigation.personalInfo}</strong> - {messages.home.stepDescriptions.personalInfo}
               </li>
               <li>
-                <strong>소득 정보</strong> - 급여, 이자, 기타 소득 입력
+                <strong>{messages.navigation.income}</strong> - {messages.home.stepDescriptions.income}
               </li>
               <li>
-                <strong>공제 항목</strong> - 표준 공제 또는 항목별 공제 선택
+                <strong>{messages.navigation.deductions}</strong> - {messages.home.stepDescriptions.deductions}
               </li>
               <li>
-                <strong>세액 공제</strong> - 자격이 있는 공제 항목 확인
+                <strong>{messages.navigation.taxCredits}</strong> - {messages.home.stepDescriptions.taxCredits}
               </li>
               <li>
-                <strong>추가 세금</strong> - 자영업 및 기타 소득
+                <strong>{messages.navigation.additionalTax}</strong> - {messages.home.stepDescriptions.additionalTax}
               </li>
               <li>
-                <strong>검토 및 계산</strong> - 최종 확인 및 신고서 생성
+                <strong>{messages.navigation.review}</strong> - {messages.home.stepDescriptions.review}
               </li>
             </ol>
           </CardContent>

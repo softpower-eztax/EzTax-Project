@@ -29,6 +29,7 @@ export interface Messages {
     confirm: string;
     yes: string;
     no: string;
+    logoTagline: string;
   };
 
   // Navigation
@@ -396,6 +397,7 @@ export const koMessages: Messages = {
     confirm: "확인",
     yes: "예",
     no: "아니오",
+    logoTagline: "세금계산 간편하게",
   },
 
   navigation: {
@@ -755,6 +757,7 @@ export const enMessages: Messages = {
     confirm: "Confirm",
     yes: "Yes",
     no: "No",
+    logoTagline: "Easy Tax Calculation",
   },
 
   navigation: {

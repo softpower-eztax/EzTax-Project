@@ -73,7 +73,7 @@ const Home: React.FC = () => {
 
       <section className="mb-12">
         <h2 className="text-2xl font-heading font-bold text-primary-dark text-center mb-8">
-          왜 EzTax인가요?
+          {messages.home.whyEzTax}
         </h2>
 
         <div className="grid md:grid-cols-4 gap-6">
@@ -84,7 +84,7 @@ const Home: React.FC = () => {
             </CardHeader>
             <CardContent>
               <p className="text-gray-dark">
-                세금 신고의 각 단계를 차례대로 안내해 드립니다.
+                {messages.home.featureDescriptions.easyCalculation}
               </p>
             </CardContent>
           </Card>
@@ -92,11 +92,11 @@ const Home: React.FC = () => {
           <Card>
             <CardHeader className="pb-2">
               <FileText className="h-10 w-10 text-primary mb-2" />
-              <CardTitle className="text-lg">최대 공제 혜택</CardTitle>
+              <CardTitle className="text-lg">{messages.home.features.maxDeductions}</CardTitle>
             </CardHeader>
             <CardContent>
               <p className="text-gray-dark">
-                귀하가 받을 수 있는 모든 공제와 세액 공제를 찾아드립니다.
+                {messages.home.featureDescriptions.maxDeductions}
               </p>
             </CardContent>
           </Card>
@@ -108,7 +108,7 @@ const Home: React.FC = () => {
             </CardHeader>
             <CardContent>
               <p className="text-gray-dark">
-                개인 맞춤형 은퇴 계획과 세금 최적화 전략을 제공합니다.
+                {messages.home.featureDescriptions.retirementPlanning}
               </p>
             </CardContent>
           </Card>
@@ -116,11 +116,11 @@ const Home: React.FC = () => {
           <Card>
             <CardHeader className="pb-2">
               <Shield className="h-10 w-10 text-primary mb-2" />
-              <CardTitle className="text-lg">안전하고 비공개적</CardTitle>
+              <CardTitle className="text-lg">{messages.home.features.safeAndPrivate}</CardTitle>
             </CardHeader>
             <CardContent>
               <p className="text-gray-dark">
-                귀하의 데이터는 은행 수준의 보안으로 암호화되고 보호됩니다.
+                {messages.home.featureDescriptions.safeAndPrivate}
               </p>
             </CardContent>
           </Card>
@@ -132,7 +132,7 @@ const Home: React.FC = () => {
             className="text-gray-600 hover:text-primary underline"
             onClick={() => navigate("/about")}
           >
-            EzTax와 운영진에 대해 더 알아보기 →
+            {messages.home.learnMoreAbout}
           </Button>
         </div>
       </section>
@@ -141,7 +141,7 @@ const Home: React.FC = () => {
         <Card>
           <CardHeader>
             <CardTitle className="text-2xl font-heading text-primary-dark">
-              세금 신고 준비가 되셨나요?
+              {messages.home.readyToFile}
             </CardTitle>
             <CardDescription>
               30분 만에 2025년 세금 신고를 완료하세요.
@@ -149,7 +149,7 @@ const Home: React.FC = () => {
           </CardHeader>
           <CardContent>
             <p className="mb-4">
-              저희의 간단한 과정은 다음 여섯 가지 섹션으로 안내합니다:
+              {messages.home.processDescription}
             </p>
             <ol className="list-decimal pl-6 mb-4 space-y-2">
               <li>

@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { TaxData } from '../types/tax';
 import { calculateTaxes } from '../lib/taxCalculations';
+import { useAuth } from '../hooks/use-auth';
 
 interface TaxContextType {
   taxData: TaxData;
@@ -291,7 +292,7 @@ export const TaxProvider: React.FC<{ children: React.ReactNode }> = ({ children 
             const newTaxReturn = await response.json();
             console.log(`새 세금 신고서 생성됨 (ID: ${newTaxReturn.id})`);
             // Update the local data with the new ID
-            setTaxData(prev => ({ ...prev, id: newTaxReturn.id }));
+            setTaxData((prev: any) => ({ ...prev, id: newTaxReturn.id }));
           }
         }
       } catch (error) {
@@ -332,7 +333,7 @@ export const TaxProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         }
 
         const newTaxReturn = await response.json();
-        setTaxData(prev => ({ ...prev, id: newTaxReturn.id }));
+        setTaxData((prev: any) => ({ ...prev, id: newTaxReturn.id }));
       }
 
       console.log('세금 데이터 저장 완료');

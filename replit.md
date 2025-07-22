@@ -105,6 +105,7 @@ Preferred communication style: Simple, everyday language.
 ## Changelog
 
 Recent Changes:
+- July 22, 2025: **REPLIT AGENT TO REPLIT MIGRATION COMPLETED** - Successfully migrated EzTax project from Replit Agent environment to standard Replit with PostgreSQL database setup, TSX runtime configuration, schema migrations, and full application functionality restored including authentication, data persistence, and tax calculation features
 - July 12, 2025: **BUSINESS NET INCOME CALCULATOR IMPLEMENTED** - Created comprehensive business net income calculator page with 21 expense categories, real-time calculation, and seamless integration with income page through "순소득 계산기" button for Schedule C tax preparation
 - July 12, 2025: **QBI CALCULATOR REPOSITIONED** - Moved QBI (Qualified Business Income) calculator button from Income page to Deductions page bottom with enhanced styling and contextual information about Section 199A deduction limits for better user workflow organization
 - July 12, 2025: **EXPERT CONSULTATION EMAIL SYSTEM IMPLEMENTED** - Added complete email functionality to About page "상담 예약하기" button with modal form, server-side API endpoint, and Gmail integration for automatic consultation request forwarding to eztax88@gmail.com

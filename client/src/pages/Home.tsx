@@ -17,10 +17,12 @@ import {
 } from "@/components/ui/tooltip";
 import { File, FileText, Clock, Shield } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
+import { useLanguage } from "@/context/LanguageContext";
 
 const Home: React.FC = () => {
   const [, navigate] = useLocation();
   const { user } = useAuth();
+  const { messages } = useLanguage();
 
   // 자동 데이터 주입 제거 - 사용자가 직접 입력하도록 변경
 
@@ -28,20 +30,16 @@ const Home: React.FC = () => {
     <div className="max-w-5xl mx-auto">
       <section className="mb-12 text-center py-10">
         <h1 className="text-4xl md:text-5xl font-heading font-bold text-primary-dark mb-2">
-          세상쉬운 세금계산 세상귀한 노후준비 2026
+          {messages.home.title}
         </h1>
         <p
           className="text-2xl md:text-3xl font-bold text-gray-600 mb-4 tracking-wide"
           style={{ fontFamily: "Georgia, serif" }}
         >
-          Less Tax, More Wealth
+          {messages.home.subtitle}
         </p>
-        {/* <p className="text-lg font-medium text-primary-dark max-w-4xl mx-auto mb-4 bg-primary/5 p-4 rounded-lg border border-primary/20">
-          EzTax는 단순히 올해 세금을 정리하는 것에 그치지 않고,<br />
-          당신의 평생 세금+은퇴 전략을 함께 설계합니다.
-        </p> */}
         <p className="text-xl text-gray-dark mb-8 text-center">
-          세금시뮬레이터로 간단하게 계산하시고 노후준비도 진단하세요.
+          {messages.home.tagline}
         </p>
 
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -54,7 +52,7 @@ const Home: React.FC = () => {
                   className="bg-green-500 hover:bg-green-600 text-white font-bold w-full sm:w-64"
                   onClick={() => navigate("/personal-info")}
                 >
-                  세금시뮬레이터(Tax Simulator)
+                  {messages.home.taxSimulatorButton}
                 </Button>
               </TooltipTrigger>
               <TooltipContent>
@@ -68,7 +66,7 @@ const Home: React.FC = () => {
             className="bg-primary hover:bg-primary-dark text-white font-bold w-full sm:w-64"
             onClick={() => navigate("/retirement-score")}
           >
-            은퇴준비상태진단
+            {messages.home.retirementDiagnosisButton}
           </Button>
         </div>
       </section>
@@ -82,7 +80,7 @@ const Home: React.FC = () => {
           <Card>
             <CardHeader className="pb-2">
               <File className="h-10 w-10 text-primary mb-2" />
-              <CardTitle className="text-lg">간편한 절차</CardTitle>
+              <CardTitle className="text-lg">{messages.home.features.easyCalculation}</CardTitle>
             </CardHeader>
             <CardContent>
               <p className="text-gray-dark">
@@ -106,7 +104,7 @@ const Home: React.FC = () => {
           <Card>
             <CardHeader className="pb-2">
               <Clock className="h-10 w-10 text-primary mb-2" />
-              <CardTitle className="text-lg">최적의 은퇴전략 제안</CardTitle>
+              <CardTitle className="text-lg">{messages.home.features.retirementPlanning}</CardTitle>
             </CardHeader>
             <CardContent>
               <p className="text-gray-dark">

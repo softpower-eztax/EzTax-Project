@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { useLocation } from 'wouter';
 // import { useTaxContext } from '@/context/TaxContext';
 import { useAuth } from '@/hooks/use-auth';
+import { LanguageToggle } from '@/components/LanguageToggle';
 import { 
   AlertDialog,
   AlertDialogAction,
@@ -65,6 +66,8 @@ const Header: React.FC = () => {
         </div>
         
         <div className="flex items-center space-x-4">
+          <LanguageToggle />
+          
           {showButtons && (
             <>
               <Button 

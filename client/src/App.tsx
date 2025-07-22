@@ -36,6 +36,7 @@ import FilingStatusChecker from "@/pages/FilingStatusChecker";
 import { AuthProvider } from "@/hooks/use-auth";
 import { ProtectedRoute } from "@/lib/protected-route";
 import { TaxProvider } from "@/context/TaxContext";
+import { LanguageProvider } from "@/context/LanguageContext";
 
 function Router() {
   return (
@@ -75,20 +76,22 @@ function Router() {
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <TaxProvider>
-          <TooltipProvider>
-            <div className="flex flex-col min-h-screen">
-              <Header />
-              <main className="py-8 flex-grow">
-                <Router />
-              </main>
-              <Footer />
-            </div>
-            <Toaster />
-          </TooltipProvider>
-        </TaxProvider>
-      </AuthProvider>
+      <LanguageProvider>
+        <AuthProvider>
+          <TaxProvider>
+            <TooltipProvider>
+              <div className="flex flex-col min-h-screen">
+                <Header />
+                <main className="py-8 flex-grow">
+                  <Router />
+                </main>
+                <Footer />
+              </div>
+              <Toaster />
+            </TooltipProvider>
+          </TaxProvider>
+        </AuthProvider>
+      </LanguageProvider>
     </QueryClientProvider>
   );
 }

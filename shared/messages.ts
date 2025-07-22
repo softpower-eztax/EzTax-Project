@@ -353,6 +353,17 @@ export const koMessages: Messages = {
     addDependent: '부양가족 추가',
     saveProgress: '진행상황저장',
     filingStatusChecker: 'Filing Status 확인',
+    basicInfo: '기본 정보',
+    noDependents: '부양가족이 없습니다. 위의 버튼을 클릭하여 추가하세요.',
+    dependent: '부양가족',
+    dependentName: '이름',
+    relationship: '관계',
+    remove: '삭제',
+    formDescription: '세금 신고서 작성을 위해 개인정보를 입력해주세요.',
+    spouseFirstName: '배우자 이름',
+    spouseLastName: '배우자 성',
+    spouseSSN: '배우자 SSN',
+    spouseDateOfBirth: '배우자 생년월일'
   },
 
   income: {
@@ -603,6 +614,17 @@ export const enMessages: Messages = {
     addDependent: 'Add Dependent',
     saveProgress: 'Save Progress',
     filingStatusChecker: 'Filing Status Checker',
+    basicInfo: 'Basic Information',
+    noDependents: 'No dependents added. Click the button above to add dependents.',
+    dependent: 'Dependent',
+    dependentName: 'Name',
+    relationship: 'Relationship',
+    remove: 'Remove',
+    formDescription: 'Please enter your personal information for tax filing.',
+    spouseFirstName: 'Spouse First Name',
+    spouseLastName: 'Spouse Last Name',
+    spouseSSN: 'Spouse SSN',
+    spouseDateOfBirth: 'Spouse Date of Birth'
   },
 
   income: {

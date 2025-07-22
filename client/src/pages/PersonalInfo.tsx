@@ -188,7 +188,7 @@ const PersonalInfo: React.FC = () => {
       
       <div className="mb-6">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">{messages.personalInfo.title} (Personal Information)</h1>
-        <p className="text-gray-600">세금 신고서 작성을 위해 개인정보를 입력해주세요.</p>
+        <p className="text-gray-600">{messages.personalInfo.formDescription}</p>
       </div>
 
       <Form {...form}>
@@ -197,7 +197,7 @@ const PersonalInfo: React.FC = () => {
           {/* 기본 개인정보 */}
           <Card>
             <CardContent className="pt-6">
-              <h2 className="text-xl font-semibold mb-4">{messages.personalInfo.basicInfo || "기본 정보"}</h2>
+              <h2 className="text-xl font-semibold mb-4">{messages.personalInfo.basicInfo}</h2>
               
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                 <FormField
@@ -529,23 +529,23 @@ const PersonalInfo: React.FC = () => {
           <Card>
             <CardContent className="pt-6">
               <div className="flex justify-between items-center mb-4">
-                <h2 className="text-xl font-semibold">부양가족 (Dependents)</h2>
+                <h2 className="text-xl font-semibold">{messages.personalInfo.dependents}</h2>
                 <Button type="button" onClick={addDependent} variant="outline" size="sm">
                   <PlusCircle className="h-4 w-4 mr-2" />
-                  부양가족 추가
+                  {messages.personalInfo.addDependent}
                 </Button>
               </div>
 
               {dependentFields.length === 0 ? (
                 <p className="text-gray-500 text-center py-4">
-                  부양가족이 없습니다. 위의 버튼을 클릭하여 추가하세요.
+                  {messages.personalInfo.noDependents}
                 </p>
               ) : (
                 <div className="space-y-4">
                   {dependentFields.map((field, index) => (
                     <div key={field.id} className="p-4 border rounded-lg">
                       <div className="flex justify-between items-center mb-4">
-                        <h3 className="font-medium">부양가족 {index + 1}</h3>
+                        <h3 className="font-medium">{messages.personalInfo.dependent} {index + 1}</h3>
                         <Button
                           type="button"
                           onClick={() => remove(index)}
@@ -562,9 +562,9 @@ const PersonalInfo: React.FC = () => {
                           name={`dependents.${index}.firstName`}
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel>이름</FormLabel>
+                              <FormLabel>{messages.personalInfo.dependentName}</FormLabel>
                               <FormControl>
-                                <Input placeholder="부양가족 이름" {...field} />
+                                <Input placeholder={messages.personalInfo.dependentName} {...field} />
                               </FormControl>
                               <FormMessage />
                             </FormItem>
@@ -576,9 +576,9 @@ const PersonalInfo: React.FC = () => {
                           name={`dependents.${index}.lastName`}
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel>성</FormLabel>
+                              <FormLabel>{messages.personalInfo.lastName}</FormLabel>
                               <FormControl>
-                                <Input placeholder="부양가족 성" {...field} />
+                                <Input placeholder={messages.personalInfo.lastName} {...field} />
                               </FormControl>
                               <FormMessage />
                             </FormItem>
@@ -612,7 +612,7 @@ const PersonalInfo: React.FC = () => {
                           name={`dependents.${index}.relationship`}
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel>관계</FormLabel>
+                              <FormLabel>{messages.personalInfo.relationship}</FormLabel>
                               <Select onValueChange={field.onChange} defaultValue={field.value}>
                                 <FormControl>
                                   <SelectTrigger>

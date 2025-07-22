@@ -152,7 +152,7 @@ const PersonalInfo: React.FC = () => {
       firstName: '',
       lastName: '',
       ssn: '',
-      relationship: relationshipOptions[0].value,
+      relationship: getRelationshipOptions(messages)[0].value,
       dateOfBirth: '',
       isDisabled: false,
       isNonresidentAlien: false,

@@ -591,6 +591,7 @@ export const koMessages: Messages = {
 
   retirementScore: {
     title: "종합 은퇴 준비 진단",
+    guideDesc: "4단계 간단한 질문으로 당신의 은퇴 준비 점수를 확인하고 맞춤 전략을 받아보세요",
     stepTitles: {
       step1: "1단계: 기본 정보",
       step2: "2단계: 재정 상태",
@@ -952,6 +953,7 @@ export const enMessages: Messages = {
 
   retirementScore: {
     title: "Comprehensive Retirement Readiness Assessment",
+    guideDesc: "Check your retirement readiness score and receive personalized strategies with 4 simple steps",
     stepTitles: {
       step1: "Step 1: Basic Information",
       step2: "Step 2: Financial Status",

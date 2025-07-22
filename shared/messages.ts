@@ -599,7 +599,7 @@ export const koMessages: Messages = {
     },
     stepDescriptions: {
       step1: "나이, 은퇴계획, 현재 저축 상황을 입력해주세요",
-      step2: "소득, 부채, 비상자금 등 재정상태를 진단합니다",
+      step2: "소득, 부채, 비상자금 등 재정n��태를 진단합니다",
       step3: "건강, 주거, 가족상황 등을 확인합니다",
       step4: "투자경험과 위험성향을 파악합니다",
     },
@@ -613,7 +613,8 @@ export const koMessages: Messages = {
       currentIncome: "현재 연소득 ($) *",
       emergencyFund: "현재 보유 비상 자금 ($) *",
       totalDebt: "총 부채 ($) *",
-      expectedSocialSecurityBenefit: "예상 Social Security 연금 (월 수령액 $) *",
+      expectedSocialSecurityBenefit:
+        "예상 Social Security 연금 (월 수령액 $) *",
       healthStatus: "건강 상태 *",
       hasHealthInsurance: "건강보험 가입 *",
       homeOwnership: "주거 상태 *",
@@ -958,8 +959,10 @@ export const enMessages: Messages = {
       step4: "Step 4: Investment Style",
     },
     stepDescriptions: {
-      step1: "Please enter your age, retirement plans, and current savings situation",
-      step2: "We diagnose your financial status including income, debt, and emergency funds",
+      step1:
+        "Please enter your age, retirement plans, and current savings situation",
+      step2:
+        "We diagnose your financial status including income, debt, and emergency funds",
       step3: "We check your health, housing, and family situation",
       step4: "We assess your investment experience and risk tolerance",
     },
@@ -968,12 +971,14 @@ export const enMessages: Messages = {
       expectedRetirementAge: "Expected Retirement Age *",
       currentSavings: "Current Total Savings ($) *",
       monthlyContribution: "Monthly Savings ($) *",
-      desiredRetirementIncome: "Expected Retirement Living Expenses (Monthly Housing Included $) *",
+      desiredRetirementIncome:
+        "Expected Retirement Living Expenses (Monthly Housing Included $) *",
       expectedAnnualReturn: "Expected Annual Investment Return (%) *",
       currentIncome: "Current Annual Income ($) *",
       emergencyFund: "Current Emergency Fund ($) *",
       totalDebt: "Total Debt ($) *",
-      expectedSocialSecurityBenefit: "Expected Social Security Benefits (Monthly $) *",
+      expectedSocialSecurityBenefit:
+        "Expected Social Security Benefits (Monthly $) *",
       healthStatus: "Health Status *",
       hasHealthInsurance: "Health Insurance Coverage *",
       homeOwnership: "Housing Status *",

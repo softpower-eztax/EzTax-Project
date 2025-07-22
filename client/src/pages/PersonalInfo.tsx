@@ -12,18 +12,19 @@ import { PlusCircle, Trash2, Save } from 'lucide-react';
 import ProgressTracker from '@/components/ProgressTracker';
 import { useTaxContext } from '@/context/TaxContext';
 import { useLocation } from 'wouter';
+import { useLanguage } from '@/context/LanguageContext';
 
-const relationshipOptions = [
-  { value: "child", label: "자녀 (Child)" },
-  { value: "parent", label: "부모 (Parent)" },
-  { value: "grandparent", label: "조부모 (Grandparent)" },
-  { value: "sibling", label: "형제자매 (Sibling)" },
-  { value: "grandchild", label: "손자녀 (Grandchild)" },
-  { value: "niece_nephew", label: "조카 (Niece/Nephew)" },
-  { value: "aunt_uncle", label: "삼촌/이모/고모 (Aunt/Uncle)" },
-  { value: "in_law", label: "인척 (In-law)" },
-  { value: "foster_child", label: "위탁 자녀 (Foster Child)" },
-  { value: "other", label: "기타 (Other)" },
+const getRelationshipOptions = (messages: any) => [
+  { value: "child", label: messages.personalInfo.dependentRelations?.child || "자녀 (Child)" },
+  { value: "parent", label: messages.personalInfo.dependentRelations?.parent || "부모 (Parent)" },
+  { value: "grandparent", label: messages.personalInfo.dependentRelations?.grandparent || "조부모 (Grandparent)" },
+  { value: "sibling", label: messages.personalInfo.dependentRelations?.sibling || "형제자매 (Sibling)" },
+  { value: "grandchild", label: messages.personalInfo.dependentRelations?.grandchild || "손자녀 (Grandchild)" },
+  { value: "niece_nephew", label: messages.personalInfo.dependentRelations?.nieceNephew || "조카 (Niece/Nephew)" },
+  { value: "aunt_uncle", label: messages.personalInfo.dependentRelations?.auntUncle || "삼촌/이모/고모 (Aunt/Uncle)" },
+  { value: "in_law", label: messages.personalInfo.dependentRelations?.inLaw || "인척 (In-law)" },
+  { value: "foster_child", label: messages.personalInfo.dependentRelations?.fosterChild || "위탁 자녀 (Foster Child)" },
+  { value: "other", label: messages.personalInfo.dependentRelations?.other || "기타 (Other)" },
 ];
 
 const PersonalInfo: React.FC = () => {
@@ -32,6 +33,7 @@ const PersonalInfo: React.FC = () => {
   const { toast } = useToast();
   const [, navigate] = useLocation();
   const [showSpouseInfo, setShowSpouseInfo] = useState(false);
+  const { messages } = useLanguage();
 
   const emptyDefaults: PersonalInformation = {
     firstName: '',
@@ -185,7 +187,7 @@ const PersonalInfo: React.FC = () => {
       <ProgressTracker currentStep="personal-info" />
       
       <div className="mb-6">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">개인정보 (Personal Information)</h1>
+        <h1 className="text-3xl font-bold text-gray-900 mb-2">{messages.personalInfo.title} (Personal Information)</h1>
         <p className="text-gray-600">세금 신고서 작성을 위해 개인정보를 입력해주세요.</p>
       </div>
 
@@ -195,7 +197,7 @@ const PersonalInfo: React.FC = () => {
           {/* 기본 개인정보 */}
           <Card>
             <CardContent className="pt-6">
-              <h2 className="text-xl font-semibold mb-4">기본 정보</h2>
+              <h2 className="text-xl font-semibold mb-4">{messages.personalInfo.basicInfo || "기본 정보"}</h2>
               
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                 <FormField
@@ -203,7 +205,7 @@ const PersonalInfo: React.FC = () => {
                   name="firstName"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>이름 (First Name)</FormLabel>
+                      <FormLabel>{messages.personalInfo.firstName} (First Name)</FormLabel>
                       <FormControl>
                         <Input placeholder="이름을 입력하세요" {...field} />
                       </FormControl>
@@ -217,7 +219,7 @@ const PersonalInfo: React.FC = () => {
                   name="middleInitial"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>중간 이름 (Middle Initial)</FormLabel>
+                      <FormLabel>{messages.personalInfo.middleInitial} (Middle Initial)</FormLabel>
                       <FormControl>
                         <Input placeholder="중간 이름 (선택사항)" maxLength={1} {...field} />
                       </FormControl>
@@ -231,7 +233,7 @@ const PersonalInfo: React.FC = () => {
                   name="lastName"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>성 (Last Name)</FormLabel>
+                      <FormLabel>{messages.personalInfo.lastName} (Last Name)</FormLabel>
                       <FormControl>
                         <Input placeholder="성을 입력하세요" {...field} />
                       </FormControl>

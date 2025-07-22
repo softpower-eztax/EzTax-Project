@@ -56,7 +56,7 @@ const Home: React.FC = () => {
                 </Button>
               </TooltipTrigger>
               <TooltipContent>
-                <p>가입없이도 세금을 계산해볼수 있습니다</p>
+                <p>{messages.home.taxSimulatorTooltip || "가입없이도 세금을 계산해볼수 있습니다"}</p>
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>

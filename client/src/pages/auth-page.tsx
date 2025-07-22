@@ -187,7 +187,7 @@ export default function AuthPage() {
                     ) : (
                       <div className="flex items-center">
                         <LogIn className="mr-2 h-4 w-4" />
-                        로그인(Login)
+                        {messages.auth.loginButton}
                       </div>
                     )}
                   </Button>
@@ -201,7 +201,7 @@ export default function AuthPage() {
                 <CardContent className="space-y-4">
                   <div className="space-y-2">
                     <Label htmlFor="register-username">
-                      사용자 이름(Username)
+                      {messages.auth.username}
                     </Label>
                     <div className="relative">
                       <User className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
@@ -220,7 +220,7 @@ export default function AuthPage() {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="register-email">이메일(Email)</Label>
+                    <Label htmlFor="register-email">{messages.auth.email}</Label>
                     <div className="relative">
                       <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                       <Input
@@ -240,7 +240,7 @@ export default function AuthPage() {
 
                   <div className="space-y-2">
                     <Label htmlFor="register-password">
-                      비밀번호(Password)
+                      {messages.auth.password}
                     </Label>
                     <div className="relative">
                       <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />

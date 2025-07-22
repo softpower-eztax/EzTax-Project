@@ -56,7 +56,7 @@ const Home: React.FC = () => {
                 </Button>
               </TooltipTrigger>
               <TooltipContent>
-                <p>{messages.home.taxSimulatorTooltip || "가입없이도 세금을 계산해볼수 있습니다"}</p>
+                <p>{messages.home.taxSimulatorTooltip}</p>
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
@@ -144,7 +144,7 @@ const Home: React.FC = () => {
               {messages.home.readyToFile}
             </CardTitle>
             <CardDescription>
-              30분 만에 2025년 세금 신고를 완료하세요.
+              {messages.home.completeTaxReturn}
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -180,14 +180,14 @@ const Home: React.FC = () => {
                 user ? navigate("/personal-info") : navigate("/auth")
               }
             >
-              {user ? "지금 시작하기" : "로그인하고 시작하기(Login to Start)"}
+              {user ? messages.home.startNowAuth : messages.home.startWithLogin}
             </Button>
             <Button
               size="lg"
               className="w-full bg-green-500 hover:bg-green-600 text-white font-bold"
               onClick={() => navigate("/personal-info")}
             >
-              세금시뮬레이터(Tax Simulator)
+              {messages.home.taxSimulatorCTA}
             </Button>
           </CardFooter>
         </Card>

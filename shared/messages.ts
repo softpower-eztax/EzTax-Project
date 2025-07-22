@@ -328,6 +328,11 @@ export const koMessages: Messages = {
       maxDeductions: '최대 공제 혜택',
       safeAndPrivate: '안전하고 비공개적',
     },
+    taxSimulatorTooltip: '가입없이도 세금을 계산해볼수 있습니다',
+    completeTaxReturn: '30분 만에 2025년 세금 신고를 완료하세요.',
+    startNowAuth: '지금 시작하기',
+    startWithLogin: '로그인하고 시작하기(Login to Start)',
+    taxSimulatorCTA: '세금시뮬레이터(Tax Simulator)',
     featureDescriptions: {
       easyCalculation: '세금 신고의 각 단계를 차례대로 안내해 드립니다.',
       maxDeductions: '귀하가 받을 수 있는 모든 공제와 세액 공제를 찾아드립니다.',
@@ -601,6 +606,11 @@ export const enMessages: Messages = {
       maxDeductions: 'Maximum Deductions',
       safeAndPrivate: 'Safe & Private',
     },
+    taxSimulatorTooltip: 'Calculate taxes without registration',
+    completeTaxReturn: 'Complete your 2025 tax return in 30 minutes.',
+    startNowAuth: 'Get Started',
+    startWithLogin: 'Login to Start',
+    taxSimulatorCTA: 'Tax Simulator',
     featureDescriptions: {
       easyCalculation: 'We guide you through each step of tax filing in order.',
       maxDeductions: 'We find all deductions and credits you qualify for.',

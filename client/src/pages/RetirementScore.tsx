@@ -12,6 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Checkbox } from "@/components/ui/checkbox";
 import { useLocation } from "wouter";
 import { useState } from "react";
+import { useLanguage } from "@/context/LanguageContext";
 import { 
   TrendingUpIcon, 
   PiggyBankIcon, 
@@ -86,6 +87,7 @@ export default function RetirementScoreStepByStep() {
   const [completedSteps, setCompletedSteps] = useState<boolean[]>([false, false, false, false]);
   const [showSSCalculator, setShowSSCalculator] = useState(false);
   const [showCalculationDetails, setShowCalculationDetails] = useState(false);
+  const { messages } = useLanguage();
   
   // Social Security calculator state
   const [ssStartAge, setSsStartAge] = useState(25);
@@ -118,17 +120,17 @@ export default function RetirementScoreStepByStep() {
   });
 
   const stepTitles = [
-    "1단계: 기본 정보",
-    "2단계: 재정 상태", 
-    "3단계: 생활 환경",
-    "4단계: 투자 성향"
+    messages.retirementScore.stepTitles.step1,
+    messages.retirementScore.stepTitles.step2,
+    messages.retirementScore.stepTitles.step3,
+    messages.retirementScore.stepTitles.step4
   ];
 
   const stepDescriptions = [
-    "나이, 은퇴계획, 현재 저축 상황을 입력해주세요",
-    "소득, 부채, 비상자금 등 재정상태를 진단합니다", 
-    "건강, 주거, 가족상황 등을 확인합니다",
-    "투자경험과 위험성향을 파악합니다"
+    messages.retirementScore.stepDescriptions.step1,
+    messages.retirementScore.stepDescriptions.step2,
+    messages.retirementScore.stepDescriptions.step3,
+    messages.retirementScore.stepDescriptions.step4
   ];
 
   // 각 단계별 필수 필드 정의
@@ -753,7 +755,7 @@ export default function RetirementScoreStepByStep() {
       <div className="text-center mb-8">
         <h1 className="text-3xl font-bold text-gray-900 mb-2 flex items-center justify-center gap-2">
           <TrendingUpIcon className="h-8 w-8 text-primary" />
-          은퇴 준비 상태 진단 (무료)
+{messages.retirementScore.title}
         </h1>
         <p className="text-gray-600">
           4단계 간단한 질문으로 당신의 은퇴 준비 점수를 확인하고 맞춤 전략을 받아보세요
@@ -814,7 +816,7 @@ export default function RetirementScoreStepByStep() {
                       name="currentAge"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>현재 나이 *</FormLabel>
+                          <FormLabel>{messages.retirementScore.formLabels.currentAge}</FormLabel>
                           <FormControl>
                             <Input
                               type="number"
@@ -834,7 +836,7 @@ export default function RetirementScoreStepByStep() {
                       name="expectedRetirementAge"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>희망 은퇴 나이 *</FormLabel>
+                          <FormLabel>{messages.retirementScore.formLabels.expectedRetirementAge}</FormLabel>
                           <FormControl>
                             <Input
                               type="number"
@@ -854,7 +856,7 @@ export default function RetirementScoreStepByStep() {
                       name="currentSavings"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>현재 총 저축액 ($) *</FormLabel>
+                          <FormLabel>{messages.retirementScore.formLabels.currentSavings}</FormLabel>
                           <FormControl>
                             <Input
                               type="number"
@@ -874,7 +876,7 @@ export default function RetirementScoreStepByStep() {
                       name="monthlyContribution"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>월 저축액 ($) *</FormLabel>
+                          <FormLabel>{messages.retirementScore.formLabels.monthlyContribution}</FormLabel>
                           <FormControl>
                             <Input
                               type="number"
@@ -894,7 +896,7 @@ export default function RetirementScoreStepByStep() {
                       name="desiredRetirementIncome"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>은퇴 후 예상 생활비 (주거비 포함 월비용 $) *</FormLabel>
+                          <FormLabel>{messages.retirementScore.formLabels.desiredRetirementIncome}</FormLabel>
                           <FormControl>
                             <Input
                               type="number"
@@ -914,7 +916,7 @@ export default function RetirementScoreStepByStep() {
                       name="expectedAnnualReturn"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>예상 연 투자수익률 (%) *</FormLabel>
+                          <FormLabel>{messages.retirementScore.formLabels.expectedAnnualReturn}</FormLabel>
                           <FormControl>
                             <Input
                               type="number"
@@ -942,7 +944,7 @@ export default function RetirementScoreStepByStep() {
                       name="currentIncome"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>현재 연소득 ($) *</FormLabel>
+                          <FormLabel>{messages.retirementScore.formLabels.currentIncome}</FormLabel>
                           <FormControl>
                             <Input
                               type="number"
@@ -962,7 +964,7 @@ export default function RetirementScoreStepByStep() {
                       name="emergencyFund"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>현재 보유 비상 자금 ($) *</FormLabel>
+                          <FormLabel>{messages.retirementScore.formLabels.emergencyFund}</FormLabel>
                           <FormControl>
                             <Input
                               type="number"
@@ -982,7 +984,7 @@ export default function RetirementScoreStepByStep() {
                       name="totalDebt"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>총 부채 ($) *</FormLabel>
+                          <FormLabel>{messages.retirementScore.formLabels.totalDebt}</FormLabel>
                           <FormControl>
                             <Input
                               type="number"
@@ -1002,7 +1004,7 @@ export default function RetirementScoreStepByStep() {
                       name="expectedSocialSecurityBenefit"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>예상 Social Security 연금 (월 수령액 $) *</FormLabel>
+                          <FormLabel>{messages.retirementScore.formLabels.expectedSocialSecurityBenefit}</FormLabel>
                           <div className="flex gap-2">
                             <FormControl>
                               <Input
@@ -1155,7 +1157,7 @@ export default function RetirementScoreStepByStep() {
                       name="healthStatus"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>건강 상태 *</FormLabel>
+                          <FormLabel>{messages.retirementScore.formLabels.healthStatus}</FormLabel>
                           <Select onValueChange={field.onChange} defaultValue={field.value}>
                             <FormControl>
                               <SelectTrigger>
@@ -1163,10 +1165,10 @@ export default function RetirementScoreStepByStep() {
                               </SelectTrigger>
                             </FormControl>
                             <SelectContent>
-                              <SelectItem value="excellent">매우 좋음</SelectItem>
-                              <SelectItem value="good">좋음</SelectItem>
-                              <SelectItem value="fair">보통</SelectItem>
-                              <SelectItem value="poor">나쁨</SelectItem>
+                              <SelectItem value="excellent">{messages.retirementScore.options.healthStatus.excellent}</SelectItem>
+                              <SelectItem value="good">{messages.retirementScore.options.healthStatus.good}</SelectItem>
+                              <SelectItem value="fair">{messages.retirementScore.options.healthStatus.fair}</SelectItem>
+                              <SelectItem value="poor">{messages.retirementScore.options.healthStatus.poor}</SelectItem>
                             </SelectContent>
                           </Select>
                           <FormMessage />
@@ -1186,7 +1188,7 @@ export default function RetirementScoreStepByStep() {
                             />
                           </FormControl>
                           <div className="space-y-1 leading-none">
-                            <FormLabel>건강보험 가입 *</FormLabel>
+                            <FormLabel>{messages.retirementScore.formLabels.hasHealthInsurance}</FormLabel>
                           </div>
                         </FormItem>
                       )}
@@ -1197,7 +1199,7 @@ export default function RetirementScoreStepByStep() {
                       name="homeOwnership"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>주거 상태 *</FormLabel>
+                          <FormLabel>{messages.retirementScore.formLabels.homeOwnership}</FormLabel>
                           <Select onValueChange={field.onChange} defaultValue={field.value}>
                             <FormControl>
                               <SelectTrigger>
@@ -1205,9 +1207,9 @@ export default function RetirementScoreStepByStep() {
                               </SelectTrigger>
                             </FormControl>
                             <SelectContent>
-                              <SelectItem value="own_outright">자가 (완전 소유)</SelectItem>
-                              <SelectItem value="mortgage">자가 (모기지)</SelectItem>
-                              <SelectItem value="rent">임대</SelectItem>
+                              <SelectItem value="own_outright">{messages.retirementScore.options.homeOwnership.ownOutright}</SelectItem>
+                              <SelectItem value="mortgage">{messages.retirementScore.options.homeOwnership.mortgage}</SelectItem>
+                              <SelectItem value="rent">{messages.retirementScore.options.homeOwnership.rent}</SelectItem>
                             </SelectContent>
                           </Select>
                           <FormMessage />
@@ -1220,7 +1222,7 @@ export default function RetirementScoreStepByStep() {
                       name="familyStatus"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>결혼상태 *</FormLabel>
+                          <FormLabel>{messages.retirementScore.formLabels.familyStatus}</FormLabel>
                           <Select onValueChange={field.onChange} defaultValue={field.value}>
                             <FormControl>
                               <SelectTrigger>
@@ -1228,10 +1230,10 @@ export default function RetirementScoreStepByStep() {
                               </SelectTrigger>
                             </FormControl>
                             <SelectContent>
-                              <SelectItem value="single">미혼</SelectItem>
-                              <SelectItem value="married">기혼</SelectItem>
-                              <SelectItem value="divorced">이혼</SelectItem>
-                              <SelectItem value="widowed">사별</SelectItem>
+                              <SelectItem value="single">{messages.retirementScore.options.familyStatus.single}</SelectItem>
+                              <SelectItem value="married">{messages.retirementScore.options.familyStatus.married}</SelectItem>
+                              <SelectItem value="divorced">{messages.retirementScore.options.familyStatus.divorced}</SelectItem>
+                              <SelectItem value="widowed">{messages.retirementScore.options.familyStatus.widowed}</SelectItem>
                             </SelectContent>
                           </Select>
                           <FormMessage />
@@ -1244,7 +1246,7 @@ export default function RetirementScoreStepByStep() {
                       name="dependentsCount"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>현재 부양가족 수 (배우자 제외) *</FormLabel>
+                          <FormLabel>{messages.retirementScore.formLabels.dependentsCount}</FormLabel>
                           <FormControl>
                             <Input
                               type="number"
@@ -1271,7 +1273,7 @@ export default function RetirementScoreStepByStep() {
                       name="investmentExperience"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>투자 경험 *</FormLabel>
+                          <FormLabel>{messages.retirementScore.formLabels.investmentExperience}</FormLabel>
                           <Select onValueChange={field.onChange} defaultValue={field.value}>
                             <FormControl>
                               <SelectTrigger>
@@ -1279,9 +1281,9 @@ export default function RetirementScoreStepByStep() {
                               </SelectTrigger>
                             </FormControl>
                             <SelectContent>
-                              <SelectItem value="beginner">초급 (1-2년)</SelectItem>
-                              <SelectItem value="intermediate">중급 (3-7년)</SelectItem>
-                              <SelectItem value="advanced">고급 (8년 이상)</SelectItem>
+                              <SelectItem value="beginner">{messages.retirementScore.options.investmentExperience.beginner}</SelectItem>
+                              <SelectItem value="intermediate">{messages.retirementScore.options.investmentExperience.intermediate}</SelectItem>
+                              <SelectItem value="advanced">{messages.retirementScore.options.investmentExperience.advanced}</SelectItem>
                             </SelectContent>
                           </Select>
                           <FormMessage />
@@ -1294,7 +1296,7 @@ export default function RetirementScoreStepByStep() {
                       name="riskTolerance"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>위험 성향 *</FormLabel>
+                          <FormLabel>{messages.retirementScore.formLabels.riskTolerance}</FormLabel>
                           <Select onValueChange={field.onChange} defaultValue={field.value}>
                             <FormControl>
                               <SelectTrigger>
@@ -1302,9 +1304,9 @@ export default function RetirementScoreStepByStep() {
                               </SelectTrigger>
                             </FormControl>
                             <SelectContent>
-                              <SelectItem value="conservative">보수적 (안정성 중시)</SelectItem>
-                              <SelectItem value="moderate">균형형 (중간 위험)</SelectItem>
-                              <SelectItem value="aggressive">공격적 (고수익 추구)</SelectItem>
+                              <SelectItem value="conservative">{messages.retirementScore.options.riskTolerance.conservative}</SelectItem>
+                              <SelectItem value="moderate">{messages.retirementScore.options.riskTolerance.moderate}</SelectItem>
+                              <SelectItem value="aggressive">{messages.retirementScore.options.riskTolerance.aggressive}</SelectItem>
                             </SelectContent>
                           </Select>
                           <FormMessage />
@@ -1317,7 +1319,7 @@ export default function RetirementScoreStepByStep() {
                       name="expectedInflationRate"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>예상 물가상승률 (%) *</FormLabel>
+                          <FormLabel>{messages.retirementScore.formLabels.expectedInflationRate}</FormLabel>
                           <FormControl>
                             <Input
                               type="number"
@@ -1346,7 +1348,7 @@ export default function RetirementScoreStepByStep() {
                   className="flex items-center gap-2"
                 >
                   <ChevronLeftIcon className="h-4 w-4" />
-                  이전 단계
+{messages.retirementScore.buttons.previous}
                 </Button>
 
                 {currentStep < 3 ? (
@@ -1356,7 +1358,7 @@ export default function RetirementScoreStepByStep() {
                     disabled={!validateCurrentStep()}
                     className="flex items-center gap-2"
                   >
-                    다음 단계
+{messages.retirementScore.buttons.next}
                     <ChevronRightIcon className="h-4 w-4" />
                   </Button>
                 ) : (
@@ -1367,7 +1369,7 @@ export default function RetirementScoreStepByStep() {
                     className="flex items-center gap-2 bg-green-600 hover:bg-green-700"
                   >
                     <TargetIcon className="h-4 w-4" />
-                    종합 은퇴 점수 계산하기
+{messages.retirementScore.buttons.calculate}
                   </Button>
                 )}
               </div>

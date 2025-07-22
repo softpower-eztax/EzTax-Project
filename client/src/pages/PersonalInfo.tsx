@@ -620,7 +620,7 @@ const PersonalInfo: React.FC = () => {
                                   </SelectTrigger>
                                 </FormControl>
                                 <SelectContent>
-                                  {relationshipOptions.map((option) => (
+                                  {getRelationshipOptions(messages).map((option) => (
                                     <SelectItem key={option.value} value={option.value}>
                                       {option.label}
                                     </SelectItem>

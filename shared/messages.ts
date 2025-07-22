@@ -231,6 +231,73 @@ export interface Messages {
   // Retirement Score
   retirementScore: {
     title: string;
+    stepTitles: {
+      step1: string;
+      step2: string;
+      step3: string;
+      step4: string;
+    };
+    stepDescriptions: {
+      step1: string;
+      step2: string;
+      step3: string;
+      step4: string;
+    };
+    formLabels: {
+      currentAge: string;
+      expectedRetirementAge: string;
+      currentSavings: string;
+      monthlyContribution: string;
+      desiredRetirementIncome: string;
+      expectedAnnualReturn: string;
+      currentIncome: string;
+      emergencyFund: string;
+      totalDebt: string;
+      expectedSocialSecurityBenefit: string;
+      healthStatus: string;
+      hasHealthInsurance: string;
+      homeOwnership: string;
+      familyStatus: string;
+      dependentsCount: string;
+      investmentExperience: string;
+      riskTolerance: string;
+      expectedInflationRate: string;
+    };
+    options: {
+      healthStatus: {
+        excellent: string;
+        good: string;
+        fair: string;
+        poor: string;
+      };
+      homeOwnership: {
+        ownOutright: string;
+        mortgage: string;
+        rent: string;
+      };
+      familyStatus: {
+        single: string;
+        married: string;
+        divorced: string;
+        widowed: string;
+      };
+      investmentExperience: {
+        beginner: string;
+        intermediate: string;
+        advanced: string;
+      };
+      riskTolerance: {
+        conservative: string;
+        moderate: string;
+        aggressive: string;
+      };
+    };
+    buttons: {
+      next: string;
+      previous: string;
+      calculate: string;
+      startOver: string;
+    };
     basicInfo: string;
     financialStatus: string;
     livingEnvironment: string;
@@ -524,6 +591,73 @@ export const koMessages: Messages = {
 
   retirementScore: {
     title: "종합 은퇴 준비 진단",
+    stepTitles: {
+      step1: "1단계: 기본 정보",
+      step2: "2단계: 재정 상태",
+      step3: "3단계: 생활 환경",
+      step4: "4단계: 투자 성향",
+    },
+    stepDescriptions: {
+      step1: "나이, 은퇴계획, 현재 저축 상황을 입력해주세요",
+      step2: "소득, 부채, 비상자금 등 재정상태를 진단합니다",
+      step3: "건강, 주거, 가족상황 등을 확인합니다",
+      step4: "투자경험과 위험성향을 파악합니다",
+    },
+    formLabels: {
+      currentAge: "현재 나이 *",
+      expectedRetirementAge: "희망 은퇴 나이 *",
+      currentSavings: "현재 총 저축액 ($) *",
+      monthlyContribution: "월 저축액 ($) *",
+      desiredRetirementIncome: "은퇴 후 예상 생활비 (주거비 포함 월비용 $) *",
+      expectedAnnualReturn: "예상 연 투자수익률 (%) *",
+      currentIncome: "현재 연소득 ($) *",
+      emergencyFund: "현재 보유 비상 자금 ($) *",
+      totalDebt: "총 부채 ($) *",
+      expectedSocialSecurityBenefit: "예상 Social Security 연금 (월 수령액 $) *",
+      healthStatus: "건강 상태 *",
+      hasHealthInsurance: "건강보험 가입 *",
+      homeOwnership: "주거 상태 *",
+      familyStatus: "결혼상태 *",
+      dependentsCount: "현재 부양가족 수 (배우자 제외) *",
+      investmentExperience: "투자 경험 *",
+      riskTolerance: "위험 성향 *",
+      expectedInflationRate: "예상 물가상승률 (%) *",
+    },
+    options: {
+      healthStatus: {
+        excellent: "매우 좋음",
+        good: "좋음",
+        fair: "보통",
+        poor: "나쁨",
+      },
+      homeOwnership: {
+        ownOutright: "자가 (완전 소유)",
+        mortgage: "자가 (모기지)",
+        rent: "임대",
+      },
+      familyStatus: {
+        single: "미혼",
+        married: "기혼",
+        divorced: "이혼",
+        widowed: "사별",
+      },
+      investmentExperience: {
+        beginner: "초보자",
+        intermediate: "중급자",
+        advanced: "고급자",
+      },
+      riskTolerance: {
+        conservative: "보수적",
+        moderate: "중간",
+        aggressive: "공격적",
+      },
+    },
+    buttons: {
+      next: "다음 단계",
+      previous: "이전 단계",
+      calculate: "계산하기",
+      startOver: "다시 시작",
+    },
     basicInfo: "기본정보",
     financialStatus: "재정상태",
     livingEnvironment: "생활환경",
@@ -817,6 +951,73 @@ export const enMessages: Messages = {
 
   retirementScore: {
     title: "Comprehensive Retirement Readiness Assessment",
+    stepTitles: {
+      step1: "Step 1: Basic Information",
+      step2: "Step 2: Financial Status",
+      step3: "Step 3: Living Environment",
+      step4: "Step 4: Investment Style",
+    },
+    stepDescriptions: {
+      step1: "Please enter your age, retirement plans, and current savings situation",
+      step2: "We diagnose your financial status including income, debt, and emergency funds",
+      step3: "We check your health, housing, and family situation",
+      step4: "We assess your investment experience and risk tolerance",
+    },
+    formLabels: {
+      currentAge: "Current Age *",
+      expectedRetirementAge: "Expected Retirement Age *",
+      currentSavings: "Current Total Savings ($) *",
+      monthlyContribution: "Monthly Savings ($) *",
+      desiredRetirementIncome: "Expected Retirement Living Expenses (Monthly Housing Included $) *",
+      expectedAnnualReturn: "Expected Annual Investment Return (%) *",
+      currentIncome: "Current Annual Income ($) *",
+      emergencyFund: "Current Emergency Fund ($) *",
+      totalDebt: "Total Debt ($) *",
+      expectedSocialSecurityBenefit: "Expected Social Security Benefits (Monthly $) *",
+      healthStatus: "Health Status *",
+      hasHealthInsurance: "Health Insurance Coverage *",
+      homeOwnership: "Housing Status *",
+      familyStatus: "Marital Status *",
+      dependentsCount: "Current Number of Dependents (Excluding Spouse) *",
+      investmentExperience: "Investment Experience *",
+      riskTolerance: "Risk Tolerance *",
+      expectedInflationRate: "Expected Inflation Rate (%) *",
+    },
+    options: {
+      healthStatus: {
+        excellent: "Excellent",
+        good: "Good",
+        fair: "Fair",
+        poor: "Poor",
+      },
+      homeOwnership: {
+        ownOutright: "Own Outright",
+        mortgage: "Own with Mortgage",
+        rent: "Rent",
+      },
+      familyStatus: {
+        single: "Single",
+        married: "Married",
+        divorced: "Divorced",
+        widowed: "Widowed",
+      },
+      investmentExperience: {
+        beginner: "Beginner",
+        intermediate: "Intermediate",
+        advanced: "Advanced",
+      },
+      riskTolerance: {
+        conservative: "Conservative",
+        moderate: "Moderate",
+        aggressive: "Aggressive",
+      },
+    },
+    buttons: {
+      next: "Next Step",
+      previous: "Previous Step",
+      calculate: "Calculate",
+      startOver: "Start Over",
+    },
     basicInfo: "Basic Information",
     financialStatus: "Financial Status",
     livingEnvironment: "Living Environment",

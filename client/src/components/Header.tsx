@@ -7,6 +7,7 @@ import { useLocation } from 'wouter';
 // import { useTaxContext } from '@/context/TaxContext';
 import { useAuth } from '@/hooks/use-auth';
 import { LanguageToggle } from '@/components/LanguageToggle';
+import { useLanguage } from '@/context/LanguageContext';
 import { 
   AlertDialog,
   AlertDialogAction,
@@ -27,11 +28,12 @@ const Header: React.FC = () => {
   // const { taxData, saveTaxReturn, resetToZero, updateTaxData } = taxContext || {};
   const { user, logoutMutation } = useAuth();
   const [isResetting, setIsResetting] = useState(false);
+  const { messages } = useLanguage();
 
   const handleSaveProgress = async () => {
     // 임시로 기능 비활성화 - TaxContext 오류 방지
     toast({
-      title: "저장 기능 임시 비활성화",
+      title: messages.common.save,
       description: "곧 복원될 예정입니다.",
     });
   };
@@ -77,7 +79,7 @@ const Header: React.FC = () => {
                 onClick={() => navigate('/filing-status-checker')}
               >
                 <ClipboardCheck className="h-4 w-4 mr-1" />
-                Filing Status 확인
+                {messages.personalInfo.filingStatusChecker}
               </Button>
               
               </>
@@ -97,7 +99,7 @@ const Header: React.FC = () => {
                   onClick={() => navigate('/admin')}
                 >
                   <Shield className="h-4 w-4 mr-1" />
-                  관리자
+                  {messages.navigation.admin}
                 </Button>
               )}
               <Button 
@@ -107,7 +109,7 @@ const Header: React.FC = () => {
                 onClick={handleLogout}
               >
                 <LogOut className="h-4 w-4 mr-1" />
-                <span>로그아웃(Logout)</span>
+                <span>{messages.common.logout}</span>
               </Button>
             </div>
           ) : (
@@ -118,7 +120,7 @@ const Header: React.FC = () => {
               onClick={handleLogin}
             >
               <LogIn className="h-4 w-4 mr-1" />
-              <span>로그인(Login)</span>
+              <span>{messages.common.login}</span>
             </Button>
           )}
         </div>

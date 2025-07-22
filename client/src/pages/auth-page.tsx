@@ -5,6 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { insertUserSchema } from "@shared/schema";
 import { useAuth } from "@/hooks/use-auth";
+import { useLanguage } from "@/context/LanguageContext";
 import {
   Card,
   CardContent,
@@ -24,15 +25,9 @@ import { FcGoogle } from "react-icons/fc";
 // Strong password validation function
 const passwordSchema = z
   .string()
-  .min(
-    8,
-    "비밀번호는 최소 8자 이상이어야 합니다(Password must be at least 8 characters)",
-  )
-  .regex(/[A-Z]/, "대문자가 포함되어야 합니다(Must contain uppercase letter)")
-  .regex(
-    /[$*!#]/,
-    "특수기호($, *, !, #) 중 하나가 포함되어야 합니다(Must contain special character: $, *, !, #)",
-  );
+  .min(8, "Password must be at least 8 characters")
+  .regex(/[A-Z]/, "Must contain uppercase letter")
+  .regex(/[$*!#]/, "Must contain special character: $, *, !, #");
 
 // Extend the insertUserSchema to include password confirmation
 const registerSchema = insertUserSchema
@@ -41,7 +36,7 @@ const registerSchema = insertUserSchema
     passwordConfirm: z.string(),
   })
   .refine((data) => data.password === data.passwordConfirm, {
-    message: "비밀번호가 일치하지 않습니다(Passwords do not match)",
+    message: "Passwords do not match",
     path: ["passwordConfirm"],
   });
 
@@ -49,8 +44,8 @@ const registerSchema = insertUserSchema
 const loginSchema = z.object({
   username: z
     .string()
-    .min(1, "사용자 이름을 입력해주세요(Username is required)"),
-  password: z.string().min(1, "비밀번호를 입력해주세요(Password is required)"),
+    .min(1, "Username is required"),
+  password: z.string().min(1, "Password is required"),
 });
 
 type RegisterFormValues = z.infer<typeof registerSchema>;
@@ -60,6 +55,7 @@ export default function AuthPage() {
   const [activeTab, setActiveTab] = useState<string>("login");
   const [, navigate] = useLocation();
   const { user, isLoading, loginMutation, registerMutation } = useAuth();
+  const { messages } = useLanguage();
 
   // Redirect if user is already logged in
   useEffect(() => {
@@ -116,12 +112,12 @@ export default function AuthPage() {
         <Card className="w-full">
           <CardHeader>
             <CardTitle className="text-2xl font-bold text-center">
-              {activeTab === "login" ? "로그인(Login)" : "회원가입(Register)"}
+              {activeTab === "login" ? messages.auth.loginTitle : messages.auth.registerTitle}
             </CardTitle>
             <CardDescription className="text-center">
               {activeTab === "login"
-                ? "EzTax 계정으로 로그인하세요(Sign in to your EzTax account)"
-                : "새 EzTax 계정 만들기(Create a new EzTax account)"}
+                ? messages.auth.loginDescription
+                : messages.auth.registerDescription}
             </CardDescription>
           </CardHeader>
 
@@ -131,8 +127,8 @@ export default function AuthPage() {
             className="w-full"
           >
             <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="login">로그인(Login)</TabsTrigger>
-              <TabsTrigger value="register">회원가입(Register)</TabsTrigger>
+              <TabsTrigger value="login">{messages.auth.loginTab}</TabsTrigger>
+              <TabsTrigger value="register">{messages.auth.registerTab}</TabsTrigger>
             </TabsList>
 
             {/* Login Form */}
@@ -140,7 +136,7 @@ export default function AuthPage() {
               <form onSubmit={loginForm.handleSubmit(onLoginSubmit)}>
                 <CardContent className="space-y-4">
                   <div className="space-y-2">
-                    <Label htmlFor="username">사용자 이름(Username)</Label>
+                    <Label htmlFor="username">{messages.auth.username}</Label>
                     <div className="relative">
                       <User className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                       <Input
@@ -158,7 +154,7 @@ export default function AuthPage() {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="password">비밀번호(Password)</Label>
+                    <Label htmlFor="password">{messages.auth.password}</Label>
                     <div className="relative">
                       <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                       <Input

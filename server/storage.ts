@@ -8,6 +8,7 @@ export interface IStorage {
   getUserById(id: number): Promise<User | undefined>;
   getUserByUsername(username: string): Promise<User | undefined>;
   getUserByGoogleId(googleId: string): Promise<User | undefined>;
+  getUserByAppleId(appleId: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
   getAllUsers(): Promise<User[]>;
   deleteUser(userId: number): Promise<void>;
@@ -40,6 +41,7 @@ export class DbStorage implements IStorage {
           password: "password",
           email: null,
           googleId: null,
+          appleId: null,
           displayName: null,
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString()
@@ -66,6 +68,11 @@ export class DbStorage implements IStorage {
   
   async getUserByGoogleId(googleId: string): Promise<User | undefined> {
     const [user] = await db.select().from(users).where(eq(users.googleId, googleId));
+    return user || undefined;
+  }
+  
+  async getUserByAppleId(appleId: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.appleId, appleId));
     return user || undefined;
   }
 

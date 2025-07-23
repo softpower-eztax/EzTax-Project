@@ -1,6 +1,7 @@
 import passport from "passport";
 import { Strategy as LocalStrategy } from "passport-local";
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
+import { Strategy as AppleStrategy } from "passport-apple";
 import fs from "fs";
 import path from "path";
 import { Express, Request, Response, NextFunction } from "express";
@@ -157,6 +158,69 @@ export function setupAuth(app: Express) {
     console.error("구글 인증 설정 중 오류 발생:", error);
   }
 
+  // Apple 인증 전략 설정
+  try {
+    passport.use(
+      new AppleStrategy(
+        {
+          clientID: process.env.APPLE_CLIENT_ID || "com.eztax.webapp", // Apple Service ID
+          teamID: process.env.APPLE_TEAM_ID || "your-team-id",
+          keyID: process.env.APPLE_KEY_ID || "your-key-id",
+          privateKeyString: process.env.APPLE_PRIVATE_KEY || "", // Apple private key
+          callbackURL: "http://localhost:5000/auth/apple/callback",
+          scope: ["name", "email"],
+          proxy: true
+        },
+        async (accessToken, refreshToken, idToken, profile, done) => {
+          try {
+            console.log('Apple OAuth 콜백 처리 중:', {
+              profileId: profile.id,
+              displayName: profile.displayName,
+              email: profile.email,
+              accessToken: accessToken ? 'RECEIVED' : 'MISSING'
+            });
+            
+            // Apple ID로 사용자 확인
+            let user = await storage.getUserByAppleId(profile.id);
+            
+            // 사용자가 없으면 새로 생성
+            if (!user) {
+              console.log('새 Apple 사용자 생성 중...');
+              // 고유한 사용자명 생성
+              const username = `apple_${profile.id}`;
+              // 이메일 가져오기 (있을 경우)
+              const email = profile.email || "";
+              
+              // 임의의 비밀번호 생성 (실제로 사용되지 않음)
+              const randomPass = randomBytes(16).toString("hex");
+              
+              user = await storage.createUser({
+                username,
+                password: await hashPassword(randomPass),
+                appleId: profile.id,
+                email: email,
+                displayName: profile.displayName || profile.name?.firstName + " " + profile.name?.lastName || username,
+              });
+              
+              console.log('새 Apple 사용자 생성 완료:', user.username);
+            } else {
+              console.log('기존 Apple 사용자 로그인:', user.username);
+            }
+            
+            return done(null, user);
+          } catch (error) {
+            console.error('Apple OAuth 처리 중 오류:', error);
+            return done(error);
+          }
+        }
+      )
+    );
+    
+    console.log("Apple 로그인 설정 완료");
+  } catch (error) {
+    console.error("Apple 인증 설정 중 오류 발생:", error);
+  }
+
   passport.serializeUser((user, done) => {
     console.log('Serializing user:', user.id);
     done(null, user.id);
@@ -284,6 +348,53 @@ export function setupAuth(app: Express) {
       host: req.get('host')
     });
     res.redirect('/auth?error=google_oauth_error');
+  });
+
+  // Apple 인증 라우트
+  app.get(
+    "/auth/apple",
+    (req, res, next) => {
+      console.log("Apple 인증 요청 받음: ", req.url);
+      console.log("요청 호스트:", req.get('host'));
+      console.log("프로토콜:", req.protocol);
+      next();
+    },
+    passport.authenticate("apple", { 
+      scope: ["name", "email"],
+      response_mode: "form_post"
+    })
+  );
+
+  app.post(
+    "/auth/apple/callback",
+    (req, res, next) => {
+      console.log("Apple 콜백 받음: ", req.url);
+      console.log("Body params:", req.body);
+      next();
+    },
+    passport.authenticate("apple", { 
+      failureRedirect: "/auth?error=apple_auth_failed",
+      failureMessage: true,
+      successMessage: true
+    }),
+    (req, res) => {
+      // 인증 성공 시 홈페이지로 리다이렉트
+      console.log("Apple 인증 성공, 사용자:", req.user?.username);
+      res.redirect("/?apple_login=success");
+    }
+  );
+
+  // Apple OAuth 오류 처리
+  app.use('/auth/apple/callback', (err: any, req: any, res: any, next: any) => {
+    console.error('Apple OAuth 오류:', err);
+    console.error('오류 상세:', {
+      message: err.message,
+      stack: err.stack,
+      name: err.name,
+      originalUrl: req.originalUrl,
+      host: req.get('host')
+    });
+    res.redirect('/auth?error=apple_oauth_error');
   });
 
   app.get("/api/user", (req, res) => {

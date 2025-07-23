@@ -8,6 +8,7 @@ export const users = pgTable("users", {
   password: text("password").notNull(),
   email: text("email"),
   googleId: text("google_id").unique(),
+  appleId: text("apple_id").unique(),
   displayName: text("display_name"),
   createdAt: text("created_at").notNull().default(new Date().toISOString()),
   updatedAt: text("updated_at").notNull().default(new Date().toISOString()),
@@ -18,6 +19,7 @@ export const insertUserSchema = createInsertSchema(users).pick({
   password: true,
   email: true,
   googleId: true,
+  appleId: true,
   displayName: true,
 });
 

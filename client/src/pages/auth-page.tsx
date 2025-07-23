@@ -21,6 +21,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Loader2, User, Mail, Lock, LogIn, UserPlus } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { FcGoogle } from "react-icons/fc";
+import { SiApple } from "react-icons/si";
 
 // Strong password validation function
 const passwordSchema = z
@@ -212,6 +213,16 @@ export default function AuthPage() {
                     <FcGoogle className="mr-2 h-4 w-4" />
                     {messages.auth.googleLogin}
                   </Button>
+
+                  <Button
+                    variant="outline"
+                    type="button"
+                    className="w-full bg-black text-white hover:bg-gray-800"
+                    onClick={() => window.location.href = '/auth/apple'}
+                  >
+                    <SiApple className="mr-2 h-4 w-4" />
+                    {messages.auth.appleLogin}
+                  </Button>
                 </CardFooter>
               </form>
             </TabsContent>
@@ -343,6 +354,16 @@ export default function AuthPage() {
                   >
                     <FcGoogle className="mr-2 h-4 w-4" />
                     {messages.auth.googleLogin}
+                  </Button>
+
+                  <Button
+                    variant="outline"
+                    type="button"
+                    className="w-full bg-black text-white hover:bg-gray-800"
+                    onClick={() => window.location.href = '/auth/apple'}
+                  >
+                    <SiApple className="mr-2 h-4 w-4" />
+                    {messages.auth.appleLogin}
                   </Button>
                 </CardFooter>
               </form>

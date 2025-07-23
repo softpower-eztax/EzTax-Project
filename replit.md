@@ -53,10 +53,13 @@ EzTax is a comprehensive web-based tax filing application that provides users wi
 - Automatic data restoration on session resume
 
 ### Authentication System
-- Local username/password authentication
-- Google OAuth integration
+- Local username/password authentication with strong password requirements
+- Google OAuth integration with automatic user creation and profile capture
+- Apple Sign-In integration with automatic user creation and unique username generation
+- Multi-provider authentication supporting three login methods seamlessly
 - Session-based authentication with PostgreSQL storage
-- Password hashing using Node.js crypto scrypt
+- Password hashing using Node.js crypto scrypt for local accounts
+- Automatic user onboarding for OAuth providers (Google, Apple)
 
 ## Data Flow
 
@@ -105,6 +108,9 @@ Preferred communication style: Simple, everyday language.
 ## Changelog
 
 Recent Changes:
+- July 23, 2025: **APPLE SIGN-IN AUTHENTICATION FULLY IMPLEMENTED** - Added complete Apple Sign-In support with passport-apple integration, database schema updates (apple_id column), automatic user creation, and Apple login buttons on both Login/Register tabs with distinctive black styling and multilingual text support
+- July 23, 2025: **GOOGLE OAUTH AUTOMATIC USER CREATION CONFIRMED WORKING** - Verified Google OAuth authentication successfully creates new users automatically on first login, generates unique usernames like `google_${profile.id}`, and captures full profile information (email, display name) for seamless user onboarding
+- July 23, 2025: **MULTI-PROVIDER AUTHENTICATION SYSTEM COMPLETED** - EzTax now supports three authentication methods: manual username/password registration, Google OAuth with automatic user creation, and Apple Sign-In with automatic user creation, providing users multiple convenient login options
 - July 23, 2025: **ENGLISH SET AS DEFAULT LANGUAGE** - Changed application default language from Korean to English in LanguageContext, with logo tagline "Easy Tax Calculation" now appearing by default instead of "세금계산 간편하게"
 - July 22, 2025: **RETIREMENT SCORE INTERNATIONALIZATION COMPLETED** - Completed comprehensive internationalization of RetirementScore component with all form labels, step titles, descriptions, button text, and select options fully supporting Korean/English language switching using centralized message system
 - July 22, 2025: **INTERNATIONALIZATION SYSTEM COMPLETED** - Fully implemented comprehensive multilingual support with Korean/English message files, language toggle button in header, integrated message system throughout Header, Footer, Home, and authentication pages for seamless language switching while maintaining all functionality. Messages automatically switch between Korean and English based on user selection with localStorage persistence.

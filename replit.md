@@ -105,6 +105,7 @@ Preferred communication style: Simple, everyday language.
 ## Changelog
 
 Recent Changes:
+- July 23, 2025: **ENGLISH SET AS DEFAULT LANGUAGE** - Changed application default language from Korean to English in LanguageContext, with logo tagline "Easy Tax Calculation" now appearing by default instead of "세금계산 간편하게"
 - July 22, 2025: **RETIREMENT SCORE INTERNATIONALIZATION COMPLETED** - Completed comprehensive internationalization of RetirementScore component with all form labels, step titles, descriptions, button text, and select options fully supporting Korean/English language switching using centralized message system
 - July 22, 2025: **INTERNATIONALIZATION SYSTEM COMPLETED** - Fully implemented comprehensive multilingual support with Korean/English message files, language toggle button in header, integrated message system throughout Header, Footer, Home, and authentication pages for seamless language switching while maintaining all functionality. Messages automatically switch between Korean and English based on user selection with localStorage persistence.
 - July 22, 2025: **REPLIT AGENT TO REPLIT MIGRATION COMPLETED** - Successfully migrated EzTax project from Replit Agent environment to standard Replit with PostgreSQL database setup, TSX runtime configuration, schema migrations, and full application functionality restored including authentication, data persistence, and tax calculation features

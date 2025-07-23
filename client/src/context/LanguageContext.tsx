@@ -10,10 +10,10 @@ interface LanguageContextType {
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
 export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  // Get initial language from localStorage or default to Korean
+  // Get initial language from localStorage or default to English
   const [language, setLanguageState] = useState<Language>(() => {
     const saved = localStorage.getItem('eztax-language');
-    return (saved === 'en' || saved === 'ko') ? saved : 'ko';
+    return (saved === 'en' || saved === 'ko') ? saved : 'en';
   });
 
   const setLanguage = (newLanguage: Language) => {

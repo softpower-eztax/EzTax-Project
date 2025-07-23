@@ -191,6 +191,27 @@ export default function AuthPage() {
                       </div>
                     )}
                   </Button>
+
+                  <div className="relative">
+                    <div className="absolute inset-0 flex items-center">
+                      <Separator className="w-full" />
+                    </div>
+                    <div className="relative flex justify-center text-xs uppercase">
+                      <span className="bg-background px-2 text-muted-foreground">
+                        Or
+                      </span>
+                    </div>
+                  </div>
+
+                  <Button
+                    variant="outline"
+                    type="button"
+                    className="w-full"
+                    onClick={() => window.location.href = '/auth/google'}
+                  >
+                    <FcGoogle className="mr-2 h-4 w-4" />
+                    {messages.auth.googleLogin}
+                  </Button>
                 </CardFooter>
               </form>
             </TabsContent>
@@ -301,6 +322,27 @@ export default function AuthPage() {
                         회원가입(Register)
                       </div>
                     )}
+                  </Button>
+
+                  <div className="relative">
+                    <div className="absolute inset-0 flex items-center">
+                      <Separator className="w-full" />
+                    </div>
+                    <div className="relative flex justify-center text-xs uppercase">
+                      <span className="bg-background px-2 text-muted-foreground">
+                        Or
+                      </span>
+                    </div>
+                  </div>
+
+                  <Button
+                    variant="outline"
+                    type="button"
+                    className="w-full"
+                    onClick={() => window.location.href = '/auth/google'}
+                  >
+                    <FcGoogle className="mr-2 h-4 w-4" />
+                    {messages.auth.googleLogin}
                   </Button>
                 </CardFooter>
               </form>
